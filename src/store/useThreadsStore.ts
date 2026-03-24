@@ -2,27 +2,40 @@ import { create } from 'zustand';
 
 export interface Thread {
   id: string;
-  title: string;
-  description: string;
-  itemIds: string[];
+  name: string;
+  itemIds: string[]; // references Item.id
+  description?: string;
 }
 
 interface ThreadsState {
   threads: Thread[];
-  addThread: (title: string, description: string, itemIds: string[]) => void;
-  deleteThread: (id: string) => void;
+  addThread: (name: string, description?: string) => void;
+  addItemToThread: (threadId: string, itemId: string) => void;
 }
 
-const INITIAL_THREADS: Thread[] = [
-  { id: 't1', title: 'Themes of Isolation', description: 'Connections between the brutalist architecture and ambient mix.', itemIds: ['i1', 'i2'] }
-];
-
 export const useThreadsStore = create<ThreadsState>((set) => ({
-  threads: INITIAL_THREADS,
-  addThread: (title, description, itemIds) => set((state) => ({
-    threads: [{ id: Date.now().toString(), title, description, itemIds }, ...state.threads]
+  threads: [
+    {
+      id: 't1',
+      name: 'Themes of Isolation',
+      itemIds: ['101', '102'],
+      description: 'Connections between brutalist structure and ambient rain. A cohesive aesthetic of being entirely alone, but totally safe and insulated from the noise.'
+    },
+    {
+      id: 't2',
+      name: 'Digital Detox',
+      itemIds: ['103', '105'],
+      description: 'Thoughts on escaping the algorithmic void through tech-minimalism.'
+    }
+  ],
+  addThread: (name, description) => set((state) => ({
+    threads: [...state.threads, { id: Date.now().toString(), name, description, itemIds: [] }]
   })),
-  deleteThread: (id) => set((state) => ({
-    threads: state.threads.filter(t => t.id !== id)
+  addItemToThread: (threadId, itemId) => set((state) => ({
+    threads: state.threads.map(t => 
+      t.id === threadId && !t.itemIds.includes(itemId)
+        ? { ...t, itemIds: [...t.itemIds, itemId] }
+        : t
+    )
   }))
 }));

@@ -13,6 +13,7 @@ const Journal = React.lazy(() => import('./pages/Journal'));
 const Mirror = React.lazy(() => import('./pages/Mirror'));
 const Create = React.lazy(() => import('./pages/Create'));
 const Settings = React.lazy(() => import('./pages/Settings'));
+const Connections = React.lazy(() => import('./pages/Connections'));
 const Auth = React.lazy(() => import('./pages/Auth'));
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/mirror" element={<Mirror />} />
             <Route path="/create" element={<Create />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/connections" element={<Connections />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>

@@ -1,15 +1,14 @@
 import React, { useRef, useState } from 'react';
-import { Shield, Upload, Plus, Trash2, Camera, Link as LinkIcon, ExternalLink, Users } from 'lucide-react';
+import { Shield, Upload, Plus, Trash2, Camera, Link as LinkIcon, ExternalLink } from 'lucide-react';
 import { useUserStore } from '../store/useUserStore';
 import { useRoomsStore } from '../store/useRoomsStore';
 
 export default function Settings() {
-  const { user, soloMode, toggleSoloMode, updateProfile, addLink, removeLink } = useUserStore();
+  const { user, soloMode, updateProfile, addLink, removeLink } = useUserStore();
   const rooms = useRoomsStore(state => state.rooms);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Local state
-  const [activeTab, setActiveTab] = useState<'profile' | 'community'>('profile');
+  const [isEditing, setIsEditing] = useState(false);
   const [newLinkTitle, setNewLinkTitle] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
 
@@ -56,54 +55,110 @@ export default function Settings() {
   if (!user) return null;
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto pb-24 md:pb-10 min-h-full font-sans transition-all duration-500">
-      <header className="mb-8">
-        <h2 className="text-3xl font-bold tracking-tight mb-2">Settings Hub</h2>
-        <p className="text-gray-400">Manage your identity and connected ecosystem.</p>
-      </header>
-
-      {/* Top Tabs */}
-      <div className="flex bg-[#1c1c1c] p-1.5 rounded-full border border-white/5 mb-10 w-fit max-w-full overflow-x-auto no-scrollbar shadow-inner">
-        <button 
-          onClick={() => setActiveTab('profile')}
-          className={`px-8 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 outline-none ${activeTab === 'profile' ? 'bg-canvas-primary text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
-        >
-          Manage Profile
-        </button>
-        <button 
-          onClick={() => setActiveTab('community')}
-          className={`px-8 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 outline-none ${activeTab === 'community' ? 'bg-canvas-primary text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
-        >
-          Manage Community
-        </button>
-      </div>
-
-      {activeTab === 'profile' ? (
-        <div className="flex flex-col lg:flex-row gap-10">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto pb-24 md:pb-10 min-h-full font-sans transition-all duration-500 flex flex-col items-center">
+      
+      {!isEditing ? (
+        <div className="w-full flex flex-col items-center animate-in fade-in zoom-in-95 duration-500 mt-2 md:mt-8">
+          <div className="mb-8 text-center max-w-lg">
+             <h2 className="text-3xl font-bold tracking-tight text-white mb-3">Live Portrait</h2>
+             <p className="text-gray-400 font-serif italic text-lg leading-relaxed px-4">This is the exact digital replica of how your identity is rendered globally across the Muse network.</p>
+          </div>
           
-          {/* Left Pane: The Editor */}
-          <div className="w-full lg:w-3/5 space-y-10">
-            
-            {/* Privacy Toggle */}
-            <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-white/5 flex items-center justify-between shadow-lg">
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-full transition-colors duration-300 ${soloMode ? 'bg-canvas-primary/20 text-canvas-primary' : 'bg-white/10 text-white'}`}>
-                  <Shield size={24} />
-                </div>
-                <div className="pr-4">
-                  <h3 className="text-lg font-semibold tracking-tight leading-tight mb-1">Solo Mode</h3>
-                  <p className="text-xs text-gray-400 max-w-sm">When enabled, your Portrait and collections are completely invisible to others. Your Canvas is yours alone.</p>
-                </div>
-              </div>
-              
-              <button 
-                onClick={toggleSoloMode}
-                className={`relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${soloMode ? 'bg-canvas-primary' : 'bg-gray-700'}`}
-              >
-                <span className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${soloMode ? 'translate-x-6' : 'translate-x-0'}`} />
-              </button>
-            </div>
+          <div className="w-full max-w-sm perspective-[1200px]">
+             {/* The Trading Card */}
+             <div className="bg-linear-to-b from-[#1c1c1c] to-[#0a0a0a] rounded-[2rem] border border-white/10 overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] transform-gpu transition-all duration-500 hover:rotate-y-[2deg] hover:rotate-x-[2deg] hover:-translate-y-2 relative">
+               
+               {/* Cover Image / Gradient */}
+               <div className="h-32 bg-linear-to-r from-canvas-primary/20 via-purple-500/10 to-transparent relative border-b border-white/5 flex justify-center">
+                  {soloMode && (
+                    <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold text-gray-300 shadow-lg z-20">
+                      <Shield size={12} className="text-canvas-primary" /> Solo Mode
+                    </div>
+                  )}
 
+                  <div className="absolute -bottom-10 w-20 h-20 rounded-full bg-[#0a0a0a] border-[3px] border-[#0a0a0a] overflow-hidden shadow-2xl flex items-center justify-center text-3xl font-serif text-gray-500 z-10">
+                    {user.avatarUrl ? (
+                      <img src={user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      user.name.charAt(0)
+                    )}
+                 </div>
+               </div>
+
+               {/* Profile Info */}
+               <div className="px-8 pb-10 relative mt-16 text-center">
+                 <h2 className="text-2xl font-bold tracking-tight text-white mb-1">{user.name}</h2>
+                 <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
+                   <span className="font-mono text-canvas-primary">{user.username}</span>
+                   {(userAge !== null || user.gender) && <span>•</span>}
+                   {user.gender && <span className="capitalize">{user.gender}</span>}
+                   {userAge !== null && <span>{userAge} yrs</span>}
+                 </div>
+
+                 {/* Top Rooms */}
+                 <div className="mt-8 flex flex-col items-center">
+                   <h4 className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-3 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-canvas-primary animate-pulse"></span>
+                      Dominant Realms
+                   </h4>
+                   <div className="flex flex-wrap justify-center gap-2">
+                     {activeRooms.map(room => (
+                       <div key={room.id} className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300">
+                         {room.name}
+                       </div>
+                     ))}
+                   </div>
+                 </div>
+
+                 {/* Social Links */}
+                 <div className="mt-8 space-y-2">
+                   {(user.links || []).length > 0 ? (
+                     (user.links || []).map(link => (
+                       <a 
+                         key={link.id} 
+                         href={link.url} 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all group"
+                       >
+                         <span className="text-sm font-semibold text-white/90 group-hover:text-canvas-primary transition-colors truncate">{link.title}</span>
+                         <ExternalLink size={14} className="text-gray-500 group-hover:text-canvas-primary transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 duration-200 shrink-0" />
+                       </a>
+                     ))
+                   ) : (
+                     <div className="text-xs text-gray-600 italic font-serif flex items-center justify-center h-12 border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
+                        No external links mapped yet
+                     </div>
+                   )}
+                 </div>
+                 
+               </div>
+             </div>
+          </div>
+
+          <button 
+             onClick={() => setIsEditing(true)}
+             className="mt-12 px-10 py-4 bg-white text-black font-bold uppercase tracking-widest text-sm rounded-full shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:-translate-y-1 transition-all active:scale-95 cursor-pointer"
+          >
+             Edit Profile
+          </button>
+        </div>
+      ) : (
+        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight mb-2">Editor</h2>
+              <p className="text-gray-400">Manage your foundational identity blocks.</p>
+            </div>
+            <button 
+               onClick={() => setIsEditing(false)}
+               className="px-8 py-3 bg-canvas-primary text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/20 transition-all hover:-translate-y-0.5 cursor-pointer"
+            >
+               Save & Preview
+            </button>
+          </header>
+          
+          <div className="space-y-10 pb-10">
             <div className="bg-[#1c1c1c] p-6 rounded-2xl border border-white/5 shadow-lg space-y-8">
               <div className="flex items-center gap-6">
                 <div 
@@ -130,7 +185,7 @@ export default function Settings() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold tracking-tight mb-1">Avatar</h3>
-                  <p className="text-xs text-gray-500">Upload a square image. High-speed local Base64 conversion guarantees absolute privacy for the MVP.</p>
+                  <p className="text-xs text-gray-500">Upload a square image. Base64 conversion guarantees immediate MVP rendering.</p>
                 </div>
               </div>
 
@@ -183,7 +238,7 @@ export default function Settings() {
               </div>
 
               <div className="space-y-3">
-                {user.links.map(link => (
+                {(user.links || []).map(link => (
                   <div key={link.id} className="flex items-center justify-between p-4 bg-[#0a0a0a] border border-white/5 rounded-xl group hover:border-white/10 transition-colors">
                     <div className="flex items-center gap-3 overflow-hidden">
                       <LinkIcon size={16} className="text-gray-500 shrink-0 group-hover:text-canvas-primary transition-colors" />
@@ -199,13 +254,14 @@ export default function Settings() {
                 ))}
               </div>
 
-              <form onSubmit={handleAddLink} className="flex flex-col md:flex-row gap-3 pt-6 border-t border-white/5">
+              <div className="flex flex-col md:flex-row gap-3 pt-6 border-t border-white/5">
                 <input 
                   type="text" 
                   placeholder="Platform (e.g. LinkedIn)" 
                   value={newLinkTitle}
                   onChange={e => setNewLinkTitle(e.target.value)}
                   className="w-full md:w-1/3 bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-canvas-primary transition-colors text-white"
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleAddLink(e); }}
                 />
                 <input 
                   type="text" 
@@ -213,121 +269,19 @@ export default function Settings() {
                   value={newLinkUrl}
                   onChange={e => setNewLinkUrl(e.target.value)}
                   className="w-full md:flex-1 bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-canvas-primary transition-colors text-white"
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleAddLink(e); }}
                 />
                 <button 
-                  type="submit" 
-                  disabled={!newLinkTitle || !newLinkUrl}
+                  onClick={handleAddLink}
+                  disabled={!newLinkTitle.trim() || !newLinkUrl.trim()}
                   className="bg-white text-black hover:bg-gray-200 disabled:bg-white/10 disabled:text-gray-500 px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-all disabled:shadow-none shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
                 >
                   <Plus size={16} /> Add
                 </button>
-              </form>
+              </div>
             </div>
             
           </div>
-
-          {/* Right Pane: Live Portrait Preview */}
-          <div className="w-full lg:w-2/5 flex flex-col items-center lg:sticky lg:top-8 h-fit pb-10 perspective-[1200px]">
-            <div className="mb-6 text-center w-full max-w-sm">
-               <h3 className="text-xl font-bold tracking-tight text-white mb-2">Live Portrait Preview</h3>
-               <p className="text-sm text-gray-400 leading-relaxed font-serif italic">This trading card is an exact replica of how your digital identity is rendered globally.</p>
-            </div>
-            <div className="w-full max-w-sm">
-               {/* The Trading Card */}
-               <div className="bg-linear-to-b from-[#1c1c1c] to-[#0a0a0a] rounded-[2rem] border border-white/10 overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] transform-gpu transition-all duration-500 hover:rotate-y-[2deg] hover:rotate-x-[2deg] hover:-translate-y-2 relative">
-                 
-                 {/* Cover Image / Gradient */}
-                 <div className="h-32 bg-linear-to-r from-canvas-primary/20 via-purple-500/10 to-transparent relative border-b border-white/5 flex justify-center">
-                    {soloMode && (
-                      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold text-gray-300 shadow-lg z-20">
-                        <Shield size={12} className="text-canvas-primary" /> Solo Mode
-                      </div>
-                    )}
-
-                    {/* Centered Avatar bridging the cover image and the profile body natively, fixes any alignment blockages! */}
-                    <div className="absolute -bottom-10 w-20 h-20 rounded-full bg-[#0a0a0a] border-[3px] border-[#0a0a0a] overflow-hidden shadow-2xl flex items-center justify-center text-3xl font-serif text-gray-500 z-10">
-                      {user.avatarUrl ? (
-                        <img src={user.avatarUrl} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        user.name.charAt(0)
-                      )}
-                   </div>
-                 </div>
-
-                 {/* Profile Info */}
-                 <div className="px-8 pb-10 relative mt-16 text-center">
-                   <h2 className="text-2xl font-bold tracking-tight text-white mb-1">{user.name}</h2>
-                   <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
-                     <span className="font-mono text-canvas-primary">{user.username}</span>
-                     {(userAge !== null || user.gender) && <span>•</span>}
-                     {user.gender && <span className="capitalize">{user.gender}</span>}
-                     {userAge !== null && <span>{userAge} yrs</span>}
-                   </div>
-
-                   {/* Top Rooms */}
-                   <div className="mt-8 flex flex-col items-center">
-                     <h4 className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-3 flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-canvas-primary animate-pulse"></span>
-                        Dominant Realms
-                     </h4>
-                     <div className="flex flex-wrap justify-center gap-2">
-                       {activeRooms.map(room => (
-                         <div key={room.id} className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300">
-                           {room.name}
-                         </div>
-                       ))}
-                     </div>
-                   </div>
-
-                   {/* Social Links */}
-                   <div className="mt-8 space-y-2">
-                     {user.links.length > 0 ? (
-                       user.links.map(link => (
-                         <a 
-                           key={link.id} 
-                           href={link.url} 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all group"
-                         >
-                           <span className="text-sm font-semibold text-white/90 group-hover:text-canvas-primary transition-colors truncate">{link.title}</span>
-                           <ExternalLink size={14} className="text-gray-500 group-hover:text-canvas-primary transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 duration-200 shrink-0" />
-                         </a>
-                       ))
-                     ) : (
-                       <div className="text-xs text-gray-600 italic font-serif flex items-center justify-center h-12 border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
-                          No external links mapped yet
-                       </div>
-                     )}
-                   </div>
-                   
-                 </div>
-               </div>
-            </div>
-          </div>
-
-        </div>
-      ) : (
-        /* Community Tab */
-        <div className="space-y-6 max-w-3xl pt-2">
-           <div className="bg-[#1c1c1c] p-10 rounded-[2rem] border border-white/5 shadow-xl text-center">
-             <div className="w-20 h-20 bg-canvas-primary/10 text-canvas-primary rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner border border-canvas-primary/20">
-                <Users size={32} />
-             </div>
-             <h3 className="text-3xl font-bold tracking-tight mb-4">Interest Pods</h3>
-             <p className="text-gray-400 text-lg max-w-lg mx-auto leading-relaxed mb-6 font-serif">
-               When you turn off Solo Mode, Muse algorithmically matches your Dominant Realms with like-minded creators. 
-             </p>
-             <p className="text-gray-500 max-w-md mx-auto leading-relaxed text-sm">
-               Instead of sprawling public algorithms screaming for your attention, Muse unites you in closed, focus-driven engagement pods of exactly 10-15 people sharing your exact contemplative patterns.
-             </p>
-             
-             <div className="mt-12 p-1 border-t border-white/5 w-full flex justify-center pt-10">
-               <button className="px-8 py-4 bg-white text-black hover:bg-gray-200 rounded-full font-bold transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:-translate-y-1 active:scale-95 duration-200">
-                 Join the Waitlist
-               </button>
-             </div>
-           </div>
         </div>
       )}
     </div>

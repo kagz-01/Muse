@@ -30,12 +30,18 @@ interface UserState {
 
 export const useUserStore = create<UserState>((set) => ({
   user: {
-    id: 'user_1',
-    email: 'creator@muse.app',
-    name: 'Anonymous Creator',
-    username: '@creator',
-    links: [],
-  }, // Pre-populated for the MVP
+    id: 'user_x',
+    email: 'alex@muse.app',
+    name: 'Alex Rivera',
+    username: '@alex',
+    gender: 'Non-binary',
+    birthDate: '1998-06-15',
+    avatarUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&h=400&q=80',
+    links: [
+      { id: 'l1', title: 'Portfolio', url: 'https://alexrivera.design' },
+      { id: 'l2', title: 'Spotify', url: 'https://open.spotify.com/user/alexr' }
+    ],
+  },
   soloMode: true,
   login: (email) => set({ user: { id: '1', email, name: email.split('@')[0], username: `@${email.split('@')[0]}`, links: [] } }),
   logout: () => set({ user: null }),

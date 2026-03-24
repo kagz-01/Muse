@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { Sparkles, Layers, ArrowRight } from 'lucide-react';
+import { Sparkles, Layers, ArrowRight, Network } from 'lucide-react';
 import { useRoomsStore } from '../store/useRoomsStore';
 
 export default function Dashboard() {
@@ -38,24 +38,33 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Recent Thread Widget */}
+          {/* Meaningful Network Widget */}
           <div 
-            onClick={() => navigate('/threads')}
-            className="group bg-[#1c1c1c] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-white/20 transition-all duration-300 transform hover:-translate-y-1"
+            onClick={() => navigate('/connections')}
+            className="group bg-[#1c1c1c] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-[#00E5FF]/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <Layers size={20} className="text-gray-400 group-hover:text-white transition-colors" />
-              <h3 className="font-semibold text-white/90 tracking-tight">Recent Thread</h3>
-            </div>
-            <h4 className="text-xl font-bold tracking-tight mb-2">Themes of Isolation</h4>
-            <p className="text-sm text-gray-500 mb-6 line-clamp-2 leading-relaxed">Connections between the brutalist architecture and ambient mix.</p>
-            <div className="flex items-center justify-between mt-auto">
-              <div className="flex -space-x-2">
-                <div className="w-8 h-8 rounded-full border-2 border-[#1c1c1c] bg-[#333]"></div>
-                <div className="w-8 h-8 rounded-full border-2 border-[#1c1c1c] bg-[#444]"></div>
+            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#00E5FF]/10 blur-3xl rounded-full"></div>
+            <div className="flex flex-col h-full relative z-10">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <Network size={20} className="text-[#00E5FF]" />
+                  <h3 className="font-bold text-white tracking-tight">Connections</h3>
+                </div>
+                <span className="bg-[#00E5FF]/10 text-[#00E5FF] text-[10px] uppercase tracking-widest px-2 py-1 rounded-md font-bold shadow-sm">1 Pending</span>
               </div>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 group-hover:text-white transition-colors">
-                View thread
+              
+              <p className="text-sm text-gray-400 mb-6 leading-relaxed font-serif italic pr-2">
+                "You and <span className="text-white font-sans font-medium not-italic">David Chen</span> have had 8 thoughtful exchanges this week. Your strongest shared theme is <span className="text-white font-sans font-medium not-italic">Identity</span>."
+              </p>
+              
+              <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                <div className="flex -space-x-2">
+                  <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=150&q=80" className="w-8 h-8 rounded-full border-[3px] border-[#1c1c1c] object-cover" />
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" className="w-8 h-8 rounded-full border-[3px] border-[#1c1c1c] object-cover" />
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#00E5FF] group-hover:translate-x-1 transition-transform">
+                  Contribute <ArrowRight size={14} />
+                </div>
               </div>
             </div>
           </div>
