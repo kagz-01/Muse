@@ -1,7 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { Sparkles, Layers, ArrowRight, Network } from 'lucide-react';
-import { useRoomsStore } from '../store/useRoomsStore';
+import { Sparkles, ArrowRight, Network, Lock, Globe } from 'lucide-react';
+import { useRoomsStore, type RoomTheme } from '../store/useRoomsStore';
+
+const themeGradients: Record<RoomTheme, string> = {
+  indigo: 'from-indigo-600/30',
+  emerald: 'from-emerald-600/30',
+  amber: 'from-amber-600/30',
+  rose: 'from-rose-600/30',
+  cyan: 'from-cyan-600/30',
+  slate: 'from-slate-600/30',
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,7 +34,7 @@ export default function Dashboard() {
             onClick={() => navigate('/mirror')}
             className="group relative overflow-hidden bg-linear-to-br from-[#1c1c1c] to-[#0a0a0a] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-canvas-primary/30 transition-all duration-300 transform hover:-translate-y-1"
           >
-            <div className="absolute -top-12 -right-12 w-40 h-40 bg-canvas-primary/10 blur-3xl rounded-full"></div>
+            <div className="absolute -top-12 -right-12 w-40 h-40 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none"></div>
             <div className="flex items-center gap-3 mb-6 relative z-10">
               <Sparkles size={20} className="text-canvas-primary" />
               <h3 className="font-semibold text-white/90 tracking-tight">Weekly Mirror</h3>
@@ -43,7 +52,7 @@ export default function Dashboard() {
             onClick={() => navigate('/connections')}
             className="group bg-[#1c1c1c] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-[#00E5FF]/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden"
           >
-            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#00E5FF]/10 blur-3xl rounded-full"></div>
+            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#00E5FF]/10 blur-3xl rounded-full pointer-events-none"></div>
             <div className="flex flex-col h-full relative z-10">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
@@ -71,30 +80,61 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* The Foundations "Down Below": Rigid Rooms */}
+      {/* The Foundations: Cinematic Rooms Gallery */}
       <section>
         <header className="mb-8 flex items-end justify-between border-b border-white/5 pb-4">
           <div>
             <h2 className="text-xl font-bold tracking-tight">Your Rooms</h2>
-            <p className="text-sm text-gray-500 mt-1">Grounded foundations for your collection.</p>
+            <p className="text-sm text-gray-500 mt-1">Highly personalized and expressive curation spaces.</p>
           </div>
         </header>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {rooms.map((room) => (
-            <div 
-              key={room.id}
-              onClick={() => navigate(`/rooms/${room.id}`)}
-              className="bg-[#151515] p-6 rounded-2xl hover:bg-[#1f1f1f] transition-colors duration-200 cursor-pointer border border-white/5 group relative shadow-md hover:shadow-lg hover:border-white/10"
-            >
-              <h3 className="text-lg font-semibold mb-2 tracking-tight truncate group-hover:text-canvas-primary transition-colors">{room.name}</h3>
-              <p className="text-xs text-gray-500 font-medium">{room.count} items</p>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {rooms.map((room) => {
+             const glowClass = themeGradients[room.themeColor] || themeGradients['indigo'];
+             return (
+               <div 
+                 key={room.id}
+                 onClick={() => navigate(`/rooms/${room.id}`)}
+                 className="relative h-56 rounded-[2rem] overflow-hidden cursor-pointer group shadow-xl border border-white/5 hover:border-white/20 transition-all transform hover:-translate-y-1"
+               >
+                 <img src={room.coverImage} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                 
+                 {/* Double Gradient System for readability and premium thematic tint */}
+                 <div className={`absolute inset-0 bg-linear-to-t ${glowClass} via-[#0a0a0a]/60 to-[#0a0a0a] opacity-60 group-hover:opacity-80 transition-opacity duration-500`}></div>
+                 <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent opacity-90"></div>
+                 
+                 <div className="absolute inset-0 p-6 flex flex-col justify-between">
+                   <div className="flex justify-end">
+                      {room.isPublic ? (
+                        <div className="bg-white/10 backdrop-blur-md px-2.5 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-bold text-white shadow-sm border border-white/10 flex items-center gap-1.5">
+                          <Globe size={12} /> Public
+                        </div>
+                      ) : (
+                        <div className="bg-black/40 backdrop-blur-md px-2.5 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-bold text-gray-300 shadow-sm border border-white/5 flex items-center gap-1.5">
+                          <Lock size={12} /> Private
+                        </div>
+                      )}
+                   </div>
+                   
+                   <div>
+                     <h3 className="text-2xl font-bold tracking-tight text-white mb-2 drop-shadow-lg group-hover:text-white transition-colors">
+                       {room.name}
+                     </h3>
+                     <span className="text-xs font-bold uppercase tracking-widest text-gray-300/80 drop-shadow-md">
+                       {room.count} Artifacts
+                     </span>
+                   </div>
+                 </div>
+               </div>
+             )
+          })}
           
-          <div className="bg-transparent border-2 border-dashed border-white/10 p-6 rounded-2xl hover:border-white/20 hover:bg-white/5 transition-colors cursor-pointer flex flex-col items-center justify-center text-gray-400 hover:text-white min-h-[120px]">
-            <span className="text-2xl font-light mb-1 active:scale-90 transition-transform">+</span>
-            <span className="text-xs font-bold uppercase tracking-wider mt-1">New Room</span>
+          <div className="relative h-56 bg-[#1c1c1c] border-2 border-dashed border-white/10 rounded-[2rem] hover:border-canvas-primary/30 hover:bg-white/[0.02] transition-colors cursor-pointer flex flex-col items-center justify-center text-gray-500 hover:text-white group">
+            <div className="w-14 h-14 rounded-full border border-dashed border-gray-600 group-hover:border-canvas-primary flex items-center justify-center mb-4 text-2xl font-light transition-colors">
+              +
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-widest group-hover:text-canvas-primary transition-colors">Create Expressive Room</span>
           </div>
         </div>
       </section>
