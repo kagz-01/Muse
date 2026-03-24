@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas-bg-dark: #0a0a0a;
+  --color-canvas-bg-light: #fafafa;
+  --color-canvas-primary: #6366f1;
+  --color-canvas-card-dark: #161616;
+  --color-canvas-card-light: #f3f4f6;
+  
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Newsreader', ui-serif, Georgia, serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-canvas-bg-dark);
+    color: white;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 300ms, color 300ms;
+  }
+}
+
+/* Base resets & utilities */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+/* Custom Utilities for Glassmorphism & Typography */
+@layer utilities {
+  .glass-panel {
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .glass-card {
+    background-color: var(--color-canvas-card-dark);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 200ms ease;
+  }
+  .glass-card:hover {
+    background-color: rgba(255, 255, 255, 0.08); /* Stable hover state, no scaling */
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
