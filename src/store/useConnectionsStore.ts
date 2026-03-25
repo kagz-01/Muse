@@ -1,142 +1,188 @@
 import { create } from 'zustand';
 
-export type Tone = 'Reflective' | 'Supportive' | 'Curious' | 'Collaborative' | 'Appreciative' | 'Sensitive' | 'Respectful Tension';
-
-export interface CommentNode {
-  id: string;
-  authorName: string;
-  authorAvatar: string;
-  content: string;
-  tone: Tone;
-  themes: string[];
-  timestamp: string;
-}
-
-export interface ConversationThread {
-  id: string;
-  title: string;
-  participants: { name: string, avatar: string }[];
-  status: 'Calm' | 'Thoughtful' | 'Growing' | 'Sensitive';
-  themes: string[];
-  comments: CommentNode[];
-}
-
-export interface Relationship {
+export interface Collaborator {
   id: string;
   name: string;
   avatar: string;
-  exchangeCount: number;
+  role: string;
+  bio: string;
   sharedThemes: string[];
-  strength: number; // 0-100
-  communicationStyle: string;
+  status: 'Online' | 'Reflecting' | 'Deep Focus' | 'Offline';
+}
+
+export type DialogueTone = 'Reflect' | 'Build' | 'Ask';
+
+export interface CircleContribution {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  text: string;
+  tone: DialogueTone;
+  timestamp: number;
+}
+
+export interface ActiveCircle {
+  id: string;
+  name: string;
+  theme: string;
+  members: string[]; // member names/avatars simple ref
+  memberCount: number;
+  recentActivity: string;
+  contributions: CircleContribution[];
+  description: string;
+}
+
+export interface CommunityRoom {
+  id: string;
+  name: string;
+  description: string;
+  coverImage: string;
+  memberCount: number;
 }
 
 interface ConnectionsState {
-  threads: ConversationThread[];
-  relationships: Relationship[];
+  collaborators: Collaborator[];
+  circles: ActiveCircle[];
+  communityRooms: CommunityRoom[];
   insights: string[];
-  activeThemes: string[];
-  addComment: (threadId: string, comment: Omit<CommentNode, 'id' | 'timestamp'>) => void;
+  joinCircle: (circleId: string) => void;
+  addContribution: (circleId: string, text: string, tone: 'Reflect' | 'Build' | 'Ask') => void;
 }
 
-const MOCK_RELATIONSHIPS: Relationship[] = [
+const MOCK_COLLABORATORS: Collaborator[] = [
   {
-    id: 'r1',
+    id: 'c1',
     name: 'David Chen',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-    exchangeCount: 8,
-    sharedThemes: ['Design', 'Identity', 'Creativity'],
-    strength: 92,
-    communicationStyle: 'Highly Collaborative & Curious'
+    role: 'Architectural Philosopher',
+    bio: 'Exploring the intersection of brutalism and digital ethics.',
+    sharedThemes: ['Brutalism', 'Silence', 'Scale'],
+    status: 'Deep Focus'
   },
   {
-    id: 'r2',
-    name: 'Amina El-Sayed',
-    avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1bf98c?auto=format&fit=crop&w=150&q=80',
-    exchangeCount: 14,
-    sharedThemes: ['Growth', 'Purpose', 'Healing'],
-    strength: 85,
-    communicationStyle: 'Deeply Reflective & Supportive'
+    id: 'c2',
+    name: 'Elena Rossi',
+    avatar: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=150&q=80',
+    role: 'Ambient Soundscaper',
+    bio: 'Mapping emotional resonance in urban environments.',
+    sharedThemes: ['Reverb', 'Memory', 'Urban Voids'],
+    status: 'Online'
   },
   {
-    id: 'r3',
+    id: 'c3',
     name: 'Marcus Thorne',
-    avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=150&q=80',
-    exchangeCount: 3,
-    sharedThemes: ['Innovation', 'Technology'],
-    strength: 45,
-    communicationStyle: 'Direct & Curious'
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
+    role: 'Interface Poet',
+    bio: 'Crafting semantic layers for human-machine intimacy.',
+    sharedThemes: ['Typography', 'Intent', 'Identity'],
+    status: 'Reflecting'
   }
 ];
 
-const MOCK_THREADS: ConversationThread[] = [
+const MOCK_CIRCLES: ActiveCircle[] = [
   {
-    id: 'th1',
-    title: 'Exploring identity, ambition, and burnout.',
-    status: 'Thoughtful',
-    themes: ['Identity', 'Growth'],
-    participants: [
-      { name: 'David Chen', avatar: MOCK_RELATIONSHIPS[0].avatar },
-      { name: 'Alex Rivera', avatar: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=150&q=80' }
-    ],
-    comments: [
+    id: 'circle-1',
+    name: 'The Silence Engine',
+    theme: 'Silence',
+    members: ['David Chen', 'Elena Rossi', 'You'],
+    memberCount: 12,
+    recentActivity: '5m ago',
+    description: 'A study on digital voids and the cognitive value of non-activity.',
+    contributions: [
       {
-        id: 'c1',
+        id: 'con-1',
+        authorId: 'c1',
         authorName: 'David Chen',
-        authorAvatar: MOCK_RELATIONSHIPS[0].avatar,
-        content: 'I realized today that the friction I feel isn\'t a lack of ambition, but a misalignment of my core identity with the projects I\'m taking on.',
-        tone: 'Reflective',
-        themes: ['Identity'],
-        timestamp: '2 hours ago'
+        authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+        text: 'I think we overestimate the need for constant "flow". Sometimes the most productive state is the void between tasks.',
+        tone: 'Reflect',
+        timestamp: Date.now() - 3600000 * 2
+      },
+      {
+        id: 'con-2',
+        authorId: 'c2',
+        authorName: 'Elena Rossi',
+        authorAvatar: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=150&q=80',
+        text: 'Exactly. In sound design, the "negative space" is what gives the transients their power. Silence isn\'t empty; it\'s structural.',
+        tone: 'Build',
+        timestamp: Date.now() - 3600000 * 1
       }
     ]
   },
   {
-    id: 'th2',
-    title: 'The aesthetic of brutalist isolation.',
-    status: 'Growing',
-    themes: ['Design', 'Reflective'],
-    participants: [
-      { name: 'Amina El-Sayed', avatar: MOCK_RELATIONSHIPS[1].avatar },
-      { name: 'Marcus Thorne', avatar: MOCK_RELATIONSHIPS[2].avatar }
-    ],
-    comments: [
+    id: 'circle-2',
+    name: 'Digital Identity Matrix',
+    theme: 'Identity',
+    members: ['Marcus Thorne', 'You'],
+    memberCount: 8,
+    recentActivity: '1h ago',
+    description: 'Analyzing how curated digital spaces reshape the internal sense of self.',
+    contributions: [
       {
-        id: 'c2',
-        authorName: 'Amina El-Sayed',
-        authorAvatar: MOCK_RELATIONSHIPS[1].avatar,
-        content: 'There is something incredibly secure about heavy architectural shadows. Great find.',
-        tone: 'Appreciative',
-        themes: ['Design'],
-        timestamp: '5 hours ago'
+        id: 'con-3',
+        authorId: 'c3',
+        authorName: 'Marcus Thorne',
+        authorAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
+        text: 'If our rooms are mirrors, then our threads are the paths we take through the glass. Does a multi-faceted UI encourage a multi-faceted self?',
+        tone: 'Ask',
+        timestamp: Date.now() - 3600000 * 5
       }
     ]
   }
 ];
 
-const MOCK_INSIGHTS = [
-  "Your strongest conversations happen when you begin with reflection.",
-  "Supportive responses from you are leading to significantly longer, healthier discussion threads.",
-  "You build deeper dialogue with users who share your creative themes.",
-  "One conversation with Marcus may benefit from a clarifying question."
+const MOCK_COMMUNITY_ROOMS: CommunityRoom[] = [
+  {
+    id: 'cr1',
+    name: 'Archive of Voids',
+    description: 'A shared collection of minimalist architecture and spatial gaps.',
+    coverImage: 'https://images.unsplash.com/photo-1509460913899-515f1df34fea?auto=format&fit=crop&w=800&q=80',
+    memberCount: 45
+  },
+  {
+    id: 'cr2',
+    name: 'Sonic Synthesis',
+    description: 'Experimental audio patterns and generative theory.',
+    coverImage: 'https://images.unsplash.com/photo-1514467958098-de5b34812076?auto=format&fit=crop&w=800&q=80',
+    memberCount: 89
+  }
 ];
-
-const MOCK_THEMES = ['Creativity', 'Identity', 'Growth', 'Healing', 'Design', 'Music', 'Purpose', 'Innovation', 'Reflection', 'Community'];
 
 export const useConnectionsStore = create<ConnectionsState>((set) => ({
-  threads: MOCK_THREADS,
-  relationships: MOCK_RELATIONSHIPS,
-  insights: MOCK_INSIGHTS,
-  activeThemes: MOCK_THEMES,
-  addComment: (threadId, comment) => set((state) => ({
-    threads: state.threads.map(t => {
-      if (t.id === threadId) {
-        return {
-          ...t,
-          comments: [...t.comments, { ...comment, id: Date.now().toString(), timestamp: 'Just now' }]
-        };
-      }
-      return t;
-    })
-  }))
+  collaborators: MOCK_COLLABORATORS,
+  circles: MOCK_CIRCLES,
+  communityRooms: MOCK_COMMUNITY_ROOMS,
+  insights: [
+    'Connection density has increased by 14% around the "Silence" theme this week.',
+    'You and David Chen are achieving 92% thematic resonance on "Brutalism".',
+    '3 new contributors joined "Digital Identity Matrix" after your last synthesis.'
+  ],
+  joinCircle: (circleId) => {
+    console.log('Joining circle:', circleId);
+    set((state) => ({
+      circles: state.circles.map(c => 
+        c.id === circleId && !c.members.includes('You')
+          ? { ...c, members: [...c.members, 'You'], memberCount: c.memberCount + 1 }
+          : c
+      )
+    }));
+  },
+  addContribution: (circleId, text, tone) => {
+    const newContribution: CircleContribution = {
+      id: 'con-' + Date.now(),
+      authorId: 'me',
+      authorName: 'You',
+      text,
+      tone,
+      timestamp: Date.now()
+    };
+    set((state) => ({
+      circles: state.circles.map(c => 
+        c.id === circleId 
+          ? { ...c, contributions: [...c.contributions, newContribution], recentActivity: 'Just now' }
+          : c
+      )
+    }));
+  }
 }));

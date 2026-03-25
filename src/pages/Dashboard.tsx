@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Sparkles, ArrowRight, Network, Lock, Globe, Plus } from 'lucide-react';
+import { Sparkles, ArrowRight, MessageSquare, Lock, Globe, Plus } from 'lucide-react';
 import { useRoomsStore, type RoomTheme } from '../store/useRoomsStore';
 import CreateRoomModal from '../components/modals/CreateRoomModal';
+import CommunityPulseStrip from '../components/connections/CommunityPulseStrip';
 
 const themeGradients: Record<RoomTheme, string> = {
   indigo: 'from-indigo-600/30',
@@ -21,10 +22,13 @@ export default function Dashboard() {
   return (
     <>
       {showCreate && <CreateRoomModal onClose={() => setShowCreate(false)} />}
-      <div className="p-6 md:p-10 max-w-7xl mx-auto pb-24 md:pb-10 min-h-full">
+      <div className="max-w-7xl mx-auto pb-24 md:pb-10 min-h-full">
+        <div className="px-6 md:px-10 pt-6">
+          <CommunityPulseStrip />
+        </div>
       
       {/* Dynamic Top Realm: Contemplation Feed */}
-      <section className="mb-16">
+      <section className="mb-16 mt-6 px-6 md:px-10">
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h2 className="text-3xl font-bold tracking-tight mb-2">Contemplation</h2>
@@ -36,7 +40,7 @@ export default function Dashboard() {
           {/* Weekly Mirror Sneak Peek widget */}
           <div 
             onClick={() => navigate('/mirror')}
-            className="group relative overflow-hidden bg-linear-to-br from-[#1c1c1c] to-[#0a0a0a] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-canvas-primary/30 transition-all duration-300 transform hover:-translate-y-1"
+            className="group relative overflow-hidden bg-linear-to-br from-[#1c1c1c] to-canvas-bg-dark rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-canvas-primary/30 transition-all duration-300 transform hover:-translate-y-1"
           >
             <div className="absolute -top-12 -right-12 w-40 h-40 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none"></div>
             <div className="flex items-center gap-3 mb-6 relative z-10">
@@ -54,29 +58,30 @@ export default function Dashboard() {
           {/* Meaningful Network Widget */}
           <div 
             onClick={() => navigate('/connections')}
-            className="group bg-[#1c1c1c] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-[#00E5FF]/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden"
+            className="group bg-[#1c1c1c] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-canvas-primary/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden"
           >
-            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#00E5FF]/10 blur-3xl rounded-full pointer-events-none"></div>
+            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none"></div>
             <div className="flex flex-col h-full relative z-10">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <Network size={20} className="text-[#00E5FF]" />
-                  <h3 className="font-bold text-white tracking-tight">Connections</h3>
+                  <MessageSquare size={20} className="text-canvas-primary" />
+                  <h3 className="font-bold text-white tracking-tight">Community Hub</h3>
                 </div>
-                <span className="bg-[#00E5FF]/10 text-[#00E5FF] text-[10px] uppercase tracking-widest px-2 py-1 rounded-md font-bold shadow-sm">1 Pending</span>
+                <span className="bg-canvas-primary/10 text-canvas-primary text-[10px] uppercase tracking-widest px-2 py-1 rounded-md font-bold shadow-sm">3 Circles Growing</span>
               </div>
               
               <p className="text-sm text-gray-400 mb-6 leading-relaxed font-serif italic pr-2">
-                "You and <span className="text-white font-sans font-medium not-italic">David Chen</span> have had 8 thoughtful exchanges this week. Your strongest shared theme is <span className="text-white font-sans font-medium not-italic">Identity</span>."
+                "You and <span className="text-white font-sans font-medium not-italic">David Chen</span> have had 8 thoughtful exchanges. The community is exploring <span className="text-white font-sans font-medium not-italic">Silence</span>."
               </p>
               
               <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
                 <div className="flex -space-x-2">
                   <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=150&q=80" className="w-8 h-8 rounded-full border-[3px] border-[#1c1c1c] object-cover" />
                   <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" className="w-8 h-8 rounded-full border-[3px] border-[#1c1c1c] object-cover" />
+                  <div className="w-8 h-8 rounded-full border-[3px] border-[#1c1c1c] bg-[#222] flex items-center justify-center text-[10px] font-bold text-gray-500">+12</div>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#00E5FF] group-hover:translate-x-1 transition-transform">
-                  Contribute <ArrowRight size={14} />
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-canvas-primary group-hover:translate-x-1 transition-transform">
+                  Enter Dialogue <ArrowRight size={14} />
                 </div>
               </div>
             </div>
@@ -85,7 +90,7 @@ export default function Dashboard() {
       </section>
 
       {/* The Foundations: Cinematic Rooms Gallery */}
-      <section>
+      <section className="px-6 md:px-10">
         <header className="mb-8 flex items-end justify-between border-b border-white/5 pb-4">
           <div>
             <h2 className="text-xl font-bold tracking-tight">Your Rooms</h2>
@@ -103,16 +108,16 @@ export default function Dashboard() {
           {rooms.map((room) => {
              const glowClass = themeGradients[room.themeColor] || themeGradients['indigo'];
              return (
-               <div 
+               <button 
                  key={room.id}
                  onClick={() => navigate(`/rooms/${room.id}`)}
-                 className="relative h-56 rounded-[2rem] overflow-hidden cursor-pointer group shadow-xl border border-white/5 hover:border-white/20 transition-all transform hover:-translate-y-1"
+                 className="relative h-56 rounded-4xl overflow-hidden cursor-pointer group shadow-xl border border-white/5 hover:border-white/20 transition-all transform hover:-translate-y-1 w-full text-left"
                >
                  <img src={room.coverImage} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                  
                  {/* Double Gradient System for readability and premium thematic tint */}
-                 <div className={`absolute inset-0 bg-linear-to-t ${glowClass} via-[#0a0a0a]/60 to-[#0a0a0a] opacity-60 group-hover:opacity-80 transition-opacity duration-500`}></div>
-                 <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent opacity-90"></div>
+                 <div className={`absolute inset-0 bg-linear-to-t ${glowClass} via-canvas-bg-dark/60 to-canvas-bg-dark opacity-60 group-hover:opacity-80 transition-opacity duration-500`}></div>
+                 <div className="absolute inset-0 bg-linear-to-t from-canvas-bg-dark via-canvas-bg-dark/40 to-transparent opacity-90"></div>
                  
                  <div className="absolute inset-0 p-6 flex flex-col justify-between">
                    <div className="flex justify-end">
@@ -136,18 +141,18 @@ export default function Dashboard() {
                      </span>
                    </div>
                  </div>
-               </div>
+               </button>
              )
           })}
           
-          <div
+          <button
             onClick={() => setShowCreate(true)}
-            className="relative h-56 bg-[#1c1c1c] border-2 border-dashed border-white/10 rounded-[2rem] hover:border-canvas-primary/30 hover:bg-white/[0.02] transition-colors cursor-pointer flex flex-col items-center justify-center text-gray-500 hover:text-white group">
+            className="relative h-56 bg-[#1c1c1c] border-2 border-dashed border-white/10 rounded-4xl hover:border-canvas-primary/30 hover:bg-white/2 transition-colors cursor-pointer flex flex-col items-center justify-center text-gray-500 hover:text-white group w-full">
             <div className="w-14 h-14 rounded-full border border-dashed border-gray-600 group-hover:border-canvas-primary flex items-center justify-center mb-4 text-2xl font-light transition-colors">
               +
             </div>
             <span className="text-[10px] font-bold uppercase tracking-widest group-hover:text-canvas-primary transition-colors">Create Expressive Room</span>
-          </div>
+          </button>
         </div>
       </section>
 

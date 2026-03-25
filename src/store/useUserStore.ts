@@ -14,6 +14,8 @@ export interface User {
   gender?: string;
   birthDate?: string;
   avatarUrl?: string;
+  bio?: string;
+  location?: string;
   links: UserLink[];
 }
 
@@ -37,6 +39,8 @@ export const useUserStore = create<UserState>((set) => ({
     gender: 'Non-binary',
     birthDate: '1998-06-15',
     avatarUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&h=400&q=80',
+    bio: 'Curating the intersection of brutalist architecture and ambient soundscapes.',
+    location: 'Berlin / Digital',
     links: [
       { id: 'l1', title: 'Portfolio', url: 'https://alexrivera.design' },
       { id: 'l2', title: 'Spotify', url: 'https://open.spotify.com/user/alexr' }

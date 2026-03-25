@@ -1,65 +1,113 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUserStore } from '../../store/useUserStore';
-import { Send, Leaf } from 'lucide-react';
-import { Tone } from '../../store/useConnectionsStore';
+import { Send, Leaf, Sparkles, HelpCircle } from 'lucide-react';
+import type { DialogueTone } from '../../store/useConnectionsStore';
 
-export default function ThoughtfulComposer({ onSubmit }: { onSubmit: (text: string, tone: Tone) => void }) {
+const ROTATING_PROMPTS = [
+  "How does this connect to your experience?",
+  "What perspective would you like to add?",
+  "Is there a deeper theme we are missing?",
+  "How does this challenge your current thinking?",
+  "What would 'Future You' say about this dialogue?"
+];
+
+export default function ThoughtfulComposer({ onSubmit, initialText = '' }: { onSubmit: (text: string, tone: DialogueTone) => void, initialText?: string }) {
   const user = useUserStore(state => state.user);
-  const [text, setText] = useState('');
-  const [activeTone, setActiveTone] = useState<Tone>('Reflective');
+  const [text, setText] = useState(initialText);
+  const [mode, setMode] = useState<DialogueTone>('Reflect');
+  const [promptIndex, setPromptIndex] = useState(0);
   
-  const tones: Tone[] = ['Reflective', 'Curious', 'Supportive', 'Collaborative', 'Respectful Tension'];
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPromptIndex(prev => (prev + 1) % ROTATING_PROMPTS.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, []);
 
   if (!user) return null;
 
+  const handleSubmit = () => {
+    if (text.trim()) {
+      onSubmit(text.trim(), mode);
+      setText('');
+    }
+  };
+
   return (
-    <div className="bg-linear-to-b from-[#1c1c1c] to-[#0a0a0a] border border-white/10 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden transition-all duration-500">
+    <div className="bg-linear-to-b from-[#1c1c1c] to-canvas-bg-dark border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden transition-all duration-500">
       
-      {/* Soft animated background glow based on tone selection */}
-      <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none transition-colors duration-700" 
+      {/* Dynamic Glow */}
+      <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full blur-[100px] pointer-events-none transition-colors duration-1000 opacity-20" 
            style={{ 
              backgroundColor: 
-               activeTone === 'Curious' ? 'rgba(0, 229, 255, 0.05)' : 
-               activeTone === 'Supportive' ? 'rgba(16, 185, 129, 0.06)' : 
-               activeTone === 'Collaborative' ? 'rgba(251, 191, 36, 0.05)' :
-               activeTone === 'Respectful Tension' ? 'rgba(249, 115, 22, 0.06)' :
-               'rgba(108, 99, 255, 0.05)' 
+               mode === 'Ask' ? '#f59e0b' : 
+               mode === 'Build' ? '#10b981' : 
+               '#6366f1' 
            }}>
       </div>
 
-      <div className="flex items-center gap-3 mb-5 relative z-10">
-        <img src={user.avatarUrl} alt="" className="w-8 h-8 rounded-full object-cover border border-white/10 shadow-sm" />
-        <p className="text-sm font-medium text-gray-400 flex items-center gap-2 font-serif italic">
-          How does this connect to your experience? <Leaf size={14} className="text-emerald-500/80" />
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 relative z-10">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+             <img src={user.avatarUrl} alt="" className="w-10 h-10 rounded-2xl object-cover border border-white/10 shadow-lg" />
+             <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#1c1c1c]" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Perspective Mode</p>
+            <div className="flex bg-white/5 border border-white/10 rounded-xl p-1">
+               {(['Reflect', 'Build', 'Ask'] as DialogueTone[]).map(m => (
+                 <button 
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all ${mode === m ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                 >
+                   {m}
+                 </button>
+               ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-2xl h-fit">
+           {mode === 'Reflect' && <Leaf size={14} className="text-indigo-400" />}
+           {mode === 'Build' && <Sparkles size={14} className="text-emerald-400" />}
+           {mode === 'Ask' && <HelpCircle size={14} className="text-amber-400" />}
+           <p className="text-xs font-serif italic text-white/70">{ROTATING_PROMPTS[promptIndex]}</p>
+        </div>
       </div>
 
       <textarea
         value={text}
         onChange={e => setText(e.target.value)}
-        placeholder="Transform a quick reaction into a thoughtful reflection..."
-        className="w-full bg-transparent text-lg md:text-xl font-serif text-white placeholder-gray-600 focus:outline-none resize-none min-h-[110px] relative z-10 leading-relaxed"
+        onKeyDown={e => {
+          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+            handleSubmit();
+          }
+        }}
+        placeholder={
+          mode === 'Reflect' ? "Share how this resonates with your internal landscape..." :
+          mode === 'Build' ? "Add a structural layer to this idea..." :
+          "What question would deepen this communal understanding?"
+        }
+        className="w-full bg-transparent text-xl md:text-2xl font-serif text-white placeholder-gray-700 focus:outline-none resize-none min-h-[140px] relative z-10 leading-relaxed active:placeholder-gray-600 transition-all"
       />
 
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mt-2 pt-5 border-t border-white/5 relative z-10">
-        <div className="flex flex-wrap gap-2">
-          {tones.map(tone => (
-             <button 
-               key={tone}
-               onClick={() => setActiveTone(tone)}
-               className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${activeTone === tone ? 'bg-canvas-primary border-canvas-primary text-white shadow-lg' : 'bg-white/5 border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/10'} border`}
-             >
-               {tone}
-             </button>
-          ))}
-        </div>
+      <div className="flex items-center justify-between mt-6 pt-8 border-t border-white/5 relative z-10">
+        <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">
+           Press <span className="text-gray-400">Cmd + Enter</span> to publish
+        </p>
         
         <button 
-          onClick={() => { if (text.trim()) { onSubmit(text.trim(), activeTone); setText(''); } }}
+          onClick={handleSubmit}
           disabled={!text.trim()}
-          className="flex items-center gap-2 px-6 py-2.5 bg-white text-black rounded-full font-bold text-sm tracking-wide disabled:opacity-50 disabled:bg-white/20 disabled:text-gray-400 transition-all hover:bg-gray-200 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.15)] cursor-pointer w-full md:w-auto justify-center"
+          className={`flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest disabled:opacity-30 disabled:grayscale transition-all hover:-translate-y-1 active:scale-95 shadow-2xl cursor-pointer ${
+            mode === 'Reflect' ? 'bg-indigo-600 text-white hover:bg-indigo-500' :
+            mode === 'Build' ? 'bg-emerald-600 text-white hover:bg-emerald-500' :
+            'bg-amber-600 text-white hover:bg-amber-500'
+          }`}
         >
-          Publish <Send size={14} />
+          {mode === 'Ask' ? 'Deliver Inquiry' : mode === 'Build' ? 'Add Perspective' : 'Publish Reflection'} 
+          <Send size={14} className="ml-1" />
         </button>
       </div>
     </div>

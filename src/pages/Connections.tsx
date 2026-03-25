@@ -1,137 +1,253 @@
-import React from 'react';
-import ConnectionMap from '../components/connections/ConnectionMap';
-import InsightCard from '../components/connections/InsightCard';
-import RelationshipCard from '../components/connections/RelationshipCard';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Users, 
+  MessageSquare, 
+  Sparkles, 
+  Zap, 
+  Globe, 
+  Search,
+  ChevronRight,
+  TrendingUp,
+  Activity
+} from 'lucide-react';
+import { useConnectionsStore } from '../store/useConnectionsStore';
+import ActiveCircleCard from '../components/connections/ActiveCircleCard';
+import CollaboratorCard from '../components/connections/CollaboratorCard';
+import CommunityRoomCard from '../components/connections/CommunityRoomCard';
+import CommunityPulseStrip from '../components/connections/CommunityPulseStrip';
 import SharedThemeCluster from '../components/connections/SharedThemeCluster';
 import ThoughtfulComposer from '../components/connections/ThoughtfulComposer';
-import ConversationCard from '../components/connections/ConversationCard';
-import { useConnectionsStore, Tone } from '../store/useConnectionsStore';
-import { useUserStore } from '../store/useUserStore';
+
+type Tab = 'Circles' | 'People' | 'Insights';
 
 export default function Connections() {
-  const { threads, relationships, insights, addComment } = useConnectionsStore();
-  const user = useUserStore(state => state.user);
+  const [activeTab, setActiveTab] = useState<Tab>('Circles');
+  const { circles, collaborators, communityRooms, insights, joinCircle } = useConnectionsStore();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleCompose = (text: string, tone: Tone) => {
-    if (threads.length > 0 && user) {
-      addComment(threads[0].id, {
-        authorName: user.name,
-        authorAvatar: user.avatarUrl || '',
-        content: text,
-        tone: tone,
-        themes: ['Reflection']
-      });
-    }
-  };
+  const tabs: { id: Tab; icon: any; label: string }[] = [
+    { id: 'Circles', icon: MessageSquare, label: 'Active Circles' },
+    { id: 'People', icon: Users, label: 'Collaborators' },
+    { id: 'Insights', icon: Sparkles, label: 'Communal Pulse' },
+  ];
 
   return (
-    <div className="p-6 md:p-8 max-w-[1400px] mx-auto pb-24 md:pb-10 font-sans transition-all duration-500 min-h-screen">
-      
-      {/* Hero Section */}
-      <header className="mb-10 relative overflow-hidden bg-[#1c1c1c] border border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
-         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-canvas-primary/20 via-transparent to-transparent"></div>
-         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-10">
-           <div>
-             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Meaningful Network</h1>
-             <p className="text-gray-400 text-lg md:text-xl max-w-2xl font-serif italic">
-               Turn isolated comments into thoughtful dialogue, shared understanding, and healthier digital relationships.
-             </p>
-           </div>
-           
-           <div className="flex gap-4 shrink-0 overflow-x-auto no-scrollbar pb-2 md:pb-0">
-             <div className="bg-[#0a0a0a] border border-white/5 px-6 py-5 rounded-3xl shrink-0">
-                <div className="text-3xl font-bold text-white mb-1">3</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse"></div> Active Threads
-                </div>
-             </div>
-             <div className="bg-[#0a0a0a] border border-white/5 px-6 py-5 rounded-3xl shrink-0">
-                <div className="text-3xl font-bold text-white mb-1">92<span className="text-lg text-gray-500 ml-1">%</span></div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-[#00E5FF] flex items-center gap-2">
-                  Node Strength
-                </div>
-             </div>
-           </div>
-         </div>
-      </header>
+    <div className="min-h-screen bg-canvas-bg-dark pb-24">
+      {/* Community Pulse Header */}
+      <CommunityPulseStrip />
 
-      {/* 3-Column Interactive Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-         
-         {/* Left Sidebar */}
-         <div className="col-span-1 lg:col-span-3 space-y-8 order-2 lg:order-1">
-            <div className="sticky top-6">
-              <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 pl-2">Communication Health</h3>
-              <div className="space-y-4 mb-8">
-                {insights.map((insight, i) => (
-                  <InsightCard key={i} text={insight} />
-                ))}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="mb-16">
+           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+              <div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-3 mb-4"
+                >
+                   <div className="w-10 h-10 rounded-2xl bg-canvas-primary/20 border border-canvas-primary/30 flex items-center justify-center text-canvas-primary">
+                      <Globe size={20} />
+                   </div>
+                   <span className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em]">The Hub</span>
+                </motion.div>
+                <motion.h1 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-5xl md:text-7xl font-bold text-white tracking-tight"
+                >
+                  Community <span className="text-gray-600">Circles.</span>
+                </motion.h1>
               </div>
-              <SharedThemeCluster />
-            </div>
-         </div>
 
-         {/* Center Feed: Active Thoughtful Architecture */}
-         <div className="col-span-1 lg:col-span-6 space-y-10 order-1 lg:order-2">
-            <ThoughtfulComposer onSubmit={handleCompose} />
-            
-            <div className="space-y-10 border-t border-white/5 pt-10">
-               {threads.map(thread => (
-                 <div key={thread.id} className="space-y-4 relative group">
-                   
-                   {/* Smart Auto Summary Layer */}
-                   <div className="sticky top-16 md:top-4 z-20 bg-canvas-bg-dark/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-4 shadow-lg mb-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-bold text-white mb-1.5 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span> {thread.title}
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                             {thread.themes.map(t => <span key={t} className="text-[10px] text-gray-400 border border-white/10 px-2 py-0.5 rounded-md uppercase tracking-widest font-bold">{t}</span>)}
-                          </div>
-                        </div>
-                        <div className="bg-[#1c1c1c] text-white text-[10px] font-bold uppercase px-3 py-1.5 flex items-center rounded-lg tracking-widest border border-white/10 shrink-0 shadow-inner">
-                          Status: {thread.status}
-                        </div>
-                      </div>
-                   </div>
-                   
-                   {/* Interconnected Conversational Chain */}
-                   <div className="pl-4 space-y-8 border-l-2 border-white/[0.03] ml-6 pb-6 relative">
-                      <div className="absolute top-0 -left-1 w-2 h-2 rounded-full bg-white/10"></div>
-                      <div className="absolute bottom-0 -left-1 w-2 h-2 rounded-full bg-white/10"></div>
-                      
-                      {thread.comments.map(comment => (
-                        <div key={comment.id} className="relative animate-in fade-in slide-in-from-left-4 duration-500">
-                          {/* Visual connective line */}
-                          <div className="absolute -left-[30px] top-10 w-6 h-px bg-white/10 group-hover:bg-white/20 transition-colors"></div>
-                          <ConversationCard comment={comment} />
-                        </div>
-                      ))}
-                   </div>
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl"
+              >
+                 <div className="text-right">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Active Thinkers</p>
+                    <p className="text-2xl font-mono text-white">1,204</p>
                  </div>
-               ))}
-            </div>
-         </div>
+                 <div className="w-px h-10 bg-white/10" />
+                 <div className="text-right">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Live Circles</p>
+                    <p className="text-2xl font-mono text-canvas-primary">12</p>
+                 </div>
+              </motion.div>
+           </div>
 
-         {/* Right Sidebar: Relationships & Mapping */}
-         <div className="col-span-1 lg:col-span-3 space-y-8 order-3">
-            <div className="sticky top-6">
-              <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 pl-2 flex items-center justify-between">
-                Relationship Matrix 
-                <span className="bg-canvas-primary/20 text-canvas-primary px-2 py-0.5 rounded-full">Live</span>
-              </h3>
-              <ConnectionMap />
-              
-              <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 mt-8 pl-2">Meaningful Nodes</h3>
-              <div className="space-y-4">
-                {relationships.map(rel => (
-                  <RelationshipCard key={rel.id} relationship={rel} />
-                ))}
-              </div>
-            </div>
-         </div>
+           {/* Custom Tab Navigation */}
+           <div className="flex flex-wrap items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-4xl w-fit mb-12">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    flex items-center gap-3 px-6 py-3 rounded-3xl text-sm font-bold transition-all duration-500
+                    ${activeTab === tab.id 
+                      ? 'bg-white text-black shadow-[0_0_25px_rgba(255,255,255,0.1)]' 
+                      : 'text-gray-500 hover:text-white hover:bg-white/5'}
+                  `}
+                >
+                  <tab.icon size={18} />
+                  {tab.label}
+                </button>
+              ))}
+           </div>
+        </div>
 
+        {/* Content Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          <div className="lg:col-span-8">
+            <AnimatePresence mode="wait">
+              {activeTab === 'Circles' && (
+                <motion.div
+                  key="circles"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-12"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {circles.map(circle => (
+                      <ActiveCircleCard 
+                        key={circle.id} 
+                        circle={circle} 
+                        onJoin={() => joinCircle(circle.id)} 
+                      />
+                    ))}
+                  </div>
+
+                  <div>
+                     <div className="flex items-center justify-between mb-8">
+                        <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                           <Globe size={24} className="text-gray-600" /> Community Rooms
+                        </h2>
+                        <button className="text-xs font-bold text-canvas-primary uppercase tracking-widest hover:underline">View All</button>
+                     </div>
+                     <div className="grid grid-cols-1 gap-8">
+                        {communityRooms.map(room => (
+                          <CommunityRoomCard key={room.id} room={room} />
+                        ))}
+                     </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'People' && (
+                <motion.div
+                  key="people"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="relative flex-1 max-w-md">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                      <input 
+                        type="text"
+                        placeholder="Search collaborators..."
+                        className="w-full bg-white/5 border border-white/5 rounded-2xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-canvas-primary/30 transition-all font-serif italic"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {collaborators
+                      .filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .map(collaborator => (
+                        <CollaboratorCard key={collaborator.id} collaborator={collaborator} />
+                      ))
+                    }
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'Insights' && (
+                <motion.div
+                  key="insights"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-12"
+                >
+                  <ThoughtfulComposer onSubmit={(text, tone) => console.log('Collective Perspective:', text, tone)} />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
+                        <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                           <TrendingUp size={20} className="text-canvas-primary" /> Collective Intelligence
+                        </h3>
+                        <div className="space-y-6">
+                           {insights.map((insight, i) => (
+                             <div key={i} className="flex gap-4 group">
+                                <div className="mt-1 w-1.5 h-1.5 rounded-full bg-canvas-primary shrink-0 group-hover:scale-150 transition-transform" />
+                                <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-200 transition-colors">{insight}</p>
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+
+                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
+                        <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                           <Activity size={20} className="text-emerald-400" /> Communication Health
+                        </h3>
+                        <div className="space-y-6">
+                           <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                              <div className="flex justify-between items-center mb-2">
+                                 <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Global Resonance</span>
+                                 <span className="text-sm font-mono text-emerald-400">94.2%</span>
+                              </div>
+                              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                 <div className="h-full bg-emerald-400 w-[94%]" />
+                              </div>
+                           </div>
+                           <p className="text-[11px] text-gray-500 font-serif italic leading-relaxed">
+                              Community dialogue is currently high-fidelity and deeply reflective. Most interactions are categorized under 'Supportive' and 'Curious'.
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Right Rail: Themes & Pulse */}
+          <div className="lg:col-span-4 space-y-12">
+             <div className="bg-white/3 border border-white/5 rounded-[2.5rem] p-8 backdrop-blur-3xl sticky top-24">
+                <div className="flex items-center justify-between mb-8">
+                   <h3 className="text-xl font-bold text-white">Theme Clusters</h3>
+                   <Sparkles size={20} className="text-canvas-primary" />
+                </div>
+                
+                <SharedThemeCluster />
+
+                <div className="mt-12 space-y-6">
+                   <div className="p-6 bg-canvas-primary/5 border border-canvas-primary/20 rounded-3xl">
+                      <div className="flex items-start gap-3 mb-3">
+                         <Zap size={18} className="text-canvas-primary shrink-0 mt-1" />
+                         <p className="text-sm font-bold text-white leading-tight">Join the 'Silence' Circle</p>
+                      </div>
+                      <p className="text-xs text-gray-400 leading-relaxed mb-4 font-serif italic">
+                         David Chen and 5 others are currently synthesizing ideas around digital voids.
+                      </p>
+                      <button className="w-full py-3 bg-canvas-primary text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-canvas-primary/80 transition-all flex items-center justify-center gap-2 group">
+                         Enter Dialogue <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </button>
+                   </div>
+                </div>
+             </div>
+          </div>
+
+        </div>
       </div>
     </div>
   );
