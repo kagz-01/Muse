@@ -13,7 +13,7 @@ export default function Layout() {
   const { soloMode, toggleSoloMode } = useUserStore();
 
   const navItems = [
-    { label: 'Rooms', path: '/dashboard', icon: <Home size={20} /> },
+    { label: 'Rooms', path: '/rooms', icon: <Home size={20} /> },
     { label: 'Threads', path: '/threads', icon: <Layers size={20} /> },
     { label: 'Journal', path: '/journal', icon: <BookOpen size={20} /> },
     { label: 'Create', path: '/create', icon: <PenTool size={20} /> },

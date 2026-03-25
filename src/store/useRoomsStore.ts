@@ -14,7 +14,8 @@ export interface Room {
 
 interface RoomsState {
   rooms: Room[];
-  addRoom: (name: string, description: string, themeColor: RoomTheme) => Room;
+  addRoom: (name: string, description: string, themeColor: RoomTheme, coverImage?: string) => Room;
+  updateRoom: (id: string, updates: Partial<Omit<Room, 'id'>>) => void;
   updateRoomTheme: (id: string, themeColor: RoomTheme) => void;
   updateRoomCover: (id: string, coverImage: string) => void;
   toggleRoomPrivacy: (id: string) => void;
@@ -88,12 +89,16 @@ export const useRoomsStore = create<RoomsState>((set) => ({
     }
   ],
   
-  addRoom: (name, description, themeColor) => {
+  addRoom: (name, description, themeColor, coverImage = '') => {
     const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now();
-    const newRoom: Room = { id, name, description, themeColor, count: 0, coverImage: '', isPublic: false };
+    const newRoom: Room = { id, name, description, themeColor, count: 0, coverImage, isPublic: false };
     set((state) => ({ rooms: [...state.rooms, newRoom] }));
     return newRoom;
   },
+
+  updateRoom: (id, updates) => set((state) => ({
+    rooms: state.rooms.map(room => room.id === id ? { ...room, ...updates } : room)
+  })),
 
   updateRoomTheme: (id, themeColor) => set((state) => ({
     rooms: state.rooms.map(room => room.id === id ? { ...room, themeColor } : room)

@@ -29,13 +29,6 @@ export default function Rooms() {
             <h1 className="text-4xl font-bold tracking-tight mb-2">Your Rooms</h1>
             <p className="text-gray-400 font-serif italic">Expressive, personal curation spaces for everything you collect.</p>
           </div>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2.5 px-6 py-3.5 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 transition-all cursor-pointer active:scale-95"
-          >
-            <Plus size={16} />
-            New Room
-          </button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

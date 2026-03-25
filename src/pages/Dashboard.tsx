@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Sparkles, ArrowRight, Network, Lock, Globe } from 'lucide-react';
+import { Sparkles, ArrowRight, Network, Lock, Globe, Plus } from 'lucide-react';
 import { useRoomsStore, type RoomTheme } from '../store/useRoomsStore';
+import CreateRoomModal from '../components/modals/CreateRoomModal';
 
 const themeGradients: Record<RoomTheme, string> = {
   indigo: 'from-indigo-600/30',
@@ -15,9 +16,12 @@ const themeGradients: Record<RoomTheme, string> = {
 export default function Dashboard() {
   const navigate = useNavigate();
   const rooms = useRoomsStore(state => state.rooms);
+  const [showCreate, setShowCreate] = useState(false);
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto pb-24 md:pb-10 min-h-full">
+    <>
+      {showCreate && <CreateRoomModal onClose={() => setShowCreate(false)} />}
+      <div className="p-6 md:p-10 max-w-7xl mx-auto pb-24 md:pb-10 min-h-full">
       
       {/* Dynamic Top Realm: Contemplation Feed */}
       <section className="mb-16">
@@ -87,6 +91,12 @@ export default function Dashboard() {
             <h2 className="text-xl font-bold tracking-tight">Your Rooms</h2>
             <p className="text-sm text-gray-500 mt-1">Highly personalized and expressive curation spaces.</p>
           </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/rooms')} className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">View All</button>
+            <button onClick={() => setShowCreate(true)} className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer">
+              <Plus size={16} />
+            </button>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -130,7 +140,9 @@ export default function Dashboard() {
              )
           })}
           
-          <div className="relative h-56 bg-[#1c1c1c] border-2 border-dashed border-white/10 rounded-[2rem] hover:border-canvas-primary/30 hover:bg-white/[0.02] transition-colors cursor-pointer flex flex-col items-center justify-center text-gray-500 hover:text-white group">
+          <div
+            onClick={() => setShowCreate(true)}
+            className="relative h-56 bg-[#1c1c1c] border-2 border-dashed border-white/10 rounded-[2rem] hover:border-canvas-primary/30 hover:bg-white/[0.02] transition-colors cursor-pointer flex flex-col items-center justify-center text-gray-500 hover:text-white group">
             <div className="w-14 h-14 rounded-full border border-dashed border-gray-600 group-hover:border-canvas-primary flex items-center justify-center mb-4 text-2xl font-light transition-colors">
               +
             </div>
@@ -139,6 +151,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-    </div>
+      </div>
+    </>
   );
 }
