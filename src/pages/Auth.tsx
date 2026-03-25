@@ -5,14 +5,29 @@ import { useUserStore } from '../store/useUserStore';
 import museLogo from '../assets/muse-logo.png';
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const login = useUserStore(state => state.login);
   const navigate = useNavigate();
 
-  const handleAuth = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    login();
-    navigate('/dashboard');
+    setIsLoading(true);
+
+    try {
+      // Pass the form data to login function
+      await login(email, password);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Authentication failed:', error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const pillars = ['Consume', 'Collect', 'Contemplate', 'Create'];
@@ -103,7 +118,9 @@ export default function Auth() {
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Name</label>
                     <input
                       type="text"
-                      required
+                      required={!isLogin}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-canvas-primary focus:ring-1 focus:ring-canvas-primary transition-all placeholder-gray-700 text-white"
                       placeholder="How should we call you?"
                     />
@@ -114,6 +131,8 @@ export default function Auth() {
                   <input
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-canvas-primary focus:ring-1 focus:ring-canvas-primary transition-all placeholder-gray-700 text-white"
                     placeholder="you@example.com"
                   />
@@ -123,6 +142,8 @@ export default function Auth() {
                   <input
                     type="password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-canvas-primary focus:ring-1 focus:ring-canvas-primary transition-all placeholder-gray-700 text-white"
                     placeholder="••••••••"
                   />
@@ -130,9 +151,10 @@ export default function Auth() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-canvas-primary hover:bg-[#4f46e5] hover:-translate-y-0.5 transform duration-200 transition-all rounded-2xl font-bold mt-2 shadow-[0_0_20px_rgba(99,102,241,0.2)] cursor-pointer"
+                  disabled={isLoading}
+                  className="w-full py-4 bg-canvas-primary hover:bg-[#4f46e5] hover:-translate-y-0.5 transform duration-200 transition-all rounded-2xl font-bold mt-2 shadow-[0_0_20px_rgba(99,102,241,0.2)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 >
-                  {isLogin ? 'Log In' : 'Create Account'}
+                  {isLoading ? 'Loading...' : (isLogin ? 'Log In' : 'Create Account')}
                 </button>
               </form>
 
@@ -145,7 +167,14 @@ export default function Auth() {
               <p className="text-center text-sm text-gray-500 mt-6">
                 {isLogin ? "Don't have an account? " : "Already have an account? "}
                 <button
-                  onClick={() => setIsLogin(!isLogin)}
+                  type="button"
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    // Optionally clear form when switching
+                    setEmail('');
+                    setPassword('');
+                    setName('');
+                  }}
                   className="text-white font-semibold hover:underline decoration-canvas-primary underline-offset-4 cursor-pointer"
                 >
                   {isLogin ? 'Sign up' : 'Log in'}

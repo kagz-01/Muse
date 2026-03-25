@@ -49,6 +49,7 @@ interface ConnectionsState {
   activeThemes: string[];
   joinCircle: (circleId: string) => void;
   addContribution: (circleId: string, text: string, tone: DialogueTone) => void;
+  createCircle: (name: string, theme: string, description: string) => void;
 }
 
 const MOCK_COLLABORATORS: Collaborator[] = [
@@ -163,7 +164,7 @@ export const useConnectionsStore = create<ConnectionsState>((set) => ({
   joinCircle: (circleId) => {
     console.log('Joining circle:', circleId);
     set((state) => ({
-      circles: state.circles.map(c => 
+      circles: state.circles.map(c =>
         c.id === circleId && !c.members.includes('You')
           ? { ...c, members: [...c.members, 'You'], memberCount: c.memberCount + 1 }
           : c
@@ -180,11 +181,24 @@ export const useConnectionsStore = create<ConnectionsState>((set) => ({
       timestamp: Date.now()
     };
     set((state) => ({
-      circles: state.circles.map(c => 
-        c.id === circleId 
+      circles: state.circles.map(c =>
+        c.id === circleId
           ? { ...c, contributions: [...c.contributions, newContribution], recentActivity: 'Just now' }
           : c
       )
     }));
+  },
+  createCircle: (name, theme, description) => {
+    const newCircle: ActiveCircle = {
+      id: 'circle-' + Date.now(),
+      name,
+      theme,
+      description,
+      members: ['You'],
+      memberCount: 1,
+      recentActivity: 'Just now',
+      contributions: []
+    };
+    set((state) => ({ circles: [newCircle, ...state.circles] }));
   }
 }));

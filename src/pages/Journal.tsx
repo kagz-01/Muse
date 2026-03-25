@@ -4,19 +4,19 @@ import { Search, Plus, Flame, Target, BookOpen, ArrowRight, Sparkles, BarChart3,
 import { useJournalStore, type JournalMood, type JournalEntry } from '../store/useJournalStore';
 
 export const moodConfig: Record<JournalMood, { label: string; color: string; emoji: string }> = {
-  reflective:  { label: 'Reflective',  color: '#8b5cf6', emoji: '🌙' },
-  grounded:    { label: 'Grounded',    color: '#10b981', emoji: '🌿' },
-  anxious:     { label: 'Anxious',     color: '#f43f5e', emoji: '⚡' },
-  grateful:    { label: 'Grateful',    color: '#f59e0b', emoji: '✨' },
+  reflective: { label: 'Reflective', color: '#8b5cf6', emoji: '🌙' },
+  grounded: { label: 'Grounded', color: '#10b981', emoji: '🌿' },
+  anxious: { label: 'Anxious', color: '#f43f5e', emoji: '⚡' },
+  grateful: { label: 'Grateful', color: '#f59e0b', emoji: '✨' },
   melancholic: { label: 'Melancholic', color: '#64748b', emoji: '🌧️' },
-  charged:     { label: 'Charged',     color: '#06b6d4', emoji: '🌊' },
-  empty:       { label: 'Empty',       color: '#374151', emoji: '○' },
-  alive:       { label: 'Alive',       color: '#84cc16', emoji: '🔥' },
-  inspired:    { label: 'Inspired',    color: '#e879f9', emoji: '💡' },
-  nostalgic:   { label: 'Nostalgic',   color: '#fb923c', emoji: '📷' },
-  focused:     { label: 'Focused',     color: '#38bdf8', emoji: '🎯' },
-  tender:      { label: 'Tender',      color: '#f472b6', emoji: '🌸' },
-  custom:      { label: 'Other',       color: '#9ca3af', emoji: '◈' },
+  charged: { label: 'Charged', color: '#06b6d4', emoji: '🌊' },
+  empty: { label: 'Empty', color: '#374151', emoji: '○' },
+  alive: { label: 'Alive', color: '#84cc16', emoji: '🔥' },
+  inspired: { label: 'Inspired', color: '#e879f9', emoji: '💡' },
+  nostalgic: { label: 'Nostalgic', color: '#fb923c', emoji: '📷' },
+  focused: { label: 'Focused', color: '#38bdf8', emoji: '🎯' },
+  tender: { label: 'Tender', color: '#f472b6', emoji: '🌸' },
+  custom: { label: 'Other', color: '#9ca3af', emoji: '◈' },
 };
 
 function timeFormat(ts: number): string {
@@ -192,21 +192,21 @@ ${e.body}
                 </h3>
                 <div className="space-y-4">
                   {moodStats.length === 0 ? <p className="text-gray-600 italic text-sm">No data yet.</p> :
-                  moodStats.slice(0, 5).map(([mood, count]) => {
-                    const cfg = moodConfig[mood as JournalMood];
-                    const percent = Math.round((count / entries.length) * 100);
-                    return (
-                      <div key={mood} className="space-y-1.5">
-                        <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                          <span className="text-gray-300">{cfg.emoji} {cfg.label}</span>
-                          <span className="text-gray-500">{count} {count === 1 ? 'entry' : 'entries'}</span>
+                    moodStats.slice(0, 5).map(([mood, count]) => {
+                      const cfg = moodConfig[mood as JournalMood];
+                      const percent = Math.round((count / entries.length) * 100);
+                      return (
+                        <div key={mood} className="space-y-1.5">
+                          <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
+                            <span className="text-gray-300">{cfg.emoji} {cfg.label}</span>
+                            <span className="text-gray-500">{count} {count === 1 ? 'entry' : 'entries'}</span>
+                          </div>
+                          <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${percent}%`, backgroundColor: cfg.color }} />
+                          </div>
                         </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${percent}%`, backgroundColor: cfg.color }} />
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               </div>
 
@@ -268,7 +268,7 @@ ${e.body}
 
           {/* Filters strip */}
           <div className="flex flex-wrap items-center gap-3 pb-4">
-             <button onClick={() => setShowFavorites(!showFavorites)}
+            <button onClick={() => setShowFavorites(!showFavorites)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${showFavorites ? 'bg-amber-500/20 border-amber-500/40 text-amber-500' : 'bg-white/5 border-white/10 text-gray-500 hover:border-white/25'}`}>
               <Star size={13} fill={showFavorites ? 'currentColor' : 'transparent'} /> Favorites
             </button>
@@ -315,23 +315,23 @@ ${e.body}
       )}
 
       {/* JOURNAL FEED */}
-      <main className="flex-1 px-6 md:px-10 pb-20 max-w-5xl mx-auto w-full">
+      <main className="flex-1 px-6 md:px-10 pb-20 max-w-7xl mx-auto w-full">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center opacity-40">
             <BookOpen size={48} className="text-gray-600 mb-6" />
             <p className="text-gray-400 text-lg font-serif">Nothing resonates here.</p>
           </div>
         ) : (
-          <div className="columns-1 md:columns-2 gap-6 space-y-6">
+          <div className="flex gap-6 overflow-x-auto pb-16 pt-8 px-4 -mx-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {filtered.map((entry, i) => {
               const cfg = moodConfig[entry.mood];
               const title = getTitle(entry);
               return (
                 <div key={entry.id} onClick={() => navigate(`/journal/${entry.id}`)}
-                  className="break-inside-avoid group relative bg-[#111318] border border-white/5 rounded-[2.2rem] p-8 cursor-pointer hover:border-white/15 hover:-translate-y-1 hover:bg-[#15181e] transition-all duration-300 overflow-hidden shadow-2xl">
+                  className="relative h-[40vh] min-h-[260px] max-h-[360px] w-[80vw] sm:w-[320px] md:w-[400px] shrink-0 snap-center rounded-[2rem] bg-[#111318] border border-white/5 p-6 cursor-pointer hover:border-white/15 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-500 transform hover:-translate-y-2 hover:bg-[#15181e] overflow-hidden flex flex-col group">
                   {/* Favorite indicator */}
                   {entry.isFavorited && (
-                    <div className="absolute top-8 right-8 z-20">
+                    <div className="absolute top-6 right-6 z-20">
                       <Star size={16} fill="#f59e0b" className="text-amber-500" />
                     </div>
                   )}
@@ -339,30 +339,30 @@ ${e.body}
                   {/* Mood accent bubble */}
                   <div className="absolute -top-10 -left-10 w-32 h-32 rounded-full blur-[80px] opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none" style={{ backgroundColor: cfg.color }} />
 
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-4">
+                  <div className="relative z-10 flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-4 shrink-0">
                       <span className="text-2xl">{cfg.emoji}</span>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500" style={{ color: `${cfg.color}99` }}>{entry.updatedAt ? timeFormat(entry.updatedAt) : 'Draft'}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500" style={{ color: `${cfg.color}99` }}>{entry.updatedAt ? timeFormat(entry.updatedAt) : 'Draft'}</p>
                     </div>
 
-                    <h3 className="text-white font-bold text-2xl leading-tight tracking-tight mb-4 group-hover:text-violet-400 transition-colors">
+                    <h3 className="text-white font-bold text-2xl leading-tight tracking-tight mb-3 group-hover:text-violet-400 transition-colors shrink-0">
                       {title || <span className="opacity-20 italic">Empty depth</span>}
                     </h3>
 
-                    <p className="text-gray-400 text-base font-serif italic leading-relaxed mb-6 line-clamp-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <p className="text-gray-400 text-xs font-serif italic leading-relaxed mb-4 line-clamp-3 opacity-80 group-hover:opacity-100 transition-opacity">
                       {excerpt(entry.body)}
                     </p>
 
-                    <div className="flex items-center justify-between pt-6 border-t border-white/5 mt-auto">
-                      <div className="flex items-center gap-5">
-                       <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600">{entry.wordCount} words</span>
-                       {entry.linkedItemIds.length > 0 && (
-                         <span className="text-[10px] font-bold uppercase tracking-widest text-violet-500/70 group-hover:text-violet-400 transition-colors">
-                           🔗 {entry.linkedItemIds.length} artifacts
-                         </span>
-                       )}
+                    <div className="flex items-center justify-between pt-5 border-t border-white/5 mt-auto shrink-0">
+                      <div className="flex items-center gap-4">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600">{entry.wordCount} words</span>
+                        {entry.linkedItemIds.length > 0 && (
+                          <span className="text-[9px] font-bold uppercase tracking-widest text-violet-500/70 group-hover:text-violet-400 transition-colors">
+                            🔗 {entry.linkedItemIds.length} ref
+                          </span>
+                        )}
                       </div>
-                      <span className="text-[10px] font-mono text-gray-800 group-hover:text-gray-600 transition-colors">#{String(i+1).padStart(2,'0')}</span>
+                      <span className="text-[9px] font-mono text-gray-800 group-hover:text-gray-600 transition-colors">#{String(i + 1).padStart(2, '0')}</span>
                     </div>
                   </div>
                 </div>

@@ -1,0 +1,56 @@
+src/components/capture/CaptureProgress.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/connections/ActiveCircleCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/connections/ActiveCircleCard.tsx(2,10): error TS6133: 'Users' is declared but its value is never read.
+src/components/connections/ActiveCircleCard.tsx(60,49): error TS6133: 'member' is declared but its value is never read.
+src/components/connections/CollaboratorCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/connections/CommunityPulseStrip.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/connections/CommunityRoomCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/connections/ConnectionMap.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/connections/ConversationCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/connections/ConversationCard.tsx(3,10): error TS2305: Module '"../../store/useConnectionsStore"' has no exported member 'CommentNode'.
+src/components/connections/ConversationCard.tsx(39,29): error TS7006: Parameter 'theme' implicitly has an 'any' type.
+src/components/connections/InsightCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/connections/SharedThemeCluster.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/layout/Layout.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/layout/Layout.tsx(6,17): error TS6133: 'Sparkles' is declared but its value is never read.
+src/components/layout/PrivacyBadge.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/modals/PrivacyManager.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/profile/PortraitCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/Community.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/Connections.tsx(22,16): error TS6133: 'Shield' is declared but its value is never read.
+src/pages/Create.tsx(5,3): error TS6133: 'Plus' is declared but its value is never read.
+src/pages/Create.tsx(6,30): error TS6133: 'Lightbulb' is declared but its value is never read.
+src/pages/Journal.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/pages/Journal.tsx(4,50): error TS6133: 'JournalEntry' is declared but its value is never read.
+src/pages/Journal.tsx(64,9): error TS6133: 'totalWords' is declared but its value is never read.
+src/pages/JournalEntry.tsx(4,37): error TS6133: 'Clock' is declared but its value is never read.
+src/pages/JournalEntry.tsx(5,45): error TS6133: 'Type' is declared but its value is never read.
+src/pages/JournalEntry.tsx(306,28): error TS2339: Property 'placeholder' does not exist on type '{ label: string; color: string; emoji: string; }'.
+src/pages/Landing.tsx(1,27): error TS6133: 'useEffect' is declared but its value is never read.
+src/pages/Landing.tsx(65,5): error TS2554: Expected 1 arguments, but got 0.
+src/pages/Landing.tsx(186,9): error TS6133: 'navigate' is declared but its value is never read.
+src/pages/Landing.tsx(188,10): error TS6133: 'noiseVisible' is declared but its value is never read.
+src/pages/Landing.tsx(188,24): error TS6133: 'setNoiseVisible' is declared but its value is never read.
+src/pages/Landing.tsx(195,9): error TS6133: 'consumeOpacity' is declared but its value is never read.
+src/pages/Landing.tsx(196,9): error TS6133: 'consumeY' is declared but its value is never read.
+src/pages/Landing.tsx(197,9): error TS6133: 'consumeScale' is declared but its value is never read.
+src/pages/Landing.tsx(199,9): error TS6133: 'collectOpacity' is declared but its value is never read.
+src/pages/Landing.tsx(200,9): error TS6133: 'collectY' is declared but its value is never read.
+src/pages/Landing.tsx(202,9): error TS6133: 'contemplateOpacity' is declared but its value is never read.
+src/pages/Landing.tsx(203,9): error TS6133: 'contemplateY' is declared but its value is never read.
+src/pages/Landing.tsx(205,9): error TS6133: 'createOpacity' is declared but its value is never read.
+src/pages/Landing.tsx(206,9): error TS6133: 'createY' is declared but its value is never read.
+src/pages/Mirror.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/pages/Rooms.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/pages/Settings.tsx(2,10): error TS6133: 'Shield' is declared but its value is never read.
+src/pages/Settings.tsx(2,56): error TS6133: 'LinkIcon' is declared but its value is never read.
+src/pages/ThreadDetail.tsx(209,44): error TS6133: 'm' is declared but its value is never read.
+src/pages/Threads.tsx(22,10): error TS6133: 'showCreate' is declared but its value is never read.
+src/store/useThreadsStore.ts(114,48): error TS2345: Argument of type '(state: ThreadsState) => { threads: (Thread | { id: string; title: string; description: string; thesis: string; mood: ThreadMood; coverImage: string; itemIds: never[]; createdAt: number; updatedAt: number; })[]; }' is not assignable to parameter of type 'ThreadsState | Partial<ThreadsState> | ((state: ThreadsState) => ThreadsState | Partial<ThreadsState>)'.
+  Type '(state: ThreadsState) => { threads: (Thread | { id: string; title: string; description: string; thesis: string; mood: ThreadMood; coverImage: string; itemIds: never[]; createdAt: number; updatedAt: number; })[]; }' is not assignable to type '(state: ThreadsState) => ThreadsState | Partial<ThreadsState>'.
+    Type '{ threads: (Thread | { id: string; title: string; description: string; thesis: string; mood: ThreadMood; coverImage: string; itemIds: never[]; createdAt: number; updatedAt: number; })[]; }' is not assignable to type 'ThreadsState | Partial<ThreadsState>'.
+      Type '{ threads: (Thread | { id: string; title: string; description: string; thesis: string; mood: ThreadMood; coverImage: string; itemIds: never[]; createdAt: number; updatedAt: number; })[]; }' is not assignable to type 'Partial<ThreadsState>'.
+        Types of property 'threads' are incompatible.
+          Type '(Thread | { id: string; title: string; description: string; thesis: string; mood: ThreadMood; coverImage: string; itemIds: never[]; createdAt: number; updatedAt: number; })[]' is not assignable to type 'Thread[]'.
+            Type 'Thread | { id: string; title: string; description: string; thesis: string; mood: ThreadMood; coverImage: string; itemIds: never[]; createdAt: number; updatedAt: number; }' is not assignable to type 'Thread'.
+              Property 'isPublic' is missing in type '{ id: string; title: string; description: string; thesis: string; mood: ThreadMood; coverImage: string; itemIds: never[]; createdAt: number; updatedAt: number; }' but required in type 'Thread'.

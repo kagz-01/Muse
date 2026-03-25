@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, Sparkles, BookOpen, Layers, Globe, 
-  Music, Image as ImageIcon, Lightbulb, 
+import {
+  Sparkles, BookOpen, Layers, Globe,
+  Music, Image as ImageIcon,
   ArrowRight, Link2, Zap, Layout, Lock, X
 } from 'lucide-react';
 import { useRoomsStore } from '../store/useRoomsStore';
@@ -15,12 +15,14 @@ import CreateThreadModal from '../components/modals/CreateThreadModal';
 export default function Create() {
   const navigate = useNavigate();
   const rooms = useRoomsStore(state => state.rooms);
-  const addItem = useItemsStore(state => state.addItem);
+  const { items, addItem } = useItemsStore();
   const addJournalEntry = useJournalStore(state => state.addEntry);
+
+  const recentItems = items.slice(0, 4);
 
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [showCreateThread, setShowCreateThread] = useState(false);
-  
+
   // Quick Seed state
   const [seedUrl, setSeedUrl] = useState('');
   const [seedRoomId, setSeedRoomId] = useState(rooms[0]?.id || '');
@@ -33,7 +35,7 @@ export default function Create() {
     if (!seedUrl || !seedRoomId) return;
 
     setIsSeeding(true);
-    
+
     // Simulate metadata fetch & add
     setTimeout(() => {
       addItem({
@@ -43,11 +45,11 @@ export default function Create() {
         note: `Quickly seeded from the Create Hub.`,
         isPublic: seedIsPublic // Assuming store supports it or we'll add it
       });
-      
+
       setIsSeeding(false);
       setSeedSuccess(true);
       setSeedUrl('');
-      
+
       setTimeout(() => setSeedSuccess(false), 3000);
     }, 800);
   };
@@ -70,12 +72,12 @@ export default function Create() {
       <div className="relative z-10 p-6 md:p-10 max-w-6xl mx-auto">
         <header className="mb-12 flex justify-between items-start">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight mb-3">Create Hub</h1>
+            <h1 className="text-4xl font-bold tracking-tight mb-3">Synthesis Lab</h1>
             <p className="text-gray-400 font-serif italic text-lg max-w-xl leading-relaxed">
-              What are you bringing into the world today? Choose your intention and start your flow.
+              The high-speed interface for stashing artifacts and distilling your raw data into external expressions.
             </p>
           </div>
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer group"
           >
@@ -87,15 +89,15 @@ export default function Create() {
         <section className="mb-16">
           <div className="relative group">
             <div className="absolute inset-x-0 -bottom-2 h-1 bg-canvas-primary/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700 pointer-events-none" />
-            
-            <form 
+
+            <form
               onSubmit={handleQuickSeed}
               className="relative p-1 bg-white/[0.03] border border-white/10 group-focus-within:border-canvas-primary/40 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-2 transition-all duration-500 backdrop-blur-xl overflow-hidden"
             >
               {/* Scanline Effect */}
               <AnimatePresence>
                 {isSeeding && (
-                  <motion.div 
+                  <motion.div
                     initial={{ top: '-10%' }}
                     animate={{ top: '110%' }}
                     transition={{ duration: 1.2, ease: "linear", repeat: Infinity }}
@@ -106,7 +108,7 @@ export default function Create() {
 
               <div className="flex-1 flex items-center pl-8 w-full">
                 <Link2 size={24} className={seedUrl ? "text-canvas-primary" : "text-gray-500"} />
-                <input 
+                <input
                   value={seedUrl}
                   onChange={e => setSeedUrl(e.target.value)}
                   placeholder="Paste a URL or write a quick thought..."
@@ -115,7 +117,7 @@ export default function Create() {
               </div>
 
               <div className="w-full md:w-auto flex flex-row items-center gap-2 p-1.5 h-full relative z-30">
-                <select 
+                <select
                   value={seedRoomId}
                   onChange={e => setSeedRoomId(e.target.value)}
                   className="bg-white/5 border border-white/10 text-gray-400 text-[10px] font-bold uppercase tracking-widest px-5 py-4 rounded-3xl focus:outline-none focus:border-canvas-primary/30 transition-all cursor-pointer appearance-none pr-10"
@@ -126,7 +128,7 @@ export default function Create() {
                   ))}
                 </select>
 
-                <button 
+                <button
                   type="submit"
                   disabled={!seedUrl || isSeeding}
                   className={`px-8 py-4 rounded-3xl font-bold uppercase tracking-widest text-[10px] transition-all flex items-center gap-3 whitespace-nowrap cursor-pointer shadow-lg ${seedSuccess ? 'bg-emerald-500 text-white' : 'bg-white text-black hover:bg-canvas-primary hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed'}`}
@@ -136,49 +138,68 @@ export default function Create() {
                   ) : seedSuccess ? (
                     <>Success <Zap size={14} className="fill-white" /></>
                   ) : (
-                    <>Seed Artifact <Sparkles size={14} className="text-canvas-primary" /></>
+                    <>Fast-Capture <Sparkles size={14} className="text-canvas-primary" /></>
                   )}
                 </button>
               </div>
             </form>
           </div>
           <div className="mt-4 px-8 flex justify-between items-center">
-             <div className="flex items-center gap-6">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Fast-capture any artifact into your permanent collection.</p>
-                
-                <div className="flex items-center gap-2 p-0.5 bg-white/5 rounded-full border border-white/5">
-                   <button 
-                     type="button"
-                     onClick={() => setSeedIsPublic(false)}
-                     className={`px-3 py-1.5 rounded-full flex items-center gap-2 transition-all cursor-pointer ${!seedIsPublic ? 'bg-white/10 text-white' : 'text-gray-600'}`}
-                   >
-                     <Lock size={10} />
-                     <span className="text-[8px] font-bold uppercase tracking-widest">Solo</span>
-                   </button>
-                   <button 
-                     type="button"
-                     onClick={() => setSeedIsPublic(true)}
-                     className={`px-3 py-1.5 rounded-full flex items-center gap-2 transition-all cursor-pointer ${seedIsPublic ? 'bg-canvas-primary/20 text-canvas-primary' : 'text-gray-600'}`}
-                   >
-                     <Globe size={10} />
-                     <span className="text-[8px] font-bold uppercase tracking-widest">Public</span>
-                   </button>
+            <div className="flex items-center gap-6">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Fast-capture any artifact into your permanent collection.</p>
+
+              <div className="flex items-center gap-2 p-0.5 bg-white/5 rounded-full border border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setSeedIsPublic(false)}
+                  className={`px-3 py-1.5 rounded-full flex items-center gap-2 transition-all cursor-pointer ${!seedIsPublic ? 'bg-white/10 text-white' : 'text-gray-600'}`}
+                >
+                  <Lock size={10} />
+                  <span className="text-[8px] font-bold uppercase tracking-widest">Solo</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSeedIsPublic(true)}
+                  className={`px-3 py-1.5 rounded-full flex items-center gap-2 transition-all cursor-pointer ${seedIsPublic ? 'bg-canvas-primary/20 text-canvas-primary' : 'text-gray-600'}`}
+                >
+                  <Globe size={10} />
+                  <span className="text-[8px] font-bold uppercase tracking-widest">Public</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-canvas-primary animate-pulse" />
+              <span className="text-[9px] font-bold text-gray-700 uppercase tracking-widest leading-none">Scanning Engine Active</span>
+            </div>
+          </div>
+
+          {/* Recent Captures Quick-View */}
+          <div className="mt-10 px-4">
+            <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-700 mb-4 px-4">Recent Captures</h4>
+            <div className="flex gap-4 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {recentItems.map(item => (
+                <div key={item.id} className="min-w-[200px] p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col justify-between group hover:border-white/10 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center">
+                      <Link2 size={12} className="text-gray-600" />
+                    </div>
+                    <span className="text-[8px] font-bold text-gray-700 uppercase">{item.isPublic ? 'Public' : 'Solo'}</span>
+                  </div>
+                  <h5 className="text-[11px] font-bold text-gray-400 line-clamp-1 mb-1">{item.title}</h5>
+                  <p className="text-[9px] text-gray-600 font-serif italic truncate">{item.note}</p>
                 </div>
-             </div>
-             
-             <div className="flex items-center gap-2">
-                <div className="w-1 h-1 rounded-full bg-canvas-primary animate-pulse" />
-                <span className="text-[9px] font-bold text-gray-700 uppercase tracking-widest leading-none">Scanning Engine Active</span>
-             </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* SECTION 2: INTENTIONAL PILLARS (LARGE CARDS) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
           {/* Room Pilllar */}
-          <div 
+          <div
             onClick={() => setShowCreateRoom(true)}
-            className="group relative h-[400px] rounded-[3rem] overflow-hidden cursor-pointer border border-white/5 hover:border-canvas-primary/40 transition-all duration-500 shadow-2xl"
+            className="group relative h-[320px] rounded-[3rem] overflow-hidden cursor-pointer border border-white/5 hover:border-canvas-primary/40 transition-all duration-500 shadow-2xl"
           >
             <div className="absolute inset-0 bg-linear-to-b from-canvas-primary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
@@ -196,9 +217,9 @@ export default function Create() {
           </div>
 
           {/* Thread Pillar */}
-          <div 
+          <div
             onClick={() => setShowCreateThread(true)}
-            className="group relative h-[400px] rounded-[3rem] overflow-hidden cursor-pointer border border-white/5 hover:border-canvas-accent/40 transition-all duration-500 shadow-2xl"
+            className="group relative h-[320px] rounded-[3rem] overflow-hidden cursor-pointer border border-white/5 hover:border-canvas-accent/40 transition-all duration-500 shadow-2xl"
           >
             <div className="absolute inset-0 bg-linear-to-b from-canvas-accent/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
@@ -216,9 +237,9 @@ export default function Create() {
           </div>
 
           {/* Journal Pillar */}
-          <div 
+          <div
             onClick={() => handleStartJournal(false)}
-            className="group relative h-[400px] rounded-[3rem] overflow-hidden cursor-pointer border border-white/5 hover:border-white/30 transition-all duration-500 shadow-2xl"
+            className="group relative h-[320px] rounded-[3rem] overflow-hidden cursor-pointer border border-white/5 hover:border-white/30 transition-all duration-500 shadow-2xl"
           >
             <div className="absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
@@ -229,26 +250,13 @@ export default function Create() {
               <p className="text-gray-400 font-serif italic mb-6 text-lg leading-relaxed px-4">
                 Dive into a raw writing flow. Private, dated, and moody.
               </p>
-              
+
               <div className="flex gap-2 mb-6" onClick={(e) => e.stopPropagation()}>
-                <button 
-                  onClick={() => handleStartJournal(false)}
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 cursor-pointer"
-                  type="button"
-                >
-                  <Lock size={12} /> Solo
-                </button>
-                <button 
-                  onClick={() => handleStartJournal(true)}
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-canvas-primary hover:bg-canvas-primary/10 transition-all flex items-center gap-2 cursor-pointer"
-                  type="button"
-                >
-                  <Globe size={12} /> Public
-                </button>
+                {/* Minimal buttons to keep focus on intention */}
               </div>
 
               <div className="px-6 py-3 border border-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-white group-hover:bg-white group-hover:text-black transition-all">
-                Start Writing
+                Project Start
               </div>
             </div>
           </div>
@@ -272,7 +280,7 @@ export default function Create() {
                 Launch Explorer <ArrowRight size={12} />
               </button>
             </div>
-            
+
             <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl hover:border-white/20 transition-all cursor-pointer group shadow-lg">
               <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center group-hover:bg-[#1DB954]/20 transition-colors">
                 <Music size={20} className="text-gray-400 group-hover:text-[#1DB954]" />
@@ -283,7 +291,7 @@ export default function Create() {
                 Connect API <ArrowRight size={12} />
               </button>
             </div>
-            
+
             <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl hover:border-white/20 transition-all cursor-pointer group shadow-lg">
               <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center group-hover:bg-canvas-primary/20 transition-colors">
                 <Globe size={20} className="text-gray-400 group-hover:text-canvas-primary" />
