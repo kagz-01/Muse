@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { X, ArrowRight, Check, ImagePlus } from 'lucide-react';
+import { X, ArrowRight, Check, Image as ImageIcon, Plus, ChevronRight, ArrowLeft, Layout, Globe, Lock } from 'lucide-react';
 import { useRoomsStore, type RoomTheme } from '../../store/useRoomsStore';
 
 interface Props { onClose: () => void; }
@@ -21,7 +21,8 @@ export default function CreateRoomModal({ onClose }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [themeColor, setThemeColor] = useState<RoomTheme>('indigo');
-  const [coverPreview, setCoverPreview] = useState('');
+  const [coverImage, setCoverImage] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState('');
 
   const nameRef = useRef<HTMLInputElement>(null);
@@ -42,7 +43,7 @@ export default function CreateRoomModal({ onClose }: Props) {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setCoverPreview(reader.result as string);
+      reader.onloadend = () => setCoverImage(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -51,9 +52,19 @@ export default function CreateRoomModal({ onClose }: Props) {
 
   const handleCreate = () => {
     if (!name.trim()) { setError('Give your room a name.'); return; }
-    const newRoom = addRoom(name.trim(), description.trim(), themeColor, coverPreview);
-    onClose();
-    navigate(`/rooms/${newRoom.id}`);
+    
+    try {
+      addRoom(name.trim(), description.trim(), themeColor, coverImage, isPublic);
+      onClose();
+      // Reset form
+      setName('');
+      setDescription('');
+      setThemeColor('indigo');
+      setCoverImage('');
+      setIsPublic(false);
+    } catch (err) {
+      setError('Failed to establish room identity.');
+    }
   };
 
   return (
@@ -82,15 +93,15 @@ export default function CreateRoomModal({ onClose }: Props) {
               onClick={() => fileRef.current?.click()}
               className="relative w-full h-36 rounded-2xl border-2 border-dashed border-white/10 hover:border-white/25 transition-all cursor-pointer overflow-hidden group"
             >
-              {coverPreview ? (
-                <img src={coverPreview} className="absolute inset-0 w-full h-full object-cover" />
+              {coverImage ? (
+                <img src={coverImage} className="absolute inset-0 w-full h-full object-cover" />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-gray-300 transition-colors">
-                  <ImagePlus size={24} />
+                  <ImageIcon size={24} />
                   <span className="text-xs font-bold uppercase tracking-widest">Upload Cover Photo</span>
                 </div>
               )}
-              {coverPreview && (
+              {coverImage && (
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span className="text-white text-xs font-bold uppercase tracking-widest">Change Image</span>
                 </div>
@@ -137,6 +148,25 @@ export default function CreateRoomModal({ onClose }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+          {/* Visibility Toggle */}
+          <div className="mb-8 p-1 bg-white/5 rounded-3xl flex gap-2">
+            <button 
+              onClick={() => setIsPublic(false)}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${!isPublic ? 'bg-white/10 text-white shadow-xl' : 'text-gray-500 hover:text-gray-300'}`}
+              type="button"
+            >
+              <Lock size={16} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Private Vault</span>
+            </button>
+            <button 
+              onClick={() => setIsPublic(true)}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${isPublic ? 'bg-canvas-primary/20 text-canvas-primary shadow-xl shadow-canvas-primary/5' : 'text-gray-500 hover:text-gray-300'}`}
+              type="button"
+            >
+              <Globe size={16} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Community Hub</span>
+            </button>
           </div>
 
           {/* Actions */}

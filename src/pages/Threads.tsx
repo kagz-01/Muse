@@ -1,12 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  MessageSquare, 
-  Layers, 
-  Users, 
-  Zap, 
+import {
+  Plus,
+  Layers,
   ChevronRight,
   Sparkles,
   Globe,
@@ -14,13 +11,22 @@ import {
 } from 'lucide-react';
 import { useThreadsStore } from '../store/useThreadsStore';
 import { useConnectionsStore, type ActiveCircle } from '../store/useConnectionsStore';
+import { useUserStore } from '../store/useUserStore';
 
 export default function Threads() {
   const navigate = useNavigate();
   const personalThreads = useThreadsStore(state => state.threads);
   const { circles } = useConnectionsStore();
-  const [activeView, setActiveView] = useState<'community' | 'private'>('community');
+  const { soloMode } = useUserStore();
+  const [activeView, setActiveView] = useState<'community' | 'private'>(soloMode ? 'private' : 'community');
   const [showCreate, setShowCreate] = useState(false);
+
+  // Sync activeView with soloMode if it changes
+  useEffect(() => {
+    if (soloMode && activeView === 'community') {
+      setActiveView('private');
+    }
+  }, [soloMode, activeView]);
 
   return (
     <div className="min-h-screen bg-canvas-bg-dark pb-24">
@@ -50,20 +56,22 @@ export default function Threads() {
               </div>
 
               {/* View Toggle */}
-              <div className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-3xl w-fit">
-                <button
-                  onClick={() => setActiveView('community')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all ${activeView === 'community' ? 'bg-white text-black' : 'text-gray-500 hover:text-white'}`}
-                >
-                  <Globe size={14} /> Community
-                </button>
-                <button
-                  onClick={() => setActiveView('private')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all ${activeView === 'private' ? 'bg-white text-black' : 'text-gray-500 hover:text-white'}`}
-                >
-                  <Lock size={14} /> Private Weaves
-                </button>
-              </div>
+              {!soloMode && (
+                <div className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-3xl w-fit">
+                  <button
+                    onClick={() => setActiveView('community')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all ${activeView === 'community' ? 'bg-white text-black' : 'text-gray-500 hover:text-white'}`}
+                  >
+                    <Globe size={14} /> Community
+                  </button>
+                  <button
+                    onClick={() => setActiveView('private')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all ${activeView === 'private' ? 'bg-white text-black' : 'text-gray-500 hover:text-white'}`}
+                  >
+                    <Lock size={14} /> Private Weaves
+                  </button>
+                </div>
+              )}
            </div>
         </header>
 

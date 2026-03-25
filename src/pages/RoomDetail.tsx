@@ -34,7 +34,8 @@ export default function RoomDetail() {
   const updateRoomCover = useRoomsStore(state => state.updateRoomCover);
   const toggleRoomPrivacy = useRoomsStore(state => state.toggleRoomPrivacy);
 
-  const items = useItemsStore(state => state.items.filter(i => i.roomId === id));
+  const allItems = useItemsStore(state => state.items);
+  const items = React.useMemo(() => allItems.filter(i => i.roomId === id), [allItems, id]);
   const addItem = useItemsStore(state => state.addItem);
   const deleteItem = useItemsStore(state => state.deleteItem);
 
@@ -73,7 +74,7 @@ export default function RoomDetail() {
     if (!newUrl.trim()) { setAddError('URL / link is required.'); return; }
     let sourceUrl = newUrl.trim();
     if (!/^https?:\/\//.test(sourceUrl)) sourceUrl = 'https://' + sourceUrl;
-    addItem({ roomId: room.id, title: newTitle.trim(), sourceUrl, note: newNote.trim() || undefined });
+    addItem({ roomId: room.id, title: newTitle.trim(), sourceUrl, note: newNote.trim() || undefined, isPublic: false });
     setNewTitle(''); setNewUrl(''); setNewNote(''); setAddError('');
     setShowAddItem(false);
   };
@@ -184,6 +185,21 @@ export default function RoomDetail() {
 
         {/* MAIN CONTENT WORKSPACE */}
         <main className="p-6 md:p-10 max-w-7xl mx-auto relative z-10 -mt-4">
+          {/* Room Contemplation / Curator's Note */}
+          <div className="mb-12 relative">
+             <div className={`absolute -inset-4 ${theme.bg} blur-2xl opacity-20 rounded-[3rem] pointer-events-none`} />
+             <div className="relative p-8 md:p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-6">
+                   <div className={`w-8 h-px bg-linear-to-r from-transparent to-${room.themeColor}-500/50`} />
+                   <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Room Contemplation</h2>
+                   <div className={`w-8 h-px bg-linear-to-l from-transparent to-${room.themeColor}-500/50`} />
+                </div>
+                <p className="text-xl md:text-2xl font-serif italic text-gray-300 leading-relaxed max-w-3xl">
+                   {room.description || "This space is currently waiting for your intellectual blueprint. What themes will you explore here?"}
+                </p>
+             </div>
+          </div>
+
           {/* Top bar */}
           <div className="flex items-center justify-between mb-8">
             <span className={`inline-block px-4 py-1.5 rounded-full bg-[#1c1c1c] border border-white/5 text-sm font-bold uppercase tracking-widest ${theme.text}`}>

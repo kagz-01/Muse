@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Check, Trash2, ImagePlus, AlertTriangle } from 'lucide-react';
+import { X, Check, Trash2, ImagePlus, AlertTriangle, Globe, Lock } from 'lucide-react';
 import { useRoomsStore, type Room, type RoomTheme } from '../../store/useRoomsStore';
 
 interface Props {
@@ -25,6 +25,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
   const [description, setDescription] = useState(room.description);
   const [themeColor, setThemeColor] = useState<RoomTheme>(room.themeColor);
   const [coverPreview, setCoverPreview] = useState(room.coverImage);
+  const [isPublic, setIsPublic] = useState(room.isPublic);
   const [error, setError] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -53,7 +54,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
 
   const handleSave = () => {
     if (!name.trim()) { setError('Room name cannot be empty.'); return; }
-    updateRoom(room.id, { name: name.trim(), description: description.trim(), themeColor, coverImage: coverPreview });
+    updateRoom(room.id, { name: name.trim(), description: description.trim(), themeColor, coverImage: coverPreview, isPublic });
     onClose();
   };
 
@@ -135,6 +136,24 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Visibility Toggle */}
+          <div className="mb-8 p-1 bg-white/5 rounded-2xl flex gap-2">
+            <button 
+              onClick={() => setIsPublic(false)}
+              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${!isPublic ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              <Lock size={14} />
+              <span className="text-[9px] font-bold uppercase tracking-widest">Private Vault</span>
+            </button>
+            <button 
+              onClick={() => setIsPublic(true)}
+              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${isPublic ? 'bg-canvas-primary/20 text-canvas-primary shadow-lg shadow-canvas-primary/5' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              <Globe size={14} />
+              <span className="text-[9px] font-bold uppercase tracking-widest">Community Hub</span>
+            </button>
           </div>
 
           {/* Save Button */}

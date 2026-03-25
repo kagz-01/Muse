@@ -1,12 +1,11 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Settings, LogOut, Shield, ChevronRight } from 'lucide-react';
+import { X, Settings, LogOut, Shield, ChevronRight, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useUserStore } from '../../store/useUserStore';
 import { useRoomsStore } from '../../store/useRoomsStore';
-import type { User } from '../../store/useUserStore';
-import type { Room } from '../../store/useRoomsStore';
 import PortraitCard from './PortraitCard';
+import PrivacyManager from '../modals/PrivacyManager';
 
 interface ProfileOverlayProps {
   isOpen: boolean;
@@ -17,6 +16,7 @@ export default function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps)
   const navigate = useNavigate();
   const { user, soloMode, toggleSoloMode, logout } = useUserStore();
   const rooms = useRoomsStore(state => state.rooms);
+  const [isPrivacyOpen, setIsPrivacyOpen] = React.useState(false);
   
   const activeRooms = rooms.slice().sort((a, b) => b.count - a.count).slice(0, 3);
 
@@ -31,6 +31,8 @@ export default function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps)
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[60] flex items-center justify-center p-6"
         >
+           <PrivacyManager isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+
           {/* Backdrop blur */}
           <motion.div 
             initial={{ opacity: 0 }}
@@ -92,6 +94,22 @@ export default function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps)
                     <div className={`w-10 h-6 rounded-full flex items-center px-1 transition-colors ${soloMode ? 'bg-canvas-primary' : 'bg-gray-800'}`}>
                       <div className={`w-4 h-4 rounded-full bg-white transition-transform ${soloMode ? 'translate-x-4' : 'translate-x-0'}`}></div>
                     </div>
+                  </button>
+
+                  <button 
+                    onClick={() => setIsPrivacyOpen(true)}
+                    className="w-full group flex items-center justify-between p-5 rounded-3xl bg-emerald-500/5 border border-emerald-500/10 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all text-left"
+                  >
+                    <div className="flex items-center gap-4">
+                       <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 transition-all">
+                          <Globe size={20} />
+                       </div>
+                       <div>
+                          <p className="text-sm font-bold text-white">Community Settings</p>
+                          <p className="text-[10px] text-emerald-500/60 font-bold uppercase tracking-widest">Granular sharing</p>
+                       </div>
+                    </div>
+                    <ChevronRight size={16} className="text-emerald-500 group-hover:scale-110 transition-transform" />
                   </button>
 
                   <button 

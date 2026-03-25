@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { X, ArrowRight, Check, ImagePlus } from 'lucide-react';
+import { X, ArrowRight, Check, ImagePlus, Globe, Lock } from 'lucide-react';
 import { useThreadsStore, type ThreadMood } from '../../store/useThreadsStore';
 
 interface Props { onClose: () => void; }
@@ -23,6 +23,7 @@ export default function CreateThreadModal({ onClose }: Props) {
   const [thesis, setThesis] = useState('');
   const [mood, setMood] = useState<ThreadMood>('contemplative');
   const [coverPreview, setCoverPreview] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState('');
 
   const titleRef = useRef<HTMLInputElement>(null);
@@ -52,7 +53,14 @@ export default function CreateThreadModal({ onClose }: Props) {
 
   const handleCreate = () => {
     if (!title.trim()) { setError('Give your thread a title.'); return; }
-    const thread = addThread({ title: title.trim(), description: description.trim(), thesis: thesis.trim(), mood, coverImage: coverPreview });
+    const thread = addThread({ 
+      title: title.trim(), 
+      description: description.trim(), 
+      thesis: thesis.trim(), 
+      mood, 
+      coverImage: coverPreview, 
+      isPublic 
+    });
     onClose();
     navigate(`/threads/${thread.id}`);
   };
@@ -141,6 +149,26 @@ export default function CreateThreadModal({ onClose }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Visibility Toggle */}
+          <div className="mb-8 p-1 bg-white/5 rounded-2xl flex gap-2">
+            <button 
+              onClick={() => setIsPublic(false)}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${!isPublic ? 'bg-white/10 text-white shadow-xl' : 'text-gray-500 hover:text-gray-300'}`}
+              type="button"
+            >
+              <Lock size={16} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Private Vault</span>
+            </button>
+            <button 
+              onClick={() => setIsPublic(true)}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${isPublic ? 'bg-canvas-accent/20 text-canvas-accent shadow-xl shadow-canvas-accent/5' : 'text-gray-500 hover:text-gray-300'}`}
+              type="button"
+            >
+              <Globe size={16} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Community Hub</span>
+            </button>
           </div>
 
           {/* Actions */}

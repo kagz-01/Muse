@@ -25,6 +25,7 @@ export interface JournalEntry {
   linkedItemIds: string[]; // Room artifacts that inspired this entry
   prompt?: string;         // writing prompt used (if any)
   isFavorited: boolean;
+  isPublic: boolean;
   wordCount: number;
   createdAt: number;
   updatedAt: number;
@@ -34,10 +35,11 @@ interface JournalState {
   entries: JournalEntry[];
   dailyWordGoal: number;
   setDailyWordGoal: (goal: number) => void;
-  addEntry: (mood?: JournalMood) => JournalEntry;
+  addEntry: (mood?: JournalMood, isPublic?: boolean) => JournalEntry;
   updateEntry: (id: string, updates: Partial<Omit<JournalEntry, 'id' | 'createdAt'>>) => void;
   deleteEntry: (id: string) => void;
   toggleFavorite: (id: string) => void;
+  toggleEntryPrivacy: (id: string) => void;
   getTitle: (entry: JournalEntry) => string;
   getStreak: () => number;
   getTodayWordCount: () => number;
@@ -62,6 +64,7 @@ I want to sit inside that feeling longer. Not fix it. Not analyze it. Just inhab
     tags: ['architecture', 'silence', 'ambient'],
     linkedItemIds: [],
     isFavorited: false,
+    isPublic: false,
     wordCount: 122,
     createdAt: seed - 86400000 * 3,
     updatedAt: seed - 86400000 * 3,
@@ -80,6 +83,7 @@ I wonder if that's why collecting feels so different. Each thing I save to Muse 
     tags: ['attention', 'digital', 'intentionality'],
     linkedItemIds: ['103'],
     isFavorited: false,
+    isPublic: false,
     wordCount: 107,
     createdAt: seed - 86400000 * 1,
     updatedAt: seed - 86400000 * 1,
@@ -98,6 +102,7 @@ Maybe the cure for everything is just being somewhere specific, paying attention
     tags: ['slowness', 'presence', 'gratitude'],
     linkedItemIds: [],
     isFavorited: true,
+    isPublic: false,
     wordCount: 68,
     createdAt: seed - 3600000 * 2,
     updatedAt: seed - 3600000 * 2,
@@ -110,7 +115,7 @@ export const useJournalStore = create<JournalState>((set, get) => ({
 
   setDailyWordGoal: (goal) => set({ dailyWordGoal: goal }),
 
-  addEntry: (mood = 'reflective') => {
+  addEntry: (mood = 'reflective', isPublic = false) => {
     const newEntry: JournalEntry = {
       id: 'j-' + Date.now(),
       title: '',
@@ -119,6 +124,7 @@ export const useJournalStore = create<JournalState>((set, get) => ({
       tags: [],
       linkedItemIds: [],
       isFavorited: false,
+      isPublic: isPublic,
       wordCount: 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -148,6 +154,10 @@ export const useJournalStore = create<JournalState>((set, get) => ({
 
   toggleFavorite: (id) => set(state => ({
     entries: state.entries.map(e => e.id === id ? { ...e, isFavorited: !e.isFavorited } : e)
+  })),
+  
+  toggleEntryPrivacy: (id) => set(state => ({
+    entries: state.entries.map(e => e.id === id ? { ...e, isPublic: !e.isPublic, updatedAt: Date.now() } : e)
   })),
 
   getTitle: (entry) =>

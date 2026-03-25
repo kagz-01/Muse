@@ -10,6 +10,7 @@ export interface Thread {
   mood: ThreadMood;
   coverImage: string;
   itemIds: string[];
+  isPublic: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -21,6 +22,7 @@ interface ThreadsState {
   deleteThread: (id: string) => void;
   addItemToThread: (threadId: string, itemId: string) => void;
   removeItemFromThread: (threadId: string, itemId: string) => void;
+  toggleThreadPrivacy: (id: string) => void;
   // legacy compat
   addThread_legacy: (name: string, description?: string) => void;
 }
@@ -37,6 +39,7 @@ export const useThreadsStore = create<ThreadsState>((set) => ({
       mood: 'contemplative',
       coverImage: 'https://images.unsplash.com/photo-1509460913899-515f1df34fea?auto=format&fit=crop&w=1200&q=80',
       itemIds: ['101', '102'],
+      isPublic: true,
       createdAt: now - 86400000 * 3,
       updatedAt: now - 86400000 * 1,
     },
@@ -48,6 +51,7 @@ export const useThreadsStore = create<ThreadsState>((set) => ({
       mood: 'urgent',
       coverImage: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80',
       itemIds: ['103', '105'],
+      isPublic: false,
       createdAt: now - 86400000 * 2,
       updatedAt: now - 86400000 * 1,
     },
@@ -59,6 +63,7 @@ export const useThreadsStore = create<ThreadsState>((set) => ({
       mood: 'serene',
       coverImage: 'https://images.unsplash.com/photo-1586023492125-27b2c3a14f57?auto=format&fit=crop&w=1200&q=80',
       itemIds: ['104'],
+      isPublic: true,
       createdAt: now - 86400000 * 5,
       updatedAt: now - 86400000 * 2,
     }
@@ -69,6 +74,7 @@ export const useThreadsStore = create<ThreadsState>((set) => ({
       ...data,
       id: 'th-' + Date.now(),
       itemIds: [],
+      isPublic: data.isPublic ?? false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
@@ -98,6 +104,10 @@ export const useThreadsStore = create<ThreadsState>((set) => ({
         ? { ...t, itemIds: t.itemIds.filter(i => i !== itemId), updatedAt: Date.now() }
         : t
     )
+  })),
+  
+  toggleThreadPrivacy: (id) => set((state) => ({
+    threads: state.threads.map(t => t.id === id ? { ...t, isPublic: !t.isPublic, updatedAt: Date.now() } : t)
   })),
 
   // Legacy compat (unused UI, kept for safety)

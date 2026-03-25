@@ -8,6 +8,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import CaptureModal from '../modals/CaptureModal';
 import ProfileOverlay from '../profile/ProfileOverlay';
+import PrivacyBadge from './PrivacyBadge';
 import { useUserStore } from '../../store/useUserStore';
 
 export default function Layout() {
@@ -16,7 +17,7 @@ export default function Layout() {
   const [isCaptureOpen, setIsCaptureOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { user } = useUserStore();
+  const { user, soloMode } = useUserStore();
 
   const navItems = [
     { label: 'Rooms', path: '/rooms', icon: <LayoutIcon size={22} />, desc: 'Your collection spaces' },
@@ -33,10 +34,22 @@ export default function Layout() {
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
-    <div className="flex flex-col h-screen w-full bg-canvas-bg-dark text-white overflow-hidden pb-safe">
+    <div className={`flex flex-col h-screen w-full bg-canvas-bg-dark text-white overflow-hidden pb-safe transition-all duration-1000 ${soloMode ? 'border-[6px] border-canvas-primary/20 shadow-[inset_0_0_50px_rgba(99,102,241,0.1)]' : 'border-0'}`}>
       <CaptureModal isOpen={isCaptureOpen} onClose={() => setIsCaptureOpen(false)} />
       <ProfileOverlay isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
       
+      {/* Solo Mode Shimmer Overlay */}
+      <AnimatePresence>
+        {soloMode && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 pointer-events-none z-[100] border-[1px] border-canvas-primary/10 shadow-[inset_0_0_100px_rgba(99,102,241,0.05)]"
+          />
+        )}
+      </AnimatePresence>
+
       {/* UNIFIED TOP HEADER */}
       <header className="sticky top-0 w-full z-50 bg-canvas-bg-dark/90 backdrop-blur-2xl border-b border-white/5 flex items-center justify-between px-6 md:px-10 py-4 h-20 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
          <div className="flex items-center gap-8">
@@ -55,7 +68,13 @@ export default function Layout() {
             </div>
          </div>
 
-         <div className="flex items-center gap-4">
+         <div className="flex items-center gap-6">
+            {/* Privacy Switcher */}
+            <div className="hidden sm:block">
+               <PrivacyBadge />
+            </div>
+
+            <div className="flex items-center gap-4">
             {/* Clickable Profile Avatar */}
             <button 
               onClick={() => setIsProfileOpen(true)}
@@ -80,8 +99,9 @@ export default function Layout() {
             >
                <MenuIcon size={22} className="text-gray-300 group-hover:text-white transition-colors" />
             </button>
+            </div>
          </div>
-      </header>
+       </header>
 
       {/* GLOBAL NAVIGATION DRAWER (Unified Menu) */}
       <AnimatePresence>
@@ -109,7 +129,7 @@ export default function Layout() {
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
               className="relative w-full max-w-sm md:max-w-md h-full bg-[#111111] border-l border-white/5 shadow-2xl flex flex-col p-8 md:p-12 overflow-y-auto"
             >
-              <div className="flex justify-between items-center mb-12">
+               <div className="flex justify-between items-center mb-12">
                  <div>
                     <h2 className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em] mb-1">Navigation</h2>
                     <h3 className="text-2xl font-bold tracking-tight text-white">Choose Intent</h3>

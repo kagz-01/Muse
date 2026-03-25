@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Check, Trash2, ImagePlus, AlertTriangle } from 'lucide-react';
+import { X, Check, Trash2, ImagePlus, AlertTriangle, Globe, Lock } from 'lucide-react';
 import { useThreadsStore, type Thread, type ThreadMood } from '../../store/useThreadsStore';
 
 interface Props { thread: Thread; onClose: () => void; onDeleted?: () => void; }
@@ -22,6 +22,7 @@ export default function EditThreadModal({ thread, onClose, onDeleted }: Props) {
   const [thesis, setThesis] = useState(thread.thesis);
   const [mood, setMood] = useState<ThreadMood>(thread.mood);
   const [coverPreview, setCoverPreview] = useState(thread.coverImage);
+  const [isPublic, setIsPublic] = useState(thread.isPublic);
   const [error, setError] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -49,7 +50,7 @@ export default function EditThreadModal({ thread, onClose, onDeleted }: Props) {
 
   const handleSave = () => {
     if (!title.trim()) { setError('Title cannot be empty.'); return; }
-    updateThread(thread.id, { title: title.trim(), description: description.trim(), thesis: thesis.trim(), mood, coverImage: coverPreview });
+    updateThread(thread.id, { title: title.trim(), description: description.trim(), thesis: thesis.trim(), mood, coverImage: coverPreview, isPublic });
     onClose();
   };
 
@@ -108,6 +109,24 @@ export default function EditThreadModal({ thread, onClose, onDeleted }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Visibility Toggle */}
+          <div className="mb-8 p-1 bg-white/5 rounded-2xl flex gap-2">
+            <button 
+              onClick={() => setIsPublic(false)}
+              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${!isPublic ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              <Lock size={14} />
+              <span className="text-[9px] font-bold uppercase tracking-widest">Private Vault</span>
+            </button>
+            <button 
+              onClick={() => setIsPublic(true)}
+              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${isPublic ? 'bg-canvas-primary/20 text-canvas-primary shadow-lg shadow-canvas-primary/5' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              <Globe size={14} />
+              <span className="text-[9px] font-bold uppercase tracking-widest">Community Hub</span>
+            </button>
           </div>
 
           <button onClick={handleSave} className="w-full py-4 rounded-2xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer hover:-translate-y-0.5 active:scale-95 text-white mb-4"

@@ -46,8 +46,9 @@ interface ConnectionsState {
   circles: ActiveCircle[];
   communityRooms: CommunityRoom[];
   insights: string[];
+  activeThemes: string[];
   joinCircle: (circleId: string) => void;
-  addContribution: (circleId: string, text: string, tone: 'Reflect' | 'Build' | 'Ask') => void;
+  addContribution: (circleId: string, text: string, tone: DialogueTone) => void;
 }
 
 const MOCK_COLLABORATORS: Collaborator[] = [
@@ -158,6 +159,7 @@ export const useConnectionsStore = create<ConnectionsState>((set) => ({
     'You and David Chen are achieving 92% thematic resonance on "Brutalism".',
     '3 new contributors joined "Digital Identity Matrix" after your last synthesis.'
   ],
+  activeThemes: ['Silence', 'Brutalism', 'Identity', 'Urban Voids', 'Scale', 'Memory'],
   joinCircle: (circleId) => {
     console.log('Joining circle:', circleId);
     set((state) => ({

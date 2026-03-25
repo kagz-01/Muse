@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Sparkles, BookOpen, Layers, Globe, 
   Music, Image as ImageIcon, Lightbulb, 
-  ArrowRight, Link2, Zap, Layout
+  ArrowRight, Link2, Zap, Layout, Lock, X
 } from 'lucide-react';
 import { useRoomsStore } from '../store/useRoomsStore';
 import { useItemsStore } from '../store/useItemsStore';
@@ -25,6 +26,7 @@ export default function Create() {
   const [seedRoomId, setSeedRoomId] = useState(rooms[0]?.id || '');
   const [isSeeding, setIsSeeding] = useState(false);
   const [seedSuccess, setSeedSuccess] = useState(false);
+  const [seedIsPublic, setSeedIsPublic] = useState(false);
 
   const handleQuickSeed = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +40,8 @@ export default function Create() {
         roomId: seedRoomId,
         title: seedUrl.includes('http') ? new URL(seedUrl).hostname : 'Quick Note',
         sourceUrl: seedUrl.startsWith('http') ? seedUrl : `https://google.com/search?q=${encodeURIComponent(seedUrl)}`,
-        note: `Quickly seeded from the Create Hub.`
+        note: `Quickly seeded from the Create Hub.`,
+        isPublic: seedIsPublic // Assuming store supports it or we'll add it
       });
       
       setIsSeeding(false);
@@ -49,8 +52,8 @@ export default function Create() {
     }, 800);
   };
 
-  const handleStartJournal = () => {
-    const entry = addJournalEntry();
+  const handleStartJournal = (isPublic: boolean = false) => {
+    const entry = addJournalEntry(undefined, isPublic);
     navigate(`/journal/${entry.id}`);
   };
 
@@ -65,24 +68,44 @@ export default function Create() {
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-canvas-accent/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="relative z-10 p-6 md:p-10 max-w-6xl mx-auto">
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold tracking-tight mb-3">Create Hub</h1>
-          <p className="text-gray-400 font-serif italic text-lg max-w-xl leading-relaxed">
-            What are you bringing into the world today? Choose your intention and start your flow.
-          </p>
+        <header className="mb-12 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight mb-3">Create Hub</h1>
+            <p className="text-gray-400 font-serif italic text-lg max-w-xl leading-relaxed">
+              What are you bringing into the world today? Choose your intention and start your flow.
+            </p>
+          </div>
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer group"
+          >
+            <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+          </button>
         </header>
 
         {/* SECTION 1: QUICK SEED (CAPTURE) */}
         <section className="mb-16">
           <div className="relative group">
-            <div className="absolute inset-0 bg-canvas-primary/10 blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700 pointer-events-none" />
+            <div className="absolute inset-x-0 -bottom-2 h-1 bg-canvas-primary/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700 pointer-events-none" />
             
             <form 
               onSubmit={handleQuickSeed}
-              className="relative p-1 bg-white/[0.03] border border-white/10 group-focus-within:border-canvas-primary/40 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-2 transition-all duration-500 backdrop-blur-xl"
+              className="relative p-1 bg-white/[0.03] border border-white/10 group-focus-within:border-canvas-primary/40 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-2 transition-all duration-500 backdrop-blur-xl overflow-hidden"
             >
+              {/* Scanline Effect */}
+              <AnimatePresence>
+                {isSeeding && (
+                  <motion.div 
+                    initial={{ top: '-10%' }}
+                    animate={{ top: '110%' }}
+                    transition={{ duration: 1.2, ease: "linear", repeat: Infinity }}
+                    className="absolute inset-x-0 h-0.5 bg-canvas-primary blur-sm z-20 pointer-events-none"
+                  />
+                )}
+              </AnimatePresence>
+
               <div className="flex-1 flex items-center pl-8 w-full">
-                <Link2 size={24} className="text-gray-500 mr-4" />
+                <Link2 size={24} className={seedUrl ? "text-canvas-primary" : "text-gray-500"} />
                 <input 
                   value={seedUrl}
                   onChange={e => setSeedUrl(e.target.value)}
@@ -91,33 +114,63 @@ export default function Create() {
                 />
               </div>
 
-              <div className="w-full md:w-auto flex flex-row items-center gap-2 p-1.5 h-full">
+              <div className="w-full md:w-auto flex flex-row items-center gap-2 p-1.5 h-full relative z-30">
                 <select 
                   value={seedRoomId}
                   onChange={e => setSeedRoomId(e.target.value)}
-                  className="bg-white/5 border border-white/10 text-gray-400 text-xs font-bold uppercase tracking-widest px-4 py-4 rounded-3xl focus:outline-none focus:border-white/20 transition-all cursor-pointer"
+                  className="bg-white/5 border border-white/10 text-gray-400 text-[10px] font-bold uppercase tracking-widest px-5 py-4 rounded-3xl focus:outline-none focus:border-canvas-primary/30 transition-all cursor-pointer appearance-none pr-10"
+                  style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'rgba(156, 163, 175, 0.5)\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.2rem' }}
                 >
                   {rooms.map(room => (
-                    <option key={room.id} value={room.id}>{room.name}</option>
+                    <option key={room.id} value={room.id} className="bg-[#111]">{room.name}</option>
                   ))}
                 </select>
 
                 <button 
+                  type="submit"
                   disabled={!seedUrl || isSeeding}
-                  className={`px-8 py-4 rounded-3xl font-bold uppercase tracking-widest text-xs transition-all flex items-center gap-3 whitespace-nowrap cursor-pointer ${seedSuccess ? 'bg-emerald-500 text-white' : 'bg-white text-black hover:bg-white/90 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed'}`}
+                  className={`px-8 py-4 rounded-3xl font-bold uppercase tracking-widest text-[10px] transition-all flex items-center gap-3 whitespace-nowrap cursor-pointer shadow-lg ${seedSuccess ? 'bg-emerald-500 text-white' : 'bg-white text-black hover:bg-canvas-primary hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed'}`}
                 >
                   {isSeeding ? (
                     <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
                   ) : seedSuccess ? (
-                    <>Success <Zap size={14} /></>
+                    <>Success <Zap size={14} className="fill-white" /></>
                   ) : (
-                    <>Seed Artifact <ArrowRight size={14} /></>
+                    <>Seed Artifact <Sparkles size={14} className="text-canvas-primary" /></>
                   )}
                 </button>
               </div>
             </form>
           </div>
-          <p className="mt-4 ml-8 text-[10px] font-bold uppercase tracking-widest text-gray-500">Fast-capture any artifact into your permanent collection.</p>
+          <div className="mt-4 px-8 flex justify-between items-center">
+             <div className="flex items-center gap-6">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Fast-capture any artifact into your permanent collection.</p>
+                
+                <div className="flex items-center gap-2 p-0.5 bg-white/5 rounded-full border border-white/5">
+                   <button 
+                     type="button"
+                     onClick={() => setSeedIsPublic(false)}
+                     className={`px-3 py-1.5 rounded-full flex items-center gap-2 transition-all cursor-pointer ${!seedIsPublic ? 'bg-white/10 text-white' : 'text-gray-600'}`}
+                   >
+                     <Lock size={10} />
+                     <span className="text-[8px] font-bold uppercase tracking-widest">Solo</span>
+                   </button>
+                   <button 
+                     type="button"
+                     onClick={() => setSeedIsPublic(true)}
+                     className={`px-3 py-1.5 rounded-full flex items-center gap-2 transition-all cursor-pointer ${seedIsPublic ? 'bg-canvas-primary/20 text-canvas-primary' : 'text-gray-600'}`}
+                   >
+                     <Globe size={10} />
+                     <span className="text-[8px] font-bold uppercase tracking-widest">Public</span>
+                   </button>
+                </div>
+             </div>
+             
+             <div className="flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-canvas-primary animate-pulse" />
+                <span className="text-[9px] font-bold text-gray-700 uppercase tracking-widest leading-none">Scanning Engine Active</span>
+             </div>
+          </div>
         </section>
 
         {/* SECTION 2: INTENTIONAL PILLARS (LARGE CARDS) */}
@@ -164,7 +217,7 @@ export default function Create() {
 
           {/* Journal Pillar */}
           <div 
-            onClick={handleStartJournal}
+            onClick={() => handleStartJournal(false)}
             className="group relative h-[400px] rounded-[3rem] overflow-hidden cursor-pointer border border-white/5 hover:border-white/30 transition-all duration-500 shadow-2xl"
           >
             <div className="absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -173,9 +226,27 @@ export default function Create() {
                 <BookOpen size={36} className="text-white" />
               </div>
               <h3 className="text-3xl font-bold mb-3 tracking-tight">Introspective Entry</h3>
-              <p className="text-gray-400 font-serif italic mb-10 text-lg leading-relaxed px-4">
+              <p className="text-gray-400 font-serif italic mb-6 text-lg leading-relaxed px-4">
                 Dive into a raw writing flow. Private, dated, and moody.
               </p>
+              
+              <div className="flex gap-2 mb-6" onClick={(e) => e.stopPropagation()}>
+                <button 
+                  onClick={() => handleStartJournal(false)}
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 cursor-pointer"
+                  type="button"
+                >
+                  <Lock size={12} /> Solo
+                </button>
+                <button 
+                  onClick={() => handleStartJournal(true)}
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-canvas-primary hover:bg-canvas-primary/10 transition-all flex items-center gap-2 cursor-pointer"
+                  type="button"
+                >
+                  <Globe size={12} /> Public
+                </button>
+              </div>
+
               <div className="px-6 py-3 border border-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-white group-hover:bg-white group-hover:text-black transition-all">
                 Start Writing
               </div>

@@ -17,6 +17,13 @@ export interface User {
   bio?: string;
   location?: string;
   links: UserLink[];
+  publicSettings: {
+    showProfile: boolean;
+    showLocation: boolean;
+    showRooms: boolean;
+    showThreads: boolean;
+    showInsights: boolean;
+  };
 }
 
 interface UserState {
@@ -26,6 +33,7 @@ interface UserState {
   logout: () => void;
   toggleSoloMode: () => void;
   updateProfile: (updates: Partial<User>) => void;
+  togglePublicSetting: (setting: keyof User['publicSettings']) => void;
   addLink: (link: Omit<UserLink, 'id'>) => void;
   removeLink: (id: string) => void;
 }
@@ -45,15 +53,48 @@ export const useUserStore = create<UserState>((set) => ({
       { id: 'l1', title: 'Portfolio', url: 'https://alexrivera.design' },
       { id: 'l2', title: 'Spotify', url: 'https://open.spotify.com/user/alexr' }
     ],
+    publicSettings: {
+      showProfile: true,
+      showLocation: true,
+      showRooms: true,
+      showThreads: true,
+      showInsights: true
+    }
   },
   soloMode: true,
-  login: (email) => set({ user: { id: '1', email, name: email.split('@')[0], username: `@${email.split('@')[0]}`, links: [] } }),
+  login: (email) => set({ user: { 
+    id: '1', 
+    email, 
+    name: email.split('@')[0], 
+    username: `@${email.split('@')[0]}`, 
+    links: [],
+    publicSettings: {
+      showProfile: true,
+      showLocation: true,
+      showRooms: true,
+      showThreads: true,
+      showInsights: true
+    }
+  } }),
   logout: () => set({ user: null }),
   toggleSoloMode: () => set((state) => ({ soloMode: !state.soloMode })),
   
   updateProfile: (updates) => set((state) => ({
     user: state.user ? { ...state.user, ...updates } : null
   })),
+  
+  togglePublicSetting: (setting) => set((state) => {
+    if (!state.user) return state;
+    return {
+      user: {
+        ...state.user,
+        publicSettings: {
+          ...state.user.publicSettings,
+          [setting]: !state.user.publicSettings[setting]
+        }
+      }
+    };
+  }),
 
   addLink: (link) => set((state) => {
     if (!state.user) return state;
