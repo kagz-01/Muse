@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import { 
   Home, Layers, BookOpen, Plus, User, PenTool, 
-  Menu as MenuIcon, X, Network, Zap, Layout as LayoutIcon, 
+  Menu as MenuIcon, X, Network, Layout as LayoutIcon, 
   ChevronRight, Sparkles, Search
 } from 'lucide-react';
+import museLogo from '../../assets/muse-logo.png';
 import { motion, AnimatePresence } from 'framer-motion';
 import CaptureModal from '../modals/CaptureModal';
 import ProfileOverlay from '../profile/ProfileOverlay';
@@ -54,11 +55,15 @@ export default function Layout() {
       <header className="sticky top-0 w-full z-50 bg-canvas-bg-dark/90 backdrop-blur-2xl border-b border-white/5 flex items-center justify-between px-6 md:px-10 py-4 h-20 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
          <div className="flex items-center gap-8">
             <h1 
-              className="text-2xl font-bold tracking-tight cursor-pointer hover:text-canvas-primary transition-colors flex items-center gap-2" 
+              className="cursor-pointer flex items-center gap-2 group" 
               onClick={() => navigate('/dashboard')}
             >
-              <Zap size={22} className="text-canvas-primary fill-canvas-primary" />
-              Muse
+              <img 
+                src={museLogo} 
+                alt="Muse" 
+                className="h-9 w-9 object-contain rounded-xl group-hover:scale-105 transition-transform duration-300"
+              />
+              <span className="text-xl font-bold tracking-tight group-hover:text-canvas-primary transition-colors">Muse</span>
             </h1>
 
             {/* Desktop Quick Search Placeholder */}

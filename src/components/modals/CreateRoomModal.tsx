@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { X, ArrowRight, Check, Image as ImageIcon, Plus, ChevronRight, ArrowLeft, Layout, Globe, Lock } from 'lucide-react';
+import { X, ArrowRight, Check, Image as ImageIcon, Globe, Lock } from 'lucide-react';
 import { useRoomsStore, type RoomTheme } from '../../store/useRoomsStore';
 
 interface Props { onClose: () => void; }
@@ -54,14 +54,10 @@ export default function CreateRoomModal({ onClose }: Props) {
     if (!name.trim()) { setError('Give your room a name.'); return; }
     
     try {
-      addRoom(name.trim(), description.trim(), themeColor, coverImage, isPublic);
+      const newRoom = addRoom(name.trim(), description.trim(), themeColor, coverImage, isPublic);
       onClose();
-      // Reset form
-      setName('');
-      setDescription('');
-      setThemeColor('indigo');
-      setCoverImage('');
-      setIsPublic(false);
+      // Navigate directly into the new room so user can see it immediately
+      navigate(`/rooms/${newRoom.id}`);
     } catch (err) {
       setError('Failed to establish room identity.');
     }

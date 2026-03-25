@@ -12,7 +12,7 @@ export interface Item {
 
 interface ItemsState {
   items: Item[];
-  addItem: (item: Omit<Item, 'id' | 'createdAt'>) => void;
+  addItem: (item: Omit<Item, 'id' | 'createdAt'>) => Item;
   deleteItem: (id: string) => void;
 }
 
@@ -66,9 +66,11 @@ const mockItems: Item[] = [
 
 export const useItemsStore = create<ItemsState>((set) => ({
   items: mockItems,
-  addItem: (item) => set((state) => ({
-    items: [{ ...item, id: Date.now().toString(), createdAt: Date.now() }, ...state.items]
-  })),
+  addItem: (item) => {
+    const newItem: Item = { ...item, id: Date.now().toString(), createdAt: Date.now() };
+    set((state) => ({ items: [newItem, ...state.items] }));
+    return newItem;
+  },
   deleteItem: (id) => set((state) => ({
     items: state.items.filter(item => item.id !== id)
   }))

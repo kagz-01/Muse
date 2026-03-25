@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   ArrowLeft, 
   Edit2, 
@@ -9,18 +9,15 @@ import {
   ExternalLink, 
   X, 
   Trash2, 
-  Link2, 
-  ChevronDown,
+  Link2,
   Globe,
   Lock,
   Zap,
-  MessageSquare,
   Sparkles,
-  TrendingUp,
-  Send
+  TrendingUp
 } from 'lucide-react';
 import { useThreadsStore } from '../store/useThreadsStore';
-import { useConnectionsStore, type ActiveCircle, type CircleContribution } from '../store/useConnectionsStore';
+import { useConnectionsStore, type ActiveCircle } from '../store/useConnectionsStore';
 import { useItemsStore } from '../store/useItemsStore';
 import { useRoomsStore } from '../store/useRoomsStore';
 import EditThreadModal from '../components/modals/EditThreadModal';
@@ -63,7 +60,7 @@ export default function ThreadDetail() {
   if (isCircle && !circle) return <NotFound navigate={navigate} />;
   if (!isCircle && !personalThread) return <NotFound navigate={navigate} />;
 
-  const themeColor = isCircle ? '#6366f1' : '#8b5cf6'; // Default indigo/violet
+
 
   return (
     <div className="min-h-screen bg-canvas-bg-dark text-white flex flex-col">
@@ -243,6 +240,25 @@ function PrivateView({
   synthesisText, setSynthesisText, handleSaveThesis, setShowAddLink, showAddLink, 
   setShowLinkExisting, showLinkExisting, addItemToThread, removeItemFromThread, addNewItem 
 }: any) {
+  const [newTitle, setNewTitle] = useState('');
+  const [newUrl, setNewUrl] = useState('');
+  const [newNote, setNewNote] = useState('');
+  const [addError, setAddError] = useState('');
+  // Find the first room as default for new items in a thread
+  const firstRoomId = rooms?.[0]?.id || '';
+
+  const handleAddNew = () => {
+    if (!newTitle.trim()) { setAddError('Title is required.'); return; }
+    if (!newUrl.trim()) { setAddError('URL is required.'); return; }
+    let url = newUrl.trim();
+    if (!/^https?:\/\//.test(url)) url = 'https://' + url;
+    // Create item in the first room, then link it to this thread
+    const newItem = addNewItem({ roomId: firstRoomId, title: newTitle.trim(), sourceUrl: url, note: newNote.trim() || undefined, isPublic: false });
+    if (newItem?.id) addItemToThread(thread.id, newItem.id);
+    setNewTitle(''); setNewUrl(''); setNewNote(''); setAddError('');
+    setShowAddLink(false);
+  };
+
   return (
     <main className="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full z-10 flex flex-col gap-12 overflow-y-auto">
       {/* SYNTHESIS / THESIS SECTION */}
@@ -283,22 +299,95 @@ function PrivateView({
 
       {/* ARTIFACTS SECTION */}
       <section>
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500">{threadItems.length} Private Artifacts</h2>
           <div className="flex items-center gap-3">
             <button onClick={() => { setShowLinkExisting(!showLinkExisting); setShowAddLink(false); }}
-              className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all">
+              className={`px-5 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-widest transition-all cursor-pointer ${showLinkExisting ? 'bg-violet-500/20 border-violet-500/40 text-violet-300' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}>
               Link Existing
             </button>
-            <button onClick={() => { setShowAddLink(!showAddLink); setShowLinkExisting(false); }}
-              className="px-5 py-2.5 rounded-xl bg-violet-600 font-bold uppercase tracking-widest text-xs hover:bg-violet-500 transition-all shadow-lg shadow-violet-500/20">
+            <button onClick={() => { setShowAddLink(!showAddLink); setShowLinkExisting(false); setAddError(''); }}
+              className={`px-5 py-2.5 rounded-xl font-bold uppercase tracking-widest text-xs transition-all shadow-lg cursor-pointer ${showAddLink ? 'bg-violet-400 text-black' : 'bg-violet-600 hover:bg-violet-500 shadow-violet-500/20'}`}>
               Add New
             </button>
           </div>
         </div>
 
-        {/* ... Artifact Grid (similar to previous version but cleaner) ... */}
-        {threadItems.length === 0 ? (
+        {/* PANEL: Add New Artifact */}
+        {showAddLink && (
+          <div className="mb-6 p-6 bg-white/[0.03] border border-violet-500/20 rounded-3xl animate-in slide-in-from-top-4 duration-300">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-bold text-white tracking-tight flex items-center gap-2">
+                <Plus size={16} className="text-violet-400" /> New Artifact
+              </h3>
+              <button onClick={() => { setShowAddLink(false); setAddError(''); }} className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer transition-all">
+                <X size={15} />
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Title *</label>
+                <input value={newTitle} onChange={e => { setNewTitle(e.target.value); setAddError(''); }}
+                  placeholder="Article name, song title…"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-violet-500/40 transition-all" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">URL *</label>
+                <input value={newUrl} onChange={e => { setNewUrl(e.target.value); setAddError(''); }}
+                  placeholder="https://…"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-violet-500/40 transition-all" />
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Note (optional)</label>
+              <textarea value={newNote} onChange={e => setNewNote(e.target.value)}
+                placeholder="Why does this matter to this weave?"
+                rows={2} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm font-serif italic focus:outline-none focus:border-violet-500/40 transition-all resize-none" />
+            </div>
+            {addError && <p className="text-rose-400 text-xs mb-3 font-medium">{addError}</p>}
+            <button onClick={handleAddNew}
+              className="px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-sm bg-violet-600 hover:bg-violet-500 text-white transition-all cursor-pointer hover:-translate-y-0.5 active:scale-95">
+              Weave into Thread
+            </button>
+          </div>
+        )}
+
+        {/* PANEL: Link Existing Artifacts */}
+        {showLinkExisting && (
+          <div className="mb-6 p-6 bg-white/[0.03] border border-violet-500/20 rounded-3xl animate-in slide-in-from-top-4 duration-300">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-bold text-white tracking-tight flex items-center gap-2">
+                <Link2 size={16} className="text-violet-400" /> Link from Your Rooms
+              </h3>
+              <button onClick={() => setShowLinkExisting(false)} className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer transition-all">
+                <X size={15} />
+              </button>
+            </div>
+            {unlinkedItems.length === 0 ? (
+              <p className="text-gray-500 font-serif italic text-sm text-center py-8">All your room artifacts are already in this thread.</p>
+            ) : (
+              <div className="space-y-2 max-h-72 overflow-y-auto pr-2">
+                {unlinkedItems.map((item: any) => (
+                  <button key={item.id} onClick={() => { addItemToThread(thread.id, item.id); }}
+                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 hover:border-violet-500/30 transition-all text-left group cursor-pointer">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-white truncate">{item.title}</p>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mt-0.5">
+                        {rooms.find((r: any) => r.id === item.roomId)?.name || 'Room'}
+                      </p>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 opacity-0 group-hover:opacity-100 transition-all shrink-0 ml-3">
+                      <Plus size={14} />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Artifacts Grid */}
+        {threadItems.length === 0 && !showAddLink && !showLinkExisting ? (
           <div className="py-24 bg-white/2 border border-white/5 border-dashed rounded-4xl flex flex-col items-center justify-center text-center">
              <Link2 size={32} className="text-gray-700 mb-4" />
              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">No Artifacts Linked</p>
@@ -312,7 +401,7 @@ function PrivateView({
                      <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">
                        {rooms.find((r: any) => r.id === item.roomId)?.name || 'General'}
                      </span>
-                     <button onClick={() => removeItemFromThread(thread.id, item.id)} className="opacity-0 group-hover:opacity-100 p-2 text-gray-600 hover:text-rose-400 transition-all">
+                     <button onClick={() => removeItemFromThread(thread.id, item.id)} className="opacity-0 group-hover:opacity-100 p-2 text-gray-600 hover:text-rose-400 transition-all cursor-pointer">
                         <Trash2 size={14} />
                      </button>
                   </div>
