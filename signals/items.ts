@@ -69,3 +69,7 @@ export function addItem(item: Omit<Item, 'id' | 'createdAt'>): Item {
 export function deleteItem(id: string) {
   itemsSignal.value = itemsSignal.value.filter(item => item.id !== id);
 }
+
+export function resetItems() {
+  itemsSignal.value = mockItems.map((item) => ({ ...item }));
+}

@@ -10,6 +10,7 @@ import * as $_app_dashboard from "./routes/(app)/dashboard.tsx";
 import * as $_app_journal_id_ from "./routes/(app)/journal/[id].tsx";
 import * as $_app_journal_index from "./routes/(app)/journal/index.tsx";
 import * as $_app_mirror from "./routes/(app)/mirror.tsx";
+import * as $_app_profile from "./routes/(app)/profile.tsx";
 import * as $_app_rooms_id_ from "./routes/(app)/rooms/[id].tsx";
 import * as $_app_rooms_index from "./routes/(app)/rooms/index.tsx";
 import * as $_app_settings from "./routes/(app)/settings.tsx";
@@ -48,6 +49,7 @@ import * as $PortraitCard from "./islands/PortraitCard.tsx";
 import * as $PrivacyBadge from "./islands/PrivacyBadge.tsx";
 import * as $PrivacyManager from "./islands/PrivacyManager.tsx";
 import * as $ProfileOverlay from "./islands/ProfileOverlay.tsx";
+import * as $ProfilePage from "./islands/ProfilePage.tsx";
 import * as $RoomInside from "./islands/RoomInside.tsx";
 import * as $RoomsGallery from "./islands/RoomsGallery.tsx";
 import * as $Settings from "./islands/Settings.tsx";
@@ -67,6 +69,7 @@ const manifest = {
     "./routes/(app)/journal/[id].tsx": $_app_journal_id_,
     "./routes/(app)/journal/index.tsx": $_app_journal_index,
     "./routes/(app)/mirror.tsx": $_app_mirror,
+    "./routes/(app)/profile.tsx": $_app_profile,
     "./routes/(app)/rooms/[id].tsx": $_app_rooms_id_,
     "./routes/(app)/rooms/index.tsx": $_app_rooms_index,
     "./routes/(app)/settings.tsx": $_app_settings,
@@ -107,6 +110,7 @@ const manifest = {
     "./islands/PrivacyBadge.tsx": $PrivacyBadge,
     "./islands/PrivacyManager.tsx": $PrivacyManager,
     "./islands/ProfileOverlay.tsx": $ProfileOverlay,
+    "./islands/ProfilePage.tsx": $ProfilePage,
     "./islands/RoomInside.tsx": $RoomInside,
     "./islands/RoomsGallery.tsx": $RoomsGallery,
     "./islands/Settings.tsx": $Settings,

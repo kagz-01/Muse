@@ -17,7 +17,7 @@ export interface Thread {
 
 const now = Date.now();
 
-export const threadsSignal = signal<Thread[]>([
+const defaultThreads: Thread[] = [
   {
     id: 't1',
     title: 'Themes of Isolation',
@@ -54,7 +54,9 @@ export const threadsSignal = signal<Thread[]>([
     createdAt: now - 86400000 * 5,
     updatedAt: now - 86400000 * 2,
   }
-]);
+];
+
+export const threadsSignal = signal<Thread[]>(defaultThreads);
 
 // Actions
 export function addThread(data: Omit<Thread, 'id' | 'createdAt' | 'updatedAt' | 'itemIds'>): Thread {
@@ -96,4 +98,8 @@ export function removeItemFromThread(threadId: string, itemId: string) {
 
 export function toggleThreadPrivacy(id: string) {
   threadsSignal.value = threadsSignal.value.map(t => t.id === id ? { ...t, isPublic: !t.isPublic, updatedAt: Date.now() } : t);
+}
+
+export function resetThreads() {
+  threadsSignal.value = defaultThreads.map((thread) => ({ ...thread, itemIds: [...thread.itemIds] }));
 }

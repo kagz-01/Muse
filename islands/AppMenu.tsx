@@ -17,6 +17,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
   ];
 
   const secondaryNav = [
+    { label: 'Profile', path: '/profile', icon: <User size={20} /> },
     { label: 'Community', path: '/connections', icon: <Network size={20} /> },
     { label: 'Quick Actions', path: '/actions', icon: <Compass size={20} /> },
     { label: 'Mirror', path: '/mirror', icon: <Sparkles size={20} /> },

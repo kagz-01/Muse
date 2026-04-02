@@ -12,7 +12,7 @@ export interface Room {
   isPublic: boolean;
 }
 
-export const roomsSignal = signal<Room[]>([
+const defaultRooms: Room[] = [
   { 
     id: 'music-ambience', 
     name: 'Music & Ambience', 
@@ -76,7 +76,9 @@ export const roomsSignal = signal<Room[]>([
     themeColor: 'indigo',
     isPublic: false
   }
-]);
+];
+
+export const roomsSignal = signal<Room[]>(defaultRooms);
 
 export function addRoom(name: string, description: string, themeColor: RoomTheme, coverImage = '', isPublic = false): Room {
   const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now();
@@ -103,4 +105,8 @@ export function toggleRoomPrivacy(id: string) {
 
 export function deleteRoom(id: string) {
   roomsSignal.value = roomsSignal.value.filter(room => room.id !== id);
+}
+
+export function resetRooms() {
+  roomsSignal.value = defaultRooms.map((room) => ({ ...room }));
 }

@@ -35,7 +35,7 @@ const seed = Date.now();
 
 const countWords = (text: string) => text.trim().split(/\s+/).filter(Boolean).length;
 
-export const journalSignal = signal<JournalEntry[]>([
+const defaultJournalEntries: JournalEntry[] = [
   {
     id: 'j1',
     title: 'On brutalist architecture and silence',
@@ -93,7 +93,9 @@ Maybe the cure for everything is just being somewhere specific, paying attention
     createdAt: seed - 3600000 * 2,
     updatedAt: seed - 3600000 * 2,
   },
-]);
+];
+
+export const journalSignal = signal<JournalEntry[]>(defaultJournalEntries);
 
 export const dailyWordGoalSignal = signal<number>(300);
 
@@ -145,6 +147,10 @@ export function toggleFavoriteJournal(id: string) {
 
 export function toggleJournalPrivacy(id: string) {
   journalSignal.value = journalSignal.value.map(e => e.id === id ? { ...e, isPublic: !e.isPublic, updatedAt: Date.now() } : e);
+}
+
+export function resetJournalEntries() {
+  journalSignal.value = defaultJournalEntries.map((entry) => ({ ...entry, tags: [...entry.tags], linkedItemIds: [...entry.linkedItemIds] }));
 }
 
 // Helpers

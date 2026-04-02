@@ -10,9 +10,10 @@ import {
   PenTool,
   Compass,
   Settings,
+  User,
 } from "lucide-preact";
 import { userSignal } from "../signals/user.ts";
-import { toggleMenu, toggleProfile } from "../signals/ui.ts";
+import { toggleMenu } from "../signals/ui.ts";
 import PrivacyBadge from "./PrivacyBadge.tsx";
 
 interface AppHeaderProps {
@@ -31,6 +32,7 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
     { label: "Community", path: "/connections", icon: <Compass size={14} /> },
     { label: "Quick Actions", path: "/actions", icon: <Compass size={14} /> },
     { label: "AI Insights", path: "/mirror", icon: <Sparkles size={14} /> },
+    { label: "Profile", path: "/profile", icon: <User size={14} /> },
     { label: "Settings", path: "/settings", icon: <Settings size={14} /> },
   ];
 
@@ -79,9 +81,8 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
             <PrivacyBadge />
           </div>
 
-          <button
-            onClick={toggleProfile}
-            type="button"
+          <a
+            href="/profile"
             className="relative group p-0.5 rounded-full border border-white/10 hover:border-canvas-primary transition-all active:scale-95 outline-none"
           >
             <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden flex items-center justify-center font-serif text-gray-400">
@@ -90,7 +91,7 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
                 : user?.name?.charAt(0) || "U"}
             </div>
             <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-canvas-primary rounded-full border-2 border-canvas-bg-dark group-hover:scale-110 transition-transform shadow-lg" />
-          </button>
+          </a>
         </div>
       </div>
 
