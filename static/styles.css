@@ -3,9 +3,31 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --muse-bg: #0c0b09;
+    --muse-surface: #141210;
+    --muse-surface-soft: #1a1714;
+    --muse-text: #f4f3f0;
+    --muse-muted: #a5a5a5;
+    --muse-border: rgba(255, 255, 255, 0.12);
+    --muse-overlay: rgba(12, 11, 9, 0.92);
+    color-scheme: dark;
+  }
+
+  html[data-theme="light"] {
+    --muse-bg: #f7f3ea;
+    --muse-surface: #fffdf8;
+    --muse-surface-soft: #f1e9db;
+    --muse-text: #1d2430;
+    --muse-muted: #5f6874;
+    --muse-border: rgba(29, 36, 48, 0.14);
+    --muse-overlay: rgba(247, 243, 234, 0.9);
+    color-scheme: light;
+  }
+
   body {
-    background-color: theme('colors.canvas.bg-dark');
-    color: white;
+    background-color: var(--muse-bg);
+    color: var(--muse-text);
     font-family: theme('fontFamily.sans');
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -18,8 +40,43 @@
   box-sizing: border-box;
 }
 
-:root {
-  color-scheme: dark;
+html[data-theme="light"] img {
+  filter: saturate(0.96);
+}
+
+html[data-theme="light"] [class*="bg-canvas-bg-dark"] {
+  background-color: var(--muse-bg) !important;
+}
+
+html[data-theme="light"] [class*="bg-canvas-card-dark"] {
+  background-color: var(--muse-surface) !important;
+}
+
+html[data-theme="light"] [class*="text-white"] {
+  color: var(--muse-text) !important;
+}
+
+html[data-theme="light"] .text-gray-300,
+html[data-theme="light"] .text-gray-400,
+html[data-theme="light"] .text-gray-500,
+html[data-theme="light"] .text-gray-600,
+html[data-theme="light"] .text-gray-700,
+html[data-theme="light"] .text-gray-800 {
+  color: var(--muse-muted) !important;
+}
+
+html[data-theme="light"] [class*="border-white"] {
+  border-color: var(--muse-border) !important;
+}
+
+html[data-theme="light"] .glass-card {
+  background-color: var(--muse-surface);
+  border-color: var(--muse-border);
+}
+
+html[data-theme="light"] .glass-panel {
+  background-color: color-mix(in oklab, var(--muse-surface) 80%, transparent);
+  border-color: var(--muse-border);
 }
 
 /* Custom Utilities for Glassmorphism & Typography */

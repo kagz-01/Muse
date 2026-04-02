@@ -46,6 +46,7 @@ import { resetRooms } from "../../signals/rooms.ts";
 import { resetItems } from "../../signals/items.ts";
 import { resetThreads } from "../../signals/threads.ts";
 import { resetJournalEntries } from "../../signals/journal.ts";
+import { setTheme } from "../../signals/ui.ts";
 
 type SettingsTab = "profile" | "appearance" | "notifications" | "privacy" | "data";
 
@@ -181,6 +182,14 @@ export default function Settings() {
       hasInitialized.current = true;
     }
   }, []);
+
+  useEffect(() => {
+    const selectedTheme = appearance.theme === "system"
+      ? (globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+      : appearance.theme;
+
+    setTheme(selectedTheme);
+  }, [appearance.theme]);
 
   useEffect(() => {
     if (!hasInitialized.current || !user) return;
