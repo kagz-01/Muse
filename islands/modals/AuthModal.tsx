@@ -15,7 +15,12 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
   const handleSubmit = (e: Event) => {
     e.preventDefault();
     login(email);
-    window.location.href = '/dashboard';
+    globalThis.location.href = '/dashboard';
+  };
+
+  const handleDemoEntry = () => {
+    login("demo@muse.app");
+    globalThis.location.href = "/dashboard?demo=1";
   };
 
   return (
@@ -103,6 +108,14 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                 className="w-full py-4 rounded-2xl bg-canvas-primary text-white font-bold uppercase tracking-widest text-[11px] shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] transition-all cursor-pointer mt-2"
               >
                 {localMode === 'signup' ? 'Enter Muse →' : 'Continue →'}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDemoEntry}
+                className="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-gray-300 font-bold uppercase tracking-widest text-[10px] hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+              >
+                Continue As Demo
               </button>
             </form>
 

@@ -1,15 +1,14 @@
 import { useState } from "preact/hooks";
 import AuthModal from "../modals/AuthModal.tsx";
 import { LandingHero, LandingFeatures } from "../../components/landing/index.ts";
+import { login } from "../../signals/user.ts";
 
 export default function LandingPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
 
   const handleWatchDemo = () => {
-    document.getElementById("demo-preview")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    login("demo@muse.app");
+    globalThis.location.href = "/dashboard?demo=1";
   };
 
   return (
