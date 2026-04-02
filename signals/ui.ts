@@ -6,6 +6,8 @@ export const isProfileOpenSignal = signal(false);
 export const isNotificationsOpenSignal = signal(false);
 
 export type AppTheme = "dark" | "light";
+export type AppAccentColor = "cyan" | "blue" | "purple" | "pink" | "green" | "yellow" | "red" | "white";
+export type AppFontSize = "small" | "medium" | "large";
 
 export type AppNotification = {
   id: string;
@@ -16,6 +18,23 @@ export type AppNotification = {
 };
 
 const THEME_STORAGE_KEY = "muse-theme";
+
+const ACCENT_RGB_MAP: Record<AppAccentColor, string> = {
+  cyan: "34 211 238",
+  blue: "96 165 250",
+  purple: "192 132 252",
+  pink: "244 114 182",
+  green: "74 222 128",
+  yellow: "250 204 21",
+  red: "248 113 113",
+  white: "241 245 249",
+};
+
+const FONT_SIZE_MAP: Record<AppFontSize, string> = {
+  small: "15px",
+  medium: "16px",
+  large: "18px",
+};
 
 const initialNotifications: AppNotification[] = [
   {
@@ -43,6 +62,29 @@ const initialNotifications: AppNotification[] = [
 
 export const notificationsSignal = signal<AppNotification[]>(initialNotifications);
 export const appThemeSignal = signal<AppTheme>("dark");
+export const appAccentSignal = signal<AppAccentColor>("cyan");
+export const appFontSizeSignal = signal<AppFontSize>("medium");
+
+function updateStoredAppearance(partial: Partial<{ theme: AppTheme; accentColor: AppAccentColor; fontSize: AppFontSize }>) {
+  try {
+    const settingsRaw = globalThis.localStorage?.getItem("muse-fresh-settings");
+    const parsed = settingsRaw
+      ? JSON.parse(settingsRaw) as { appearance?: Record<string, unknown>; [key: string]: unknown }
+      : {};
+
+    const next = {
+      ...parsed,
+      appearance: {
+        ...(parsed.appearance ?? {}),
+        ...partial,
+      },
+    };
+
+    globalThis.localStorage?.setItem("muse-fresh-settings", JSON.stringify(next));
+  } catch {
+    // Best effort persistence.
+  }
+}
 
 function resolveSavedTheme(): AppTheme {
   try {
@@ -71,6 +113,18 @@ function applyThemeToDocument(theme: AppTheme) {
   docEl.setAttribute("data-theme", theme);
 }
 
+function applyAccentToDocument(accentColor: AppAccentColor) {
+  const docEl = globalThis.document?.documentElement;
+  if (!docEl) return;
+  docEl.style.setProperty("--muse-accent-rgb", ACCENT_RGB_MAP[accentColor]);
+}
+
+function applyFontSizeToDocument(fontSize: AppFontSize) {
+  const docEl = globalThis.document?.documentElement;
+  if (!docEl) return;
+  docEl.style.fontSize = FONT_SIZE_MAP[fontSize];
+}
+
 export function initializeTheme() {
   const theme = resolveSavedTheme();
   appThemeSignal.value = theme;
@@ -83,29 +137,27 @@ export function setTheme(theme: AppTheme) {
 
   try {
     globalThis.localStorage?.setItem(THEME_STORAGE_KEY, theme);
-
-    const settingsRaw = globalThis.localStorage?.getItem("muse-fresh-settings");
-    if (settingsRaw) {
-      const parsed = JSON.parse(settingsRaw) as {
-        appearance?: { theme?: string };
-        [key: string]: unknown;
-      };
-      const next = {
-        ...parsed,
-        appearance: {
-          ...(parsed.appearance ?? {}),
-          theme,
-        },
-      };
-      globalThis.localStorage?.setItem("muse-fresh-settings", JSON.stringify(next));
-    }
   } catch {
     // Best effort persistence.
   }
+
+  updateStoredAppearance({ theme });
 }
 
 export function toggleTheme() {
   setTheme(appThemeSignal.value === "dark" ? "light" : "dark");
+}
+
+export function setAccentColor(accentColor: AppAccentColor) {
+  appAccentSignal.value = accentColor;
+  applyAccentToDocument(accentColor);
+  updateStoredAppearance({ accentColor });
+}
+
+export function setGlobalFontSize(fontSize: AppFontSize) {
+  appFontSizeSignal.value = fontSize;
+  applyFontSizeToDocument(fontSize);
+  updateStoredAppearance({ fontSize });
 }
 
 export function toggleMenu() {

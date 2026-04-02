@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    --muse-accent-rgb: 212 168 83;
     --muse-bg: #0c0b09;
     --muse-surface: #141210;
     --muse-surface-soft: #1a1714;

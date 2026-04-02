@@ -169,14 +169,14 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
+            className="p-2.5 rounded-full bg-canvas-primary/10 border border-canvas-primary/30 hover:bg-canvas-primary/20 hover:border-canvas-primary/50 transition-all"
             aria-label="Toggle color theme"
             title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
           >
             {theme === "dark" ? (
-              <Sun size={16} className="text-amber-300" />
+              <Sun size={16} className="text-canvas-primary" />
             ) : (
-              <Moon size={16} className="text-slate-700" />
+              <Moon size={16} className="text-canvas-primary" />
             )}
           </button>
 

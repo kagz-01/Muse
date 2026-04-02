@@ -15,26 +15,53 @@ export default function App({ Component }: PageProps) {
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    const saved = localStorage.getItem("muse-theme");
-    if (saved === "light" || saved === "dark") {
-      document.documentElement.setAttribute("data-theme", saved);
-      return;
-    }
+    const accentMap = {
+      cyan: "34 211 238",
+      blue: "96 165 250",
+      purple: "192 132 252",
+      pink: "244 114 182",
+      green: "74 222 128",
+      yellow: "250 204 21",
+      red: "248 113 113",
+      white: "241 245 249",
+    };
+
+    const fontSizeMap = {
+      small: "15px",
+      medium: "16px",
+      large: "18px",
+    };
+
+    let resolvedTheme = "dark";
 
     const settings = localStorage.getItem("muse-fresh-settings");
     if (settings) {
       const parsed = JSON.parse(settings);
       const mode = parsed?.appearance?.theme;
       if (mode === "light" || mode === "dark") {
-        document.documentElement.setAttribute("data-theme", mode);
-        return;
+        resolvedTheme = mode;
       }
       if (mode === "system") {
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", systemTheme);
-        return;
+        resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+
+      const accent = parsed?.appearance?.accentColor;
+      if (accent && accentMap[accent]) {
+        document.documentElement.style.setProperty("--muse-accent-rgb", accentMap[accent]);
+      }
+
+      const fontSize = parsed?.appearance?.fontSize;
+      if (fontSize && fontSizeMap[fontSize]) {
+        document.documentElement.style.fontSize = fontSizeMap[fontSize];
       }
     }
+
+    const savedTheme = localStorage.getItem("muse-theme");
+    if (savedTheme === "light" || savedTheme === "dark") {
+      resolvedTheme = savedTheme;
+    }
+
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
   } catch (_) {}
 })();`,
           }}

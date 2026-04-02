@@ -10,7 +10,7 @@ export default {
         canvas: {
           'bg-dark': '#0C0B09', // Warm near-black
           'bg-light': '#fafafa',
-          primary: '#D4A853', // Warm Gold (Editorial accent)
+          primary: 'rgb(var(--muse-accent-rgb) / <alpha-value>)',
           'card-dark': '#141210', // Warm card surface
           'card-light': '#f3f4f6',
           teal: '#2A9D8F', // AI/mood accent

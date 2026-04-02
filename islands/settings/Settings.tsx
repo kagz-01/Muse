@@ -46,7 +46,7 @@ import { resetRooms } from "../../signals/rooms.ts";
 import { resetItems } from "../../signals/items.ts";
 import { resetThreads } from "../../signals/threads.ts";
 import { resetJournalEntries } from "../../signals/journal.ts";
-import { setTheme } from "../../signals/ui.ts";
+import { setAccentColor, setGlobalFontSize, setTheme } from "../../signals/ui.ts";
 
 type SettingsTab = "profile" | "appearance" | "notifications" | "privacy" | "data";
 
@@ -190,6 +190,14 @@ export default function Settings() {
 
     setTheme(selectedTheme);
   }, [appearance.theme]);
+
+  useEffect(() => {
+    setAccentColor(appearance.accentColor);
+  }, [appearance.accentColor]);
+
+  useEffect(() => {
+    setGlobalFontSize(appearance.fontSize);
+  }, [appearance.fontSize]);
 
   useEffect(() => {
     if (!hasInitialized.current || !user) return;

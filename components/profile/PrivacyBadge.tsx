@@ -8,9 +8,9 @@ export default function PrivacyBadge() {
     <button 
       onClick={toggleSoloMode}
       className={`relative group flex items-center gap-2.5 px-4 py-2 rounded-full border transition-all duration-500 overflow-hidden ${
-        soloMode 
-          ? 'bg-canvas-primary/10 border-canvas-primary/30 text-canvas-primary' 
-          : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/20'
+        soloMode
+          ? "bg-canvas-primary/20 border-canvas-primary/45 text-canvas-primary"
+          : "bg-canvas-primary/10 border-canvas-primary/25 text-canvas-primary hover:bg-canvas-primary/15"
       }`}
     >
       {/* Background Shimmer (CSS-only replacement for framer-motion) */}
