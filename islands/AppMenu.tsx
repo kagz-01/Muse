@@ -10,16 +10,15 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
 
   const navItems = [
     { label: 'Home', path: '/dashboard', icon: <Home size={22} />, desc: 'Your central flow' },
-    { label: 'Rooms', path: '/rooms', icon: <LayoutIcon size={22} />, desc: 'Your collection spaces' },
-    { label: 'Journal', path: '/journal', icon: <BookOpen size={22} />, desc: 'Private introspection' },
-    { label: 'Threads', path: '/threads', icon: <Layers size={22} />, desc: 'Thematic syntheses' },
-    { label: 'AI Insights', path: '/mirror', icon: <Sparkles size={22} />, desc: 'Weekly reflection signals' },
     { label: 'Create', path: '/create', icon: <PenTool size={22} />, desc: 'Start a new flow' },
+    { label: 'Rooms', path: '/rooms', icon: <LayoutIcon size={22} />, desc: 'Your collection spaces' },
+    { label: 'Threads', path: '/threads', icon: <Layers size={22} />, desc: 'Thematic syntheses' },
+    { label: 'Journal', path: '/journal', icon: <BookOpen size={22} />, desc: 'Private introspection' },
   ];
 
   const secondaryNav = [
+    { label: 'Community', path: '/connections', icon: <Network size={20} /> },
     { label: 'Quick Actions', path: '/actions', icon: <Compass size={20} /> },
-    { label: 'Community/Connections', path: '/connections', icon: <Network size={20} /> },
     { label: 'Mirror', path: '/mirror', icon: <Sparkles size={20} /> },
     { label: 'Settings', path: '/settings', icon: <User size={20} /> },
   ];

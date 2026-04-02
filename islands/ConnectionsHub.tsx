@@ -5,17 +5,19 @@ import {
 } from "lucide-preact";
 import { 
   circlesSignal, collaboratorsSignal, communityRoomsSignal, 
-  activeThemesSignal, insightsSignal, joinCircle 
+  insightsSignal, joinCircle 
 } from "../signals/connections.ts";
 import { soloModeSignal, toggleSoloMode } from "../signals/user.ts";
 import ActiveCircleCard from "./ActiveCircleCard.tsx";
 import CollaboratorCard from "./CollaboratorCard.tsx";
 import CommunityRoomCard from "./CommunityRoomCard.tsx";
 import SharedThemeCluster from "./SharedThemeCluster.tsx";
-import ThoughtfulComposer, { DialogueTone } from "./ThoughtfulComposer.tsx";
+import ThoughtfulComposer from "./ThoughtfulComposer.tsx";
 import CommunityPulseStrip from "./CommunityPulseStrip.tsx";
 
 type Tab = 'Circles' | 'People' | 'Insights';
+
+type TabIcon = typeof MessageSquare;
 
 export default function ConnectionsHub() {
   const [activeTab, setActiveTab] = useState<Tab>('Circles');
@@ -27,7 +29,7 @@ export default function ConnectionsHub() {
   const insights = insightsSignal.value;
   const soloMode = soloModeSignal.value;
 
-  const tabs: { id: Tab; icon: any; label: string }[] = [
+  const tabs: { id: Tab; icon: TabIcon; label: string }[] = [
     { id: 'Circles', icon: MessageSquare, label: 'Active Circles' },
     { id: 'People', icon: Users, label: 'Collaborators' },
     { id: 'Insights', icon: Sparkles, label: 'Communal Pulse' },
@@ -51,11 +53,14 @@ export default function ConnectionsHub() {
                    <div className="w-10 h-10 rounded-2xl bg-canvas-primary/20 border border-canvas-primary/30 flex items-center justify-center text-canvas-primary">
                       <Globe size={20} />
                    </div>
-                   <span className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em]">The Hub</span>
+                   <span className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em]">Community</span>
                 </div>
                 <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
-                  Community <span className="text-gray-600">Circles.</span>
+                  Pattern-Based <span className="text-gray-600">Connections.</span>
                 </h1>
+                <p className="mt-5 max-w-2xl text-gray-400 font-serif italic text-lg leading-relaxed">
+                  Connect after the system has something to say. The people here are organized around shared themes, active circles, and the ideas that keep returning.
+                </p>
               </div>
 
               <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
@@ -71,10 +76,29 @@ export default function ConnectionsHub() {
               </div>
            </div>
 
+            <section className="grid gap-4 md:grid-cols-3 mb-12">
+              <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 backdrop-blur-sm">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Circles</div>
+                <div className="mt-2 text-3xl font-bold text-white">{circles.length}</div>
+                <p className="mt-2 text-sm text-gray-500 font-serif italic">Active shared interest spaces.</p>
+              </div>
+              <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 backdrop-blur-sm">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Collaborators</div>
+                <div className="mt-2 text-3xl font-bold text-white">{collaborators.length}</div>
+                <p className="mt-2 text-sm text-gray-500 font-serif italic">People with overlapping themes.</p>
+              </div>
+              <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 backdrop-blur-sm">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Community rooms</div>
+                <div className="mt-2 text-3xl font-bold text-white">{communityRooms.length}</div>
+                <p className="mt-2 text-sm text-gray-500 font-serif italic">Shared spaces shaped by the pattern layer.</p>
+              </div>
+            </section>
+
            {/* Custom Tab Navigation */}
            <div className="flex flex-wrap items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-4xl w-fit mb-12">
               {tabs.map((tab) => (
                 <button
+                  type="button"
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
@@ -112,13 +136,15 @@ export default function ConnectionsHub() {
 
                <div className="flex flex-col sm:flex-row gap-4">
                   <button 
+                    type="button"
                     onClick={toggleSoloMode}
                     className="px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-3xl hover:bg-canvas-primary hover:text-white transition-all shadow-[0_20px_40px_rgba(0,0,0,0.3)] active:scale-95 flex items-center gap-3 cursor-pointer"
                   >
                     <Globe size={16} /> Reconnect to Community
                   </button>
                   <button 
-                    onClick={() => window.history.back()}
+                    type="button"
+                    onClick={() => globalThis.history.back()}
                     className="px-10 py-5 bg-white/5 border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-xs rounded-3xl hover:text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
                   >
                     Return to Private Space
@@ -146,7 +172,7 @@ export default function ConnectionsHub() {
                           <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                              <Globe size={24} className="text-gray-600" /> Community Rooms
                           </h2>
-                          <button className="text-xs font-bold text-canvas-primary uppercase tracking-widest hover:underline cursor-pointer">View All</button>
+                          <button type="button" className="text-xs font-bold text-canvas-primary uppercase tracking-widest hover:underline cursor-pointer">View All</button>
                        </div>
                        <div className="grid grid-cols-1 gap-8">
                           {communityRooms.map(room => (
@@ -246,7 +272,8 @@ export default function ConnectionsHub() {
                              David Chen and 5 others are currently synthesizing ideas around digital voids.
                           </p>
                           <button 
-                            onClick={() => window.location.href = '/threads/c1?type=circle'}
+                            type="button"
+                            onClick={() => globalThis.location.href = '/threads/c1?type=circle'}
                             className="w-full py-3 bg-canvas-primary text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-canvas-primary/80 transition-all flex items-center justify-center gap-2 group cursor-pointer"
                           >
                              Enter Dialogue <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />

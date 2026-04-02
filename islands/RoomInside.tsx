@@ -3,7 +3,7 @@ import {
   ArrowLeft, Globe, Lock, Palette, Check, Camera,
   Edit2, Share2, Plus, ExternalLink, Trash2, X 
 } from "lucide-preact";
-import { type Room, type RoomTheme, roomsSignal, updateRoomTheme, updateRoomCover, toggleRoomPrivacy } from "../signals/rooms.ts";
+import { type RoomTheme, roomsSignal, updateRoomTheme, updateRoomCover, toggleRoomPrivacy } from "../signals/rooms.ts";
 import { itemsSignal, addItem, deleteItem } from "../signals/items.ts";
 import EditRoomModal from "./EditRoomModal.tsx";
 
@@ -28,6 +28,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   const room = roomsSignal.value.find(r => r.id === roomId);
   const allItems = itemsSignal.value;
   const items = useMemo(() => allItems.filter(i => i.roomId === roomId), [allItems, roomId]);
+  const latestItems = useMemo(() => items.slice(0, 3), [items]);
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -168,17 +169,60 @@ export default function RoomInside({ roomId }: { roomId: string }) {
         </header>
 
         <main className="p-6 md:p-10 max-w-7xl mx-auto relative z-10 -mt-4">
+          <section className="mb-8 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
+            <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 md:p-7 backdrop-blur-sm">
+              <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+                <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-white">Collect</span>
+                <span>Room detail</span>
+              </div>
+              <h2 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-white">{room.name}</h2>
+              <p className="mt-3 max-w-3xl text-gray-400 font-serif italic leading-relaxed">
+                {room.description || "This room is where consumed content gets collected, refined, and held until it is ready to become a pattern."}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 rounded-[2rem] border border-white/5 bg-black/25 p-4 md:p-5 backdrop-blur-sm">
+              <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Artifacts</div>
+                <div className="mt-2 text-2xl font-bold text-white">{items.length}</div>
+              </div>
+              <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Access</div>
+                <div className="mt-2 text-2xl font-bold text-white">{room.isPublic ? "Pub" : "Vault"}</div>
+              </div>
+              <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Theme</div>
+                <div className={`mt-2 text-2xl font-bold ${theme.text}`}>{room.themeColor}</div>
+              </div>
+            </div>
+          </section>
+
           <div className="mb-12 relative">
              <div className={`absolute -inset-4 ${theme.bg} blur-2xl opacity-20 rounded-4xl pointer-events-none`} />
              <div className="relative p-8 md:p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 backdrop-blur-sm">
                 <div className="flex items-center gap-3 mb-6">
                    <div className="w-8 h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
-                   <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Room Contemplation</h2>
+                   <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Room Signal</h2>
                    <div className="w-8 h-px bg-linear-to-l from-transparent via-white/20 to-transparent" />
                 </div>
                 <p className="text-xl md:text-2xl font-serif italic text-gray-300 leading-relaxed max-w-3xl">
-                   {room.description || "This space is currently waiting for your intellectual blueprint. What themes will you explore here?"}
+                   {room.description || "This space is currently waiting for your intellectual blueprint. What themes will you collect here before they become something larger?"}
                 </p>
+                {latestItems.length > 0 && (
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {latestItems.map((item) => (
+                      <a
+                        key={item.id}
+                        href={item.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-all ${theme.bg} ${theme.text} border-white/10 hover:border-white/20`}
+                      >
+                        {item.title}
+                      </a>
+                    ))}
+                  </div>
+                )}
              </div>
           </div>
 
@@ -191,7 +235,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
               type="button"
               className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold uppercase tracking-widest transition-all cursor-pointer active:scale-95"
             >
-              <Plus size={16} /> Add to Room
+              <Plus size={16} /> Collect Artifact
             </button>
           </div>
 
@@ -247,13 +291,13 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                 <Plus size={28} className={theme.text} />
               </div>
               <p className="text-white text-xl font-bold tracking-tight mb-2">This room is empty.</p>
-              <p className="text-gray-400 font-serif italic text-sm mb-6">Start adding links, articles, music — anything you want to keep.</p>
+              <p className="text-gray-400 font-serif italic text-sm mb-6 max-w-lg text-center">Start adding links, articles, music, or notes here. This is the first step of collection before patterns are formed in Threads.</p>
               <button onClick={() => setShowAddItem(true)}
                 type="button"
                 className="px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-sm text-black cursor-pointer hover:-translate-y-0.5 active:scale-95 transition-all outline-none"
                 style={{ backgroundColor: paletteColors.find(c => c.name === room.themeColor)?.hex || '#6366f1' }}
               >
-                Add First Artifact
+                Collect First Artifact
               </button>
             </div>
           ) : (

@@ -1,9 +1,9 @@
 import { useState, useMemo } from "preact/hooks";
 import { 
-  ArrowLeft, Globe, Lock, Share2, Plus, 
-  Layers, Lightbulb, Link2, ExternalLink, X, Trash2
+   ArrowLeft, Globe, Lock, Share2, Plus, 
+   Layers, Lightbulb, Link2, ExternalLink, X, Trash2
 } from "lucide-preact";
-import { threadsSignal, type ThreadMood, updateThread, removeItemFromThread, addItemToThread, toggleThreadPrivacy } from "../signals/threads.ts";
+import { threadsSignal, type ThreadMood, removeItemFromThread, addItemToThread, toggleThreadPrivacy } from "../signals/threads.ts";
 import { itemsSignal } from "../signals/items.ts";
 import { roomsSignal } from "../signals/rooms.ts";
 
@@ -26,6 +26,16 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
   const [showAddItems, setShowAddItems] = useState(false);
   const [activeTab, setActiveTab] = useState<'artifacts' | 'synthesis'>('artifacts');
 
+   const synthesizedItems = thread ? allItems.filter((item) => thread.itemIds.includes(item.id)) : [];
+   const sourceRoomNames = useMemo(() => {
+      const names = new Set<string>();
+      synthesizedItems.forEach((item) => {
+         const roomName = rooms.find((room) => room.id === item.roomId)?.name;
+         if (roomName) names.add(roomName);
+      });
+      return Array.from(names);
+   }, [rooms, synthesizedItems]);
+
   if (!thread) return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#0a0a0a]">
       <p className="text-2xl font-bold text-white tracking-tight">Thread not found.</p>
@@ -36,10 +46,6 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
   );
 
   const moodTheme = moodMapping[thread.mood] || moodMapping['contemplative'];
-  const synthesizedItems = allItems.filter(i => thread.itemIds.includes(i.id));
-  
-  // Available items to add (those not already in the thread)
-  const availableItems = allItems.filter(i => !thread.itemIds.includes(i.id));
 
   const handleToggleItem = (itemId: string) => {
     if (thread.itemIds.includes(itemId)) {
@@ -103,6 +109,47 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
       </header>
 
       <main className="p-6 md:p-10 max-w-7xl mx-auto relative z-10">
+            <section className="mb-8 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
+               <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 md:p-7 backdrop-blur-sm">
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+                     <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-white">Contemplate</span>
+                     <span>Pattern synthesis</span>
+                  </div>
+                  <h2 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-white">{thread.title}</h2>
+                  <p className="mt-3 max-w-3xl text-gray-400 font-serif italic leading-relaxed">
+                     {thread.description || "This thread is where room artifacts are joined into a single pattern, then tested for meaning."}
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                     {sourceRoomNames.length > 0 ? (
+                        sourceRoomNames.map((name) => (
+                           <span key={name} className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300">
+                              {name}
+                           </span>
+                        ))
+                     ) : (
+                        <span className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                           No source rooms yet
+                        </span>
+                     )}
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-3 gap-3 rounded-[2rem] border border-white/5 bg-black/25 p-4 md:p-5 backdrop-blur-sm">
+                  <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                     <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Artifacts</div>
+                     <div className="mt-2 text-2xl font-bold text-white">{synthesizedItems.length}</div>
+                  </div>
+                  <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                     <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Sources</div>
+                     <div className="mt-2 text-2xl font-bold text-white">{sourceRoomNames.length}</div>
+                  </div>
+                  <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                     <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Mood</div>
+                     <div className={`mt-2 text-2xl font-bold ${moodTheme.text}`}>{thread.mood}</div>
+                  </div>
+               </div>
+            </section>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
           {/* LEFT COLUMN: THE THESIS & SYNTHESIS */}
@@ -124,8 +171,8 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                      </div>
                      <div className="w-px h-8 bg-white/5" />
                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-1">Origin Room</p>
-                        <p className="text-sm font-medium text-gray-400">Cross-Room Collective</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-1">Origin Rooms</p>
+                        <p className="text-sm font-medium text-gray-400">{sourceRoomNames.length > 0 ? sourceRoomNames.join(' · ') : 'Cross-Room Collective'}</p>
                      </div>
                   </div>
                </div>
@@ -134,13 +181,15 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
             <section>
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
-                  <button 
+                           <button 
+                              type="button"
                     onClick={() => setActiveTab('artifacts')}
                     className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'artifacts' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
                   >
                     Artifacts
                   </button>
-                  <button 
+                           <button 
+                              type="button"
                     onClick={() => setActiveTab('synthesis')}
                     className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'synthesis' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
                   >
@@ -148,8 +197,8 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                   </button>
                 </div>
                 <button 
+                           type="button"
                   onClick={() => setShowAddItems(!showAddItems)}
-                  type="button"
                   className="flex items-center gap-2 px-6 py-2 rounded-full border border-white/10 hover:border-white/20 text-[10px] font-bold uppercase tracking-widest text-white transition-all cursor-pointer"
                 >
                   <Plus size={14} className={moodTheme.text} /> Modify Thread
@@ -160,7 +209,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                 <div className="mb-10 p-6 bg-[#111318] border border-white/10 rounded-3xl animate-in slide-in-from-top-4 duration-300">
                   <div className="flex items-center justify-between mb-6">
                      <h3 className="font-bold text-white tracking-tight">Add / Remove Synthesized Items</h3>
-                     <button onClick={() => setShowAddItems(false)} className="text-gray-500 hover:text-white transition-colors">
+                     <button type="button" onClick={() => setShowAddItems(false)} className="text-gray-500 hover:text-white transition-colors">
                         <X size={18} />
                      </button>
                   </div>
@@ -177,7 +226,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                                 className={`p-4 rounded-2xl border transition-all text-left flex items-start gap-3 group cursor-pointer ${isSelected ? `bg-white/5 ${moodTheme.border}` : 'bg-transparent border-white/5 hover:border-white/10'}`}
                               >
                                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isSelected ? `${moodTheme.bg} ${moodTheme.border}` : 'border-white/20'}`}>
-                                    {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
+                                    {isSelected && <span className="text-[10px] font-bold text-white">+</span>}
                                  </div>
                                  <div className="min-w-0">
                                     <p className={`text-sm font-bold truncate group-hover:text-white transition-colors ${isSelected ? 'text-white' : 'text-gray-400'}`}>{item.title}</p>
@@ -197,7 +246,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                     <div className="col-span-full py-24 flex flex-col items-center justify-center bg-white/[0.02] border-2 border-dashed border-white/5 rounded-[2.5rem]">
                        <Layers size={32} className="text-gray-800 mb-4" />
                        <p className="text-gray-500 font-serif italic mb-6">No artifacts have been synthesized into this thread yet.</p>
-                       <button onClick={() => setShowAddItems(true)} className="px-8 py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest text-[11px] shadow-xl hover:-translate-y-1 transition-all">
+                       <button type="button" onClick={() => setShowAddItems(true)} className="px-8 py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest text-[11px] shadow-xl hover:-translate-y-1 transition-all">
                           Synthesize Now
                        </button>
                     </div>
@@ -238,7 +287,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                    <Share2 size={32} className="mx-auto mb-6 text-indigo-500 opacity-50" />
                    <h3 className="text-2xl font-bold text-white mb-4">Thread Synthesis Engine</h3>
                    <p className="text-gray-500 font-serif italic text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-                      This module generates a high-fidelity visual and structural output of your thread for external export and sharing. 
+                      This module generates a high-fidelity visual and structural output of your thread for external export and sharing.
                       Coming soon as part of the Muse Pro Max update.
                    </p>
                    <div className="inline-block px-10 py-4 bg-indigo-500 text-white font-bold uppercase tracking-widest text-xs rounded-full opacity-50 cursor-not-allowed">
@@ -253,7 +302,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
           <div className="lg:col-span-4 space-y-8">
              <div className="p-8 bg-[#151515] border border-white/5 rounded-4xl shadow-xl">
                 <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-600 mb-6 flex items-center gap-2">
-                   <Link2 size={12} /> Thread Context
+                   <Link2 size={12} /> Pattern Context
                 </h3>
                 <div className="space-y-6">
                    <div>
@@ -314,10 +363,10 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                 <div className="relative bg-[#111318] p-8 rounded-[1.9rem] flex flex-col items-center text-center">
                    <h4 className="text-base font-bold text-white mb-2 tracking-tight">Sync this Thread</h4>
                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Create a living document</p>
-                   <button className="w-full py-3 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-2xl shadow-xl hover:-translate-y-0.5 transition-all">
+                   <button type="button" className="w-full py-3 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-2xl shadow-xl hover:-translate-y-0.5 transition-all">
                       Export to PDF
                    </button>
-                   <button className="w-full py-3 mt-3 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl hover:bg-white/5 transition-all">
+                   <button type="button" className="w-full py-3 mt-3 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl hover:bg-white/5 transition-all">
                       Share to community
                    </button>
                 </div>

@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
 import { 
-  Plus, Sparkles, BookOpen, Layers, Globe, 
-  Music, Image as ImageIcon, Lightbulb, 
+  Sparkles, BookOpen, Layers, Globe, 
+  Music, Image as ImageIcon, 
   ArrowRight, Link2, Zap, Layout, Lock, X 
 } from "lucide-preact";
 import { roomsSignal } from "../signals/rooms.ts";
@@ -12,6 +12,7 @@ import CreateThreadModal from "./CreateThreadModal.tsx";
 
 export default function CreateHub() {
   const rooms = roomsSignal.value;
+  const totalArtifacts = rooms.reduce((count, room) => count + room.count, 0);
   
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [showCreateThread, setShowCreateThread] = useState(false);
@@ -62,9 +63,12 @@ export default function CreateHub() {
       <div className="relative z-10 p-6 md:p-10 max-w-6xl mx-auto">
         <header className="mb-12 flex justify-between items-start">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight mb-3 text-white">Create Hub</h1>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 mb-4">
+              <Sparkles size={12} className="text-indigo-400" /> Create
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight mb-3 text-white">Create From Reflection</h1>
             <p className="text-gray-400 font-serif italic text-lg max-w-xl leading-relaxed">
-              What are you bringing into the world today? Choose your intention and start your flow.
+              Start with a room, a thread, or a journal entry. Creation should feel like the next step after thinking, not a separate act.
             </p>
           </div>
           <a
@@ -74,6 +78,24 @@ export default function CreateHub() {
             <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
           </a>
         </header>
+
+        <section className="mb-12 grid gap-4 md:grid-cols-3">
+          <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5 backdrop-blur-sm">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Rooms</div>
+            <div className="mt-2 text-3xl font-bold text-white">{rooms.length}</div>
+            <p className="mt-2 text-sm text-gray-500 font-serif italic">Start from a collection space.</p>
+          </div>
+          <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5 backdrop-blur-sm">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Artifacts</div>
+            <div className="mt-2 text-3xl font-bold text-white">{totalArtifacts}</div>
+            <p className="mt-2 text-sm text-gray-500 font-serif italic">Seed a new idea into a room.</p>
+          </div>
+          <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5 backdrop-blur-sm">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Flow</div>
+            <div className="mt-2 text-3xl font-bold text-white">3 paths</div>
+            <p className="mt-2 text-sm text-gray-500 font-serif italic">Room, thread, or journal, depending on intent.</p>
+          </div>
+        </section>
 
         <section className="mb-16">
           <div className="relative group">

@@ -24,13 +24,13 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
 
   const tabs = [
     { label: "Home", path: "/dashboard", icon: <Home size={14} /> },
-    { label: "Rooms", path: "/rooms", icon: <LayoutIcon size={14} /> },
-    { label: "Journal", path: "/journal", icon: <BookOpen size={14} /> },
-    { label: "Threads", path: "/threads", icon: <Layers size={14} /> },
-    { label: "AI Insights", path: "/mirror", icon: <Sparkles size={14} /> },
     { label: "Create", path: "/create", icon: <PenTool size={14} /> },
+    { label: "Rooms", path: "/rooms", icon: <LayoutIcon size={14} /> },
+    { label: "Threads", path: "/threads", icon: <Layers size={14} /> },
+    { label: "Journal", path: "/journal", icon: <BookOpen size={14} /> },
+    { label: "Community", path: "/connections", icon: <Compass size={14} /> },
     { label: "Quick Actions", path: "/actions", icon: <Compass size={14} /> },
-    { label: "Community/Connections", path: "/connections", icon: <Compass size={14} /> },
+    { label: "AI Insights", path: "/mirror", icon: <Sparkles size={14} /> },
     { label: "Settings", path: "/settings", icon: <Settings size={14} /> },
   ];
 

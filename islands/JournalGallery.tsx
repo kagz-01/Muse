@@ -4,7 +4,7 @@ import {
   Sparkles, BarChart3, Calendar, Download, Star 
 } from "lucide-preact";
 import { 
-  journalSignal, type JournalMood, type JournalEntry, 
+  journalSignal, type JournalMood, 
   addEntry, dailyWordGoalSignal, getJournalStreak, 
   getTodayWordCount, getJournalTitle 
 } from "../signals/journal.ts";
@@ -64,6 +64,7 @@ export default function JournalGallery() {
   const todayWords = getTodayWordCount();
   const totalWords = entries.reduce((acc, e) => acc + e.wordCount, 0);
   const goalProgress = Math.min(100, (todayWords / dailyWordGoal) * 100);
+  const recentEntries = useMemo(() => entries.slice(0, 3), [entries]);
 
   const filtered = useMemo(() => entries.filter(e => {
     const matchSearch = search === '' ||
@@ -184,6 +185,51 @@ ${e.body}
               </button>
             </div>
           </div>
+
+          <section className="mb-10 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 md:p-7 backdrop-blur-sm">
+              <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+                <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-white">Contemplate</span>
+                <span>Private reflection layer</span>
+              </div>
+              <h2 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-white">Your Journal</h2>
+              <p className="mt-3 max-w-3xl text-gray-400 font-serif italic leading-relaxed">
+                This is where collected patterns become thought. Write privately, track mood shifts, and return here before anything becomes public or shared.
+              </p>
+            </div>
+
+            <div className="rounded-[2rem] border border-white/5 bg-black/25 p-5 md:p-6 backdrop-blur-sm">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Streak</div>
+                  <div className="mt-2 text-2xl font-bold text-white">{streak}d</div>
+                </div>
+                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Today</div>
+                  <div className="mt-2 text-2xl font-bold text-white">{todayWords}</div>
+                </div>
+                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Total</div>
+                  <div className="mt-2 text-2xl font-bold text-white">{totalWords}</div>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {recentEntries.length > 0 ? recentEntries.map((entry) => (
+                  <a
+                    key={entry.id}
+                    href={`/journal/${entry.id}`}
+                    className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300 hover:border-white/20 hover:text-white transition-all"
+                  >
+                    {getJournalTitle(entry)}
+                  </a>
+                )) : (
+                  <span className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    No recent entries
+                  </span>
+                )}
+              </div>
+            </div>
+          </section>
 
           {showInsights && (
             <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-300">
