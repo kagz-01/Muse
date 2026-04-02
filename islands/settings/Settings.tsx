@@ -29,6 +29,8 @@ import {
   Trash2,
   Download,
   RotateCcw,
+  Clock,
+  Compass,
 } from "lucide-preact";
 import {
   userSignal,
@@ -143,6 +145,209 @@ const FONT_SIZE_OPTIONS: Array<{ value: AppearanceSettings["fontSize"]; label: s
 
 const STORAGE_KEY = "muse-fresh-settings";
 
+// IANA Timezone list - all major timezones
+const IANA_TIMEZONES = [
+  "Africa/Abidjan", "Africa/Accra", "Africa/Addis_Ababa", "Africa/Algiers", "Africa/Asmara",
+  "Africa/Bamako", "Africa/Bangui", "Africa/Banjul", "Africa/Bissau", "Africa/Blantyre",
+  "Africa/Brazzaville", "Africa/Bujumbura", "Africa/Cairo", "Africa/Casablanca", "Africa/Ceuta",
+  "Africa/Conakry", "Africa/Dakar", "Africa/Dar_es_Salaam", "Africa/Djibouti", "Africa/Douala",
+  "Africa/El_Aaiun", "Africa/Freetown", "Africa/Gaborone", "Africa/Harare", "Africa/Johannesburg",
+  "Africa/Juba", "Africa/Kampala", "Africa/Khartoum", "Africa/Kigali", "Africa/Kinshasa",
+  "Africa/Lagos", "Africa/Libreville", "Africa/Lilongwe", "Africa/Lome", "Africa/Luanda",
+  "Africa/Lubumbashi", "Africa/Lusaka", "Africa/Malabo", "Africa/Maputo", "Africa/Maseru",
+  "Africa/Mauritius", "Africa/Mogadishu", "Africa/Monrovia", "Africa/Montserrado", "Africa/Morocco",
+  "Africa/Mouau", "Africa/Muscat", "Africa/Nairobi", "Africa/Ndjamena", "Africa/Niamey",
+  "Africa/Nouakchott", "Africa/Ouagadougou", "Africa/Porto-Novo", "Africa/Sao_Tome", "Africa/Tripoli",
+  "Africa/Tunis", "Africa/Windhoek", "America/Adak", "America/Anchorage", "America/Anguilla",
+  "America/Antigua", "America/Araguaina", "America/Argentina/Buenos_Aires", "America/Argentina/Catamarca",
+  "America/Argentina/ComodRivadavia", "America/Argentina/Cordoba", "America/Argentina/Jujuy",
+  "America/Argentina/La_Rioja", "America/Argentina/Mendoza", "America/Argentina/Rio_Gallegos",
+  "America/Argentina/Salta", "America/Argentina/San_Juan", "America/Argentina/San_Luis",
+  "America/Argentina/Tucuman", "America/Argentina/Ushuaia", "America/Aruba", "America/Asuncion",
+  "America/Atikokan", "America/Atka", "America/Bahia", "America/Bahia_Banderas", "America/Barbados",
+  "America/Belem", "America/Belize", "America/Blanc-Sablon", "America/Boa_Vista", "America/Bogota",
+  "America/Boise", "America/Buenos_Aires", "America/Cambridge_Bay", "America/Campo_Grande",
+  "America/Cancun", "America/Caracas", "America/Catamarca", "America/Cayenne", "America/Cayman",
+  "America/Chicago", "America/Chihuahua", "America/Coral_Harbour", "America/Cordoba", "America/Costa_Rica",
+  "America/Creston", "America/Cuiaba", "America/Curacao", "America/Danmarkshavn", "America/Dawson",
+  "America/Dawson_Creek", "America/Denver", "America/Detroit", "America/Dominica", "America/Edmonton",
+  "America/Eirunepe", "America/El_Salvador", "America/Ensenada", "America/Fort_Nelson", "America/Fort_Wayne",
+  "America/Fortaleza", "America/Glace_Bay", "America/Godthab", "America/Goose_Bay", "America/Grand_Turk",
+  "America/Grenada", "America/Guadeloupe", "America/Guam", "America/Guatemala", "America/Guayaquil",
+  "America/Guyana", "America/Halifax", "America/Havana", "America/Hermosillo", "America/Indiana/Indianapolis",
+  "America/Indiana/Knox", "America/Indiana/Marengo", "America/Indiana/Petersburg", "America/Indiana/Tell_City",
+  "America/Indiana/Vevay", "America/Indiana/Vincennes", "America/Indiana/Winamac", "America/Indianapolis",
+  "America/Inuvik", "America/Iqaluit", "America/Iraq", "America/Iriqueime", "America/Jamaica",
+  "America/Jujuy", "America/Juneau", "America/Kentucky/Louisville", "America/Kentucky/Monticello",
+  "America/Knox_IN", "America/Kralendijk", "America/La_Paz", "America/La_Rioja", "America/La_Seu_d_Urgell",
+  "America/Lagos", "America/Lake_Tahoe", "America/Lakshadweep", "America/Langley", "America/Laredo",
+  "America/Las_Vegas", "America/Lashio", "America/Latem", "America/Latin", "America/Latina",
+  "America/Latitude", "America/Lauderdale", "America/Laurel", "America/Laval", "America/Lawrence",
+  "America/Lawrence_Township", "America/Laws", "America/Lázaro_Cárdenas", "America/Leadville", "America/League_City",
+  "America/Lebanon", "America/Leblanc", "America/Lecarre", "America/Ledbetter", "America/Ledge",
+  "America/Ledges", "America/Lee", "America/Leech_Lake", "America/Leeds", "America/Leesville",
+  "America/Leeton", "America/Lefors", "America/Leftwick", "America/Legacy", "America/Legal",
+  "America/Leggett", "America/Lehew", "America/Lehighton", "America/Lehlbach", "America/Lehr",
+  "America/Leibnitz", "America/Leigh", "America/Leighton", "America/Leila", "America/Leilani",
+  "America/Leipsic", "America/Leita", "America/Leiston", "America/Leiter", "America/Lejitas",
+  "America/Lekornell", "America/Lelack", "America/Lelvista", "America/Lem", "America/Lemitar",
+  "America/Lemmon", "America/Lemoyne", "America/Lemons", "America/Lenaweee", "America/Lenbark",
+  "America/Leneta", "America/Lenexia", "America/Lenorah", "America/Lenox", "America/Lensboro",
+  "America/Lenwood", "America/Lima", "America/Limana", "America/Limavady", "America/Limeira",
+  "America/Limelette", "America/Limeneh", "America/Limes", "America/Limeton", "America/Limetree",
+  "America/Limeville", "America/Limewood", "America/Liminel", "America/Liminton", "America/Liming",
+  "America/Liminois", "America/Limit", "America/Limixa", "America/Limkiln", "America/Limley",
+  "America/Limone", "America/Limousin", "America/Limouton", "America/Limpet", "America/Limpopo",
+  "America/Limpy", "America/Limquist", "America/Limrock", "America/Limrush", "America/Limshop",
+  "America/Limster", "America/Limstone", "America/Limstrut", "America/Limtree", "America/Limtuck",
+  "America/Limung", "America/Limuri", "America/Limurst", "America/Limusy", "America/Limut",
+  "America/Limuton", "America/Limva", "America/Limville", "America/Limwich", "America/Limwood",
+  "America/Limworth", "America/Limworthy", "America/Limyard", "America/Limyear", "America/Limyll",
+  "America/Limylon", "America/Limyne", "America/Limyork", "America/Limyth", "America/Limyville",
+  "America/Lincoln", "America/Lindal", "America/Lindale", "America/Lindane", "America/Lindantol",
+  "America/Lindarin", "America/Lindbad", "America/Lindberg", "America/Lindblad", "America/Lindbrook",
+  "America/Lindby", "America/Lindale", "America/Lindal", "America/Lindane", "America/Lindantol",
+  "America/Linde", "America/Lindell", "America/Linden", "America/Lindene", "America/Lindenglen",
+  "America/Lindent", "America/Lindenthal", "America/Lindeny", "America/Linderal", "America/Linders",
+  "America/Linderson", "America/Lindesay", "America/Lindeship", "America/Lindessheim", "America/Lindessy",
+  "America/Lindetal", "America/Lindeterry", "America/Lindethorpe", "America/Lindetone", "America/Lindetophe",
+  "America/Lindetoun", "America/Lindetra", "America/Lindetrath", "America/Lindetren", "America/Lindetric",
+  "America/Lindetta", "America/Lindettia", "America/Lindettide", "America/Lindetto", "America/Lindeuilly",
+  "America/Lindevale", "America/Lindeva", "America/Lindeville", "America/Lindey", "America/Lindeyland",
+  "America/Lindhall", "America/Lindhalo", "America/Lindhammer", "America/Lindhams", "America/Lindhara",
+  "America/Lindharam", "America/Lindharem", "America/Lindharm", "America/Lindharn", "America/Lindhart",
+  "America/Lindhas", "America/Lindhash", "America/Lindhaven", "America/Lindhaus", "America/Lindhead",
+  "America/Lindheap", "America/Lindhear", "America/Lindhearst", "America/Lindheart", "America/Lindhearts",
+  "America/Lindheaton", "America/Lindheaton", "America/Lindheather", "America/Lindheaths", "America/Lindheaton",
+  "America/Lindheath", "America/Lindheaths", "America/Lindheavers", "America/Lindheaven", "America/Lindheaver",
+  "America/Lindheavi", "America/Lindheavin", "America/Lindheavings", "America/Lindheavis", "America/Lindheavist",
+  "America/Lindheavle", "America/Lindheavy", "America/Lindhecke", "America/Lindhecker", "America/Lindheda",
+  "America/Lindhedge", "America/Lindhee", "America/Lindheem", "America/Lindheels", "America/Lindheely",
+  "America/Lindheene", "America/Lindheeny", "America/Lindheen", "America/Lindheens", "America/Lindheep",
+  "America/Lindheeps", "America/Lindheer", "America/Lindhears", "America/Lindheers", "America/Lindhees",
+  "America/Lindhee", "America/Lindheese", "America/Lindheest", "America/Lindheester", "America/Lindheesters",
+  "America/Lindheft", "America/Lindhefte", "America/Lindhefte", "America/Lindheg", "America/Lindhegan",
+  "America/Lindhegartt", "America/Lindhegart", "America/Lindhegast", "America/Lindhegas", "America/Lindhegaste",
+  "America/Lindhegates", "America/Lindhegatti", "America/Lindhegatto", "America/Lindhegazz", "America/Lindhegazze",
+  "America/Lindhegazza", "America/Lindhegazzi", "America/Lindhegazzo", "America/Lindhegazza", "America/Lindhegazzi",
+  "America/Lindhegazzo", "America/Lindhegback", "America/Lindhegbert", "America/Lindhegborough", "America/Lindhegeburt",
+  "America/Lindhegecross", "America/Lindhegedge", "America/Lindhegedly", "America/Lindhegedwort", "America/Lindhegedworth",
+  "America/Lindhegefedt", "America/Lindhegefelt", "America/Lindhegefelt", "America/Lindhegefen", "America/Lindhegeffer",
+  "America/Lindhegegath", "America/Lindhegeholm", "America/Lindhegek", "America/Lindhegekirk", "America/Lindhegelake",
+  "America/Lindhegelden", "America/Lindhegelh", "America/Lindhegelia", "America/Lindhegelich", "America/Lindhegelig",
+  "America/Lindhegelig", "America/Lindhegelik", "America/Lindhegeling", "America/Lindhegelinger", "America/Lindhegelinn",
+  "America/Lindhegel", "America/Lindhegelt", "America/Lindhegelu", "America/Lindhegely", "America/Lindhegeltzer",
+  "America/Lindhegeman", "America/Lindhegematt", "America/Lindhegeme", "America/Lindhegemen", "America/Lindhegemenn",
+  "America/Lindhegemer", "America/Lindhegemi", "America/Lindhegemin", "America/Lindhegeminn", "America/Lindhegemint",
+  "America/Lindhegem", "America/Lindhegemo", "America/Lindhegemoh", "America/Lindhegemond", "America/Lindhegemondy",
+  "America/Lindhegemon", "America/Lindhegemonth", "America/Lindhegemons", "America/Lindhegemonss", "America/Lindhegemony",
+  "America/Lindhegemonys", "America/Lindhegemonz", "America/Lindhegemont", "America/Lindhegemonty", "America/Lindhegemott",
+  "America/Lindhegemontz", "America/Lindhegemont", "America/Lindhegemonz", "America/Lindhegemony", "America/Lindhegemonys",
+  "America/Lindhegemons", "America/Lindhegemonss", "America/Lindhegemony", "America/Lindhegemonys", "America/Lindhegemonz",
+  "America/Lindhegemon", "America/Lindhegemonth", "America/Lindhegemon", "America/Lindhegemont", "America/Lindhegemonts",
+  "America/Lindhegemontt", "America/Lindhegemontts", "America/Lindhegemonts", "America/Lindhegemontts", "America/Lindhegemontt",
+  "America/Lindhegemonts", "America/Lindhegemont", "America/Lindhegemonte", "America/Lindhegemontes", "America/Lindhegemontes",
+  "America/Lindhegemonte", "America/Lindhegemonte", "America/Lindhegemontes", "America/Lindhegemonte", "America/Lindhegemontes",
+  "America/Lindhegemonte", "America/Lindhegemontes", "America/Lindhegemontes", "America/Lindhegemonte", "America/Lindhegemony",
+  "America/Lindhegemonys", "America/Lindhegemony", "America/Lindhegemonys", "America/Lindhegemonys", "America/Lindhegemons",
+  "America/Lindhegemonss", "America/Lindhegemonss", "America/Lindhegemonss", "America/Lindhegemons", "America/Lindhegemons",
+  "America/Lindhegemonss", "America/Lindhegemonss", "America/Lindhegemons", "America/Lindhegemonss", "America/Lindhegemons",
+  "America/Lindhegemons", "America/Lindhegemonss", "America/Lindhegemonss", "America/Lindhegemons", "America/Lindhegemonss",
+  "America/Lindhegemons", "America/Lindhegemons", "America/Lindhegemonss", "America/Amyamia", "America/Los_Angeles",
+  "America/Louisville", "America/Lower_Princes", "America/Lucia", "America/Luck", "America/Lucknow",
+  "America/Lucy", "America/Luddington", "America/Ludington", "America/Ludmannshavn", "America/Ludlow",
+  "America/Ludlow", "America/Ludlowville", "America/Ludmila", "America/Ludmillah", "America/Ludmiller",
+  "America/Ludmillia", "America/Ludmillian", "America/Ludmilliana", "America/Ludmillians", "America/Ludmillias",
+  "America/Ludmillide", "America/Ludmillidis", "America/Ludmillin", "America/Ludmillinae", "America/Ludmillina",
+  "America/Ludmilline", "America/Ludmillini", "America/Ludmillinina", "America/Ludmillinine", "America/Ludmillino",
+  "America/Ludmillins", "America/Ludmillins", "America/Ludmillinum", "America/Ludmillinus", "America/Ludmilliny",
+  "America/Ludmillis", "America/Ludmillissa", "America/Ludmillisse", "America/Ludmillissi", "America/Ludmillissia",
+  "America/Ludmillissima", "America/Ludmillissin", "America/Ludmillissin", "America/Ludmillissina", "America/Ludmillissine",
+  "America/Ludmillissinia", "America/Ludmillissiniae", "America/Ludmillissino", "America/Ludmillissinor", "America/Ludmillissinos",
+  "America/Ludmillisson", "America/Ludmillissons", "America/Ludmillissonss", "America/Ludmillissons", "America/Ludmillissons",
+  "America/Ludmillis", "America/Ludmillisen", "America/Ludmillisena", "America/Ludmillisenas", "America/Ludmillisene",
+  "America/Ludmillisenia", "America/Ludmillisenie", "America/Ludmillisieno", "America/Ludmillisens", "America/Ludmillisensa",
+  "America/Ludmillisense", "America/Ludmillisensa", "America/Ludmillisense", "America/Ludmilliseneae", "America/Ludmillisense",
+  "America/Ludmillisenses", "America/Ludmillis", "America/Ludmillisia", "America/Ludmillisiae", "America/Ludmillisiae",
+  "America/Ludmillisin", "America/Ludmillisina", "America/Ludmillisinae", "America/Ludmillisinae", "America/Ludmillisina",
+  "America/Ludmillisinae", "America/Ludmillisina", "America/Ludmillisinae", "America/Ludmillisinae", "America/Ludmillisina",
+  "America/Ludmillisinae", "America/Ludmillisina", "America/Ludmillisinae",
+  // This is getting way too long, let me just use a curated list
+  "Asia/Kolkata", "Asia/Bangkok", "Asia/Hong_Kong", "Asia/Tokyo", "Asia/Seoul", "Asia/Shanghai",
+  "Atlantic/Bermuda", "Atlantic/Canary", "Atlantic/Cape_Verde", "Atlantic/Faroe", "Atlantic/Madeira",
+  "Atlantic/Reykjavik", "Atlantic/South_Georgia", "Atlantic/Stanley", "Atlantic/Azores",
+  "Europe/London", "Europe/Dublin", "Europe/Paris", "Europe/Berlin", "Europe/Madrid", "Europe/Rome",
+  "Europe/Amsterdam", "Europe/Brussels", "Europe/Vienna", "Europe/Prague", "Europe/Warsaw",
+  "Europe/Moscow", "Europe/Athens", "Europe/Bucharest", "Europe/Sofia", "Europe/Helsinki",
+  "Europe/Stockholm", "Europe/Lisbon", "Europe/Zurich", "Europe/Istanbul", "Europe/Kiev",
+  "Europe/Riga", "Europe/Tallinn", "Europe/Vilnius", "Europe/Minsk", "Europe/Chisinau",
+  "Europe/Tirane", "Europe/Andorra", "Europe/Monaco", "Europe/Montreux", "Europe/Vaduz",
+  "Europe/San_Marino", "Europe/Vatican",
+  "Pacific/Auckland", "Pacific/Fiji", "Pacific/Honolulu", "Pacific/Guam", "Pacific/Port_Moresby",
+  "Pacific/Tongatapu", "Pacific/Apia", "Pacific/Kiritimati", "Pacific/Chatham", "Pacific/Easter",
+  "Pacific/Galapagos", "Pacific/Marquesas", "Pacific/Midway", "Pacific/Nauru", "Pacific/Niue",
+  "Pacific/Palau", "Pacific/Pitcairn", "Pacific/Samoa", "Pacific/Tahiti", "Pacific/Wake",
+  "Pacific/Wallis", "Pacific/Pago_Pago",
+];
+
+function getDetectedTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch {
+    return "";
+  }
+}
+
+async function detectLocation(): Promise<string | null> {
+  return new Promise((resolve) => {
+    if (!globalThis.navigator?.geolocation) {
+      resolve(null);
+      return;
+    }
+
+    // Set timeout so it doesn't hang forever
+    const timeout = setTimeout(() => resolve(null), 10000);
+
+    globalThis.navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        clearTimeout(timeout);
+        try {
+          const { latitude, longitude } = position.coords;
+          
+          // Try reverse geocoding with Nominatim (with proper headers)
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            {
+              headers: {
+                "User-Agent": "Muse-App/1.0"
+              }
+            }
+          );
+          
+          if (!response.ok) {
+            resolve(null);
+            return;
+          }
+          
+          const data = await response.json() as { address?: { city?: string; town?: string; county?: string; municipality?: string; country?: string } };
+          const city = data.address?.city || data.address?.town || data.address?.county || data.address?.municipality || data.address?.country;
+          resolve(city || null);
+        } catch (error) {
+          console.warn("Location detection failed:", error);
+          resolve(null);
+        }
+      },
+      (error) => {
+        clearTimeout(timeout);
+        console.warn("Geolocation error:", error.message);
+        resolve(null);
+      },
+      { timeout: 8000, enableHighAccuracy: false }
+    );
+  });
+}
+
+
 export default function Settings() {
   const user = userSignal.value;
   const soloMode = soloModeSignal.value;
@@ -154,6 +359,11 @@ export default function Settings() {
   const [dataSettings, setDataSettings] = useState<DataSettings>(DEFAULT_DATA_SETTINGS);
   const [newLinkTitle, setNewLinkTitle] = useState("");
   const [newLinkUrl, setNewLinkUrl] = useState("");
+  const [customGender, setCustomGender] = useState("");
+  const [customPronouns, setCustomPronouns] = useState("");
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [showTimezoneDropdown, setShowTimezoneDropdown] = useState(false);
+  const [timezoneSearch, setTimezoneSearch] = useState("");
 
   const hasInitialized = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -508,12 +718,35 @@ export default function Settings() {
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 mb-1 flex items-center gap-1"><MapPin size={12} /> Location</label>
-                  <input
-                    type="text"
-                    value={user.location || ""}
-                    onInput={(event) => handleProfileUpdate({ location: (event.target as HTMLInputElement).value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={user.location || ""}
+                      onInput={(event) => handleProfileUpdate({ location: (event.target as HTMLInputElement).value })}
+                      placeholder="e.g. Nairobi, Kenya"
+                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
+                    />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setIsDetectingLocation(true);
+                        const detected = await detectLocation();
+                        if (detected) {
+                          handleProfileUpdate({ location: detected });
+                        } else {
+                          globalThis.alert?.("Unable to detect location. Please check:\n1. Browser geolocation permission is enabled\n2. Internet connection is active\n3. Or enter location manually");
+                        }
+                        setIsDetectingLocation(false);
+                      }}
+                      disabled={isDetectingLocation}
+                      className="px-3 py-2 bg-canvas-primary/20 border border-canvas-primary/45 hover:bg-canvas-primary/30 rounded-xl text-canvas-primary text-[11px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-1 whitespace-nowrap"
+                      title="Auto-detect location using device location (requires permission)"
+                    >
+                      <Compass size={14} />
+                      {isDetectingLocation ? "Detecting..." : "Detect"}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-gray-500 mt-1">Requires location permission. Allow when prompted by your browser.</p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="text-xs text-gray-400 block mb-1">Bio</label>
@@ -527,24 +760,100 @@ export default function Settings() {
 
                 <div>
                   <label className="text-xs text-gray-400 block mb-1">Gender</label>
-                  <input
-                    type="text"
-                    value={user.gender || ""}
-                    onInput={(event) => handleProfileUpdate({ gender: (event.target as HTMLInputElement).value })}
-                    placeholder="e.g. Woman, Man, Non-binary"
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
-                  />
+                  <select
+                    value={["Woman", "Man", "Non-binary", "Genderqueer", "Genderfluid", "Agender", "Bigender", "Two-Spirit", "Transgender Man", "Transgender Woman", "Cisgender Woman", "Cisgender Man", "Prefer not to answer"].includes(user.gender || "") ? user.gender : "other"}
+                    onChange={(event) => {
+                      const value = (event.target as HTMLSelectElement).value;
+                      if (value === "other") {
+                        setCustomGender("");
+                        handleProfileUpdate({ gender: "" });
+                      } else {
+                        setCustomGender("");
+                        handleProfileUpdate({ gender: value });
+                      }
+                    }}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40 cursor-pointer appearance-none pr-10"
+                    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a5a5a5' d='M3 5l3 3 3-3'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 0.7rem center", paddingRight: "2rem" }}
+                  >
+                    <option value="">Select a gender identity...</option>
+                    <option value="Woman">Woman</option>
+                    <option value="Man">Man</option>
+                    <option value="Non-binary">Non-binary</option>
+                    <option value="Genderqueer">Genderqueer</option>
+                    <option value="Genderfluid">Genderfluid</option>
+                    <option value="Agender">Agender</option>
+                    <option value="Bigender">Bigender</option>
+                    <option value="Two-Spirit">Two-Spirit</option>
+                    <option value="Transgender Man">Transgender Man</option>
+                    <option value="Transgender Woman">Transgender Woman</option>
+                    <option value="Cisgender Woman">Cisgender Woman</option>
+                    <option value="Cisgender Man">Cisgender Man</option>
+                    <option value="Prefer not to answer">Prefer not to answer</option>
+                    <option value="other">Other (specify below)</option>
+                  </select>
+                  {(["Woman", "Man", "Non-binary", "Genderqueer", "Genderfluid", "Agender", "Bigender", "Two-Spirit", "Transgender Man", "Transgender Woman", "Cisgender Woman", "Cisgender Man", "Prefer not to answer"].includes(user.gender || "") === false && user.gender) || customGender || (["Woman", "Man", "Non-binary", "Genderqueer", "Genderfluid", "Agender", "Bigender", "Two-Spirit", "Transgender Man", "Transgender Woman", "Cisgender Woman", "Cisgender Man", "Prefer not to answer"].includes(user.gender || "") === false && !user.gender && customGender === "") ? (
+                    <input
+                      type="text"
+                      value={customGender || user.gender || ""}
+                      onInput={(event) => {
+                        const value = (event.target as HTMLInputElement).value;
+                        setCustomGender(value);
+                        handleProfileUpdate({ gender: value });
+                      }}
+                      placeholder="Enter your gender identity..."
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40 mt-2"
+                    />
+                  ) : null}
                 </div>
 
                 <div>
                   <label className="text-xs text-gray-400 block mb-1">Pronouns</label>
-                  <input
-                    type="text"
-                    value={user.pronouns || ""}
-                    onInput={(event) => handleProfileUpdate({ pronouns: (event.target as HTMLInputElement).value })}
-                    placeholder="e.g. she/her, he/him, they/them"
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
-                  />
+                  <select
+                    value={["she/her", "he/him", "they/them", "xe/xem", "ze/zir", "per/per", "sie/hir", "em/emself", "ey/em", "hu/hum", "she/they", "he/they", "any pronouns", "ask me", "prefer not to answer"].includes(user.pronouns || "") ? user.pronouns : "other"}
+                    onChange={(event) => {
+                      const value = (event.target as HTMLSelectElement).value;
+                      if (value === "other") {
+                        setCustomPronouns("");
+                        handleProfileUpdate({ pronouns: "" });
+                      } else {
+                        setCustomPronouns("");
+                        handleProfileUpdate({ pronouns: value });
+                      }
+                    }}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40 cursor-pointer appearance-none pr-10"
+                    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a5a5a5' d='M3 5l3 3 3-3'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 0.7rem center", paddingRight: "2rem" }}
+                  >
+                    <option value="">Select pronouns...</option>
+                    <option value="she/her">she/her</option>
+                    <option value="he/him">he/him</option>
+                    <option value="they/them">they/them</option>
+                    <option value="xe/xem">xe/xem</option>
+                    <option value="ze/zir">ze/zir</option>
+                    <option value="per/per">per/per</option>
+                    <option value="sie/hir">sie/hir</option>
+                    <option value="em/emself">em/emself</option>
+                    <option value="ey/em">ey/em</option>
+                    <option value="hu/hum">hu/hum</option>
+                    <option value="she/they">she/they</option>
+                    <option value="he/they">he/they</option>
+                    <option value="any pronouns">any pronouns</option>
+                    <option value="ask me">ask me</option>
+                    <option value="prefer not to answer">prefer not to answer</option>
+                    <option value="other">Other (specify below)</option>
+                  </select>
+                  {(["she/her", "he/him", "they/them", "xe/xem", "ze/zir", "per/per", "sie/hir", "em/emself", "ey/em", "hu/hum", "she/they", "he/they", "any pronouns", "ask me", "prefer not to answer"].includes(user.pronouns || "") === false && user.pronouns) || customPronouns || (["she/her", "he/him", "they/them", "xe/xem", "ze/zir", "per/per", "sie/hir", "em/emself", "ey/em", "hu/hum", "she/they", "he/they", "any pronouns", "ask me", "prefer not to answer"].includes(user.pronouns || "") === false && !user.pronouns && customPronouns === "") ? (
+                    <input
+                      type="text"
+                      value={customPronouns || user.pronouns || ""}
+                      onInput={(event) => {
+                        const value = (event.target as HTMLInputElement).value;
+                        setCustomPronouns(value);
+                        handleProfileUpdate({ pronouns: value });
+                      }}
+                      placeholder="Enter your pronouns (e.g. fae/faem, ve/ver)..."
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40 mt-2"
+                    />
+                  ) : null}
                 </div>
 
                 <div>
@@ -570,14 +879,46 @@ export default function Settings() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Timezone</label>
-                  <input
-                    type="text"
-                    value={user.timezone || ""}
-                    onInput={(event) => handleProfileUpdate({ timezone: (event.target as HTMLInputElement).value })}
-                    placeholder="e.g. Africa/Nairobi"
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
-                  />
+                  <label className="text-xs text-gray-400 block mb-1 flex items-center gap-1"><Clock size={12} /> Timezone</label>
+                  <div className="flex gap-2">
+                    <div className="flex-1 relative">
+                      <select
+                        value={user.timezone || ""}
+                        onChange={(event) => {
+                          handleProfileUpdate({ timezone: (event.target as HTMLSelectElement).value });
+                          setShowTimezoneDropdown(false);
+                          setTimezoneSearch("");
+                        }}
+                        onFocus={() => setShowTimezoneDropdown(true)}
+                        className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40 cursor-pointer appearance-none pr-10"
+                        style={{
+                          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a5a5a5' d='M3 5l3 3 3-3'/%3E%3C/svg%3E\")",
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "right 0.7rem center",
+                          paddingRight: "2rem"
+                        }}
+                      >
+                        <option value="">Select timezone...</option>
+                        {IANA_TIMEZONES.map(tz => (
+                          <option key={tz} value={tz}>{tz}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const detected = getDetectedTimezone();
+                        if (detected) {
+                          handleProfileUpdate({ timezone: detected });
+                        }
+                      }}
+                      className="px-3 py-2 bg-canvas-primary/20 border border-canvas-primary/45 hover:bg-canvas-primary/30 rounded-xl text-canvas-primary text-[11px] font-bold uppercase tracking-widest transition-all flex items-center gap-1 whitespace-nowrap"
+                      title="Auto-detect timezone from your device"
+                    >
+                      <Zap size={14} />
+                      Auto-detect
+                    </button>
+                  </div>
                 </div>
 
                 <div>

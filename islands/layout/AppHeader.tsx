@@ -113,10 +113,14 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
             <button
               type="button"
               onClick={toggleNotifications}
-              className="p-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all relative"
+              className={`p-2.5 rounded-full transition-all relative ${
+                unreadCount > 0
+                  ? "bg-canvas-primary/20 border border-canvas-primary/45 hover:bg-canvas-primary/30 hover:border-canvas-primary/60"
+                  : "bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20"
+              }`}
               aria-label="Open notifications"
             >
-              <Bell size={16} className="text-gray-400" />
+              <Bell size={16} className={unreadCount > 0 ? "text-canvas-primary" : "text-gray-400"} />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-canvas-primary text-[9px] font-bold text-black flex items-center justify-center px-1">
                   {unreadCount > 9 ? "9+" : unreadCount}
