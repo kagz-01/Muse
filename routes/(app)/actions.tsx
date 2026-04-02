@@ -1,4 +1,4 @@
-import CreateHub from "../../islands/CreateHub.tsx";
+import { CreateHub } from "../../islands/create/index.ts";
 
 export default function ActionsPage() {
   return <CreateHub />;

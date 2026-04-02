@@ -1,4 +1,4 @@
-import ConnectionsHub from "../../islands/ConnectionsHub.tsx";
+import { ConnectionsHub } from "../../islands/connections/index.ts";
 
 export default function ConnectionsPage() {
   return (

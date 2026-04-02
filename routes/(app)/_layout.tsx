@@ -1,7 +1,5 @@
 import { PageProps } from "$fresh/server.ts";
-import AppLayoutWrapper from "../../islands/AppLayoutWrapper.tsx";
-import AppHeader from "../../islands/AppHeader.tsx";
-import AppMenu from "../../islands/AppMenu.tsx";
+import { AppLayoutWrapper, AppHeader, AppMenu } from "../../islands/layout/index.ts";
 
 export default function AppLayout({ Component, url }: PageProps) {
   return (

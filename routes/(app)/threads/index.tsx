@@ -1,4 +1,4 @@
-import ThreadsGallery from "../../../islands/ThreadsGallery.tsx";
+import { ThreadsGallery } from "../../../islands/threads/index.ts";
 
 export default function ThreadsPage() {
   return (

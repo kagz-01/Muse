@@ -1,4 +1,4 @@
-import Settings from "../../islands/Settings.tsx";
+import { Settings } from "../../islands/settings/index.ts";
 
 export default function SettingsPage() {
   return (

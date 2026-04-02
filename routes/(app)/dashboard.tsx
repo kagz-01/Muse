@@ -1,6 +1,5 @@
-import CommunityPulseStrip from "../../islands/CommunityPulseStrip.tsx";
-import HomeOverview from "../../islands/HomeOverview.tsx";
-import DashboardRooms from "../../islands/DashboardRooms.tsx";
+import { CommunityPulseStrip } from "../../components/connections/index.ts";
+import { HomeOverview, DashboardRooms } from "../../islands/dashboard/index.ts";
 
 export default function DashboardPage() {
   return (

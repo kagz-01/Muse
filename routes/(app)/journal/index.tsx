@@ -1,4 +1,4 @@
-import JournalGallery from "../../../islands/JournalGallery.tsx";
+import { JournalGallery } from "../../../islands/journal/index.ts";
 
 export default function JournalPage() {
   return (

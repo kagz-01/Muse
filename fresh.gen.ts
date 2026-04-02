@@ -21,42 +21,43 @@ import * as $_app from "./routes/_app.tsx";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
-import * as $ActiveCircleCard from "./islands/ActiveCircleCard.tsx";
-import * as $AppHeader from "./islands/AppHeader.tsx";
-import * as $AppLayoutWrapper from "./islands/AppLayoutWrapper.tsx";
-import * as $AppMenu from "./islands/AppMenu.tsx";
-import * as $AuthModal from "./islands/AuthModal.tsx";
-import * as $CaptureModal from "./islands/CaptureModal.tsx";
-import * as $CollaboratorCard from "./islands/CollaboratorCard.tsx";
-import * as $CommunityPulseStrip from "./islands/CommunityPulseStrip.tsx";
-import * as $CommunityRoomCard from "./islands/CommunityRoomCard.tsx";
-import * as $ConnectionsHub from "./islands/ConnectionsHub.tsx";
-import * as $CreateHub from "./islands/CreateHub.tsx";
-import * as $CreateRoomModal from "./islands/CreateRoomModal.tsx";
-import * as $CreateThreadModal from "./islands/CreateThreadModal.tsx";
-import * as $DashboardRooms from "./islands/DashboardRooms.tsx";
-import * as $DashboardWidgets from "./islands/DashboardWidgets.tsx";
-import * as $EditRoomModal from "./islands/EditRoomModal.tsx";
-import * as $HomeOverview from "./islands/HomeOverview.tsx";
-import * as $JournalEntryView from "./islands/JournalEntryView.tsx";
-import * as $JournalGallery from "./islands/JournalGallery.tsx";
-import * as $LandingFeatures from "./islands/LandingFeatures.tsx";
-import * as $LandingHero from "./islands/LandingHero.tsx";
 import * as $LandingIsland from "./islands/LandingIsland.tsx";
-import * as $LandingPage from "./islands/LandingPage.tsx";
-import * as $Mirror from "./islands/Mirror.tsx";
-import * as $PortraitCard from "./islands/PortraitCard.tsx";
-import * as $PrivacyBadge from "./islands/PrivacyBadge.tsx";
-import * as $PrivacyManager from "./islands/PrivacyManager.tsx";
-import * as $ProfileOverlay from "./islands/ProfileOverlay.tsx";
-import * as $ProfilePage from "./islands/ProfilePage.tsx";
-import * as $RoomInside from "./islands/RoomInside.tsx";
-import * as $RoomsGallery from "./islands/RoomsGallery.tsx";
-import * as $Settings from "./islands/Settings.tsx";
-import * as $SharedThemeCluster from "./islands/SharedThemeCluster.tsx";
-import * as $ThoughtfulComposer from "./islands/ThoughtfulComposer.tsx";
-import * as $ThreadInside from "./islands/ThreadInside.tsx";
-import * as $ThreadsGallery from "./islands/ThreadsGallery.tsx";
+import * as $connections_ConnectionsHub from "./islands/connections/ConnectionsHub.tsx";
+import * as $connections_index from "./islands/connections/index.ts";
+import * as $create_CreateHub from "./islands/create/CreateHub.tsx";
+import * as $create_index from "./islands/create/index.ts";
+import * as $dashboard_DashboardRooms from "./islands/dashboard/DashboardRooms.tsx";
+import * as $dashboard_HomeOverview from "./islands/dashboard/HomeOverview.tsx";
+import * as $dashboard_index from "./islands/dashboard/index.ts";
+import * as $journal_JournalEntryView from "./islands/journal/JournalEntryView.tsx";
+import * as $journal_JournalGallery from "./islands/journal/JournalGallery.tsx";
+import * as $journal_index from "./islands/journal/index.ts";
+import * as $landing_LandingPage from "./islands/landing/LandingPage.tsx";
+import * as $landing_index from "./islands/landing/index.ts";
+import * as $layout_AppHeader from "./islands/layout/AppHeader.tsx";
+import * as $layout_AppLayoutWrapper from "./islands/layout/AppLayoutWrapper.tsx";
+import * as $layout_AppMenu from "./islands/layout/AppMenu.tsx";
+import * as $layout_index from "./islands/layout/index.ts";
+import * as $mirror_Mirror from "./islands/mirror/Mirror.tsx";
+import * as $mirror_index from "./islands/mirror/index.ts";
+import * as $modals_AuthModal from "./islands/modals/AuthModal.tsx";
+import * as $modals_CaptureModal from "./islands/modals/CaptureModal.tsx";
+import * as $modals_CreateRoomModal from "./islands/modals/CreateRoomModal.tsx";
+import * as $modals_CreateThreadModal from "./islands/modals/CreateThreadModal.tsx";
+import * as $modals_EditRoomModal from "./islands/modals/EditRoomModal.tsx";
+import * as $modals_index from "./islands/modals/index.ts";
+import * as $profile_ProfileOverlay from "./islands/profile/ProfileOverlay.tsx";
+import * as $profile_ProfilePage from "./islands/profile/ProfilePage.tsx";
+import * as $profile_index from "./islands/profile/index.ts";
+import * as $rooms_RoomInside from "./islands/rooms/RoomInside.tsx";
+import * as $rooms_RoomsGallery from "./islands/rooms/RoomsGallery.tsx";
+import * as $rooms_index from "./islands/rooms/index.ts";
+import * as $settings_PrivacyManager from "./islands/settings/PrivacyManager.tsx";
+import * as $settings_Settings from "./islands/settings/Settings.tsx";
+import * as $settings_index from "./islands/settings/index.ts";
+import * as $threads_ThreadInside from "./islands/threads/ThreadInside.tsx";
+import * as $threads_ThreadsGallery from "./islands/threads/ThreadsGallery.tsx";
+import * as $threads_index from "./islands/threads/index.ts";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -82,42 +83,43 @@ const manifest = {
     "./routes/index.tsx": $index,
   },
   islands: {
-    "./islands/ActiveCircleCard.tsx": $ActiveCircleCard,
-    "./islands/AppHeader.tsx": $AppHeader,
-    "./islands/AppLayoutWrapper.tsx": $AppLayoutWrapper,
-    "./islands/AppMenu.tsx": $AppMenu,
-    "./islands/AuthModal.tsx": $AuthModal,
-    "./islands/CaptureModal.tsx": $CaptureModal,
-    "./islands/CollaboratorCard.tsx": $CollaboratorCard,
-    "./islands/CommunityPulseStrip.tsx": $CommunityPulseStrip,
-    "./islands/CommunityRoomCard.tsx": $CommunityRoomCard,
-    "./islands/ConnectionsHub.tsx": $ConnectionsHub,
-    "./islands/CreateHub.tsx": $CreateHub,
-    "./islands/CreateRoomModal.tsx": $CreateRoomModal,
-    "./islands/CreateThreadModal.tsx": $CreateThreadModal,
-    "./islands/DashboardRooms.tsx": $DashboardRooms,
-    "./islands/DashboardWidgets.tsx": $DashboardWidgets,
-    "./islands/EditRoomModal.tsx": $EditRoomModal,
-    "./islands/HomeOverview.tsx": $HomeOverview,
-    "./islands/JournalEntryView.tsx": $JournalEntryView,
-    "./islands/JournalGallery.tsx": $JournalGallery,
-    "./islands/LandingFeatures.tsx": $LandingFeatures,
-    "./islands/LandingHero.tsx": $LandingHero,
     "./islands/LandingIsland.tsx": $LandingIsland,
-    "./islands/LandingPage.tsx": $LandingPage,
-    "./islands/Mirror.tsx": $Mirror,
-    "./islands/PortraitCard.tsx": $PortraitCard,
-    "./islands/PrivacyBadge.tsx": $PrivacyBadge,
-    "./islands/PrivacyManager.tsx": $PrivacyManager,
-    "./islands/ProfileOverlay.tsx": $ProfileOverlay,
-    "./islands/ProfilePage.tsx": $ProfilePage,
-    "./islands/RoomInside.tsx": $RoomInside,
-    "./islands/RoomsGallery.tsx": $RoomsGallery,
-    "./islands/Settings.tsx": $Settings,
-    "./islands/SharedThemeCluster.tsx": $SharedThemeCluster,
-    "./islands/ThoughtfulComposer.tsx": $ThoughtfulComposer,
-    "./islands/ThreadInside.tsx": $ThreadInside,
-    "./islands/ThreadsGallery.tsx": $ThreadsGallery,
+    "./islands/connections/ConnectionsHub.tsx": $connections_ConnectionsHub,
+    "./islands/connections/index.ts": $connections_index,
+    "./islands/create/CreateHub.tsx": $create_CreateHub,
+    "./islands/create/index.ts": $create_index,
+    "./islands/dashboard/DashboardRooms.tsx": $dashboard_DashboardRooms,
+    "./islands/dashboard/HomeOverview.tsx": $dashboard_HomeOverview,
+    "./islands/dashboard/index.ts": $dashboard_index,
+    "./islands/journal/JournalEntryView.tsx": $journal_JournalEntryView,
+    "./islands/journal/JournalGallery.tsx": $journal_JournalGallery,
+    "./islands/journal/index.ts": $journal_index,
+    "./islands/landing/LandingPage.tsx": $landing_LandingPage,
+    "./islands/landing/index.ts": $landing_index,
+    "./islands/layout/AppHeader.tsx": $layout_AppHeader,
+    "./islands/layout/AppLayoutWrapper.tsx": $layout_AppLayoutWrapper,
+    "./islands/layout/AppMenu.tsx": $layout_AppMenu,
+    "./islands/layout/index.ts": $layout_index,
+    "./islands/mirror/Mirror.tsx": $mirror_Mirror,
+    "./islands/mirror/index.ts": $mirror_index,
+    "./islands/modals/AuthModal.tsx": $modals_AuthModal,
+    "./islands/modals/CaptureModal.tsx": $modals_CaptureModal,
+    "./islands/modals/CreateRoomModal.tsx": $modals_CreateRoomModal,
+    "./islands/modals/CreateThreadModal.tsx": $modals_CreateThreadModal,
+    "./islands/modals/EditRoomModal.tsx": $modals_EditRoomModal,
+    "./islands/modals/index.ts": $modals_index,
+    "./islands/profile/ProfileOverlay.tsx": $profile_ProfileOverlay,
+    "./islands/profile/ProfilePage.tsx": $profile_ProfilePage,
+    "./islands/profile/index.ts": $profile_index,
+    "./islands/rooms/RoomInside.tsx": $rooms_RoomInside,
+    "./islands/rooms/RoomsGallery.tsx": $rooms_RoomsGallery,
+    "./islands/rooms/index.ts": $rooms_index,
+    "./islands/settings/PrivacyManager.tsx": $settings_PrivacyManager,
+    "./islands/settings/Settings.tsx": $settings_Settings,
+    "./islands/settings/index.ts": $settings_index,
+    "./islands/threads/ThreadInside.tsx": $threads_ThreadInside,
+    "./islands/threads/ThreadsGallery.tsx": $threads_ThreadsGallery,
+    "./islands/threads/index.ts": $threads_index,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

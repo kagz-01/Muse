@@ -1,4 +1,4 @@
-import Mirror from "../../islands/Mirror.tsx";
+import { Mirror } from "../../islands/mirror/index.ts";
 
 export default function MirrorPage() {
   return (
