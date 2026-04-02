@@ -21,7 +21,6 @@ import * as $_app from "./routes/_app.tsx";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
-import * as $LandingIsland from "./islands/LandingIsland.tsx";
 import * as $connections_ConnectionsHub from "./islands/connections/ConnectionsHub.tsx";
 import * as $connections_index from "./islands/connections/index.ts";
 import * as $create_CreateHub from "./islands/create/CreateHub.tsx";
@@ -32,6 +31,7 @@ import * as $dashboard_index from "./islands/dashboard/index.ts";
 import * as $journal_JournalEntryView from "./islands/journal/JournalEntryView.tsx";
 import * as $journal_JournalGallery from "./islands/journal/JournalGallery.tsx";
 import * as $journal_index from "./islands/journal/index.ts";
+import * as $landing_LandingIsland from "./islands/landing/LandingIsland.tsx";
 import * as $landing_LandingPage from "./islands/landing/LandingPage.tsx";
 import * as $landing_index from "./islands/landing/index.ts";
 import * as $layout_AppHeader from "./islands/layout/AppHeader.tsx";
@@ -83,7 +83,6 @@ const manifest = {
     "./routes/index.tsx": $index,
   },
   islands: {
-    "./islands/LandingIsland.tsx": $LandingIsland,
     "./islands/connections/ConnectionsHub.tsx": $connections_ConnectionsHub,
     "./islands/connections/index.ts": $connections_index,
     "./islands/create/CreateHub.tsx": $create_CreateHub,
@@ -94,6 +93,7 @@ const manifest = {
     "./islands/journal/JournalEntryView.tsx": $journal_JournalEntryView,
     "./islands/journal/JournalGallery.tsx": $journal_JournalGallery,
     "./islands/journal/index.ts": $journal_index,
+    "./islands/landing/LandingIsland.tsx": $landing_LandingIsland,
     "./islands/landing/LandingPage.tsx": $landing_LandingPage,
     "./islands/landing/index.ts": $landing_index,
     "./islands/layout/AppHeader.tsx": $layout_AppHeader,

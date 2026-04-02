@@ -1,6 +1,6 @@
 import { useState, useEffect } from "preact/hooks";
 import { ArrowRight, BookOpen, Layers, PenTool, Sparkles, Globe, ChevronDown } from "lucide-preact";
-import AuthModal from "./modals/AuthModal.tsx";
+import AuthModal from "../modals/AuthModal.tsx";
 
 const NOISE_WORDS = [
   'trending', 'viral', 'breaking', 'hot takes', 'controversy', 'sponsored',
