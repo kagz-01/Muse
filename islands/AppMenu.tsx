@@ -1,5 +1,5 @@
 import { isMenuOpenSignal, closeMenu, toggleMenu, toggleCapture } from "../signals/ui.ts";
-import { Home, Layers, BookOpen, Plus, User, PenTool, Menu as MenuIcon, X, Network, Layout as LayoutIcon, ChevronRight, Sparkles } from "lucide-preact";
+import { Home, Layers, BookOpen, Plus, User, PenTool, Menu as MenuIcon, X, Network, Layout as LayoutIcon, ChevronRight, Sparkles, Compass } from "lucide-preact";
 
 interface AppMenuProps {
   currentPath: string;
@@ -9,14 +9,17 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
   const isOpen = isMenuOpenSignal.value;
 
   const navItems = [
+    { label: 'Home', path: '/dashboard', icon: <Home size={22} />, desc: 'Your central flow' },
     { label: 'Rooms', path: '/rooms', icon: <LayoutIcon size={22} />, desc: 'Your collection spaces' },
-    { label: 'Threads', path: '/threads', icon: <Layers size={22} />, desc: 'Thematic syntheses' },
     { label: 'Journal', path: '/journal', icon: <BookOpen size={22} />, desc: 'Private introspection' },
+    { label: 'Threads', path: '/threads', icon: <Layers size={22} />, desc: 'Thematic syntheses' },
+    { label: 'AI Insights', path: '/mirror', icon: <Sparkles size={22} />, desc: 'Weekly reflection signals' },
     { label: 'Create', path: '/create', icon: <PenTool size={22} />, desc: 'Start a new flow' },
   ];
 
   const secondaryNav = [
-    { label: 'Connections', path: '/connections', icon: <Network size={20} /> },
+    { label: 'Quick Actions', path: '/actions', icon: <Compass size={20} /> },
+    { label: 'Community/Connections', path: '/connections', icon: <Network size={20} /> },
     { label: 'Mirror', path: '/mirror', icon: <Sparkles size={20} /> },
     { label: 'Settings', path: '/settings', icon: <User size={20} /> },
   ];
@@ -35,6 +38,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
         </a>
         
         <button 
+          type="button"
           onClick={toggleCapture}
           className="relative -top-10 w-16 h-16 bg-white text-black rounded-full flex items-center justify-center shadow-[0_20px_40px_rgba(0,0,0,0.4)] border-4 border-canvas-bg-dark active:scale-90 transition-transform"
         >
@@ -42,6 +46,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
         </button>
 
         <button 
+          type="button"
           onClick={toggleMenu}
           className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all ${isOpen ? 'text-canvas-primary' : 'text-gray-500'}`}
         >
@@ -68,7 +73,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
               <h2 className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em] mb-1">Navigation</h2>
               <h3 className="text-2xl font-bold tracking-tight text-white">Choose Intent</h3>
             </div>
-            <button onClick={closeMenu} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-gray-500 hover:text-white transition-all cursor-pointer">
+            <button type="button" onClick={closeMenu} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-gray-500 hover:text-white transition-all cursor-pointer">
               <X size={24} />
             </button>
           </div>
@@ -81,7 +86,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   key={item.label}
                   href={item.path}
                   onClick={closeMenu}
-                  className={`group flex items-center justify-between p-6 rounded-[2rem] transition-all border block ${active ? 'bg-canvas-primary border-canvas-primary shadow-[0_20px_40px_rgba(99,102,241,0.25)]' : 'bg-white/[0.03] border-white/5 hover:border-white/15'}`}
+                  className={`group flex items-center justify-between p-6 rounded-[2rem] transition-all border ${active ? 'bg-canvas-primary border-canvas-primary shadow-[0_20px_40px_rgba(99,102,241,0.25)]' : 'bg-white/[0.03] border-white/5 hover:border-white/15'}`}
                 >
                   <div className="flex items-center gap-5">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${active ? 'bg-white/20 text-white' : 'bg-white/5 text-gray-500 group-hover:bg-white/10 group-hover:text-white'}`}>
@@ -99,7 +104,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
 
             <div className="h-px bg-white/5 my-6" />
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               {secondaryNav.map(item => (
                 <a 
                   key={item.label}
@@ -116,6 +121,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
 
           <div className="pt-10 flex flex-col gap-4">
             <button 
+              type="button"
               onClick={() => { toggleCapture(); closeMenu(); }}
               className="w-full group py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-3xl flex justify-center items-center gap-3 shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_rgba(255,255,255,0.25)] hover:-translate-y-1 active:scale-95 transition-all"
             >

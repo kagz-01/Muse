@@ -1,5 +1,5 @@
 import CommunityPulseStrip from "../../islands/CommunityPulseStrip.tsx";
-import DashboardWidgets from "../../islands/DashboardWidgets.tsx";
+import HomeOverview from "../../islands/HomeOverview.tsx";
 import DashboardRooms from "../../islands/DashboardRooms.tsx";
 
 export default function DashboardPage() {
@@ -9,7 +9,7 @@ export default function DashboardPage() {
         <CommunityPulseStrip />
       </div>
       
-      <DashboardWidgets />
+      <HomeOverview />
       <DashboardRooms />
     </div>
   );

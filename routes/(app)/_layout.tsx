@@ -6,11 +6,11 @@ import AppMenu from "../../islands/AppMenu.tsx";
 export default function AppLayout({ Component, url }: PageProps) {
   return (
     <AppLayoutWrapper>
-      <AppHeader />
+      <AppHeader currentPath={url.pathname} />
       <AppMenu currentPath={url.pathname} />
       
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto w-full relative scroll-smooth bg-canvas-bg-dark pt-20">
+      <main className="flex-1 overflow-y-auto w-full relative scroll-smooth bg-canvas-bg-dark pt-32 md:pt-36">
         <Component />
       </main>
       

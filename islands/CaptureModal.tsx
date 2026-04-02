@@ -69,7 +69,9 @@ export default function CaptureModal() {
     let title = 'Captured Artifact';
     try {
       title = url.startsWith('http') ? new URL(url).hostname : 'Personal Thought';
-    } catch(_e) {}
+    } catch (_e) {
+      // Keep fallback title when URL parsing fails.
+    }
 
     addItem({
       roomId,
@@ -335,4 +337,6 @@ export default function CaptureModal() {
         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-canvas-primary/10 blur-[60px] rounded-full" />
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-canvas-accent/10 blur-[60px] rounded-full" />
       </div>
-    </di
+    </div>
+  );
+}

@@ -1,7 +1,5 @@
-import LandingIsland from "../islands/LandingIsland.tsx";
+import LandingPage from "../islands/LandingPage.tsx";
 
 export default function Home() {
-  return (
-    <LandingIsland />
-  );
+  return <LandingPage />;
 }

@@ -3,6 +3,7 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $_app_layout from "./routes/(app)/_layout.tsx";
+import * as $_app_actions from "./routes/(app)/actions.tsx";
 import * as $_app_connections from "./routes/(app)/connections.tsx";
 import * as $_app_create from "./routes/(app)/create.tsx";
 import * as $_app_dashboard from "./routes/(app)/dashboard.tsx";
@@ -35,9 +36,13 @@ import * as $CreateThreadModal from "./islands/CreateThreadModal.tsx";
 import * as $DashboardRooms from "./islands/DashboardRooms.tsx";
 import * as $DashboardWidgets from "./islands/DashboardWidgets.tsx";
 import * as $EditRoomModal from "./islands/EditRoomModal.tsx";
+import * as $HomeOverview from "./islands/HomeOverview.tsx";
 import * as $JournalEntryView from "./islands/JournalEntryView.tsx";
 import * as $JournalGallery from "./islands/JournalGallery.tsx";
+import * as $LandingFeatures from "./islands/LandingFeatures.tsx";
+import * as $LandingHero from "./islands/LandingHero.tsx";
 import * as $LandingIsland from "./islands/LandingIsland.tsx";
+import * as $LandingPage from "./islands/LandingPage.tsx";
 import * as $Mirror from "./islands/Mirror.tsx";
 import * as $PortraitCard from "./islands/PortraitCard.tsx";
 import * as $PrivacyBadge from "./islands/PrivacyBadge.tsx";
@@ -55,6 +60,7 @@ import type { Manifest } from "$fresh/server.ts";
 const manifest = {
   routes: {
     "./routes/(app)/_layout.tsx": $_app_layout,
+    "./routes/(app)/actions.tsx": $_app_actions,
     "./routes/(app)/connections.tsx": $_app_connections,
     "./routes/(app)/create.tsx": $_app_create,
     "./routes/(app)/dashboard.tsx": $_app_dashboard,
@@ -89,9 +95,13 @@ const manifest = {
     "./islands/DashboardRooms.tsx": $DashboardRooms,
     "./islands/DashboardWidgets.tsx": $DashboardWidgets,
     "./islands/EditRoomModal.tsx": $EditRoomModal,
+    "./islands/HomeOverview.tsx": $HomeOverview,
     "./islands/JournalEntryView.tsx": $JournalEntryView,
     "./islands/JournalGallery.tsx": $JournalGallery,
+    "./islands/LandingFeatures.tsx": $LandingFeatures,
+    "./islands/LandingHero.tsx": $LandingHero,
     "./islands/LandingIsland.tsx": $LandingIsland,
+    "./islands/LandingPage.tsx": $LandingPage,
     "./islands/Mirror.tsx": $Mirror,
     "./islands/PortraitCard.tsx": $PortraitCard,
     "./islands/PrivacyBadge.tsx": $PrivacyBadge,
