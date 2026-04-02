@@ -6,7 +6,7 @@ import {
 } from "lucide-preact";
 import { isCaptureOpenSignal, toggleCapture } from "../signals/ui.ts";
 import { roomsSignal, addRoom } from "../signals/rooms.ts";
-import { addItem } from "../signals/journal.ts";
+import { addItem } from "../signals/items.ts";
 
 type CaptureStep = 'input' | 'context' | 'contemplation';
 
@@ -335,6 +335,4 @@ export default function CaptureModal() {
         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-canvas-primary/10 blur-[60px] rounded-full" />
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-canvas-accent/10 blur-[60px] rounded-full" />
       </div>
-    </div>
-  );
-}
+    </di

@@ -8,11 +8,13 @@ export default {
     extend: {
       colors: {
         canvas: {
-          'bg-dark': '#0a0a0a',
+          'bg-dark': '#0C0B09', // Warm near-black
           'bg-light': '#fafafa',
-          primary: '#6366f1',
-          'card-dark': '#161616',
+          primary: '#D4A853', // Warm Gold (Editorial accent)
+          'card-dark': '#141210', // Warm card surface
           'card-light': '#f3f4f6',
+          teal: '#2A9D8F', // AI/mood accent
+          'gold-dim': '#8C6D35', // Muted gold for subtle states
         }
       },
       fontFamily: {
