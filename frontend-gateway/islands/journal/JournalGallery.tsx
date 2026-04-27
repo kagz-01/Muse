@@ -142,7 +142,7 @@ ${e.body}
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
       <div className="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-12">
         <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
-          <div className="absolute top-0 right-0 h-full w-1/2 bg-linear-to-l from-violet-500/10 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-violet-500/10 to-transparent blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-3xl">
@@ -150,9 +150,9 @@ ${e.body}
                 <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
                 Contemplation Layer
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
                 Quiet Your 
-                <span className="block italic font-serif text-violet-400 bg-linear-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent">Mental Noise.</span>
+                <span className="block italic font-serif text-violet-400 bg-gradient-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent pb-4 pr-4">Mental Noise.</span>
               </h1>
               <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
                 Your Journal is the sanctuary for raw thought. This is where patterns from your collection are tested against your intuition before they become creation.
@@ -294,7 +294,7 @@ ${e.body}
         <div className="px-6 md:px-10 pb-8 max-w-6xl mx-auto w-full">
           <div onClick={handleNewEntry}
             className="group cursor-pointer flex items-center gap-6 bg-[#111318] border border-white/5 hover:border-violet-500/30 hover:bg-violet-500/5 rounded-4xl p-8 transition-all duration-500 relative overflow-hidden shadow-xl">
-            <div className="absolute top-0 right-0 w-64 h-full bg-linear-to-l from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             <div className="w-14 h-14 rounded-2xl bg-violet-500/10 flex items-center justify-center shrink-0 shadow-[0_0_40px_rgba(139,92,246,0.1)]">
               <Sparkles size={24} className="text-violet-400 group-hover:rotate-12 transition-transform" />
             </div>

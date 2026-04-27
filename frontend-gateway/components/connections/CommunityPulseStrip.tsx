@@ -22,7 +22,7 @@ export default function CommunityPulseStrip() {
 
   return (
     <div className="w-full h-12 bg-white/[0.02] border-y border-white/5 flex items-center justify-center overflow-hidden px-6 relative">
-      <div className="absolute inset-0 bg-linear-to-r from-transparent via-indigo-500/5 to-transparent opacity-50" />
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/5 to-transparent opacity-50" />
       
       <div 
         key={index}

@@ -95,7 +95,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
             <div className={`absolute inset-0 ${theme.bg}`} />
           )}
 
-          <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
 
           <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" className="hidden" />
@@ -201,9 +201,9 @@ export default function RoomInside({ roomId }: { roomId: string }) {
              <div className={`absolute -inset-4 ${theme.bg} blur-2xl opacity-20 rounded-4xl pointer-events-none`} />
              <div className="relative p-8 md:p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 backdrop-blur-sm">
                 <div className="flex items-center gap-3 mb-6">
-                   <div className="w-8 h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
+                   <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                    <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Room Signal</h2>
-                   <div className="w-8 h-px bg-linear-to-l from-transparent via-white/20 to-transparent" />
+                   <div className="w-8 h-px bg-gradient-to-l from-transparent via-white/20 to-transparent" />
                 </div>
                 <p className="text-xl md:text-2xl font-serif italic text-gray-300 leading-relaxed max-w-3xl">
                    {room.description || "This space is currently waiting for your intellectual blueprint. What themes will you collect here before they become something larger?"}
@@ -307,7 +307,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                   className={`bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group transition-all duration-500 card-glow glow-${room.themeColor}`}
                 >
                   <div className={`h-40 ${theme.bg} relative overflow-hidden`}>
-                    <div className="absolute inset-0 bg-linear-to-t from-[#111] via-transparent to-white/5 opacity-50" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
                        <ExternalLink size={40} className={theme.text} />
                     </div>

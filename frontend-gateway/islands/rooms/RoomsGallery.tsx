@@ -299,7 +299,7 @@ export default function RoomsGallery() {
 
       <div className="p-6 md:p-10 max-w-7xl mx-auto pb-24 md:pb-10 space-y-12">
         <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
-          <div className="absolute top-0 right-0 h-full w-1/2 bg-linear-to-l from-canvas-primary/10 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-canvas-primary/10 to-transparent blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-3xl">
@@ -309,7 +309,7 @@ export default function RoomsGallery() {
               </div>
               <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
                 Curate Your 
-                <span className="italic font-serif text-canvas-primary bg-clip-text text-transparent bg-linear-to-r from-canvas-primary to-indigo-400 ml-3 pb-2 pr-4">Digital Soul.</span>
+                <span className="italic font-serif text-canvas-primary bg-clip-text text-transparent bg-gradient-to-r from-canvas-primary to-indigo-400 ml-3 pb-2 pr-4">Digital Soul.</span>
               </h1>
               <p className="mt-8 max-w-3xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-8">
                 Your Rooms are more than just digital storage. They are the sanctuary for your collected artifacts—the raw materials of your consciousness, secured by blockchain and refined by intelligence.

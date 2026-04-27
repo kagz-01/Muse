@@ -59,7 +59,7 @@ export default function CreateHub() {
         {showCreateThread && <CreateThreadModal onClose={() => setShowCreateThread(false)} />}
 
         <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
-          <div className="absolute top-0 right-0 h-full w-1/2 bg-linear-to-l from-emerald-500/10 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-emerald-500/10 to-transparent blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-3xl">
@@ -67,9 +67,9 @@ export default function CreateHub() {
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Synthesis Hub
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
                 Transmute Thought 
-                <span className="block italic font-serif text-emerald-400 bg-linear-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Into Form.</span>
+                <span className="block italic font-serif text-emerald-400 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent pb-4 pr-4">Into Form.</span>
               </h1>
               <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
                 Creation is the inevitable result of deep contemplation. Whether initializing a new space, weaving a thread, or seeding an artifact, every act here is intentional.

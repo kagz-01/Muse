@@ -26,7 +26,7 @@ export default function PrivacyManager({ isOpen, onClose }: PrivacyManagerProps)
 
       <div className="relative w-full max-w-lg bg-[#111111] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
         {/* Glow Base */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
         <div className="flex justify-between items-start mb-10">
            <div>

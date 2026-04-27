@@ -141,7 +141,7 @@ export default function LandingIsland() {
           <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight leading-none mb-6 animate-in slide-in-from-bottom-5 duration-700 delay-150">
             Turn consumption
             <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-canvas-primary via-violet-400 to-indigo-300">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-canvas-primary via-violet-400 to-indigo-300">
               into creation.
             </span>
           </h1>
@@ -237,7 +237,7 @@ export default function LandingIsland() {
 
         {/* ── COMMUNITY STRIP ───────────────────────────────────────────────── */}
         <section className="py-24 px-6 md:px-16 max-w-6xl mx-auto z-10 relative">
-          <div className="relative overflow-hidden rounded-4xl bg-linear-to-br from-indigo-500/20 via-violet-600/10 to-transparent border border-indigo-500/20 p-12 md:p-16 text-center">
+          <div className="relative overflow-hidden rounded-4xl bg-gradient-to-br from-indigo-500/20 via-violet-600/10 to-transparent border border-indigo-500/20 p-12 md:p-16 text-center">
             <div className="absolute inset-0 bg-indigo-500/5 blur-3xl" />
             <div className="relative z-10">
               <Globe size={32} className="text-indigo-400 mx-auto mb-6" />
@@ -278,7 +278,7 @@ export default function LandingIsland() {
           <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-none">
             Ready to find your
             <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-canvas-primary to-violet-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-canvas-primary to-violet-400">
               creative loop?
             </span>
           </h2>

@@ -16,7 +16,7 @@ export default function PrivacyBadge() {
       {/* Background Shimmer (CSS-only replacement for framer-motion) */}
       {soloMode && (
         <div 
-          className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"
           style={{ animation: 'shimmer 3s infinite linear' }}
         />
       )}
