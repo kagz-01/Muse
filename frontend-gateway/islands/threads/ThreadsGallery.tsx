@@ -51,7 +51,7 @@ export default function ThreadsGallery() {
               </div>
               <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
                 Synthesize Your 
-                <span className="block italic font-serif text-indigo-400 bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Consciousness.</span>
+                <span className="block italic font-serif text-indigo-400 bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent pr-4 pb-2">Consciousness.</span>
               </h1>
               <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
                 Threads are where patterns emerge. Connect the disparate artifacts of your collection into cohesive, high-fidelity intellectual structures.
@@ -112,7 +112,7 @@ export default function ThreadsGallery() {
                     <div className="h-px bg-white/10 flex-1" />
                   </div>
                   <h3 className="text-3xl font-bold tracking-tight text-white mb-4 group-hover:text-indigo-400 transition-colors duration-500">{thread.title}</h3>
-                  <p className="text-gray-300 text-base font-serif italic mb-8 line-clamp-2 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+                  <p className="text-gray-300 text-base font-serif italic mb-8 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
                     {thread.description || "A deep synthesis of curated artifacts and emerging patterns."}
                   </p>
                   

@@ -109,7 +109,7 @@ export default function CaptureModal() {
         <button 
           type="button"
           onClick={toggleCapture}
-          className="absolute top-8 right-8 p-3 text-gray-500 hover:text-white transition-all rounded-2xl hover:bg-white/5 active:scale-95 cursor-pointer"
+          className="absolute top-8 right-8 p-3 text-gray-500 hover:text-white transition-all rounded-2xl hover:bg-white/5 active:scale-95 cursor-pointer z-50"
         >
           <X size={24} />
         </button>
@@ -118,7 +118,7 @@ export default function CaptureModal() {
           <button 
             type="button"
             onClick={handleBack}
-            className="absolute top-8 left-8 p-3 text-gray-500 hover:text-white transition-all rounded-2xl hover:bg-white/5 active:scale-95 flex items-center gap-2 group cursor-pointer"
+            className="absolute top-8 left-8 p-3 text-gray-500 hover:text-white transition-all rounded-2xl hover:bg-white/5 active:scale-95 flex items-center gap-2 group cursor-pointer z-50"
           >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
             <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:inline">Back</span>
@@ -334,8 +334,8 @@ export default function CaptureModal() {
         </div>
 
         {/* Decorative elements */}
-        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-canvas-primary/10 blur-[60px] rounded-full" />
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-canvas-accent/10 blur-[60px] rounded-full" />
+        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-canvas-primary/10 blur-[60px] rounded-full pointer-events-none" />
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-canvas-accent/10 blur-[60px] rounded-full pointer-events-none" />
       </div>
     </div>
   );
