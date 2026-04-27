@@ -30,6 +30,7 @@ import {
   toggleTheme,
 } from "../../signals/ui.ts";
 import { PrivacyBadge } from "../../components/profile/index.ts";
+import WalletConnectButton from "../WalletConnectButton.tsx";
 
 interface AppHeaderProps {
   currentPath: string;
@@ -186,6 +187,10 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
 
           <div className="hidden sm:block">
             <PrivacyBadge />
+          </div>
+
+          <div className="hidden sm:block">
+            <WalletConnectButton />
           </div>
 
           <a
