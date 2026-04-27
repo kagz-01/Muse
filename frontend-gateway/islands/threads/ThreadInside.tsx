@@ -242,45 +242,59 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
 
               {activeTab === 'artifacts' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {synthesizedItems.length === 0 ? (
-                    <div className="col-span-full py-24 flex flex-col items-center justify-center bg-white/[0.02] border-2 border-dashed border-white/5 rounded-[2.5rem]">
-                       <Layers size={32} className="text-gray-800 mb-4" />
-                       <p className="text-gray-500 font-serif italic mb-6">No artifacts have been synthesized into this thread yet.</p>
-                       <button type="button" onClick={() => setShowAddItems(true)} className="px-8 py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest text-[11px] shadow-xl hover:-translate-y-1 transition-all">
-                          Synthesize Now
-                       </button>
-                    </div>
-                  ) : (
-                    synthesizedItems.map(item => (
-                      <div key={item.id} className={`p-6 bg-[#111318] border border-white/5 rounded-3xl hover:border-white/10 transition-all group relative overflow-hidden`}>
-                        <div className={`absolute top-0 right-0 w-24 h-24 ${moodTheme.bg} blur-3xl opacity-0 group-hover:opacity-20 transition-opacity pointer-events-none`} />
-                        <div className="relative z-10">
-                          <div className="flex items-center justify-between mb-3">
-                             <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 hover:underline">
-                                {new URL(item.sourceUrl).hostname.replace('www.', '')}
-                             </a>
-                             <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors">
-                                <ExternalLink size={14} />
-                             </a>
-                          </div>
-                          <h4 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-indigo-400 transition-colors">{item.title}</h4>
-                          {item.note && (
-                            <p className="text-gray-400 font-serif italic text-sm leading-relaxed mb-4 line-clamp-3">"{item.note}"</p>
-                          )}
-                          <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                             <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600">Added {new Date(item.createdAt).toLocaleDateString()}</span>
-                             <button 
-                                onClick={() => handleToggleItem(item.id)}
-                                type="button" 
-                                className="w-7 h-7 rounded-full flex items-center justify-center text-gray-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
-                              >
-                                <Trash2 size={13} />
-                             </button>
-                          </div>
-                        </div>
+              {synthesizedItems.length === 0 ? (
+                <div className="col-span-full py-32 flex flex-col items-center justify-center bg-[#111] border-2 border-dashed border-white/5 rounded-[3rem] card-glow glow-slate">
+                   <Layers size={40} className="text-gray-800 mb-6 animate-pulse" />
+                   <p className="text-white text-xl font-bold tracking-tight mb-2">Synthesis is pending.</p>
+                   <p className="text-gray-500 font-serif italic text-sm mb-10 max-w-lg text-center">No artifacts have been woven into this thread. Patterns are waiting to be discovered.</p>
+                   <button type="button" onClick={() => setShowAddItems(true)} className="px-10 py-4 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.2em] text-[12px] shadow-2xl hover:-translate-y-1 transition-all">
+                      Initialize Synthesis
+                   </button>
+                </div>
+              ) : (
+                synthesizedItems.map(item => (
+                  <div key={item.id} className={`bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group transition-all duration-500 card-glow glow-${thread.mood === 'contemplative' ? 'indigo' : thread.mood === 'curious' ? 'cyan' : thread.mood === 'dark' ? 'slate' : thread.mood === 'hopeful' ? 'emerald' : thread.mood === 'urgent' ? 'rose' : 'amber'}`}>
+                    <div className={`h-40 ${moodTheme.bg} relative overflow-hidden`}>
+                      <div className="absolute inset-0 bg-linear-to-t from-[#111] via-transparent to-white/5 opacity-50" />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                         <ExternalLink size={40} className={moodTheme.text} />
                       </div>
-                    ))
-                  )}
+                      <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" 
+                        className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-gray-300 hover:text-white opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-xl"
+                      >
+                        <ExternalLink size={14} />
+                      </a>
+                    </div>
+
+                    <div className="p-7">
+                      <div className="flex flex-col gap-1 mb-4">
+                        <span className={`text-[8px] font-bold uppercase tracking-[0.2em] ${moodTheme.text}`}>Synthesized Artifact</span>
+                        <h4 className="font-bold text-lg leading-tight text-white/90 group-hover:text-white transition-colors line-clamp-2">{item.title}</h4>
+                      </div>
+                      
+                      {item.note && (
+                        <p className="text-sm text-gray-400 line-clamp-2 mb-6 font-serif italic border-l-2 border-white/10 pl-4 py-1 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">"{item.note}"</p>
+                      )}
+
+                      <div className="flex items-center justify-between mt-auto pt-5 border-t border-white/5">
+                        <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer"
+                          className={`text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-gray-500 hover:${moodTheme.text} transition-colors`}
+                        >
+                          {new URL(item.sourceUrl).hostname.replace('www.', '')}
+                        </a>
+                        <button 
+                          onClick={() => handleToggleItem(item.id)}
+                          type="button" 
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+
                 </div>
               ) : (
                 <div className="p-12 text-center bg-white/[0.02] border border-white/5 rounded-[2.5rem]">
