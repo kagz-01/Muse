@@ -12,6 +12,25 @@ const moodGlowClasses: Record<ThreadMood, string> = {
   serene: 'glow-amber',
 };
 
+const moodGradients: Record<ThreadMood, string> = {
+  contemplative: 'from-indigo-600/40',
+  curious: 'from-cyan-600/40',
+  dark: 'from-slate-600/40',
+  hopeful: 'from-emerald-600/40',
+  urgent: 'from-rose-600/40',
+  serene: 'from-amber-600/40',
+};
+
+const moodColors: Record<ThreadMood, string> = {
+  contemplative: '#818cf8',
+  curious: '#22d3ee',
+  dark: '#94a3b8',
+  hopeful: '#34d399',
+  urgent: '#fb7185',
+  serene: '#fbbf24',
+};
+
+
 export default function ThreadsGallery() {
   const threads = threadsSignal.value;
   const [showCreate, setShowCreate] = useState(false);

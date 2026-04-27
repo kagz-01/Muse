@@ -289,7 +289,6 @@ ${e.body}
               ))}
           </div>
         </div>
-      </div>
 
       {!search && !showFavorites && filterMood === 'all' && (
         <div className="px-6 md:px-10 pb-8 max-w-6xl mx-auto w-full">

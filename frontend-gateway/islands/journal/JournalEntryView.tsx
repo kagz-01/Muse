@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "preact/hooks";
 import { 
   ArrowLeft, Trash2, AlertTriangle, Hash, X, Check, 
   ChevronDown, Link2, Plus, Sparkles, Star, 
-  Book, Calendar
+  Book, Calendar, Lock
 } from "lucide-preact";
 import { 
   journalSignal, type JournalMood, type JournalEntry as _JournalEntry, 

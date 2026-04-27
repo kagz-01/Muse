@@ -38,7 +38,6 @@ export default function ConnectionsHub() {
   ];
 
   return (
-  return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
       {/* Community Pulse Header */}
       <CommunityPulseStrip />
