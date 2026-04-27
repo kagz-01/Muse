@@ -36,6 +36,13 @@ The navigation is being shaped around the workflow, not just page names:
 - Quick Actions
 - Settings
 
+## Current Features & Status
+
+The platform architecture is established and currently supports:
+- **UI/UX Personalization:** Theme toggling (Dark/Light), typography scaling, and dynamic accent colors.
+- **Core Interfaces:** Simplified user dashboard, profile settings, and Demo Mode for user onboarding.
+- **Interactions:** Notifications action bell and cleanly structured routing mirroring the product cycle.
+
 ## Working Rules
 
 - Keep the cycle above as the source of truth.

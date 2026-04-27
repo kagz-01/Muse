@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  frontend-gateway:
+    build: 
+      context: ./frontend-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - AI_ENGINE_URL=http://ai-engine:8000
+      - BLOCKCHAIN_URL=http://blockchain-security:3000
+    depends_on:
+      - ai-engine
+      - blockchain-security
+    volumes:
+      - ./frontend-gateway:/app
+
+  ai-engine:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./ai-engine:/app
+
+  blockchain-security:
+    build:
+      context: ./blockchain-security
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
