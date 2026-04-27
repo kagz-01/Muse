@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: muse-ai-engine
+    env: docker
+    dockerContext: ./ai-engine
+    dockerfilePath: ./ai-engine/Dockerfile
+    plan: free
+    region: oregon # or frankfurt, depending on your user base
+    branch: main
+    envVars:
+      - key: PORT
+        value: 8000
