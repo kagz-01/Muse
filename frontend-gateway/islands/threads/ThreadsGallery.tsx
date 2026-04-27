@@ -49,9 +49,9 @@ export default function ThreadsGallery() {
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
                 Synthesis Engine
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
                 Synthesize Your 
-                <span className="block italic font-serif text-indigo-400 bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent pr-4 pb-2">Consciousness.</span>
+                <span className="block italic font-serif text-indigo-400 bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent pr-4 pb-4">Consciousness.</span>
               </h1>
               <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
                 Threads are where patterns emerge. Connect the disparate artifacts of your collection into cohesive, high-fidelity intellectual structures.

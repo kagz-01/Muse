@@ -307,9 +307,9 @@ export default function RoomsGallery() {
                 <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
                 Collection Engine
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
                 Curate Your 
-                <span className="italic font-serif text-canvas-primary bg-clip-text text-transparent bg-gradient-to-r from-canvas-primary to-indigo-400 ml-3">Digital Soul.</span>
+                <span className="italic font-serif text-canvas-primary bg-clip-text text-transparent bg-linear-to-r from-canvas-primary to-indigo-400 ml-3 pb-2 pr-4">Digital Soul.</span>
               </h1>
               <p className="mt-8 max-w-3xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-8">
                 Your Rooms are more than just digital storage. They are the sanctuary for your collected artifacts—the raw materials of your consciousness, secured by blockchain and refined by intelligence.
