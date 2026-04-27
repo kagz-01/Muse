@@ -14,7 +14,6 @@ interface Props {
 
 export default function CommunityRoomCard({ room }: Props) {
   return (
-  return (
     <div className="group relative h-[420px] rounded-[3rem] overflow-hidden bg-[#0d0d0d] border border-white/5 shadow-2xl transition-all duration-700 hover:border-indigo-500/40 hover:-translate-y-2">
       <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110">
         <img src={room.coverImage} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-700" alt={room.name} />
