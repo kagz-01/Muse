@@ -1,15 +1,22 @@
 import { useState } from "preact/hooks";
+import { updateProfile, userSignal } from "../signals/user.ts";
 
 export default function WalletConnectButton() {
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const user = userSignal.value;
+  const [walletAddress, setWalletAddress] = useState<string | null>(user?.walletAddress || null);
 
   const connectWallet = async () => {
-    // @ts-ignore - Phantom wallet injects solana object into window
-    const provider = (globalThis as any).solana;
+    interface SolanaProvider {
+      isPhantom?: boolean;
+      connect: () => Promise<{ publicKey: { toString: () => string } }>;
+    }
+    const provider = (globalThis as unknown as { solana: SolanaProvider }).solana;
     if (provider?.isPhantom) {
       try {
         const resp = await provider.connect();
-        setWalletAddress(resp.publicKey.toString());
+        const address = resp.publicKey.toString();
+        setWalletAddress(address);
+        updateProfile({ walletAddress: address });
       } catch (_err) {
         console.error("User rejected request.");
       }

@@ -287,51 +287,59 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 bg-[#111318]/50 backdrop-blur-md rounded-3xl border border-white/5">
-              <div className={`w-20 h-20 ${theme.bg} rounded-3xl mb-6 flex items-center justify-center`}>
+              <div className={`w-20 h-20 ${theme.bg} rounded-3xl mb-6 flex items-center justify-center shadow-2xl`}>
                 <Plus size={28} className={theme.text} />
               </div>
-              <p className="text-white text-xl font-bold tracking-tight mb-2">This room is empty.</p>
-              <p className="text-gray-400 font-serif italic text-sm mb-6 max-w-lg text-center">Start adding links, articles, music, or notes here. This is the first step of collection before patterns are formed in Threads.</p>
+              <p className="text-white text-xl font-bold tracking-tight mb-2">This space is expectant.</p>
+              <p className="text-gray-400 font-serif italic text-sm mb-6 max-w-lg text-center">Your artifacts will appear here as clusters of intelligence. Begin the collection phase.</p>
               <button onClick={() => setShowAddItem(true)}
                 type="button"
-                className="px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-sm text-black cursor-pointer hover:-translate-y-0.5 active:scale-95 transition-all outline-none"
+                className="px-10 py-4 rounded-2xl font-bold uppercase tracking-[0.2em] text-[12px] text-black cursor-pointer hover:-translate-y-1 active:scale-95 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)] hover:shadow-[0_20px_50px_rgba(255,255,255,0.2)]"
                 style={{ backgroundColor: paletteColors.find(c => c.name === room.themeColor)?.hex || '#6366f1' }}
               >
                 Collect First Artifact
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {items.map(item => (
                 <div key={item.id}
-                  className={`bg-[#111318] rounded-3xl border border-white/5 overflow-hidden group transition-all duration-300 hover:-translate-y-1 hover:${theme.border} hover:shadow-xl hover:${theme.shadow}`}
+                  className={`bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group transition-all duration-500 card-glow glow-${room.themeColor}`}
                 >
-                  <div className={`h-32 ${theme.bg} relative overflow-hidden`}>
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-white/5 to-transparent" />
+                  <div className={`h-40 ${theme.bg} relative overflow-hidden`}>
+                    <div className="absolute inset-0 bg-linear-to-t from-[#111] via-transparent to-white/5 opacity-50" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                       <ExternalLink size={40} className={theme.text} />
+                    </div>
                     <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer"
-                      className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-gray-300 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
+                      className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-gray-300 hover:text-white opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-xl"
                     >
-                      <ExternalLink size={13} />
+                      <ExternalLink size={14} />
                     </a>
                   </div>
 
-                  <div className="p-5">
-                    <h4 className="font-bold text-base leading-tight mb-2 text-white/90 group-hover:text-white transition-colors line-clamp-2">{item.title}</h4>
+                  <div className="p-7">
+                    <div className="flex flex-col gap-1 mb-4">
+                      <span className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}>Artifact</span>
+                      <h4 className="font-bold text-lg leading-tight text-white/90 group-hover:text-white transition-colors line-clamp-2">{item.title}</h4>
+                    </div>
+                    
                     {item.note && (
-                      <p className="text-sm text-gray-400 line-clamp-2 mb-3 font-serif italic border-l-2 border-white/10 pl-3">"{item.note}"</p>
+                      <p className="text-sm text-gray-400 line-clamp-2 mb-6 font-serif italic border-l-2 border-white/10 pl-4 py-1 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">"{item.note}"</p>
                     )}
-                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/5">
+
+                    <div className="flex items-center justify-between mt-auto pt-5 border-t border-white/5">
                       <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer"
-                        className={`text-[10px] uppercase font-bold tracking-widest truncate max-w-[65%] ${theme.text} hover:underline`}
+                        className={`text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-gray-500 hover:${theme.text} transition-colors`}
                       >
                         {getHostname(item.sourceUrl)}
                       </a>
                       <button
                         onClick={() => deleteItem(item.id)}
                         type="button"
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
                       >
-                        <Trash2 size={13} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </div>
@@ -340,15 +348,19 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
               <div
                 onClick={() => setShowAddItem(true)}
-                className="h-full min-h-[220px] border-2 border-dashed border-white/10 rounded-3xl hover:border-white/25 hover:bg-white/2 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 group"
+                className={`h-full min-h-[280px] border-2 border-dashed border-white/5 rounded-[2.5rem] hover:border-white/20 hover:bg-white/[0.02] transition-all duration-500 cursor-pointer flex flex-col items-center justify-center gap-4 group card-glow glow-${room.themeColor}`}
               >
-                <div className={`w-12 h-12 rounded-full border-2 border-dashed border-gray-600 group-hover:${theme.border} flex items-center justify-center transition-colors`}>
-                  <Plus size={20} className={`text-gray-500 group-hover:${theme.text} transition-colors`} />
+                <div className={`w-14 h-14 rounded-full border-2 border-dashed border-gray-700 group-hover:${theme.border} flex items-center justify-center transition-all duration-500`}>
+                  <Plus size={24} className={`text-gray-600 group-hover:${theme.text} transition-colors`} />
                 </div>
-                <span className={`text-[10px] font-bold uppercase tracking-widest text-gray-500 group-hover:${theme.text} transition-colors`}>Add Artifact</span>
+                <div className="flex flex-col items-center gap-1">
+                   <span className={`text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 group-hover:${theme.text} transition-colors`}>Collect Artifact</span>
+                   <span className="text-[9px] text-gray-700 font-serif italic">Expand your clusters</span>
+                </div>
               </div>
             </div>
           )}
+
         </main>
       </div>
     </>

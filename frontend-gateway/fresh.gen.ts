@@ -22,6 +22,7 @@ import * as $api_joke from "./routes/api/joke.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $WalletConnectButton from "./islands/WalletConnectButton.tsx";
 import * as $connections_CommunityPulseStripIsland from "./islands/connections/CommunityPulseStripIsland.tsx";
 import * as $connections_ConnectionsHub from "./islands/connections/ConnectionsHub.tsx";
 import * as $connections_index from "./islands/connections/index.ts";
@@ -86,6 +87,7 @@ const manifest = {
     "./routes/index.tsx": $index,
   },
   islands: {
+    "./islands/WalletConnectButton.tsx": $WalletConnectButton,
     "./islands/connections/CommunityPulseStripIsland.tsx":
       $connections_CommunityPulseStripIsland,
     "./islands/connections/ConnectionsHub.tsx": $connections_ConnectionsHub,

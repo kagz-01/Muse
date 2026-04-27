@@ -12,6 +12,8 @@ import {
 import { itemsSignal } from "../../signals/items.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { moodConfig } from "./JournalGallery.tsx";
+import { getAIInsights, storeJournalOnBlockchain, mintReward } from "../../utils/api.ts";
+import { userSignal } from "../../signals/user.ts";
 
 const moods = Object.entries(moodConfig) as [JournalMood, typeof moodConfig[JournalMood]][];
 
@@ -64,6 +66,38 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
   const [lastSavedTime, setLastSavedTime] = useState<number | null>(entry?.updatedAt ?? null);
   const [showPrompt, setShowPrompt] = useState(!entry?.body);
   const [promptIdx, setPromptIdx] = useState(0);
+  
+  // Web3 & AI Integration States
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [aiInsights, setAiInsights] = useState<any>(null);
+  const [blockchainResult, setBlockchainResult] = useState<any>(null);
+
+  const handleSecureAndAnalyze = async () => {
+    if (!body.trim()) return;
+    setIsProcessing(true);
+    
+    const user = userSignal.value;
+    const wallet = user?.walletAddress;
+
+    try {
+      // 1. Get AI Insights
+      const aiData = await getAIInsights(body);
+      setAiInsights(aiData);
+
+      // 2. Store on Blockchain if wallet is connected
+      if (wallet) {
+        const bcData = await storeJournalOnBlockchain(user.id, body, wallet);
+        setBlockchainResult(bcData);
+        
+        // 3. Reward user for journaling
+        await mintReward(wallet, "journal_entry");
+      }
+    } catch (error) {
+      console.error("Processing Error:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -232,13 +266,49 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             </p>
             <div className="mt-4 w-16 h-1 rounded-full" style={{ backgroundColor: cfg.color + '40' }} />
           </div>
-          <button onClick={() => setShowPrompt(!showPrompt)}
-            type="button"
-            className="flex items-center gap-2 group text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all cursor-pointer shadow-lg">
-            <Sparkles size={14} className="group-hover:rotate-12 transition-transform" />
-            Prompt Engine
-          </button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleSecureAndAnalyze}
+              disabled={isProcessing || !body.trim()}
+              type="button"
+              className={`flex items-center gap-2 group text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer shadow-lg px-4 py-2 rounded-full border border-white/10 ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:text-white hover:bg-white/5'}`}
+            >
+              <Sparkles size={14} className={isProcessing ? "animate-spin" : "group-hover:rotate-12 transition-transform"} />
+              {isProcessing ? "Processing..." : "Secure & Analyze"}
+            </button>
+            <button onClick={() => setShowPrompt(!showPrompt)}
+              type="button"
+              className="flex items-center gap-2 group text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all cursor-pointer shadow-lg px-4 py-2 rounded-full border border-white/10 hover:bg-white/5">
+              <Book size={14} className="group-hover:rotate-12 transition-transform" />
+              Prompt Engine
+            </button>
+          </div>
         </div>
+
+        {(aiInsights || blockchainResult) && (
+          <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+            {aiInsights && (
+              <div className="bg-canvas-primary/5 border border-canvas-primary/20 rounded-3xl p-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-canvas-primary mb-3">AI Engine Insights</p>
+                <p className="text-sm text-gray-300 leading-relaxed italic">
+                  {aiInsights.summary || aiInsights.status || "Analysis complete. Semantic patterns stored."}
+                </p>
+              </div>
+            )}
+            {blockchainResult && (
+              <div className="bg-purple-500/5 border border-purple-500/20 rounded-3xl p-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-purple-400 mb-3">Blockchain Immutable Log</p>
+                <div className="space-y-2">
+                  <p className="text-[10px] text-gray-400 truncate">Transaction: {blockchainResult.solana_transaction_id}</p>
+                  <p className="text-[10px] text-gray-400 truncate">Arweave Hash: {blockchainResult.arweave_hash}</p>
+                  <div className="flex items-center gap-2 mt-2 text-[10px] text-emerald-400 font-bold uppercase tracking-widest">
+                    <Check size={10} strokeWidth={3} /> Proof of Thought Secured
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {showPrompt && (
           <div className="mb-10 flex items-start gap-5 bg-white/[0.03] border rounded-4xl p-7 animate-in fade-in slide-in-from-top-4 duration-500 backdrop-blur-sm"

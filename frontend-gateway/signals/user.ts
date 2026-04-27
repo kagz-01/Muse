@@ -20,6 +20,7 @@ export interface User {
   avatarUrl?: string;
   bio?: string;
   location?: string;
+  walletAddress?: string;
   links: UserLink[];
   publicSettings: {
     showProfile: boolean;
