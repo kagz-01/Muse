@@ -53,47 +53,41 @@ export default function CreateHub() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pb-24 md:pb-10 relative overflow-hidden">
-      {showCreateRoom && <CreateRoomModal onClose={() => setShowCreateRoom(false)} />}
-      {showCreateThread && <CreateThreadModal onClose={() => setShowCreateThread(false)} />}
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
+      <div className="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-12">
+        {showCreateRoom && <CreateRoomModal onClose={() => setShowCreateRoom(false)} />}
+        {showCreateThread && <CreateThreadModal onClose={() => setShowCreateThread(false)} />}
 
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-600/5 blur-[120px] rounded-full pointer-events-none" />
-
-      <div className="relative z-10 p-6 md:p-10 max-w-6xl mx-auto">
-        <header className="mb-12 flex justify-between items-start">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 mb-4">
-              <Sparkles size={12} className="text-indigo-400" /> Create
+        <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
+          <div className="absolute top-0 right-0 h-full w-1/2 bg-linear-to-l from-emerald-500/10 to-transparent blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-emerald-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Synthesis Hub
+              </div>
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
+                Transmute Thought 
+                <span className="block italic font-serif text-emerald-400 bg-linear-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Into Form.</span>
+              </h1>
+              <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
+                Creation is the inevitable result of deep contemplation. Whether initializing a new space, weaving a thread, or seeding an artifact, every act here is intentional.
+              </p>
             </div>
-            <h1 className="text-4xl font-bold tracking-tight mb-3 text-white">Create From Reflection</h1>
-            <p className="text-gray-400 font-serif italic text-lg max-w-xl leading-relaxed">
-              Start with a room, a thread, or a journal entry. Creation should feel like the next step after thinking, not a separate act.
-            </p>
-          </div>
-          <a
-            href="/dashboard"
-            className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white hover:bg-white/10 transition-all group"
-          >
-            <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
-          </a>
-        </header>
 
-        <section className="mb-12 grid gap-4 md:grid-cols-3">
-          <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5 backdrop-blur-sm">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Rooms</div>
-            <div className="mt-2 text-3xl font-bold text-white">{rooms.length}</div>
-            <p className="mt-2 text-sm text-gray-500 font-serif italic">Start from a collection space.</p>
-          </div>
-          <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5 backdrop-blur-sm">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Artifacts</div>
-            <div className="mt-2 text-3xl font-bold text-white">{totalArtifacts}</div>
-            <p className="mt-2 text-sm text-gray-500 font-serif italic">Seed a new idea into a room.</p>
-          </div>
-          <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-5 backdrop-blur-sm">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Flow</div>
-            <div className="mt-2 text-3xl font-bold text-white">3 paths</div>
-            <p className="mt-2 text-sm text-gray-500 font-serif italic">Room, thread, or journal, depending on intent.</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4 mb-2">
+                 <div className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
+                    <p className="text-white font-bold text-lg leading-none">{rooms.length}</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Active Rooms</p>
+                 </div>
+                 <div className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
+                    <p className="text-white font-bold text-lg leading-none">{totalArtifacts}</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Total Artifacts</p>
+                 </div>
+              </div>
+            </div>
           </div>
         </section>
 

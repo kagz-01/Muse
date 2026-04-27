@@ -139,97 +139,48 @@ ${e.body}
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10">
-      <div className="relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.15),transparent_60%)] pointer-events-none" />
-
-        <div className="relative z-10 px-6 md:px-10 pt-10 pb-8 max-w-6xl mx-auto w-full">
-          <div className="flex flex-wrap items-center gap-4 mb-10">
-            <div className="flex items-center gap-2.5 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
-              <Flame size={18} className={streak > 0 ? "text-orange-400" : "text-gray-600"} />
-              <div>
-                <p className="text-white font-bold text-base leading-none">{streak} days</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">Streak</p>
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
+      <div className="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-12">
+        <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
+          <div className="absolute top-0 right-0 h-full w-1/2 bg-linear-to-l from-violet-500/10 to-transparent blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-violet-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                Contemplation Layer
               </div>
-            </div>
-
-            <div className="flex items-center gap-3 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl flex-1 max-w-xs">
-              <Target size={16} className="text-violet-400 shrink-0" />
-              <div className="flex-1">
-                <div className="flex justify-between mb-1.5">
-                  <p className="text-[10px] text-gray-500 uppercase tracking-widest">Today</p>
-                  <p className="text-[10px] font-bold text-gray-300">{todayWords}/{dailyWordGoal}</p>
-                </div>
-                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-violet-500 transition-all duration-500" style={{ width: `${goalProgress}%` }} />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 ml-auto">
-              <button onClick={handleExport}
-                type="button"
-                className="w-11 h-11 flex items-center justify-center bg-white/5 border border-white/10 rounded-full text-gray-400 hover:text-white hover:border-white/20 transition-all cursor-pointer"
-                title="Export to Markdown">
-                <Download size={18} />
-              </button>
-              <button onClick={() => setShowInsights(!showInsights)}
-                type="button"
-                className={`flex items-center gap-2 px-5 h-11 rounded-full border text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${showInsights ? 'bg-violet-500/20 border-violet-500/40 text-violet-400' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'}`}>
-                <BarChart3 size={15} /> {showInsights ? 'Hide Insights' : 'Insights'}
-              </button>
-              <button onClick={handleNewEntry}
-                type="button"
-                className="flex items-center gap-2.5 px-8 h-11 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:shadow-[0_0_50px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 transition-all cursor-pointer">
-                <Plus size={16} /> New Entry
-              </button>
-            </div>
-          </div>
-
-          <section className="mb-10 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 md:p-7 backdrop-blur-sm">
-              <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-white">Contemplate</span>
-                <span>Private reflection layer</span>
-              </div>
-              <h2 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-white">Your Journal</h2>
-              <p className="mt-3 max-w-3xl text-gray-400 font-serif italic leading-relaxed">
-                This is where collected patterns become thought. Write privately, track mood shifts, and return here before anything becomes public or shared.
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
+                Quiet Your 
+                <span className="block italic font-serif text-violet-400 bg-linear-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent">Mental Noise.</span>
+              </h1>
+              <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
+                Your Journal is the sanctuary for raw thought. This is where patterns from your collection are tested against your intuition before they become creation.
               </p>
             </div>
 
-            <div className="rounded-[2rem] border border-white/5 bg-black/25 p-5 md:p-6 backdrop-blur-sm">
-              <div className="grid grid-cols-3 gap-3">
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Streak</div>
-                  <div className="mt-2 text-2xl font-bold text-white">{streak}d</div>
-                </div>
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Today</div>
-                  <div className="mt-2 text-2xl font-bold text-white">{todayWords}</div>
-                </div>
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Total</div>
-                  <div className="mt-2 text-2xl font-bold text-white">{totalWords}</div>
-                </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4 mb-2">
+                 <div className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
+                    <p className="text-white font-bold text-lg leading-none">{streak} days</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Streak</p>
+                 </div>
+                 <div className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
+                    <p className="text-white font-bold text-lg leading-none">{todayWords}</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Words Today</p>
+                 </div>
               </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {recentEntries.length > 0 ? recentEntries.map((entry) => (
-                  <a
-                    key={entry.id}
-                    href={`/journal/${entry.id}`}
-                    className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300 hover:border-white/20 hover:text-white transition-all"
-                  >
-                    {getJournalTitle(entry)}
-                  </a>
-                )) : (
-                  <span className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                    No recent entries
-                  </span>
-                )}
-              </div>
+              <button 
+                onClick={handleNewEntry}
+                type="button"
+                className="w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-8 py-5 text-[12px] font-bold uppercase tracking-[0.2em] text-black shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-all hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(255,255,255,0.25)] active:scale-95 cursor-pointer"
+              >
+                + New Journal Entry
+              </button>
             </div>
-          </section>
+          </div>
+        </section>
+
 
           {showInsights && (
             <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-300">

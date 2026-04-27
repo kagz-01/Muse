@@ -38,84 +38,62 @@ export default function ConnectionsHub() {
   ];
 
   return (
-    <div className="min-h-screen bg-canvas-bg-dark pb-24 relative overflow-hidden">
-      {/* Background Glows */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
-
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
       {/* Community Pulse Header */}
       <CommunityPulseStrip />
 
-      <div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        {/* Hero Section */}
-        <div className="mb-16">
-           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                   <div className="w-10 h-10 rounded-2xl bg-canvas-primary/20 border border-canvas-primary/30 flex items-center justify-center text-canvas-primary">
-                      <Globe size={20} />
-                   </div>
-                   <span className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em]">Community</span>
-                </div>
-                <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
-                  Pattern-Based <span className="text-gray-600">Connections.</span>
-                </h1>
-                <p className="mt-5 max-w-2xl text-gray-400 font-serif italic text-lg leading-relaxed">
-                  Connect after the system has something to say. The people here are organized around shared themes, active circles, and the ideas that keep returning.
-                </p>
+      <div className="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-12">
+        <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
+          <div className="absolute top-0 right-0 h-full w-1/2 bg-linear-to-l from-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                Collective Resonance
               </div>
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
+                Connect Through 
+                <span className="block italic font-serif text-indigo-400 bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Shared Patterns.</span>
+              </h1>
+              <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
+                Community in Muse is not about noise; it is about resonance. Connect with others only after the system has identified deep overlaps in your curated collections and threads.
+              </p>
+            </div>
 
-              <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
-                 <div className="text-right">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Active Thinkers</p>
-                    <p className="text-2xl font-mono text-white">1,204</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4 mb-2">
+                 <div className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
+                    <p className="text-white font-bold text-lg leading-none">1,204</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Active Thinkers</p>
                  </div>
-                 <div className="w-px h-10 bg-white/10" />
-                 <div className="text-right">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Live Circles</p>
-                    <p className="text-2xl font-mono text-canvas-primary">12</p>
+                 <div className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
+                    <p className="text-white font-bold text-lg leading-none">12</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Live Circles</p>
                  </div>
               </div>
-           </div>
-
-            <section className="grid gap-4 md:grid-cols-3 mb-12">
-              <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 backdrop-blur-sm">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Circles</div>
-                <div className="mt-2 text-3xl font-bold text-white">{circles.length}</div>
-                <p className="mt-2 text-sm text-gray-500 font-serif italic">Active shared interest spaces.</p>
+              <div className="flex flex-wrap items-center gap-2 p-1 bg-white/5 border border-white/10 rounded-[2rem]">
+                {tabs.map((tab) => (
+                  <button
+                    type="button"
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`
+                      flex items-center gap-2.5 px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer
+                      ${activeTab === tab.id 
+                        ? 'bg-white text-black shadow-xl' 
+                        : 'text-gray-500 hover:text-white hover:bg-white/5'}
+                    `}
+                  >
+                    <tab.icon size={14} />
+                    {tab.label}
+                  </button>
+                ))}
               </div>
-              <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 backdrop-blur-sm">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Collaborators</div>
-                <div className="mt-2 text-3xl font-bold text-white">{collaborators.length}</div>
-                <p className="mt-2 text-sm text-gray-500 font-serif italic">People with overlapping themes.</p>
-              </div>
-              <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 backdrop-blur-sm">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Community rooms</div>
-                <div className="mt-2 text-3xl font-bold text-white">{communityRooms.length}</div>
-                <p className="mt-2 text-sm text-gray-500 font-serif italic">Shared spaces shaped by the pattern layer.</p>
-              </div>
-            </section>
-
-           {/* Custom Tab Navigation */}
-           <div className="flex flex-wrap items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-4xl w-fit mb-12">
-              {tabs.map((tab) => (
-                <button
-                  type="button"
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`
-                    flex items-center gap-3 px-6 py-3 rounded-3xl text-sm font-bold transition-all duration-500
-                    ${activeTab === tab.id 
-                      ? 'bg-white text-black shadow-[0_0_25px_rgba(255,255,255,0.1)]' 
-                      : 'text-gray-500 hover:text-white hover:bg-white/5'}
-                  `}
-                >
-                  <tab.icon size={18} />
-                  {tab.label}
-                </button>
-              ))}
-           </div>
-        </div>
+            </div>
+          </div>
+        </section>
 
         <div className="transition-all duration-500">
           {soloMode ? (
