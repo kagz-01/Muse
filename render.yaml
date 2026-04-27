@@ -1,7 +1,7 @@
 services:
   - type: web
     name: muse-ai-engine
-    env: docker
+    runtime: docker
     dockerContext: ./ai-engine
     dockerfilePath: ./ai-engine/Dockerfile
     plan: free

@@ -38,10 +38,10 @@ The navigation is being shaped around the workflow, not just page names:
 
 ## Current Features & Status
 
-The platform architecture is established and currently supports:
-- **UI/UX Personalization:** Theme toggling (Dark/Light), typography scaling, and dynamic accent colors.
-- **Core Interfaces:** Simplified user dashboard, profile settings, and Demo Mode for user onboarding.
-- **Interactions:** Notifications action bell and cleanly structured routing mirroring the product cycle.
+Muse has evolved into a fully scalable Web3-enabled Knowledge Platform. The monorepo architecture currently supports:
+- **`frontend-gateway/` (Deno Fresh):** The core UI offering theme toggling (Dark/Light), typography scaling, dynamic accent colors, and a Solana Web3 Wallet connector (`Phantom`).
+- **`ai-engine/` (Python/FastAPI):** Prepared for real-time LangChain analysis, semantic search, and personalized journal insights.
+- **`blockchain-security/` (Rust/Anchor):** Handles AES-256-GCM data encryption, Arweave decentralized storage integration, and native Solana Smart Contracts for Immutable Logging (Proof of Thought), $MUSE token rewards, Soulbound Reputation Tokens, and Token-Gated Rooms.
 
 ## Working Rules
 
@@ -53,15 +53,23 @@ The platform architecture is established and currently supports:
 - Journal should remain the private contemplation layer.
 - Community should connect people only after patterns exist.
 
-## Development
+## Development (Monorepo)
 
-Make sure Deno is installed, then start the app:
+Muse is built as a microservices architecture orchestrated via Docker.
 
+### Running the Full Stack
+To run the Deno Frontend, Python AI Engine, and Rust Blockchain Security API simultaneously, run the following from the root directory:
 ```bash
-deno task start
+docker compose up --build
 ```
 
-This runs the Fresh app with file watching enabled.
+### Running just the Frontend UI
+If you only need to work on UI styling or React components:
+```bash
+cd frontend-gateway
+deno task start
+```
+This runs the Fresh app on port 8000 with file watching enabled.
 
 ## Notes
 
