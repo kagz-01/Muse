@@ -10,3 +10,15 @@ services:
     envVars:
       - key: PORT
         value: 8000
+
+  - type: web
+    name: muse-blockchain-security
+    runtime: docker
+    dockerContext: ./blockchain-security
+    dockerfilePath: ./blockchain-security/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    envVars:
+      - key: PORT
+        value: 3000
