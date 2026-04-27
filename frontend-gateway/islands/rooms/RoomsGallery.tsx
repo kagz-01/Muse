@@ -5,7 +5,6 @@ import {
   Globe,
   Layout,
   Layers,
-  Lock,
   Pin,
   Plus,
   Sparkles,
@@ -103,7 +102,7 @@ function RoomCard({
     return (
       <div
         onClick={onOpen}
-        className={`group relative min-w-[300px] md:min-w-[360px] h-[440px] snap-start overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#111] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
+        className={`group relative w-[280px] md:w-[320px] shrink-0 h-[440px] snap-start overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#111] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
       >
         {/* Background Image - Always Visible but Subtle */}
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
@@ -395,7 +394,7 @@ export default function RoomsGallery() {
               </div>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+            <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:-mx-10 md:px-10">
               {pinnedRooms.map((room) => (
                 <div key={room.id} className="snap-start">
                   <RoomCard
@@ -482,7 +481,7 @@ export default function RoomsGallery() {
                 </button>
               </div>
             ) : (
-              <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+              <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:-mx-10 md:px-10">
                 {visibleRooms.map((room) => (
                   <div key={room.id} className="snap-start">
                     <RoomCard
@@ -502,7 +501,7 @@ export default function RoomsGallery() {
                 <button
                   onClick={() => setShowCreate(true)}
                   type="button"
-                  className="min-w-[280px] md:min-w-[320px] rounded-[2rem] border-2 border-dashed border-white/10 bg-transparent px-6 py-8 text-left transition-all hover:border-white/25 hover:bg-white/[0.02] cursor-pointer snap-start"
+                  className="w-[280px] md:w-[320px] shrink-0 h-[440px] rounded-[2.5rem] border-2 border-dashed border-white/10 bg-transparent px-6 py-8 text-left transition-all hover:border-white/25 hover:bg-white/[0.02] cursor-pointer snap-start"
                 >
                   <div className="flex h-full min-h-[270px] flex-col items-center justify-center text-center">
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-gray-600 text-gray-500 transition-colors hover:border-white">

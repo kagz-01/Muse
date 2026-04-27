@@ -1,5 +1,5 @@
 import { 
-  Users, Plus, ArrowRight, MessageSquare, Globe 
+  Plus, ArrowRight, MessageSquare, Globe 
 } from "lucide-preact";
 
 export interface ActiveCircle {
