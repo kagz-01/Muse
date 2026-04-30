@@ -30,17 +30,23 @@ import * as $create_CreateHub from "./islands/create/CreateHub.tsx";
 import * as $create_index from "./islands/create/index.ts";
 import * as $dashboard_DashboardRooms from "./islands/dashboard/DashboardRooms.tsx";
 import * as $dashboard_HomeOverview from "./islands/dashboard/HomeOverview.tsx";
+import * as $dashboard_PulseHome from "./islands/dashboard/PulseHome.tsx";
 import * as $dashboard_index from "./islands/dashboard/index.ts";
 import * as $journal_JournalEntryView from "./islands/journal/JournalEntryView.tsx";
 import * as $journal_JournalGallery from "./islands/journal/JournalGallery.tsx";
 import * as $journal_index from "./islands/journal/index.ts";
+import * as $landing_DemoVideo from "./islands/landing/DemoVideo.tsx";
+import * as $landing_LandingFooter from "./islands/landing/LandingFooter.tsx";
 import * as $landing_LandingIsland from "./islands/landing/LandingIsland.tsx";
 import * as $landing_LandingPage from "./islands/landing/LandingPage.tsx";
+import * as $landing_SpectralHero from "./islands/landing/SpectralHero.tsx";
+import * as $landing_SystemBento from "./islands/landing/SystemBento.tsx";
 import * as $landing_index from "./islands/landing/index.ts";
 import * as $layout_AppHeader from "./islands/layout/AppHeader.tsx";
 import * as $layout_AppLayoutWrapper from "./islands/layout/AppLayoutWrapper.tsx";
 import * as $layout_AppMenu from "./islands/layout/AppMenu.tsx";
 import * as $layout_index from "./islands/layout/index.ts";
+import * as $library_UnifiedVault from "./islands/library/UnifiedVault.tsx";
 import * as $mirror_Mirror from "./islands/mirror/Mirror.tsx";
 import * as $mirror_index from "./islands/mirror/index.ts";
 import * as $modals_AuthModal from "./islands/modals/AuthModal.tsx";
@@ -96,17 +102,23 @@ const manifest = {
     "./islands/create/index.ts": $create_index,
     "./islands/dashboard/DashboardRooms.tsx": $dashboard_DashboardRooms,
     "./islands/dashboard/HomeOverview.tsx": $dashboard_HomeOverview,
+    "./islands/dashboard/PulseHome.tsx": $dashboard_PulseHome,
     "./islands/dashboard/index.ts": $dashboard_index,
     "./islands/journal/JournalEntryView.tsx": $journal_JournalEntryView,
     "./islands/journal/JournalGallery.tsx": $journal_JournalGallery,
     "./islands/journal/index.ts": $journal_index,
+    "./islands/landing/DemoVideo.tsx": $landing_DemoVideo,
+    "./islands/landing/LandingFooter.tsx": $landing_LandingFooter,
     "./islands/landing/LandingIsland.tsx": $landing_LandingIsland,
     "./islands/landing/LandingPage.tsx": $landing_LandingPage,
+    "./islands/landing/SpectralHero.tsx": $landing_SpectralHero,
+    "./islands/landing/SystemBento.tsx": $landing_SystemBento,
     "./islands/landing/index.ts": $landing_index,
     "./islands/layout/AppHeader.tsx": $layout_AppHeader,
     "./islands/layout/AppLayoutWrapper.tsx": $layout_AppLayoutWrapper,
     "./islands/layout/AppMenu.tsx": $layout_AppMenu,
     "./islands/layout/index.ts": $layout_index,
+    "./islands/library/UnifiedVault.tsx": $library_UnifiedVault,
     "./islands/mirror/Mirror.tsx": $mirror_Mirror,
     "./islands/mirror/index.ts": $mirror_index,
     "./islands/modals/AuthModal.tsx": $modals_AuthModal,

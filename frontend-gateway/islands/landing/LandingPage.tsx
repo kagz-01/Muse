@@ -35,7 +35,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 z-20" />
         
         {/* We would use a real loop video here. For now, we simulate with a pulse and movement */}
-        <div className="absolute inset-0 bg-gradient-radial from-canvas-primary/20 to-transparent animate-[pulse_10s_infinite_ease-in-out] blur-[150px]" />
+        <div className="absolute inset-0 bg-gradient-radial from-canvas-primary/20 to-transparent animate-slow-pulse blur-[150px]" />
       </div>
 
       {/* Header */}
@@ -100,12 +100,14 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-6">
                <button 
+                 type="button"
                  onClick={() => setAuthMode('signup')}
                  className="px-12 py-6 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full shadow-3xl hover:-translate-y-1 active:scale-95 transition-all cursor-pointer"
                >
                  Begin Initialization
                </button>
                <button 
+                 type="button"
                  onClick={handleGuestEntry}
                  className="px-12 py-6 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white/10 transition-all cursor-pointer"
                >
@@ -117,6 +119,16 @@ export default function LandingPage() {
 
         <LandingFooter />
       </main>
+
+      <style>{`
+        @keyframes slow-pulse {
+          0%, 100% { opacity: 0.15; transform: scale(1); }
+          50% { opacity: 0.25; transform: scale(1.05); }
+        }
+        .animate-slow-pulse {
+          animation: slow-pulse 15s infinite ease-in-out;
+        }
+      `}</style>
     </div>
   );
 }

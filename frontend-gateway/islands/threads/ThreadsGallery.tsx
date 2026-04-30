@@ -133,6 +133,7 @@ export default function ThreadsGallery() {
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-all duration-500">
                        {thread.isPublic ? <Globe size={14} /> : <Lock size={14} />}
                     </div>
+                  </div>
                 </div>
               </div>
             </a>
@@ -156,4 +157,3 @@ export default function ThreadsGallery() {
     </>
   );
 }
-

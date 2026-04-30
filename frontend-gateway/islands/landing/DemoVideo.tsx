@@ -1,5 +1,4 @@
-import { useState } from "preact/hooks";
-import { Play, X, Zap, Activity, Sparkles } from "lucide-preact";
+import { X, Zap, Activity, Sparkles } from "lucide-preact";
 
 export default function DemoVideo({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   if (!isOpen) return null;
@@ -55,6 +54,7 @@ export default function DemoVideo({ isOpen, onClose }: { isOpen: boolean, onClos
         </div>
 
         <button 
+          type="button"
           onClick={onClose}
           className="absolute top-10 right-10 w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all cursor-pointer z-50 hover:rotate-90"
         >
