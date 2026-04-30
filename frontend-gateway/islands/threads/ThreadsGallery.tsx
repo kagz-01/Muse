@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { Layers, Plus, Share2, Globe, Lock } from "lucide-preact";
+import { Layers, Plus, Globe, Lock } from "lucide-preact";
 import { threadsSignal, type ThreadMood } from "../../signals/threads.ts";
 import CreateThreadModal from "../modals/CreateThreadModal.tsx";
 
@@ -39,7 +39,7 @@ export default function ThreadsGallery() {
     <>
       {showCreate && <CreateThreadModal onClose={() => setShowCreate(false)} />}
       
-      <div className="p-6 md:p-10 max-w-7xl mx-auto pb-24 md:pb-10 space-y-12">
+      <div className="p-6 md:p-10 w-full max-w-[1800px] mx-auto pb-24 md:pb-10 space-y-12">
         <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
           <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
           
@@ -49,9 +49,9 @@ export default function ThreadsGallery() {
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
                 Synthesis Engine
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white">
                 Synthesize Your 
-                <span className="block italic font-serif text-indigo-400 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent pr-4 pb-4">Consciousness.</span>
+                <span className="inline-block italic font-serif text-indigo-400 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent pr-12 pb-6 -mr-12 -mb-6">Consciousness.</span>
               </h1>
               <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
                 Threads are where patterns emerge. Connect the disparate artifacts of your collection into cohesive, high-fidelity intellectual structures.
@@ -60,9 +60,9 @@ export default function ThreadsGallery() {
 
             <div className="flex flex-col gap-4">
               <button 
-                onClick={() => setShowCreate(true)}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowCreate(true); }}
                 type="button"
-                className="w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-8 py-5 text-[12px] font-bold uppercase tracking-[0.2em] text-black shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-all hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(255,255,255,0.25)] active:scale-95 cursor-pointer"
+                className="w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-8 py-5 text-[12px] font-bold uppercase tracking-[0.2em] text-black shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-all hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(255,255,255,0.25)] active:scale-95 cursor-pointer relative z-[30]"
               >
                 + Initialize Thread
               </button>
@@ -70,7 +70,7 @@ export default function ThreadsGallery() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {threads.map((thread) => (
             <a
               key={thread.id}
@@ -131,18 +131,17 @@ export default function ThreadsGallery() {
                        </div>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-all duration-500">
-                       <Share2 size={16} />
+                       {thread.isPublic ? <Globe size={14} /> : <Lock size={14} />}
                     </div>
-                  </div>
                 </div>
               </div>
             </a>
           ))}
 
           <button
-            onClick={() => setShowCreate(true)}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowCreate(true); }}
             type="button"
-            className="h-[460px] rounded-[2.5rem] border-2 border-dashed border-white/5 bg-[#0d0d0d] hover:border-white/20 hover:bg-white/[0.02] flex flex-col items-center justify-center gap-6 transition-all duration-500 group cursor-pointer card-glow glow-slate"
+            className="h-[460px] rounded-[2.5rem] border-2 border-dashed border-white/5 bg-[#0d0d0d] hover:border-indigo-500/20 hover:bg-indigo-500/[0.02] flex flex-col items-center justify-center gap-6 transition-all duration-500 group cursor-pointer card-glow glow-indigo relative z-[30]"
           >
             <div className="w-16 h-16 rounded-full border-2 border-dashed border-gray-700 group-hover:border-indigo-400 flex items-center justify-center transition-all duration-500">
               <Plus size={24} className="text-gray-600 group-hover:text-indigo-400" />

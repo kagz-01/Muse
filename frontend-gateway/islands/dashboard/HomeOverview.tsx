@@ -90,7 +90,7 @@ export default function HomeOverview() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-10 pt-8 pb-10 space-y-8">
+    <div className="max-w-[1800px] mx-auto px-6 md:px-10 pt-8 pb-10 space-y-8">
       <section className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-linear-to-br from-white/[0.04] via-white/[0.02] to-transparent p-8 md:p-10 shadow-2xl">
         <div className="absolute -top-16 -right-12 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-20 -left-16 h-56 w-56 rounded-full bg-canvas-primary/10 blur-3xl" />

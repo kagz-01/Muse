@@ -42,7 +42,7 @@ export default function ConnectionsHub() {
       {/* Community Pulse Header */}
       <CommunityPulseStrip />
 
-      <div className="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-12">
+      <div className="p-6 md:p-10 max-w-[1800px] mx-auto w-full space-y-12">
         <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
           <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
           

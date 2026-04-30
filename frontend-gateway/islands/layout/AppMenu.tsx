@@ -1,5 +1,6 @@
-import { isMenuOpenSignal, closeMenu, toggleMenu, toggleCapture } from "../../signals/ui.ts";
-import { Home, Layers, BookOpen, Plus, User, PenTool, Menu as MenuIcon, X, Network, Layout as LayoutIcon, ChevronRight, Sparkles, Compass, MessageSquare } from "lucide-preact";
+import { isMenuOpenSignal, closeMenu, toggleCapture, setAccentColor, appAccentSignal, AppAccentColor } from "../../signals/ui.ts";
+import { BookOpen, Plus, X, Network, Layout as LayoutIcon, ChevronRight, Sparkles, Activity, Shield, Wallet, Download, Settings as SettingsIcon } from "lucide-preact";
+import { userSignal } from "../../signals/user.ts";
 
 interface AppMenuProps {
   currentPath: string;
@@ -8,20 +9,14 @@ interface AppMenuProps {
 export default function AppMenu({ currentPath }: AppMenuProps) {
   const isOpen = isMenuOpenSignal.value;
 
-  // The Core Cycle Flow: Rooms (Collect) -> Threads (Analyze) -> Create -> Journal (Contemplate) -> Community (Network)
-  const cycleNav = [
-    { label: 'Rooms', path: '/rooms', icon: <LayoutIcon size={24} />, desc: 'Collect' },
-    { label: 'Threads', path: '/threads', icon: <Layers size={24} />, desc: 'Analyze' },
-    { label: 'Journal', path: '/journal', icon: <BookOpen size={24} />, desc: 'Contemplate' },
-    { label: 'Community', path: '/connections', icon: <Network size={24} />, desc: 'Network' },
-  ];
+  const user = userSignal.value;
 
-  const secondaryNav = [
-    { label: 'Home', path: '/dashboard', icon: <Home size={20} /> },
-    { label: 'Mirror', path: '/mirror', icon: <Sparkles size={20} /> },
-    { label: 'Profile', path: '/profile', icon: <User size={20} /> },
-    { label: 'Settings', path: '/settings', icon: <User size={20} /> },
-    { label: 'Quick Actions', path: '/actions', icon: <Compass size={20} /> },
+  // Muse 2.0 Unified Lifecycle Flow
+  const cycleNav = [
+    { label: 'Pulse', path: '/dashboard', icon: <Sparkles size={24} />, desc: 'Awareness' },
+    { label: 'Vault', path: '/rooms', icon: <LayoutIcon size={24} />, desc: 'Collection' },
+    { label: 'Journal', path: '/journal', icon: <BookOpen size={24} />, desc: 'Contemplate' },
+    { label: 'Network', path: '/connections', icon: <Network size={24} />, desc: 'Collective' },
   ];
 
   const isActive = (path: string) => currentPath.startsWith(path);
@@ -46,15 +41,17 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
           ))}
         </div>
 
-        {/* Center: THE CREATE BUTTON (The Core Action) */}
-        <div className="relative -top-6">
+        {/* Center: THE SYNTHESIS ENGINE */}
+        <div className="relative -top-8">
+          <div className="absolute inset-0 bg-canvas-primary/20 blur-2xl rounded-full animate-pulse" />
           <button 
             type="button"
             onClick={toggleCapture}
-            className="w-16 h-16 bg-white text-black rounded-[2rem] flex items-center justify-center shadow-[0_15px_35px_rgba(255,255,255,0.2)] border-4 border-[#0a0a0a] active:scale-90 transition-all hover:scale-105 group"
+            className="relative w-16 h-16 bg-white text-black rounded-[2rem] flex items-center justify-center shadow-[0_20px_40px_rgba(255,255,255,0.2)] border-4 border-[#0a0a0a] active:scale-90 transition-all hover:scale-105 group overflow-hidden"
           >
-            <Plus size={32} className="group-hover:rotate-90 transition-transform duration-500" />
-            <div className="absolute -bottom-8 whitespace-nowrap text-[10px] font-bold text-white uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">Capture</div>
+            <div className="absolute inset-0 bg-canvas-primary/5 group-hover:bg-canvas-primary/10 transition-colors" />
+            <Plus size={32} className="relative z-10 group-hover:rotate-90 transition-transform duration-500" />
+            <div className="absolute -bottom-8 whitespace-nowrap text-[9px] font-bold text-white uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity">Synthesize</div>
           </button>
         </div>
 
@@ -94,32 +91,84 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
             </button>
           </div>
 
-          <nav className="flex flex-col gap-2">
-            {secondaryNav.map(item => {
-              const active = isActive(item.path);
-              return (
-                <a 
-                  key={item.label}
-                  href={item.path}
-                  onClick={closeMenu}
-                  className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${active ? 'bg-canvas-primary/10 text-canvas-primary border border-canvas-primary/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
-                >
-                  {item.icon}
-                  <span className="text-sm font-bold tracking-tight">{item.label}</span>
+          <div className="space-y-6">
+            {/* PROFILE WIDGET */}
+            <div className="bg-white/5 rounded-[2rem] p-6 border border-white/10">
+              <div className="flex items-center gap-4 mb-5">
+                <img src={user?.avatarUrl} className="w-14 h-14 rounded-2xl object-cover border border-white/10" alt="" />
+                <div>
+                  <h3 className="text-sm font-bold text-white tracking-tight">{user?.name}</h3>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{user?.username}</p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <a href="/profile" onClick={closeMenu} className="flex items-center justify-between p-3 rounded-xl bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all">
+                  Manage Persona <ChevronRight size={14} />
                 </a>
-              );
-            })}
-          </nav>
+              </div>
+            </div>
 
-          <div className="mt-auto pt-10 border-t border-white/5">
-             <div className="bg-canvas-primary/5 rounded-3xl p-5 border border-canvas-primary/10">
-                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-widest mb-2">Mirror Intelligence</p>
-                <p className="text-xs text-gray-400 leading-relaxed mb-4">Your semantic patterns are being analyzed in real-time.</p>
-                <a href="/mirror" className="inline-flex items-center gap-2 text-[10px] font-bold text-white uppercase tracking-widest hover:gap-3 transition-all">
-                  Open Insights <ChevronRight size={14} />
+            {/* LEDGER & PRIVACY WIDGET */}
+            <div className="bg-white/5 rounded-[2rem] p-6 border border-white/10 space-y-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Shield size={16} className="text-canvas-primary" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Visibility</span>
+                </div>
+                <span className="text-[9px] font-bold px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg uppercase tracking-widest border border-emerald-500/20">Public</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Wallet size={16} className="text-canvas-primary" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Ledger Status</span>
+                </div>
+                <span className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">Secured</span>
+              </div>
+            </div>
+
+            {/* AURA WIDGET */}
+            <div className="bg-white/5 rounded-[2rem] p-6 border border-white/10">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">System Aura</span>
+                <span className="text-[9px] font-bold text-canvas-primary uppercase tracking-widest">Resonance</span>
+              </div>
+              <div className="flex flex-wrap gap-2.5">
+                {(['cyan', 'blue', 'purple', 'pink', 'green', 'yellow', 'red', 'white'] as AppAccentColor[]).map(color => (
+                  <button 
+                    type="button"
+                    key={color}
+                    onClick={() => setAccentColor(color)}
+                    className={`w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-90 ${appAccentSignal.value === color ? 'border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-white/10'}`}
+                    style={{ backgroundColor: color === 'white' ? '#f1f5f9' : color }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* SYSTEM CONTROLS */}
+            <div className="grid grid-cols-2 gap-3">
+              <a href="/settings" onClick={closeMenu} className="flex flex-col items-center gap-3 p-5 rounded-3xl bg-white/5 border border-white/5 hover:border-white/20 transition-all text-gray-400 hover:text-white">
+                <SettingsIcon size={20} />
+                <span className="text-[9px] font-bold uppercase tracking-widest">Settings</span>
+              </a>
+              <button type="button" className="flex flex-col items-center gap-3 p-5 rounded-3xl bg-white/5 border border-white/5 hover:border-white/20 transition-all text-gray-400 hover:text-white cursor-pointer">
+                <Download size={20} />
+                <span className="text-[9px] font-bold uppercase tracking-widest">Export Soul</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-auto pt-8">
+             <div className="bg-gradient-to-br from-canvas-primary/10 to-transparent rounded-3xl p-6 border border-canvas-primary/20">
+                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                  <Activity size={12} /> Mirror Sync
+                </p>
+                <p className="text-[11px] text-gray-400 leading-relaxed mb-4 font-serif italic">Your digital soul is synchronizing with the collective consciousness.</p>
+                <a href="/mirror" onClick={closeMenu} className="text-[9px] font-bold text-white uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all">
+                  Deep Intelligence <ChevronRight size={14} />
                 </a>
              </div>
-             <p className="mt-8 text-center text-[9px] font-bold text-gray-700 uppercase tracking-widest">Muse 2.0 • Secured</p>
+             <p className="mt-8 text-center text-[8px] font-bold text-gray-800 uppercase tracking-[0.4em]">Muse v2.0 • Phase Alpha</p>
           </div>
         </div>
       </div>

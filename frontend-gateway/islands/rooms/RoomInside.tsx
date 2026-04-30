@@ -108,7 +108,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
             <Camera size={18} />
           </button>
 
-          <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 max-w-7xl mx-auto w-full z-10">
+          <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 max-w-[1800px] mx-auto w-full z-10">
             <div className="flex justify-between items-center">
               <a href="/rooms" className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-lg">
                 <ArrowLeft size={18} />
@@ -168,7 +168,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
           </div>
         </header>
 
-        <main className="p-6 md:p-10 max-w-7xl mx-auto relative z-10 -mt-4">
+        <main className="p-6 md:p-10 max-w-[1800px] mx-auto relative z-10 -mt-4">
           <section className="mb-8 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
             <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 md:p-7 backdrop-blur-sm">
               <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">

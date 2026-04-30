@@ -54,7 +54,7 @@ export default function CreateHub() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
-      <div className="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-12">
+      <div className="p-6 md:p-10 max-w-[1800px] mx-auto w-full space-y-12">
         {showCreateRoom && <CreateRoomModal onClose={() => setShowCreateRoom(false)} />}
         {showCreateThread && <CreateThreadModal onClose={() => setShowCreateThread(false)} />}
 
@@ -67,9 +67,9 @@ export default function CreateHub() {
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Synthesis Hub
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white">
                 Transmute Thought 
-                <span className="block italic font-serif text-emerald-400 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent pb-4 pr-4">Into Form.</span>
+                <span className="inline-block italic font-serif text-emerald-400 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent ml-3 pr-12 pb-6 -mr-12 -mb-6">Into Form.</span>
               </h1>
               <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
                 Creation is the inevitable result of deep contemplation. Whether initializing a new space, weaving a thread, or seeding an artifact, every act here is intentional.
@@ -189,10 +189,10 @@ export default function CreateHub() {
           </div>
 
           <div 
-            onClick={() => setShowCreateThread(true)}
-            className="group relative h-[400px] rounded-4xl overflow-hidden cursor-pointer border border-white/5 hover:border-violet-600/40 transition-all duration-500 shadow-2xl"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowCreateThread(true); }}
+            className="group relative h-[400px] rounded-4xl overflow-hidden cursor-pointer border border-white/5 hover:border-violet-600/40 transition-all duration-500 shadow-2xl z-10"
           >
-            <div className="absolute inset-0 bg-linear-to-b from-violet-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-b from-violet-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
               <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-4xl flex items-center justify-center mb-8 transform group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 shadow-xl">
                 <Layers size={36} className="text-violet-400" />

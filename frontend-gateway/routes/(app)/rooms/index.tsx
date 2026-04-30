@@ -1,7 +1,7 @@
-import { RoomsGallery } from "../../../islands/rooms/index.ts";
+import UnifiedVault from "../../../islands/library/UnifiedVault.tsx";
 
 export default function RoomsPage() {
   return (
-    <RoomsGallery />
+    <UnifiedVault />
   );
 }

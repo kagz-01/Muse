@@ -2,23 +2,11 @@ import {
   Search,
   Menu as MenuIcon,
   Bell,
-  Moon,
-  Sun,
-  CheckCheck,
-  Home,
-  Layout as LayoutIcon,
-  BookOpen,
-  Layers,
   Sparkles,
-  PenTool,
-  Compass,
-  Settings,
-  User,
 } from "lucide-preact";
 import { useEffect, useRef } from "preact/hooks";
 import { userSignal } from "../../signals/user.ts";
 import {
-  appThemeSignal,
   closeNotifications,
   initializeTheme,
   isNotificationsOpenSignal,
@@ -27,9 +15,7 @@ import {
   notificationsSignal,
   toggleMenu,
   toggleNotifications,
-  toggleTheme,
 } from "../../signals/ui.ts";
-import { PrivacyBadge } from "../../components/profile/index.ts";
 import WalletConnectButton from "../WalletConnectButton.tsx";
 
 interface AppHeaderProps {
@@ -37,27 +23,10 @@ interface AppHeaderProps {
 }
 
 export default function AppHeader({ currentPath }: AppHeaderProps) {
-  const user = userSignal.value;
-  const theme = appThemeSignal.value;
   const isNotificationsOpen = isNotificationsOpenSignal.value;
   const notifications = notificationsSignal.value;
-  const unreadCount = notifications.filter((notification) => !notification.isRead).length;
+  const unreadCount = notifications.filter((n: any) => !n.isRead).length;
   const notificationPanelRef = useRef<HTMLDivElement>(null);
-
-  const tabs = [
-    { label: "Home", path: "/dashboard", icon: <Home size={14} /> },
-    { label: "Create", path: "/create", icon: <PenTool size={14} /> },
-    { label: "Rooms", path: "/rooms", icon: <LayoutIcon size={14} /> },
-    { label: "Threads", path: "/threads", icon: <Layers size={14} /> },
-    { label: "Journal", path: "/journal", icon: <BookOpen size={14} /> },
-    { label: "Community", path: "/connections", icon: <Compass size={14} /> },
-    { label: "Quick Actions", path: "/actions", icon: <Compass size={14} /> },
-    { label: "AI Insights", path: "/mirror", icon: <Sparkles size={14} /> },
-    { label: "Profile", path: "/profile", icon: <User size={14} /> },
-    { label: "Settings", path: "/settings", icon: <Settings size={14} /> },
-  ];
-
-  const isActive = (path: string) => currentPath.startsWith(path);
 
   useEffect(() => {
     initializeTheme();
@@ -129,13 +98,13 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
               <div className="absolute right-0 mt-4 w-[340px] rounded-[2.5rem] border border-white/10 bg-[#111111] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4">
                 <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-canvas-primary">Signals</h4>
-                  <button onClick={markAllNotificationsRead} className="text-[9px] font-bold uppercase text-gray-500 hover:text-white transition-colors">Dismiss All</button>
+                  <button type="button" onClick={markAllNotificationsRead} className="text-[9px] font-bold uppercase text-gray-500 hover:text-white transition-colors">Dismiss All</button>
                 </div>
                 <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
                   {notifications.length === 0 ? (
                     <div className="p-10 text-center text-gray-600 text-xs italic">No active signals.</div>
                   ) : notifications.map((n) => (
-                    <button key={n.id} onClick={() => markNotificationRead(n.id)} className="w-full p-6 text-left border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                    <button type="button" key={n.id} onClick={() => markNotificationRead(n.id)} className="w-full p-6 text-left border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
                       <p className="text-sm font-bold text-white mb-1">{n.title}</p>
                       <p className="text-[11px] text-gray-500 leading-relaxed">{n.detail}</p>
                     </button>

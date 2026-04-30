@@ -297,7 +297,7 @@ export default function RoomsGallery() {
     <>
       {showCreate && <CreateRoomModal onClose={() => setShowCreate(false)} />}
 
-      <div className="p-6 md:p-10 max-w-7xl mx-auto pb-24 md:pb-10 space-y-12">
+      <div className="p-6 md:p-10 w-full max-w-[1800px] mx-auto pb-24 md:pb-10 space-y-12">
         <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
           <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-canvas-primary/10 to-transparent blur-3xl pointer-events-none" />
           
@@ -307,9 +307,9 @@ export default function RoomsGallery() {
                 <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
                 Collection Engine
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white">
                 Curate Your 
-                <span className="italic font-serif text-canvas-primary bg-clip-text text-transparent bg-gradient-to-r from-canvas-primary to-indigo-400 ml-3 pb-2 pr-4">Digital Soul.</span>
+                <span className="inline-block italic font-serif text-canvas-primary bg-gradient-to-r from-canvas-primary to-indigo-400 bg-clip-text text-transparent ml-3 pr-12 pb-6 -mr-12 -mb-6">Digital Soul.</span>
               </h1>
               <p className="mt-8 max-w-3xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-8">
                 Your Rooms are more than just digital storage. They are the sanctuary for your collected artifacts—the raw materials of your consciousness, secured by blockchain and refined by intelligence.
@@ -450,7 +450,7 @@ export default function RoomsGallery() {
                 </p>
               </div>
             ) : viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                 {visibleRooms.map((room) => (
                   <RoomCard
                     key={room.id}
@@ -501,7 +501,7 @@ export default function RoomsGallery() {
                 <button
                   onClick={() => setShowCreate(true)}
                   type="button"
-                  className="w-[280px] md:w-[320px] shrink-0 h-[440px] rounded-[2.5rem] border-2 border-dashed border-white/10 bg-transparent px-6 py-8 text-left transition-all hover:border-white/25 hover:bg-white/[0.02] cursor-pointer snap-start"
+                  className="w-[280px] md:w-[320px] shrink-0 h-[440px] rounded-[2.5rem] border-2 border-dashed border-white/10 bg-transparent px-6 py-8 text-left transition-all hover:border-canvas-primary/20 hover:bg-canvas-primary/[0.02] cursor-pointer snap-start group z-10"
                 >
                   <div className="flex h-full min-h-[270px] flex-col items-center justify-center text-center">
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-gray-600 text-gray-500 transition-colors hover:border-white">
