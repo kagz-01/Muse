@@ -50,5 +50,5 @@ export function addItem(item: Omit<Item, 'id' | 'createdAt' | 'dataProvenance'>)
 }
 
 export function deleteItem(id: string) {
-  itemsSignal.value = itemsSignal.value.filter(i => i.id !== id);
+  itemsSignal.value = itemsSignal.value.filter((i: Item) => i.id !== id);
 }

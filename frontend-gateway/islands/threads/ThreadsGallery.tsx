@@ -1,9 +1,9 @@
 import { useState } from "preact/hooks";
 import { 
-  GitCommit, Plus, Search, Filter, 
-  ExternalLink, Sparkles, MessageSquare, Clock, Globe, Lock
+  GitCommit, Plus, Search, 
+  ExternalLink, Clock, Globe, Lock
 } from "lucide-preact";
-import { threadsSignal, type ThreadMood } from "../../signals/threads.ts";
+import { threadsSignal, type ThreadMood, type Thread } from "../../signals/threads.ts";
 import BlueprintReview from "../../components/threads/BlueprintReview.tsx";
 
 const moodMapping: Record<ThreadMood, {
@@ -21,7 +21,7 @@ export default function ThreadsGallery() {
   const threads = threadsSignal.value;
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredThreads = threads.filter(t => 
+  const filteredThreads = threads.filter((t: Thread) => 
     t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     t.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -46,7 +46,10 @@ export default function ThreadsGallery() {
                </p>
             </div>
 
-            <button className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:-translate-y-1 transition-all flex items-center gap-3">
+            <button 
+              type="button"
+              className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:-translate-y-1 transition-all flex items-center gap-3"
+            >
                <Plus size={18} /> New Synthesis
             </button>
          </div>
@@ -73,7 +76,11 @@ export default function ThreadsGallery() {
             </h2>
             <div className="flex gap-2">
                {['all', 'public', 'private'].map(filter => (
-                 <button key={filter} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all capitalize">
+                 <button 
+                    type="button"
+                    key={filter} 
+                    className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all"
+                 >
                     {filter}
                  </button>
                ))}
@@ -81,8 +88,8 @@ export default function ThreadsGallery() {
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredThreads.map(thread => {
-               const mood = moodMapping[thread.mood];
+            {filteredThreads.map((thread: Thread) => {
+               const mood = moodMapping[thread.mood as ThreadMood];
                return (
                   <div key={thread.id} className="group bg-[#111] border border-white/5 rounded-[3rem] overflow-hidden hover:border-white/20 transition-all duration-500 shadow-2xl relative">
                      <div className="absolute top-0 right-0 p-6 z-10">
@@ -115,7 +122,7 @@ export default function ThreadsGallery() {
                            <div className="flex items-center gap-3">
                               <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600">Cross-Section</span>
                               <div className="flex -space-x-2">
-                                 {thread.sourceRoomIds.map(roomId => (
+                                 {thread.sourceRoomIds.map((roomId: string) => (
                                     <div key={roomId} className="w-6 h-6 rounded-full bg-white/10 border border-[#111] flex items-center justify-center text-[7px] font-bold uppercase text-white">
                                        {roomId.toUpperCase()}
                                     </div>

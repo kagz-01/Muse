@@ -1,14 +1,14 @@
-import { useState, useEffect } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { 
-  Sparkles, Layers, MessageSquare, GitCommit, 
-  Plus, X, Globe, Zap, Cpu, Activity
+  Sparkles, MessageSquare, GitCommit, 
+  Plus, X, Zap, Cpu, Activity
 } from "lucide-preact";
 
 type Phase = 'collect' | 'contemplate' | 'synthesize' | 'create';
 
 export default function SynthesisEngine() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activePhase, setActivePhase] = useState<Phase | null>(null);
+  const [_activePhase, setActivePhase] = useState<Phase | null>(null);
 
   const phases = [
     { id: 'collect', icon: Plus, label: 'Collect', color: 'text-indigo-400', desc: 'Capture social signals' },
@@ -31,6 +31,7 @@ export default function SynthesisEngine() {
       <div className="relative">
          {/* TRIGGER BUTTON */}
          <button 
+           type="button"
            onClick={() => setIsOpen(!isOpen)}
            className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 shadow-[0_0_50px_rgba(255,255,255,0.15)] hover:shadow-[0_0_70px_rgba(255,255,255,0.25)] ${isOpen ? 'bg-white text-black rotate-45 scale-90' : 'bg-[#111] border border-white/10 text-white'}`}
          >
@@ -43,6 +44,7 @@ export default function SynthesisEngine() {
               <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-10 fade-in duration-500">
                  {phases.map((phase, i) => (
                    <button 
+                     type="button"
                      key={phase.id}
                      onClick={() => {
                         setActivePhase(phase.id as Phase);

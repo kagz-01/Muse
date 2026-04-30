@@ -171,7 +171,7 @@ export function submitPerspective(content: string, targetId?: string, source?: s
   
   // Simulate Parallel Analysis
   setTimeout(() => {
-    perspectivesSignal.value = perspectivesSignal.value.map(p => 
+    perspectivesSignal.value = perspectivesSignal.value.map((p: Perspective) => 
       p.id === newId ? { ...p, isAnalyzing: false } : p
     );
   }, 2000);

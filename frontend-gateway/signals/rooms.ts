@@ -63,13 +63,13 @@ export function addRoom(room: Omit<Room, 'id' | 'updatedAt' | 'count' | 'semanti
 }
 
 export function updateRoomTheme(id: string, theme: RoomTheme) {
-  roomsSignal.value = roomsSignal.value.map(r => r.id === id ? { ...r, themeColor: theme } : r);
+  roomsSignal.value = roomsSignal.value.map((r: Room) => r.id === id ? { ...r, themeColor: theme } : r);
 }
 
 export function updateRoomCover(id: string, cover: string) {
-  roomsSignal.value = roomsSignal.value.map(r => r.id === id ? { ...r, coverImage: cover } : r);
+  roomsSignal.value = roomsSignal.value.map((r: Room) => r.id === id ? { ...r, coverImage: cover } : r);
 }
 
 export function toggleRoomPrivacy(id: string) {
-  roomsSignal.value = roomsSignal.value.map(r => r.id === id ? { ...r, isPublic: !r.isPublic } : r);
+  roomsSignal.value = roomsSignal.value.map((r: Room) => r.id === id ? { ...r, isPublic: !r.isPublic } : r);
 }
