@@ -1,0 +1,49 @@
+import { signal } from "@preact/signals";
+import { type ThreadMood } from "./threads.ts";
+
+export interface ThreadBlueprint {
+  id: string;
+  suggestedTitle: string;
+  suggestedDescription: string;
+  suggestedMood: ThreadMood;
+  itemIds: string[];
+  sourceRoomIds: string[];
+  thesis: string;
+  confidenceScore: number; // 0-100% AI confidence in this pattern
+  status: 'pending' | 'accepted' | 'refining' | 'discarded';
+  createdAt: string;
+}
+
+export const blueprintsSignal = signal<ThreadBlueprint[]>([
+  {
+    id: 'bp1',
+    suggestedTitle: 'The Architecture of Sovereignty',
+    suggestedDescription: 'A recurring pattern found across your Aesthetic Brutalism and Cognitive Stoicism rooms.',
+    suggestedMood: 'contemplative',
+    itemIds: ['i1', 'i2'],
+    sourceRoomIds: ['r1', 'r2'],
+    thesis: 'Your curation suggests that raw, honest digital forms are a prerequisite for personal sovereignty.',
+    confidenceScore: 92,
+    status: 'pending',
+    createdAt: new Date().toISOString()
+  }
+]);
+
+export function acceptBlueprint(id: string) {
+  blueprintsSignal.value = blueprintsSignal.value.map(bp => 
+    bp.id === id ? { ...bp, status: 'accepted' } : bp
+  );
+  // In a real app, this would also add to the main threadsSignal
+}
+
+export function discardBlueprint(id: string) {
+  blueprintsSignal.value = blueprintsSignal.value.map(bp => 
+    bp.id === id ? { ...bp, status: 'discarded' } : bp
+  );
+}
+
+export function updateBlueprintThesis(id: string, newThesis: string) {
+  blueprintsSignal.value = blueprintsSignal.value.map(bp => 
+    bp.id === id ? { ...bp, thesis: newThesis, status: 'refining' } : bp
+  );
+}
