@@ -18,6 +18,8 @@ export interface Collaborator {
   status: 'Online' | 'Reflecting' | 'Deep Focus' | 'Offline';
   bio: string;
   sharedThemes: string[];
+  aura: string; // Cognitive Aura color
+  intelligenceProfile: string; // e.g., 'Synthesizer', 'Architect', 'Observer'
 }
 
 export interface CommunityRoom {
@@ -39,13 +41,16 @@ export interface Perspective {
   timestamp: string;
   relationship: 'Resonating' | 'Challenging' | 'Synthesizing' | 'Initial';
   targetId?: string;
+  source?: string; // e.g., 'Journal', 'Vault'
 }
 
-export interface ThoughtCluster {
+export interface WisdomNode {
   id: string;
   topic: string;
-  perspectiveIds: string[];
-  resonanceScore: number;
+  x: number;
+  y: number;
+  radius: number;
+  connectedTo: string[];
 }
 
 export const circlesSignal = signal<ActiveCircle[]>([
@@ -77,7 +82,9 @@ export const collaboratorsSignal = signal<Collaborator[]>([
     role: 'Acoustic Architect',
     status: 'Deep Focus',
     bio: 'The friction of raw concrete is the point. A cognitive fortress against noise.',
-    sharedThemes: ['Brutalism', 'Silence']
+    sharedThemes: ['Brutalism', 'Silence'],
+    aura: 'cyan',
+    intelligenceProfile: 'Architect'
   },
   {
     id: 'p2',
@@ -86,7 +93,9 @@ export const collaboratorsSignal = signal<Collaborator[]>([
     role: 'Synthesist',
     status: 'Online',
     bio: 'Why do we keep collecting if we don\'t synthesize? A room is just a box until it becomes a thread.',
-    sharedThemes: ['Synthesis', 'Identity']
+    sharedThemes: ['Synthesis', 'Identity'],
+    aura: 'purple',
+    intelligenceProfile: 'Synthesizer'
   }
 ]);
 
@@ -100,14 +109,11 @@ export const communityRoomsSignal = signal<CommunityRoom[]>([
   }
 ]);
 
-export const activeThemesSignal = signal<string[]>([
-  'Brutalism', 'Ambient Noise', 'Stoic Tech', 'Urban Rewilding', 'Cognitive Load', 'Silence', 'Minimalism'
-]);
-
-export const insightsSignal = signal<string[]>([
-  "Community dialogue is currently high-fidelity and deeply reflective.",
-  "Trends indicate a shift towards 'Quiet Tech' curation.",
-  "The 'Silence' circle has seen a 40% increase in deep-linked artifacts this week."
+export const wisdomNodesSignal = signal<WisdomNode[]>([
+  { id: 'w1', topic: 'Brutalism', x: 200, y: 150, radius: 60, connectedTo: ['w2', 'w3'] },
+  { id: 'w2', topic: 'Silence', x: 400, y: 100, radius: 45, connectedTo: ['w1'] },
+  { id: 'w3', topic: 'Stoic Tech', x: 350, y: 300, radius: 50, connectedTo: ['w1'] },
+  { id: 'w4', topic: 'Identity', x: 600, y: 200, radius: 40, connectedTo: [] },
 ]);
 
 export const perspectivesSignal = signal<Perspective[]>([
@@ -116,7 +122,8 @@ export const perspectivesSignal = signal<Perspective[]>([
     author: { name: 'Amina El-Sayed', avatar: '', aura: 'cyan' },
     content: "The friction of raw concrete is the point. A cognitive fortress against noise.",
     timestamp: '2m ago',
-    relationship: 'Initial'
+    relationship: 'Initial',
+    source: 'Journal'
   },
   {
     id: 'per2',
@@ -124,16 +131,8 @@ export const perspectivesSignal = signal<Perspective[]>([
     content: "I'd argue that noise is necessary for the silence to have meaning. It's the contrast that builds the experience.",
     timestamp: 'Just now',
     relationship: 'Challenging',
-    targetId: 'per1'
-  }
-]);
-
-export const clustersSignal = signal<ThoughtCluster[]>([
-  {
-    id: 'cl1',
-    topic: 'Brutalist Psychology',
-    perspectiveIds: ['per1', 'per2'],
-    resonanceScore: 0.85
+    targetId: 'per1',
+    source: 'Vault'
   }
 ]);
 
@@ -141,7 +140,7 @@ export function joinCircle(id: string) {
   console.log(`Joining circle: ${id}`);
 }
 
-export function submitPerspective(content: string, targetId?: string) {
+export function submitPerspective(content: string, targetId?: string, source?: string) {
   const newId = 'per-' + Date.now();
   const newPerspective: Perspective = {
     id: newId,
@@ -149,18 +148,9 @@ export function submitPerspective(content: string, targetId?: string) {
     content,
     timestamp: 'Just now',
     relationship: targetId ? (Math.random() > 0.5 ? 'Resonating' : 'Synthesizing') : 'Initial',
-    targetId
+    targetId,
+    source
   };
   
   perspectivesSignal.value = [newPerspective, ...perspectivesSignal.value];
-  
-  if (perspectivesSignal.value.length % 3 === 0) {
-    const newCluster: ThoughtCluster = {
-      id: 'cl-' + Date.now(),
-      topic: 'Emerging Pattern: ' + content.slice(0, 20) + '...',
-      perspectiveIds: [newId, 'per1', 'per2'],
-      resonanceScore: Math.random()
-    };
-    clustersSignal.value = [newCluster, ...clustersSignal.value];
-  }
 }

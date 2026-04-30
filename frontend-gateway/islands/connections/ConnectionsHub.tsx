@@ -10,14 +10,15 @@ import {
 import { soloModeSignal, toggleSoloMode } from "../../signals/user.ts";
 import {
   ActiveCircleCard,
-  CollaboratorCard,
   CommunityRoomCard,
   SharedThemeCluster,
   CommunityPulseStrip,
 } from "../../components/connections/index.ts";
 import ThoughtStream from "./ThoughtStream.tsx";
+import WisdomMap from "./WisdomMap.tsx";
+import AuraCard from "../../components/connections/AuraCard.tsx";
 
-type Tab = 'Stream' | 'Circles' | 'People';
+type Tab = 'Stream' | 'Wisdom' | 'Circles' | 'People';
 
 export default function ConnectionsHub() {
   const [activeTab, setActiveTab] = useState<Tab>('Stream');
@@ -30,6 +31,7 @@ export default function ConnectionsHub() {
 
   const tabs: { id: Tab; icon: any; label: string }[] = [
     { id: 'Stream', icon: Activity, label: 'Thought Stream' },
+    { id: 'Wisdom', icon: Sparkles, label: 'Wisdom Map' },
     { id: 'Circles', icon: MessageSquare, label: 'Active Circles' },
     { id: 'People', icon: Users, label: 'Collaborators' },
   ];
@@ -49,7 +51,7 @@ export default function ConnectionsHub() {
             <div className="max-w-4xl">
               <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                The Collective Protocol 2.0
+                The Collective Protocol 3.0
               </div>
               <h1 className="mt-10 text-6xl md:text-8xl font-bold tracking-tight leading-[0.85] text-white">
                 Resonate with the <span className="italic font-serif text-gray-700">communal pulse.</span>
@@ -126,6 +128,10 @@ export default function ConnectionsHub() {
                   <ThoughtStream />
                 )}
 
+                {activeTab === 'Wisdom' && (
+                  <WisdomMap />
+                )}
+
                 {activeTab === 'Circles' && (
                   <div className="space-y-16">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -173,7 +179,7 @@ export default function ConnectionsHub() {
                       {collaborators
                         .filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()))
                         .map(collaborator => (
-                          <CollaboratorCard key={collaborator.id} collaborator={collaborator} />
+                          <AuraCard key={collaborator.id} collaborator={collaborator} />
                         ))
                       }
                     </div>
