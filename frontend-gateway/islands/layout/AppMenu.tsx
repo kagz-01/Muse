@@ -10,6 +10,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
   const isOpen = isMenuOpenSignal.value;
 
   const user = userSignal.value;
+  const isDemo = user?.email === "demo@muse.app";
 
   // Muse 2.0 Unified Lifecycle Flow
   const cycleNav = [
@@ -102,11 +103,30 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <a href="/profile" onClick={closeMenu} className="flex items-center justify-between p-3 rounded-xl bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all">
-                  Manage Persona <ChevronRight size={14} />
+                <a href={isDemo ? "/" : "/profile"} onClick={closeMenu} className="flex items-center justify-between p-3 rounded-xl bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all">
+                  {isDemo ? "Establish Soul Link" : "Manage Persona"} <ChevronRight size={14} />
                 </a>
               </div>
             </div>
+
+            {isDemo && (
+              <div className="bg-canvas-primary/5 border border-canvas-primary/20 rounded-[2rem] p-6 space-y-4">
+                <div className="flex items-center gap-3">
+                  <Activity size={16} className="text-canvas-primary" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary">Observer Mode</span>
+                </div>
+                <p className="text-[11px] text-gray-400 leading-relaxed font-serif italic">
+                  You are observing a sample consciousness. Actions are temporary.
+                </p>
+                <button 
+                  type="button"
+                  onClick={() => globalThis.location.href = '/'}
+                  className="w-full py-3 bg-canvas-primary text-white text-[9px] font-bold uppercase tracking-widest rounded-xl shadow-lg hover:shadow-canvas-primary/20 transition-all cursor-pointer"
+                >
+                  Register to Save
+                </button>
+              </div>
+            )}
 
             {/* LEDGER & PRIVACY WIDGET */}
             <div className="bg-white/5 rounded-[2rem] p-6 border border-white/10 space-y-5">
@@ -147,13 +167,23 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
 
             {/* SYSTEM CONTROLS */}
             <div className="grid grid-cols-2 gap-3">
-              <a href="/settings" onClick={closeMenu} className="flex flex-col items-center gap-3 p-5 rounded-3xl bg-white/5 border border-white/5 hover:border-white/20 transition-all text-gray-400 hover:text-white">
+              <a 
+                href={isDemo ? "/" : "/settings"} 
+                onClick={isDemo ? (e) => { e.preventDefault(); globalThis.location.href='/'; } : closeMenu} 
+                className={`relative flex flex-col items-center gap-3 p-5 rounded-3xl border transition-all ${isDemo ? 'bg-white/[0.02] border-white/5 text-gray-700' : 'bg-white/5 border-white/5 hover:border-white/20 text-gray-400 hover:text-white'}`}
+              >
+                {isDemo && <Lock size={12} className="absolute top-4 right-4 text-gray-800" />}
                 <SettingsIcon size={20} />
-                <span className="text-[9px] font-bold uppercase tracking-widest">Settings</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest">{isDemo ? 'Unlock' : 'Settings'}</span>
               </a>
-              <button type="button" className="flex flex-col items-center gap-3 p-5 rounded-3xl bg-white/5 border border-white/5 hover:border-white/20 transition-all text-gray-400 hover:text-white cursor-pointer">
+              <button 
+                type="button" 
+                onClick={isDemo ? () => globalThis.location.href='/' : undefined}
+                className={`relative flex flex-col items-center gap-3 p-5 rounded-3xl border transition-all cursor-pointer ${isDemo ? 'bg-white/[0.02] border-white/5 text-gray-700' : 'bg-white/5 border-white/5 hover:border-white/20 text-gray-400 hover:text-white'}`}
+              >
+                {isDemo && <Lock size={12} className="absolute top-4 right-4 text-gray-800" />}
                 <Download size={20} />
-                <span className="text-[9px] font-bold uppercase tracking-widest">Export Soul</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest">{isDemo ? 'Unlock' : 'Export Soul'}</span>
               </button>
             </div>
           </div>

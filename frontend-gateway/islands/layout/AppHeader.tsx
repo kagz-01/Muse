@@ -15,17 +15,14 @@ import {
   notificationsSignal,
   toggleMenu,
   toggleNotifications,
+  AppNotification
 } from "../../signals/ui.ts";
 import WalletConnectButton from "../WalletConnectButton.tsx";
 
-interface AppHeaderProps {
-  currentPath: string;
-}
-
-export default function AppHeader({ currentPath }: AppHeaderProps) {
+export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
   const isNotificationsOpen = isNotificationsOpenSignal.value;
   const notifications = notificationsSignal.value;
-  const unreadCount = notifications.filter((n: any) => !n.isRead).length;
+  const unreadCount = notifications.filter((n: AppNotification) => !n.isRead).length;
   const notificationPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -48,8 +45,25 @@ export default function AppHeader({ currentPath }: AppHeaderProps) {
     };
   }, [isNotificationsOpen]);
 
+  const user = userSignal.value;
+  const isDemo = user?.email === "demo@muse.app";
+
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-3xl border-b border-white/5">
+    <header className={`fixed top-0 left-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-3xl border-b border-white/5 transition-all duration-500 ${isDemo ? 'pt-8' : ''}`}>
+      {isDemo && (
+        <div className="absolute top-0 left-0 w-full h-8 bg-canvas-primary/10 border-b border-canvas-primary/20 flex items-center justify-center gap-4 px-6 overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
+          <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-canvas-primary animate-pulse">Observer Mode: Limited Persistence</p>
+          <div className="h-3 w-px bg-canvas-primary/20" />
+          <button 
+            type="button"
+            onClick={() => globalThis.location.href = '/'}
+            className="text-[9px] font-bold uppercase tracking-widest text-white hover:text-canvas-primary transition-colors cursor-pointer"
+          >
+            Register to Establish Soul Link
+          </button>
+        </div>
+      )}
       <div className="flex items-center justify-between px-6 md:px-10 h-20">
         <div className="flex items-center gap-6">
           <a
