@@ -1,11 +1,11 @@
 import { useState } from "preact/hooks";
 import { 
   Users, MessageSquare, Sparkles, 
-  Globe, Search, TrendingUp, Activity, Lock, ChevronRight, Zap
+  Globe, Search, Lock, ChevronRight, Activity, Zap
 } from "lucide-preact";
 import { 
   circlesSignal, collaboratorsSignal, communityRoomsSignal, 
-  insightsSignal, joinCircle 
+  joinCircle 
 } from "../../signals/connections.ts";
 import { soloModeSignal, toggleSoloMode } from "../../signals/user.ts";
 import {
@@ -13,28 +13,25 @@ import {
   CollaboratorCard,
   CommunityRoomCard,
   SharedThemeCluster,
-  ThoughtfulComposer,
   CommunityPulseStrip,
 } from "../../components/connections/index.ts";
+import ThoughtStream from "./ThoughtStream.tsx";
 
-type Tab = 'Circles' | 'People' | 'Insights';
-
-type TabIcon = typeof MessageSquare;
+type Tab = 'Stream' | 'Circles' | 'People';
 
 export default function ConnectionsHub() {
-  const [activeTab, setActiveTab] = useState<Tab>('Circles');
+  const [activeTab, setActiveTab] = useState<Tab>('Stream');
   const [searchQuery, setSearchQuery] = useState('');
   
   const circles = circlesSignal.value;
   const collaborators = collaboratorsSignal.value;
   const communityRooms = communityRoomsSignal.value;
-  const insights = insightsSignal.value;
   const soloMode = soloModeSignal.value;
 
-  const tabs: { id: Tab; icon: TabIcon; label: string }[] = [
+  const tabs: { id: Tab; icon: any; label: string }[] = [
+    { id: 'Stream', icon: Activity, label: 'Thought Stream' },
     { id: 'Circles', icon: MessageSquare, label: 'Active Circles' },
     { id: 'People', icon: Users, label: 'Collaborators' },
-    { id: 'Insights', icon: Sparkles, label: 'Communal Pulse' },
   ];
 
   return (
@@ -43,49 +40,40 @@ export default function ConnectionsHub() {
       <CommunityPulseStrip />
 
       <div className="p-6 md:p-10 max-w-[1800px] mx-auto w-full space-y-12">
-        <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
+        
+        {/* HERO SECTION */}
+        <section className="relative overflow-hidden rounded-[4rem] border border-white/5 bg-[#0d0d0d] p-12 md:p-20 shadow-2xl">
           <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
           
-          <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400">
+          <div className="relative z-10 flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-4xl">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                Collective Resonance
+                The Collective Protocol 2.0
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
-                Connect Through 
-                <span className="block italic font-serif text-indigo-400 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Shared Patterns.</span>
+              <h1 className="mt-10 text-6xl md:text-8xl font-bold tracking-tight leading-[0.85] text-white">
+                Resonate with the <span className="italic font-serif text-gray-700">communal pulse.</span>
               </h1>
-              <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
-                Community in Muse is not about noise; it is about resonance. Connect with others only after the system has identified deep overlaps in your curated collections and threads.
+              <p className="mt-10 max-w-2xl text-gray-500 text-xl md:text-2xl leading-relaxed font-serif italic border-l-4 border-canvas-primary/20 pl-8">
+                "We don't just connect; we converge. Witness the synthesis of a thousand digital souls."
               </p>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-4 mb-2">
-                 <div className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
-                    <p className="text-white font-bold text-lg leading-none">1,204</p>
-                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Active Thinkers</p>
-                 </div>
-                 <div className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
-                    <p className="text-white font-bold text-lg leading-none">12</p>
-                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Live Circles</p>
-                 </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 p-1 bg-white/5 border border-white/10 rounded-[2rem]">
+            <div className="flex flex-col gap-6">
+               <div className="flex flex-wrap items-center gap-3 p-1.5 bg-white/5 border border-white/10 rounded-[2.5rem]">
                 {tabs.map((tab) => (
                   <button
                     type="button"
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`
-                      flex items-center gap-2.5 px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer
+                      flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 cursor-pointer
                       ${activeTab === tab.id 
-                        ? 'bg-white text-black shadow-xl' 
+                        ? 'bg-white text-black shadow-2xl scale-105' 
                         : 'text-gray-500 hover:text-white hover:bg-white/5'}
                     `}
                   >
-                    <tab.icon size={14} />
+                    <tab.icon size={16} />
                     {tab.label}
                   </button>
                 ))}
@@ -94,48 +82,52 @@ export default function ConnectionsHub() {
           </div>
         </section>
 
-        <div className="transition-all duration-500">
+        <div className="transition-all duration-700">
           {soloMode ? (
-            <div className="flex flex-col items-center justify-center py-32 text-center animate-in fade-in zoom-in-95">
-               <div className="relative mb-10">
-                  <div className="w-48 h-48 rounded-full border border-dashed border-canvas-primary/20 flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                     <div className="w-32 h-32 rounded-full border border-canvas-primary/40" />
+            <div className="flex flex-col items-center justify-center py-40 text-center animate-in fade-in zoom-in-95">
+               <div className="relative mb-12">
+                  <div className="w-56 h-56 rounded-full border border-dashed border-canvas-primary/20 flex items-center justify-center animate-[spin_30s_linear_infinite]">
+                     <div className="w-40 h-40 rounded-full border border-canvas-primary/40" />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                     <div className="w-20 h-20 rounded-3xl bg-canvas-primary/20 border border-canvas-primary/40 flex items-center justify-center shadow-[0_0_50px_rgba(99,102,241,0.2)]">
-                        <Lock size={32} className="text-canvas-primary" />
+                     <div className="w-24 h-24 rounded-[2rem] bg-canvas-primary/20 border border-canvas-primary/40 flex items-center justify-center shadow-[0_0_80px_rgba(99,102,241,0.3)]">
+                        <Lock size={40} className="text-canvas-primary" />
                      </div>
                   </div>
                </div>
 
-               <h2 className="text-4xl font-bold text-white mb-4 italic font-serif">The Private Vault Is Active.</h2>
-               <p className="text-gray-500 max-w-md mx-auto mb-12 leading-relaxed font-serif italic text-lg">
-                 You are currently in Solo Mode. Community resonances are muffled to prioritize your private introspection.
+               <h2 className="text-5xl font-bold text-white mb-6 italic font-serif">Sovereign Silence is Active.</h2>
+               <p className="text-gray-500 max-w-lg mx-auto mb-16 leading-relaxed font-serif italic text-xl">
+                 You are currently in Solo Mode. The communal pulse is muffled to prioritize your private introspection.
                </p>
 
-               <div className="flex flex-col sm:flex-row gap-4">
+               <div className="flex flex-col sm:flex-row gap-6">
                   <button 
                     type="button"
                     onClick={toggleSoloMode}
-                    className="px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-3xl hover:bg-canvas-primary hover:text-white transition-all shadow-[0_20px_40px_rgba(0,0,0,0.3)] active:scale-95 flex items-center gap-3 cursor-pointer"
+                    className="px-12 py-6 bg-white text-black font-bold uppercase tracking-[0.2em] text-[11px] rounded-3xl hover:-translate-y-1 transition-all shadow-3xl active:scale-95 flex items-center gap-4 cursor-pointer"
                   >
-                    <Globe size={16} /> Reconnect to Community
+                    <Globe size={18} /> Establish Collective Link
                   </button>
                   <button 
                     type="button"
                     onClick={() => globalThis.history.back()}
-                    className="px-10 py-5 bg-white/5 border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-xs rounded-3xl hover:text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
+                    className="px-12 py-6 bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-[0.2em] text-[11px] rounded-3xl hover:text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
                   >
-                    Return to Private Space
+                    Return to Private Vault
                   </button>
                </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-4">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
               
               <div className="lg:col-span-8">
+                {activeTab === 'Stream' && (
+                  <ThoughtStream />
+                )}
+
                 {activeTab === 'Circles' && (
-                  <div className="space-y-12">
+                  <div className="space-y-16">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {circles.map(circle => (
                         <ActiveCircleCard 
@@ -147,11 +139,11 @@ export default function ConnectionsHub() {
                     </div>
   
                     <div>
-                       <div className="flex items-center justify-between mb-8">
-                          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                             <Globe size={24} className="text-gray-600" /> Community Rooms
+                       <div className="flex items-center justify-between mb-10">
+                          <h2 className="text-3xl font-bold text-white flex items-center gap-4">
+                             <Globe size={32} className="text-gray-800" /> Public Domains
                           </h2>
-                          <button type="button" className="text-xs font-bold text-canvas-primary uppercase tracking-widest hover:underline cursor-pointer">View All</button>
+                          <button type="button" className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em] hover:underline cursor-pointer">Explore All</button>
                        </div>
                        <div className="grid grid-cols-1 gap-8">
                           {communityRooms.map(room => (
@@ -163,21 +155,21 @@ export default function ConnectionsHub() {
                 )}
   
                 {activeTab === 'People' && (
-                  <div>
-                    <div className="flex items-center justify-between mb-8">
-                      <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                  <div className="space-y-10">
+                    <div className="flex items-center justify-between">
+                      <div className="relative flex-1 max-w-xl">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
                         <input 
                           type="text"
-                          placeholder="Search collaborators..."
-                          className="w-full bg-white/5 border border-white/5 rounded-2xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-canvas-primary/30 transition-all font-serif italic outline-none"
+                          placeholder="Search sovereign collaborators..."
+                          className="w-full bg-white/5 border border-white/10 rounded-3xl py-5 pl-16 pr-8 text-white focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.08] transition-all font-serif italic text-lg outline-none"
                           value={searchQuery}
                           onInput={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
                         />
                       </div>
                     </div>
   
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {collaborators
                         .filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()))
                         .map(collaborator => (
@@ -187,76 +179,55 @@ export default function ConnectionsHub() {
                     </div>
                   </div>
                 )}
-  
-                {activeTab === 'Insights' && (
-                  <div className="space-y-12">
-                    <ThoughtfulComposer onSubmit={(text, tone) => console.log('Collective Perspective:', text, tone)} />
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                       <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
-                          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
-                             <TrendingUp size={20} className="text-canvas-primary" /> Collective Intelligence
-                          </h3>
-                          <div className="space-y-6">
-                             {insights.map((insight, i) => (
-                               <div key={i} className="flex gap-4 group">
-                                  <div className="mt-1 w-1.5 h-1.5 rounded-full bg-canvas-primary shrink-0 group-hover:scale-150 transition-transform" />
-                                  <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-200 transition-colors">{insight}</p>
-                               </div>
-                             ))}
-                          </div>
-                       </div>
-  
-                       <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
-                          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
-                             <Activity size={20} className="text-emerald-400" /> Communication Health
-                          </h3>
-                          <div className="space-y-6">
-                             <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                                <div className="flex justify-between items-center mb-2">
-                                   <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Global Resonance</span>
-                                   <span className="text-sm font-mono text-emerald-400">94.2%</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                   <div className="h-full bg-emerald-400 w-[94%]" />
-                                </div>
-                             </div>
-                             <p className="text-[11px] text-gray-500 font-serif italic leading-relaxed">
-                                Community dialogue is currently high-fidelity and deeply reflective. Most interactions are categorized under 'Supportive' and 'Curious'.
-                             </p>
-                          </div>
-                       </div>
-                    </div>
-                  </div>
-                )}
               </div>
   
               {/* Right Rail: Themes & Pulse */}
               <div className="lg:col-span-4 space-y-12">
-                 <div className="bg-white/3 border border-white/5 rounded-[2.5rem] p-8 backdrop-blur-3xl sticky top-24">
-                    <div className="flex items-center justify-between mb-8">
-                       <h3 className="text-xl font-bold text-white">Theme Clusters</h3>
-                       <Sparkles size={20} className="text-canvas-primary" />
+                 <div className="bg-white/2 border border-white/5 rounded-[3rem] p-10 backdrop-blur-3xl sticky top-24">
+                    <div className="flex items-center justify-between mb-10">
+                       <h3 className="text-2xl font-bold text-white tracking-tight">Pattern Clusters</h3>
+                       <Sparkles size={24} className="text-canvas-primary" />
                     </div>
                     
                     <SharedThemeCluster />
   
-                    <div className="mt-12 space-y-6">
-                       <div className="p-6 bg-canvas-primary/5 border border-canvas-primary/20 rounded-3xl">
-                          <div className="flex items-start gap-3 mb-3">
-                             <Zap size={18} className="text-canvas-primary shrink-0 mt-1" />
-                             <p className="text-sm font-bold text-white leading-tight">Join the 'Silence' Circle</p>
+                    <div className="mt-12 space-y-8">
+                       <div className="p-8 bg-canvas-primary/5 border border-canvas-primary/20 rounded-[2.5rem]">
+                          <div className="flex items-start gap-4 mb-4">
+                             <Zap size={24} className="text-canvas-primary shrink-0 mt-1" />
+                             <div>
+                                <p className="text-lg font-bold text-white leading-tight">Emerging: 'Digital Voids'</p>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Circle Forming</p>
+                             </div>
                           </div>
-                          <p className="text-xs text-gray-400 leading-relaxed mb-4 font-serif italic">
-                             David Chen and 5 others are currently synthesizing ideas around digital voids.
+                          <p className="text-sm text-gray-500 leading-relaxed mb-6 font-serif italic">
+                             David Chen and 5 others are currently synthesizing ideas around digital emptiness.
                           </p>
                           <button 
                             type="button"
                             onClick={() => globalThis.location.href = '/threads/c1?type=circle'}
-                            className="w-full py-3 bg-canvas-primary text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-canvas-primary/80 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                            className="w-full py-4 bg-canvas-primary text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group cursor-pointer shadow-xl"
                           >
-                             Enter Dialogue <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                             Enter Dialogue <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                           </button>
+                       </div>
+
+                       <div className="p-8 bg-white/2 border border-white/5 rounded-[2.5rem]">
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">Collective Health</h4>
+                          <div className="space-y-6">
+                             <div className="space-y-3">
+                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+                                   <span className="text-gray-600">Global Resonance</span>
+                                   <span className="text-emerald-400 font-mono">94.2%</span>
+                                </div>
+                                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                   <div className="h-full bg-emerald-500 w-[94%]" />
+                                </div>
+                             </div>
+                             <p className="text-[11px] text-gray-600 font-serif italic leading-relaxed">
+                                Dialogue is currently high-fidelity and deeply reflective.
+                             </p>
+                          </div>
                        </div>
                     </div>
                  </div>

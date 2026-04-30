@@ -28,6 +28,26 @@ export interface CommunityRoom {
   coverImage: string;
 }
 
+export interface Perspective {
+  id: string;
+  author: {
+    name: string;
+    avatar: string;
+    aura: string;
+  };
+  content: string;
+  timestamp: string;
+  relationship: 'Resonating' | 'Challenging' | 'Synthesizing' | 'Initial';
+  targetId?: string;
+}
+
+export interface ThoughtCluster {
+  id: string;
+  topic: string;
+  perspectiveIds: string[];
+  resonanceScore: number;
+}
+
 export const circlesSignal = signal<ActiveCircle[]>([
   {
     id: 'c1',
@@ -90,7 +110,57 @@ export const insightsSignal = signal<string[]>([
   "The 'Silence' circle has seen a 40% increase in deep-linked artifacts this week."
 ]);
 
+export const perspectivesSignal = signal<Perspective[]>([
+  {
+    id: 'per1',
+    author: { name: 'Amina El-Sayed', avatar: '', aura: 'cyan' },
+    content: "The friction of raw concrete is the point. A cognitive fortress against noise.",
+    timestamp: '2m ago',
+    relationship: 'Initial'
+  },
+  {
+    id: 'per2',
+    author: { name: 'Marcus Thorne', avatar: '', aura: 'purple' },
+    content: "I'd argue that noise is necessary for the silence to have meaning. It's the contrast that builds the experience.",
+    timestamp: 'Just now',
+    relationship: 'Challenging',
+    targetId: 'per1'
+  }
+]);
+
+export const clustersSignal = signal<ThoughtCluster[]>([
+  {
+    id: 'cl1',
+    topic: 'Brutalist Psychology',
+    perspectiveIds: ['per1', 'per2'],
+    resonanceScore: 0.85
+  }
+]);
+
 export function joinCircle(id: string) {
   console.log(`Joining circle: ${id}`);
-  // Implementation logic here
+}
+
+export function submitPerspective(content: string, targetId?: string) {
+  const newId = 'per-' + Date.now();
+  const newPerspective: Perspective = {
+    id: newId,
+    author: { name: 'Alex Rivera', avatar: '', aura: 'indigo' },
+    content,
+    timestamp: 'Just now',
+    relationship: targetId ? (Math.random() > 0.5 ? 'Resonating' : 'Synthesizing') : 'Initial',
+    targetId
+  };
+  
+  perspectivesSignal.value = [newPerspective, ...perspectivesSignal.value];
+  
+  if (perspectivesSignal.value.length % 3 === 0) {
+    const newCluster: ThoughtCluster = {
+      id: 'cl-' + Date.now(),
+      topic: 'Emerging Pattern: ' + content.slice(0, 20) + '...',
+      perspectiveIds: [newId, 'per1', 'per2'],
+      resonanceScore: Math.random()
+    };
+    clustersSignal.value = [newCluster, ...clustersSignal.value];
+  }
 }

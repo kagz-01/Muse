@@ -25,6 +25,7 @@ import * as $index from "./routes/index.tsx";
 import * as $WalletConnectButton from "./islands/WalletConnectButton.tsx";
 import * as $connections_CommunityPulseStripIsland from "./islands/connections/CommunityPulseStripIsland.tsx";
 import * as $connections_ConnectionsHub from "./islands/connections/ConnectionsHub.tsx";
+import * as $connections_ThoughtStream from "./islands/connections/ThoughtStream.tsx";
 import * as $connections_index from "./islands/connections/index.ts";
 import * as $create_CreateHub from "./islands/create/CreateHub.tsx";
 import * as $create_index from "./islands/create/index.ts";
@@ -97,6 +98,7 @@ const manifest = {
     "./islands/connections/CommunityPulseStripIsland.tsx":
       $connections_CommunityPulseStripIsland,
     "./islands/connections/ConnectionsHub.tsx": $connections_ConnectionsHub,
+    "./islands/connections/ThoughtStream.tsx": $connections_ThoughtStream,
     "./islands/connections/index.ts": $connections_index,
     "./islands/create/CreateHub.tsx": $create_CreateHub,
     "./islands/create/index.ts": $create_index,
