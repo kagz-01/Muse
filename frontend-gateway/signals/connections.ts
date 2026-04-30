@@ -18,8 +18,8 @@ export interface Collaborator {
   status: 'Online' | 'Reflecting' | 'Deep Focus' | 'Offline';
   bio: string;
   sharedThemes: string[];
-  aura: string; // Cognitive Aura color
-  intelligenceProfile: string; // e.g., 'Synthesizer', 'Architect', 'Observer'
+  aura: string;
+  intelligenceProfile: string;
 }
 
 export interface CommunityRoom {
@@ -41,7 +41,10 @@ export interface Perspective {
   timestamp: string;
   relationship: 'Resonating' | 'Challenging' | 'Synthesizing' | 'Initial';
   targetId?: string;
-  source?: string; // e.g., 'Journal', 'Vault'
+  source?: string;
+  txId?: string; // Ledger Transaction ID
+  encryptionStatus?: 'Secure' | 'End-to-End' | 'Standard';
+  isAnalyzing?: boolean; // Parallel Analysis state
 }
 
 export interface WisdomNode {
@@ -52,6 +55,20 @@ export interface WisdomNode {
   radius: number;
   connectedTo: string[];
 }
+
+export interface SyncEngineStatus {
+  nodesActive: number;
+  latency: string;
+  throughput: string;
+  health: 'Optimal' | 'Degraded' | 'Critical';
+}
+
+export const syncStatusSignal = signal<SyncEngineStatus>({
+  nodesActive: 12,
+  latency: '2ms',
+  throughput: '1.2k req/s',
+  health: 'Optimal'
+});
 
 export const circlesSignal = signal<ActiveCircle[]>([
   {
@@ -85,17 +102,6 @@ export const collaboratorsSignal = signal<Collaborator[]>([
     sharedThemes: ['Brutalism', 'Silence'],
     aura: 'cyan',
     intelligenceProfile: 'Architect'
-  },
-  {
-    id: 'p2',
-    name: 'Marcus Thorne',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-    role: 'Synthesist',
-    status: 'Online',
-    bio: 'Why do we keep collecting if we don\'t synthesize? A room is just a box until it becomes a thread.',
-    sharedThemes: ['Synthesis', 'Identity'],
-    aura: 'purple',
-    intelligenceProfile: 'Synthesizer'
   }
 ]);
 
@@ -123,7 +129,9 @@ export const perspectivesSignal = signal<Perspective[]>([
     content: "The friction of raw concrete is the point. A cognitive fortress against noise.",
     timestamp: '2m ago',
     relationship: 'Initial',
-    source: 'Journal'
+    source: 'Journal',
+    txId: '0x8f...3a2',
+    encryptionStatus: 'End-to-End'
   },
   {
     id: 'per2',
@@ -132,7 +140,9 @@ export const perspectivesSignal = signal<Perspective[]>([
     timestamp: 'Just now',
     relationship: 'Challenging',
     targetId: 'per1',
-    source: 'Vault'
+    source: 'Vault',
+    txId: '0x4c...9b1',
+    encryptionStatus: 'End-to-End'
   }
 ]);
 
@@ -142,6 +152,8 @@ export function joinCircle(id: string) {
 
 export function submitPerspective(content: string, targetId?: string, source?: string) {
   const newId = 'per-' + Date.now();
+  const txId = '0x' + Math.random().toString(16).slice(2, 10) + '...' + Math.random().toString(16).slice(2, 6);
+  
   const newPerspective: Perspective = {
     id: newId,
     author: { name: 'Alex Rivera', avatar: '', aura: 'indigo' },
@@ -149,8 +161,18 @@ export function submitPerspective(content: string, targetId?: string, source?: s
     timestamp: 'Just now',
     relationship: targetId ? (Math.random() > 0.5 ? 'Resonating' : 'Synthesizing') : 'Initial',
     targetId,
-    source
+    source,
+    txId,
+    encryptionStatus: 'End-to-End',
+    isAnalyzing: true
   };
   
   perspectivesSignal.value = [newPerspective, ...perspectivesSignal.value];
+  
+  // Simulate Parallel Analysis
+  setTimeout(() => {
+    perspectivesSignal.value = perspectivesSignal.value.map(p => 
+      p.id === newId ? { ...p, isAnalyzing: false } : p
+    );
+  }, 2000);
 }

@@ -17,6 +17,7 @@ import {
 import ThoughtStream from "./ThoughtStream.tsx";
 import WisdomMap from "./WisdomMap.tsx";
 import AuraCard from "../../components/connections/AuraCard.tsx";
+import SyncStatus from "../../components/connections/SyncStatus.tsx";
 
 type Tab = 'Stream' | 'Wisdom' | 'Circles' | 'People';
 
@@ -51,13 +52,13 @@ export default function ConnectionsHub() {
             <div className="max-w-4xl">
               <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                The Collective Protocol 3.0
+                The Collective Protocol 3.1
               </div>
               <h1 className="mt-10 text-6xl md:text-8xl font-bold tracking-tight leading-[0.85] text-white">
                 Resonate with the <span className="italic font-serif text-gray-700">communal pulse.</span>
               </h1>
               <p className="mt-10 max-w-2xl text-gray-500 text-xl md:text-2xl leading-relaxed font-serif italic border-l-4 border-canvas-primary/20 pl-8">
-                "We don't just connect; we converge. Witness the synthesis of a thousand digital souls."
+                "Immutable, sovereign, and real-time. Witness the evolution of shared intelligence."
               </p>
             </div>
 
@@ -189,6 +190,9 @@ export default function ConnectionsHub() {
   
               {/* Right Rail: Themes & Pulse */}
               <div className="lg:col-span-4 space-y-12">
+                 
+                 <SyncStatus />
+
                  <div className="bg-white/2 border border-white/5 rounded-[3rem] p-10 backdrop-blur-3xl sticky top-24">
                     <div className="flex items-center justify-between mb-10">
                        <h3 className="text-2xl font-bold text-white tracking-tight">Pattern Clusters</h3>
@@ -216,24 +220,6 @@ export default function ConnectionsHub() {
                           >
                              Enter Dialogue <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                           </button>
-                       </div>
-
-                       <div className="p-8 bg-white/2 border border-white/5 rounded-[2.5rem]">
-                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">Collective Health</h4>
-                          <div className="space-y-6">
-                             <div className="space-y-3">
-                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                                   <span className="text-gray-600">Global Resonance</span>
-                                   <span className="text-emerald-400 font-mono">94.2%</span>
-                                </div>
-                                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                                   <div className="h-full bg-emerald-500 w-[94%]" />
-                                </div>
-                             </div>
-                             <p className="text-[11px] text-gray-600 font-serif italic leading-relaxed">
-                                Dialogue is currently high-fidelity and deeply reflective.
-                             </p>
-                          </div>
                        </div>
                     </div>
                  </div>
