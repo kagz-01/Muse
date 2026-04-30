@@ -2,21 +2,41 @@ import { useState } from "preact/hooks";
 import AuthModal from "../modals/AuthModal.tsx";
 import SpectralHero from "./SpectralHero.tsx";
 import SystemBento from "./SystemBento.tsx";
+import LandingFooter from "./LandingFooter.tsx";
+import DemoVideo from "./DemoVideo.tsx";
 import { login } from "../../signals/user.ts";
 
 export default function LandingPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
+  const [isDemoOpen, setIsDemoOpen] = useState(false);
 
   const handleWatchDemo = () => {
+    setIsDemoOpen(true);
+  };
+
+  const handleGuestEntry = () => {
     login("demo@muse.app");
     globalThis.location.href = "/dashboard?demo=1";
   };
 
   return (
-    <div className="bg-[#0a0a0a] text-white font-sans overflow-x-hidden selection:bg-canvas-primary selection:text-white">
+    <div className="bg-[#050505] text-white font-sans overflow-x-hidden selection:bg-canvas-primary selection:text-white">
       {authMode && (
         <AuthModal initialMode={authMode} onClose={() => setAuthMode(null)} />
       )}
+
+      {isDemoOpen && (
+        <DemoVideo isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
+      )}
+
+      {/* DYNAMIC BACKGROUND VIDEO (Observer Perspective) */}
+      <div className="fixed inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-linear-to-b from-[#050505] via-transparent to-[#050505] z-10" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 z-20" />
+        
+        {/* We would use a real loop video here. For now, we simulate with a pulse and movement */}
+        <div className="absolute inset-0 bg-gradient-radial from-canvas-primary/20 to-transparent animate-[pulse_10s_infinite_ease-in-out] blur-[150px]" />
+      </div>
 
       {/* Header */}
       <header className="fixed top-0 left-0 w-full px-6 md:px-12 py-8 flex justify-between items-center z-[100] backdrop-blur-3xl bg-black/20 border-b border-white/5">
@@ -26,12 +46,12 @@ export default function LandingPage() {
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tighter text-white leading-none">MUSE</span>
-            <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-gray-500 mt-1 leading-none">Intelligence</span>
+            <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-canvas-primary mt-1 leading-none">Intelligence</span>
           </div>
         </div>
 
         <nav className="hidden md:flex items-center gap-10">
-          {['Ecosystem', 'Vision', 'Network', 'Ledger'].map(link => (
+          {['Vision', 'Ecosystem', 'Ledger'].map(link => (
             <a key={link} href={`#${link.toLowerCase()}`} className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-colors">
               {link}
             </a>
@@ -57,11 +77,13 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="relative pt-20">
-        {/* Grain Overlay */}
-        <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-50" />
+      <main className="relative z-10 pt-20">
         
-        <SpectralHero onOpenAuth={setAuthMode} onWatchDemo={handleWatchDemo} />
+        <SpectralHero 
+          onOpenAuth={setAuthMode} 
+          onWatchDemo={handleWatchDemo} 
+          onGuestEntry={handleGuestEntry}
+        />
         
         <div id="ecosystem">
           <SystemBento />
@@ -76,29 +98,24 @@ export default function LandingPage() {
             <p className="max-w-2xl mx-auto text-gray-500 text-xl font-serif italic">
               Stop consuming. Start synthesizing. Your private creative loop is one click away.
             </p>
-            <button 
-              onClick={() => setAuthMode('signup')}
-              className="px-12 py-6 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full shadow-3xl hover:-translate-y-1 active:scale-95 transition-all cursor-pointer"
-            >
-              Begin Initialization
-            </button>
+            <div className="flex flex-wrap justify-center gap-6">
+               <button 
+                 onClick={() => setAuthMode('signup')}
+                 className="px-12 py-6 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full shadow-3xl hover:-translate-y-1 active:scale-95 transition-all cursor-pointer"
+               >
+                 Begin Initialization
+               </button>
+               <button 
+                 onClick={handleGuestEntry}
+                 className="px-12 py-6 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white/10 transition-all cursor-pointer"
+               >
+                 Enter Observer Mode
+               </button>
+            </div>
           </div>
         </section>
 
-        {/* FINAL FOOTER */}
-        <footer className="max-w-[1800px] mx-auto px-10 py-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex items-center gap-4 opacity-40">
-            <div className="h-6 w-6 bg-white rounded flex items-center justify-center text-black font-bold text-[10px]">M</div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Muse Intelligence © 2026</span>
-          </div>
-          <div className="flex gap-10">
-            {['Privacy', 'Legal', 'Source', 'Status'].map(link => (
-              <a key={link} href="#" className="text-[10px] font-bold uppercase tracking-widest text-gray-700 hover:text-white transition-colors">
-                {link}
-              </a>
-            ))}
-          </div>
-        </footer>
+        <LandingFooter />
       </main>
     </div>
   );

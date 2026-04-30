@@ -1,9 +1,10 @@
 import { useEffect, useState } from "preact/hooks";
-import { Sparkles, ArrowRight, Activity, Zap } from "lucide-preact";
+import { Sparkles, ArrowRight, Activity, Zap, Play } from "lucide-preact";
 
-export default function SpectralHero({ onOpenAuth, onWatchDemo }: { 
+export default function SpectralHero({ onOpenAuth, onWatchDemo, onGuestEntry }: { 
   onOpenAuth: (mode: "login" | "signup") => void,
-  onWatchDemo: () => void 
+  onWatchDemo: () => void,
+  onGuestEntry: () => void
 }) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -19,7 +20,7 @@ export default function SpectralHero({ onOpenAuth, onWatchDemo }: {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
+    <section className="relative min-h-[95vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
       
       {/* CINEMATIC BACKGROUND ELEMENTS */}
       <div className="absolute inset-0 pointer-events-none">
@@ -54,14 +55,14 @@ export default function SpectralHero({ onOpenAuth, onWatchDemo }: {
         {/* TOP SIGNAL */}
         <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.4em] text-canvas-primary shadow-2xl">
           <Activity size={14} className="animate-pulse" />
-          The Muse System 2.0 is Live
+          The Muse System 2.1 is Live
         </div>
 
         {/* MAIN HEADLINE */}
         <h1 className="text-6xl md:text-9xl font-bold tracking-tight leading-[0.85] text-white">
-          Capture. <span className="text-gray-700 italic font-serif">Contemplate.</span>
+          Capture. <span className="text-gray-700 italic font-serif lowercase">contemplate.</span>
           <span className="block mt-4 bg-gradient-to-r from-white via-white/80 to-gray-500 bg-clip-text text-transparent">
-            Synthesize your World.
+            Synthesize.
           </span>
         </h1>
 
@@ -79,17 +80,26 @@ export default function SpectralHero({ onOpenAuth, onWatchDemo }: {
           >
             <div className="absolute inset-0 bg-canvas-primary/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
             <span className="relative z-10 flex items-center gap-3">
-              Initialize Account <ArrowRight size={16} />
+              Initialize Soul Link <ArrowRight size={16} />
             </span>
           </button>
 
           <button 
             type="button"
-            onClick={onWatchDemo}
+            onClick={onGuestEntry}
             className="group px-10 py-5 rounded-full border border-white/10 bg-white/5 text-[11px] font-bold uppercase tracking-[0.2em] text-white hover:bg-white/10 transition-all flex items-center gap-3 cursor-pointer"
           >
-            <Zap size={16} className="text-canvas-primary group-hover:scale-125 transition-transform" /> 
-            Explore Demo
+            <Activity size={16} className="text-canvas-primary group-hover:scale-125 transition-transform" /> 
+            Enter Observer Mode
+          </button>
+
+          <button 
+            type="button"
+            onClick={onWatchDemo}
+            className="group px-10 py-5 rounded-full border border-white/10 bg-white/5 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-all flex items-center gap-3 cursor-pointer"
+          >
+            <Play size={16} className="text-canvas-primary group-hover:fill-canvas-primary transition-all" /> 
+            Watch System Demo
           </button>
         </div>
 
