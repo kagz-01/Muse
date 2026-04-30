@@ -1,78 +1,55 @@
-# Muse
+# Muse Collective 3.0: The Industrial-Grade Intelligence Loop
 
-Muse is a Fresh app for turning what people consume into something they can understand, organize, reflect on, and create from.
+**Muse** is a sovereign knowledge environment designed to transform raw consumption into collective intelligence. It replaces passive data storage with a proactive **Synthesis Engine**, allowing users to capture signals, contemplate patterns, and broadcast immutable thoughts to a global collective.
 
-## Product Cycle
+## 🌀 The Loop: Your Cognitive Workflow
 
-The app follows a single cycle:
+Muse follows a strictly enforced four-phase cognitive cycle. Every feature in the platform is designed to support this movement:
 
-1. Consume
-2. Collect
-3. Contemplate
-4. Create
-5. Community
+1.  **Collect**: The "Inlet" phase. Capture raw signals from the social web and personal rooms using the high-fidelity **Artifact Extractor**.
+2.  **Contemplate**: The "Internal" phase. Dialogue with your patterns in the **Journal Terminal**, featuring contextual anchors and reflection auras.
+3.  **Synthesize**: The "Integration" phase. Use the **Synthesis Engine** (Radial Menu) to weave diverse rooms into **Woven Threads**—living documents of complex thought.
+4.  **Create**: The "Outlet" phase. Transform private syntheses into **Immutable Thoughts**, broadcasted to the **Collective Thought Stream** with cryptographic proof of provenance.
 
-This is the product rule. Features should support this loop, not bypass it.
+## 🏗️ Core Infrastructure
 
-## How The App Maps To The Cycle
+### The Synthesis Engine (Radial)
+A cinematic, globally accessible radial navigation layer that allows frictionless movement between the four phases of the loop. It monitors your **Cognitive Streak** and **Resonance Metrics** in real-time.
 
-- Home is the overview of the system and the user’s current state.
-- Rooms are where consumed content gets collected and organized.
-- Threads synthesize rooms into patterns.
-- Journal is the contemplation layer.
-- Create is where the user turns reflection into output.
-- Community/Connections is for pattern-based connection with like-minded people.
+### Sovereign Knowledge Rooms
+Personal data vaults where raw signals are stored. Features include:
+- **Resonance Clusters**: Automated grouping of related artifacts.
+- **Full Spectrum Styling**: Room-specific themes, covers, and typography.
+- **Privacy Shrouds**: Granular control over room visibility and collaborative access.
 
-## Current Navigation Order
+### The Collective Soul Profile
+A high-fidelity visualization of your intellectual character. Displays your **Aura Type** (Architect, Synthesizer, etc.), **Intelligence Lineage**, and **Impact Metrics** (how your knowledge resonates with others).
 
-The navigation is being shaped around the workflow, not just page names:
+### Immutable Ledger (Proof of Thought)
+Simulated blockchain integration that seals your final syntheses. Every published thought carries a unique **Ledger ID**, providing immutable proof of intellectual contribution and provenance.
 
-- Home
-- Create
-- Rooms
-- Threads
-- Journal
-- Community/Connections
-- Quick Actions
-- Settings
+## 🛠️ Technology Stack
 
-## Current Features & Status
+-   **Frontend Gateway**: [Deno Fresh](https://fresh.deno.dev/) + Preact Signals for real-time reactivity.
+-   **Aesthetics**: Vanilla CSS + Tailwind-compatible utility layers for brutalist, high-end bento styling.
+-   **Icons**: [Lucide-Preact](https://lucide.dev/) for cinematic, technical iconography.
+-   **Architecture**: Modular Signal-based state management (`signals/`) for cross-room cognitive consistency.
 
-Muse has evolved into a fully scalable Web3-enabled Knowledge Platform. The monorepo architecture currently supports:
-- **`frontend-gateway/` (Deno Fresh):** The core UI offering theme toggling (Dark/Light), typography scaling, dynamic accent colors, and a Solana Web3 Wallet connector (`Phantom`).
-- **`ai-engine/` (Python/FastAPI):** Prepared for real-time LangChain analysis, semantic search, and personalized journal insights.
-- **`blockchain-security/` (Rust/Anchor):** Handles AES-256-GCM data encryption, Arweave decentralized storage integration, and native Solana Smart Contracts for Immutable Logging (Proof of Thought), $MUSE token rewards, Soulbound Reputation Tokens, and Token-Gated Rooms.
+## 🚀 Getting Started
 
-## Working Rules
-
-- Keep the cycle above as the source of truth.
-- Prefer incremental improvements over broad rewrites.
-- When adding a feature, ask where it belongs in the cycle.
-- Rooms should support pinning, sorting, archiving, vaulting, and collaboration.
-- Threads should help reveal patterns across rooms.
-- Journal should remain the private contemplation layer.
-- Community should connect people only after patterns exist.
-
-## Development (Monorepo)
-
-Muse is built as a microservices architecture orchestrated via Docker.
-
-### Running the Full Stack
-To run the Deno Frontend, Python AI Engine, and Rust Blockchain Security API simultaneously, run the following from the root directory:
-```bash
-docker compose up --build
-```
-
-### Running just the Frontend UI
-If you only need to work on UI styling or React components:
+### Development Mode
+To run the Deno Frontend locally:
 ```bash
 cd frontend-gateway
 deno task start
 ```
-This runs the Fresh app on port 8000 with file watching enabled.
 
-## Notes
+### Full Infrastructure (Docker)
+To spin up the full Muse environment including AI nodes and Ledger proxies:
+```bash
+docker compose up --build
+```
 
-- The root app is the primary Fresh implementation.
-- Muse2 is the reference frontend used for pattern and UX ideas.
-- The README should be treated as the lightweight product brief for future work.
+---
+
+*“Where diverse signals from your rooms converge into living documents of collective intelligence.”*
