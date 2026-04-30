@@ -1,40 +1,33 @@
-import { useState, useMemo } from "preact/hooks";
+import { useState, useRef, useMemo } from "preact/hooks";
 import { 
-   ArrowLeft, Globe, Lock, Share2, Plus, 
-   Layers, Lightbulb, Link2, ExternalLink, X, Trash2
+  ArrowLeft, Globe, Lock, Palette, Check, Camera,
+  Edit2, Share2, Plus, ExternalLink, Trash2, X, MessageSquare, Layers, Sparkles,
+  GitCommit, Activity, Hash
 } from "lucide-preact";
-import { threadsSignal, type ThreadMood, removeItemFromThread, addItemToThread, toggleThreadPrivacy } from "../../signals/threads.ts";
-import { itemsSignal } from "../../signals/items.ts";
+import { type ThreadMood, threadsSignal, updateThreadMood, toggleThreadPrivacy, removeItemFromThread } from "../../signals/threads.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
+import { itemsSignal } from "../../signals/items.ts";
+import SynthesisWeb from "../../components/threads/SynthesisWeb.tsx";
 
 const moodMapping: Record<ThreadMood, {
-  border: string; shadow: string; text: string; bg: string; color: string;
+  color: string; bg: string; text: string; aura: string;
 }> = {
-  contemplative: { border: 'border-violet-500/50', shadow: 'shadow-violet-500/20', text: 'text-violet-400', bg: 'bg-violet-500/10', color: '#8b5cf6' },
-  curious: { border: 'border-cyan-500/50', shadow: 'shadow-cyan-500/20', text: 'text-cyan-400', bg: 'bg-cyan-500/10', color: '#06b6d4' },
-  dark: { border: 'border-slate-500/50', shadow: 'shadow-slate-500/20', text: 'text-slate-400', bg: 'bg-slate-500/10', color: '#475569' },
-  hopeful: { border: 'border-emerald-500/50', shadow: 'shadow-emerald-500/20', text: 'text-emerald-400', bg: 'bg-emerald-500/10', color: '#10b981' },
-  urgent: { border: 'border-rose-500/50', shadow: 'shadow-rose-500/20', text: 'text-rose-400', bg: 'bg-rose-500/10', color: '#f43f5e' },
-  serene: { border: 'border-amber-500/50', shadow: 'shadow-amber-500/20', text: 'text-amber-400', bg: 'bg-amber-500/10', color: '#f59e0b' },
+  contemplative: { color: 'indigo', bg: 'bg-indigo-500/10', text: 'text-indigo-400', aura: 'from-indigo-500/40 to-emerald-500/40' },
+  curious: { color: 'cyan', bg: 'bg-cyan-500/10', text: 'text-cyan-400', aura: 'from-cyan-500/40 to-indigo-500/40' },
+  dark: { color: 'slate', bg: 'bg-slate-500/10', text: 'text-slate-400', aura: 'from-slate-800 to-black' },
+  hopeful: { color: 'emerald', bg: 'bg-emerald-500/10', text: 'text-emerald-400', aura: 'from-emerald-400 to-cyan-400' },
+  urgent: { color: 'rose', bg: 'bg-rose-500/10', text: 'text-rose-400', aura: 'from-rose-500 to-amber-500' },
+  serene: { color: 'amber', bg: 'bg-amber-500/10', text: 'text-amber-400', aura: 'from-amber-400 to-rose-400' },
 };
 
 export default function ThreadInside({ threadId }: { threadId: string }) {
   const thread = threadsSignal.value.find(t => t.id === threadId);
-  const allItems = itemsSignal.value;
   const rooms = roomsSignal.value;
+  const allItems = itemsSignal.value;
+  const items = useMemo(() => allItems.filter(i => thread?.itemIds.includes(i.id)), [allItems, thread?.itemIds]);
 
-  const [showAddItems, setShowAddItems] = useState(false);
-  const [activeTab, setActiveTab] = useState<'artifacts' | 'synthesis'>('artifacts');
-
-   const synthesizedItems = thread ? allItems.filter((item) => thread.itemIds.includes(item.id)) : [];
-   const sourceRoomNames = useMemo(() => {
-      const names = new Set<string>();
-      synthesizedItems.forEach((item) => {
-         const roomName = rooms.find((room) => room.id === item.roomId)?.name;
-         if (roomName) names.add(roomName);
-      });
-      return Array.from(names);
-   }, [rooms, synthesizedItems]);
+  const [activeTab, setActiveTab] = useState<'synthesis' | 'artifacts'>('synthesis');
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   if (!thread) return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#0a0a0a]">
@@ -45,348 +38,133 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
     </div>
   );
 
-  const moodTheme = moodMapping[thread.mood] || moodMapping['contemplative'];
-
-  const handleToggleItem = (itemId: string) => {
-    if (thread.itemIds.includes(itemId)) {
-      removeItemFromThread(thread.id, itemId);
-    } else {
-      addItemToThread(thread.id, itemId);
-    }
-  };
+  const mood = moodMapping[thread.mood] || moodMapping['contemplative'];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pb-24 md:pb-10 relative overflow-hidden">
-      {/* Ambient background glow */}
-      <div className={`fixed inset-0 pointer-events-none transition-colors duration-1000 opacity-20 blur-[150px] ${moodTheme.bg}`} />
-      
+    <div className="pb-24 md:pb-10 min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+      {/* MULTI-ROOM AURA */}
+      <div className={`fixed inset-0 pointer-events-none bg-linear-to-br ${mood.aura} blur-[140px] opacity-20 transition-all duration-1000`} />
+
       <header className="relative w-full h-[45vh] min-h-[350px] overflow-hidden group">
-        {thread.coverImage ? (
-           <img src={thread.coverImage} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="" />
-        ) : (
-           <div className={`absolute inset-0 ${moodTheme.bg} opacity-20`} />
-        )}
-        
-        <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
-        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+         {thread.coverImage ? (
+           <img src={thread.coverImage} className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700" alt="" />
+         ) : (
+           <div className={`absolute inset-0 ${mood.bg}`} />
+         )}
+         <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
+         
+         <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 max-w-[1800px] mx-auto w-full z-10">
+            <div className="flex justify-between items-center">
+              <a href="/threads" className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-lg">
+                <ArrowLeft size={18} />
+              </a>
 
-        <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 max-w-[1800px] mx-auto w-full z-10">
-          <div className="flex justify-between items-center">
-            <a href="/threads" className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all shadow-xl">
-              <ArrowLeft size={18} />
-            </a>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => toggleThreadPrivacy(thread.id)}
-                type="button"
-                className={`px-4 py-2 rounded-full backdrop-blur-md border shadow-lg flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer ${thread.isPublic ? 'bg-white/10 border-white/20 text-white' : 'bg-black/50 border-black/40 text-gray-400'}`}
-              >
-                {thread.isPublic ? <><Globe size={13} className={moodTheme.text} /> Public Thread</> : <><Lock size={13} /> Private Thread</>}
-              </button>
+              <div className="flex items-center gap-3">
+                 <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
+                    <Activity size={14} className={mood.text} />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white">Synthesizing {thread.sourceRoomIds.length} Rooms</span>
+                 </div>
+                 <button
+                   onClick={() => toggleThreadPrivacy(thread.id)}
+                   className={`px-3.5 py-2 rounded-full backdrop-blur-md border shadow-lg flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${thread.isPublic ? 'bg-white/10 border-white/20 text-white' : 'bg-black/50 border-black/40 text-gray-400'}`}
+                 >
+                   {thread.isPublic ? <><Globe size={12} className={mood.text} /> Public</> : <><Lock size={12} /> Private</>}
+                 </button>
+              </div>
             </div>
-          </div>
 
-          <div className="md:max-w-3xl">
-            <div className={`inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.2em] border shadow-lg transition-colors ${moodTheme.border} ${moodTheme.text}`}>
-               <Layers size={10} /> {thread.mood} Flow
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4 drop-shadow-2xl">{thread.title}</h1>
-            <p className="text-gray-400 text-lg md:text-xl font-serif italic mb-6 leading-relaxed line-clamp-2 max-w-2xl">{thread.description}</p>
-            
-            <div className="flex items-center gap-4">
-               <div className="flex -space-x-3">
-                  {synthesizedItems.slice(0, 5).map(item => (
-                     <div key={item.id} className={`w-9 h-9 rounded-full border-2 border-[#0a0a0a] ${moodTheme.bg} flex items-center justify-center overflow-hidden`}>
-                        <div className="w-full h-full bg-white/5" />
-                     </div>
-                  ))}
+            <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden">
+               <div className="relative z-10">
+                  <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-4 drop-shadow-2xl">{thread.title}</h1>
+                  <p className="text-gray-300 font-serif italic text-lg md:text-xl max-w-3xl leading-relaxed">{thread.description}</p>
                </div>
-               <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{synthesizedItems.length} Core Artifacts</span>
             </div>
-          </div>
-        </div>
+         </div>
       </header>
 
-      <main className="p-6 md:p-10 max-w-[1800px] mx-auto relative z-10">
-            <section className="mb-8 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-               <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 md:p-7 backdrop-blur-sm">
-                  <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                     <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-white">Contemplate</span>
-                     <span>Pattern synthesis</span>
-                  </div>
-                  <h2 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-white">{thread.title}</h2>
-                  <p className="mt-3 max-w-3xl text-gray-400 font-serif italic leading-relaxed">
-                     {thread.description || "This thread is where room artifacts are joined into a single pattern, then tested for meaning."}
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                     {sourceRoomNames.length > 0 ? (
-                        sourceRoomNames.map((name) => (
-                           <span key={name} className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300">
-                              {name}
-                           </span>
-                        ))
-                     ) : (
-                        <span className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                           No source rooms yet
-                        </span>
-                     )}
-                  </div>
-               </div>
+      <main className="p-6 md:p-10 max-w-[1800px] mx-auto relative z-10 -mt-8">
+         
+         <div className="flex items-center gap-6 mb-12">
+            <button 
+              onClick={() => setActiveTab('synthesis')}
+              className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${activeTab === 'synthesis' ? 'bg-white text-black shadow-2xl scale-105' : 'bg-white/5 border border-white/10 text-gray-500 hover:text-white'}`}
+            >
+               <GitCommit size={16} /> Synthesis Hub
+            </button>
+            <button 
+              onClick={() => setActiveTab('artifacts')}
+              className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${activeTab === 'artifacts' ? 'bg-white text-black shadow-2xl scale-105' : 'bg-white/5 border border-white/10 text-gray-500 hover:text-white'}`}
+            >
+               <Layers size={16} /> Woven Artifacts ({items.length})
+            </button>
 
-               <div className="grid grid-cols-3 gap-3 rounded-[2rem] border border-white/5 bg-black/25 p-4 md:p-5 backdrop-blur-sm">
-                  <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
-                     <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Artifacts</div>
-                     <div className="mt-2 text-2xl font-bold text-white">{synthesizedItems.length}</div>
-                  </div>
-                  <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
-                     <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Sources</div>
-                     <div className="mt-2 text-2xl font-bold text-white">{sourceRoomNames.length}</div>
-                  </div>
-                  <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
-                     <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Mood</div>
-                     <div className={`mt-2 text-2xl font-bold ${moodTheme.text}`}>{thread.mood}</div>
-                  </div>
-               </div>
-            </section>
+            <div className="ml-auto flex items-center gap-3">
+               <button onClick={() => setIsPaletteOpen(!isPaletteOpen)} className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all cursor-pointer">
+                  <Palette size={20} />
+               </button>
+               <button className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
+                  Export Pattern
+               </button>
+            </div>
+         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
-          {/* LEFT COLUMN: THE THESIS & SYNTHESIS */}
-          <div className="lg:col-span-8 space-y-12">
-            <section className="relative">
-               <div className={`absolute -inset-4 md:-inset-8 ${moodTheme.bg} blur-3xl opacity-10 rounded-4xl pointer-events-none`} />
-               <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-2xl">
-                  <div className="flex items-center gap-3 mb-8">
-                     <Lightbulb size={20} className={moodTheme.text} />
-                     <h2 className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-500">Core Thesis & Intention</h2>
-                  </div>
-                  <blockquote className="text-2xl md:text-3xl font-serif italic text-white leading-snug mb-10 decoration-indigo-500/20 underline decoration-4 underline-offset-8">
-                     "{thread.thesis || "No thesis defined for this exploration yet. What is the core question that unifies these artifacts?"}"
-                  </blockquote>
-                  <div className="flex items-center gap-6 pt-8 border-t border-white/5">
-                     <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-1">Last Synthesis</p>
-                        <p className="text-sm font-medium text-gray-400">{new Date(thread.updatedAt).toLocaleDateString()}</p>
-                     </div>
-                     <div className="w-px h-8 bg-white/5" />
-                     <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-1">Origin Rooms</p>
-                        <p className="text-sm font-medium text-gray-400">{sourceRoomNames.length > 0 ? sourceRoomNames.join(' · ') : 'Cross-Room Collective'}</p>
-                     </div>
-                  </div>
-               </div>
-            </section>
+         {activeTab === 'synthesis' ? (
+           <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+              <SynthesisWeb threadId={thread.id} />
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                 <div className="md:col-span-2 p-12 bg-white/[0.02] border border-white/5 rounded-[3.5rem] relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-canvas-primary/40 to-transparent" />
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 mb-10 flex items-center gap-3">
+                       <MessageSquare size={14} /> Contemplation Pulse
+                    </h4>
+                    <p className="text-3xl md:text-4xl font-serif italic text-white leading-relaxed mb-12">
+                       "If we accept that <span className={mood.text}>Raw Materials</span> are the core of digital sovereignty, how does this redefine our interaction with social signals?"
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                       {['Explore Contradictions', 'Find Parallel Patterns', 'Deepen Thesis'].map(action => (
+                         <button key={action} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all">
+                            {action}
+                         </button>
+                       ))}
+                    </div>
+                 </div>
 
-            <section>
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                           <button 
-                              type="button"
-                    onClick={() => setActiveTab('artifacts')}
-                    className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'artifacts' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
-                  >
-                    Artifacts
-                  </button>
-                           <button 
-                              type="button"
-                    onClick={() => setActiveTab('synthesis')}
-                    className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'synthesis' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
-                  >
-                    Synthesis
-                  </button>
-                </div>
-                <button 
-                           type="button"
-                  onClick={() => setShowAddItems(!showAddItems)}
-                  className="flex items-center gap-2 px-6 py-2 rounded-full border border-white/10 hover:border-white/20 text-[10px] font-bold uppercase tracking-widest text-white transition-all cursor-pointer"
-                >
-                  <Plus size={14} className={moodTheme.text} /> Modify Thread
-                </button>
+                 <div className="p-10 bg-black/40 border border-white/5 rounded-[3.5rem] flex flex-col justify-center text-center">
+                    <Sparkles size={40} className="text-canvas-primary mx-auto mb-6" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Synthesis Resonance</p>
+                    <div className="text-5xl font-bold text-white mb-8">{thread.synthesisScore}%</div>
+                    <p className="text-sm text-gray-400 font-serif italic leading-relaxed">
+                       This thread is highly cohesive. The signals from your rooms are forming a unified cognitive pattern.
+                    </p>
+                 </div>
               </div>
-
-              {showAddItems && (
-                <div className="mb-10 p-6 bg-[#111318] border border-white/10 rounded-3xl animate-in slide-in-from-top-4 duration-300">
-                  <div className="flex items-center justify-between mb-6">
-                     <h3 className="font-bold text-white tracking-tight">Add / Remove Synthesized Items</h3>
-                     <button type="button" onClick={() => setShowAddItems(false)} className="text-gray-500 hover:text-white transition-colors">
-                        <X size={18} />
-                     </button>
+           </div>
+         ) : (
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+              {items.map(item => (
+                <div key={item.id} className="bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group hover:border-white/20 transition-all duration-500">
+                  <div className="h-40 bg-white/5 relative overflow-hidden flex items-center justify-center">
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-700">Artifact Node</p>
+                     <div className="absolute top-4 left-4 px-2.5 py-1 rounded-lg bg-black/60 border border-white/10 text-[8px] font-bold uppercase tracking-widest text-white">
+                        From {rooms.find(r => r.id === item.roomId)?.name}
+                     </div>
                   </div>
-                  <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {allItems.map(item => {
-                           const isSelected = thread.itemIds.includes(item.id);
-                           const roomName = rooms.find(r => r.id === item.roomId)?.name || 'Unknown Room';
-                           return (
-                              <button
-                                key={item.id}
-                                onClick={() => handleToggleItem(item.id)}
-                                type="button"
-                                className={`p-4 rounded-2xl border transition-all text-left flex items-start gap-3 group cursor-pointer ${isSelected ? `bg-white/5 ${moodTheme.border}` : 'bg-transparent border-white/5 hover:border-white/10'}`}
-                              >
-                                 <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isSelected ? `${moodTheme.bg} ${moodTheme.border}` : 'border-white/20'}`}>
-                                    {isSelected && <span className="text-[10px] font-bold text-white">+</span>}
-                                 </div>
-                                 <div className="min-w-0">
-                                    <p className={`text-sm font-bold truncate group-hover:text-white transition-colors ${isSelected ? 'text-white' : 'text-gray-400'}`}>{item.title}</p>
-                                    <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest truncate">{roomName}</p>
-                                 </div>
-                              </button>
-                           );
-                        })}
+                  <div className="p-7">
+                     <h4 className="font-bold text-lg text-white mb-4 line-clamp-2">{item.title}</h4>
+                     <p className="text-sm text-gray-500 font-serif italic mb-6 line-clamp-3">"{item.note}"</p>
+                     <div className="flex items-center justify-between pt-5 border-t border-white/5">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-gray-700">Sovereign Data</span>
+                        <button onClick={() => removeItemFromThread(thread.id, item.id)} className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100">
+                           <Trash2 size={14} />
+                        </button>
                      </div>
                   </div>
                 </div>
-              )}
+              ))}
+           </div>
+         )}
 
-              {activeTab === 'artifacts' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {synthesizedItems.length === 0 ? (
-                <div className="col-span-full py-32 flex flex-col items-center justify-center bg-[#111] border-2 border-dashed border-white/5 rounded-[3rem] card-glow glow-slate">
-                   <Layers size={40} className="text-gray-800 mb-6 animate-pulse" />
-                   <p className="text-white text-xl font-bold tracking-tight mb-2">Synthesis is pending.</p>
-                   <p className="text-gray-500 font-serif italic text-sm mb-10 max-w-lg text-center">No artifacts have been woven into this thread. Patterns are waiting to be discovered.</p>
-                   <button type="button" onClick={() => setShowAddItems(true)} className="px-10 py-4 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.2em] text-[12px] shadow-2xl hover:-translate-y-1 transition-all">
-                      Initialize Synthesis
-                   </button>
-                </div>
-              ) : (
-                synthesizedItems.map(item => (
-                  <div key={item.id} className={`bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group transition-all duration-500 card-glow glow-${thread.mood === 'contemplative' ? 'indigo' : thread.mood === 'curious' ? 'cyan' : thread.mood === 'dark' ? 'slate' : thread.mood === 'hopeful' ? 'emerald' : thread.mood === 'urgent' ? 'rose' : 'amber'}`}>
-                    <div className={`h-40 ${moodTheme.bg} relative overflow-hidden`}>
-                      <div className="absolute inset-0 bg-linear-to-t from-[#111] via-transparent to-white/5 opacity-50" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
-                         <ExternalLink size={40} className={moodTheme.text} />
-                      </div>
-                      <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" 
-                        className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-gray-300 hover:text-white opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-xl"
-                      >
-                        <ExternalLink size={14} />
-                      </a>
-                    </div>
-
-                    <div className="p-7">
-                      <div className="flex flex-col gap-1 mb-4">
-                        <span className={`text-[8px] font-bold uppercase tracking-[0.2em] ${moodTheme.text}`}>Synthesized Artifact</span>
-                        <h4 className="font-bold text-lg leading-tight text-white/90 group-hover:text-white transition-colors line-clamp-2">{item.title}</h4>
-                      </div>
-                      
-                      {item.note && (
-                        <p className="text-sm text-gray-400 line-clamp-2 mb-6 font-serif italic border-l-2 border-white/10 pl-4 py-1 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">"{item.note}"</p>
-                      )}
-
-                      <div className="flex items-center justify-between mt-auto pt-5 border-t border-white/5">
-                        <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer"
-                          className={`text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-gray-500 hover:${moodTheme.text} transition-colors`}
-                        >
-                          {new URL(item.sourceUrl).hostname.replace('www.', '')}
-                        </a>
-                        <button 
-                          onClick={() => handleToggleItem(item.id)}
-                          type="button" 
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-
-                </div>
-              ) : (
-                <div className="p-12 text-center bg-white/[0.02] border border-white/5 rounded-[2.5rem]">
-                   <Share2 size={32} className="mx-auto mb-6 text-indigo-500 opacity-50" />
-                   <h3 className="text-2xl font-bold text-white mb-4">Thread Synthesis Engine</h3>
-                   <p className="text-gray-500 font-serif italic text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-                      This module generates a high-fidelity visual and structural output of your thread for external export and sharing.
-                      Coming soon as part of the Muse Pro Max update.
-                   </p>
-                   <div className="inline-block px-10 py-4 bg-indigo-500 text-white font-bold uppercase tracking-widest text-xs rounded-full opacity-50 cursor-not-allowed">
-                      Waitlist Open
-                   </div>
-                </div>
-              )}
-            </section>
-          </div>
-
-          {/* RIGHT COLUMN: CONTEXT & META */}
-          <div className="lg:col-span-4 space-y-8">
-             <div className="p-8 bg-[#151515] border border-white/5 rounded-4xl shadow-xl">
-                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-600 mb-6 flex items-center gap-2">
-                   <Link2 size={12} /> Pattern Context
-                </h3>
-                <div className="space-y-6">
-                   <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Primary Mood</p>
-                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border ${moodTheme.border} ${moodTheme.bg} transition-all`}>
-                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: moodTheme.color }} />
-                         <span className={`text-[11px] font-bold uppercase tracking-widest ${moodTheme.text}`}>{thread.mood}</span>
-                      </div>
-                   </div>
-
-                   <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Community Status</p>
-                      {thread.isPublic ? (
-                        <div className="flex items-center gap-3 p-4 bg-indigo-500/5 border border-indigo-500/20 rounded-2xl">
-                           <Globe size={18} className="text-indigo-400" />
-                           <div className="min-w-0">
-                              <p className="text-xs font-bold text-white uppercase tracking-widest">Publically Visible</p>
-                              <p className="text-[10px] text-gray-500 font-medium">Synced with Community Pulse</p>
-                           </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl">
-                           <Lock size={18} className="text-gray-400" />
-                           <div className="min-w-0">
-                              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Solo Protocol</p>
-                              <p className="text-[10px] text-gray-600 font-medium">Encrypted & Private</p>
-                           </div>
-                        </div>
-                      )}
-                   </div>
-
-                   <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Room Lineage</p>
-                      <ul className="space-y-3">
-                         {Array.from(new Set(synthesizedItems.map(i => i.roomId))).map(roomId => {
-                            const originRoom = rooms.find(r => r.id === roomId);
-                            if (!originRoom) return null;
-                            return (
-                               <li key={roomId} className="flex items-center gap-3 group">
-                                  <div className={`w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 overflow-hidden`}>
-                                     {originRoom.coverImage ? (
-                                        <img src={originRoom.coverImage} className="w-full h-full object-cover" alt="" />
-                                     ) : (
-                                        <Layers size={14} />
-                                     )}
-                                  </div>
-                                  <span className="text-xs font-bold text-gray-400 group-hover:text-white transition-colors">{originRoom.name}</span>
-                               </li>
-                            );
-                         })}
-                      </ul>
-                   </div>
-                </div>
-             </div>
-
-             <div className="relative p-1 overflow-hidden rounded-4xl bg-linear-to-br from-indigo-500/20 via-transparent to-violet-600/20 group">
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-[#0a0a0a] to-transparent z-10" />
-                <div className="relative bg-[#111318] p-8 rounded-[1.9rem] flex flex-col items-center text-center">
-                   <h4 className="text-base font-bold text-white mb-2 tracking-tight">Sync this Thread</h4>
-                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Create a living document</p>
-                   <button type="button" className="w-full py-3 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-2xl shadow-xl hover:-translate-y-0.5 transition-all">
-                      Export to PDF
-                   </button>
-                   <button type="button" className="w-full py-3 mt-3 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl hover:bg-white/5 transition-all">
-                      Share to community
-                   </button>
-                </div>
-             </div>
-          </div>
-        </div>
       </main>
     </div>
   );
