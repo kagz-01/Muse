@@ -1,20 +1,23 @@
 import { useState, useMemo } from "preact/hooks";
 import { 
   Sparkles, MessageSquare, Layers, GitCommit, ArrowRight, Check,
-  BookOpen, Hash, Activity, Send
+  BookOpen, Hash, Activity, Send, Palette, Type, Image as ImageIcon
 } from "lucide-preact";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { threadsSignal } from "../../signals/threads.ts";
 import { journalSignal, addJournalEntry } from "../../signals/journal.ts";
+import { userSignal } from "../../signals/user.ts";
 
 export default function JournalTerminal() {
   const rooms = roomsSignal.value;
   const threads = threadsSignal.value;
+  const user = userSignal.value;
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [activeSources, setActiveSources] = useState<string[]>([]);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [isStylistOpen, setIsStylistOpen] = useState(false);
 
   const toggleSource = (id: string) => {
     setActiveSources(prev => 
@@ -44,20 +47,50 @@ export default function JournalTerminal() {
 
   return (
     <div className="bg-[#111318] border border-white/10 rounded-[3rem] p-10 md:p-16 relative overflow-hidden shadow-3xl">
-      <div className="absolute top-0 right-0 h-full w-1/3 bg-canvas-primary/5 blur-[120px] pointer-events-none" />
+      {/* REFLECTION AURA */}
+      <div className="absolute inset-0 bg-linear-to-br from-canvas-primary/5 via-transparent to-transparent pointer-events-none" />
       
       <div className="relative z-10 space-y-10">
          <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
                <BookOpen size={14} className="text-canvas-primary" /> Contemplation Terminal
             </h3>
-            {isCapturing && (
-              <div className="flex items-center gap-3">
-                 <Activity size={14} className="text-canvas-primary animate-pulse" />
-                 <span className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary">Syncing Cognition...</span>
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+               <button onClick={() => setIsStylistOpen(!isStylistOpen)} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all">
+                  <Palette size={18} />
+               </button>
+               {isCapturing && (
+                 <div className="flex items-center gap-3">
+                    <Activity size={14} className="text-canvas-primary animate-pulse" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary">Syncing Cognition...</span>
+                 </div>
+               )}
+            </div>
          </div>
+
+         {isStylistOpen && (
+           <div className="p-6 bg-white/2 border border-white/5 rounded-[2rem] animate-in slide-in-from-top-4 duration-500">
+              <h4 className="text-[9px] font-bold uppercase tracking-widest text-gray-600 mb-6">Journal Stylist</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                 <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+                    <Type size={18} className="text-gray-500 group-hover:text-white transition-colors" />
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-gray-600">Typography</span>
+                 </button>
+                 <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+                    <ImageIcon size={18} className="text-gray-500 group-hover:text-white transition-colors" />
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-gray-600">Wallpaper</span>
+                 </button>
+                 <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+                    <Palette size={18} className="text-gray-500 group-hover:text-white transition-colors" />
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-gray-600">Spectrum</span>
+                 </button>
+                 <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+                    <Sparkles size={18} className="text-gray-500 group-hover:text-white transition-colors" />
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-gray-600">Aura Glow</span>
+                 </button>
+              </div>
+           </div>
+         )}
 
          <div className="space-y-6">
             <input 
