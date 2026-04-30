@@ -18,6 +18,11 @@ export interface User {
     topThemes: string[];
     synthesisCount: number;
   };
+  synthesisLineage: {
+    totalRooms: number;
+    totalArtifacts: number;
+    wovenThreads: number;
+  };
   customStyling?: {
     journalWallpaper?: string;
     fontFamily?: string;
@@ -39,6 +44,11 @@ export const userSignal = signal<User>({
     resonanceScore: 88,
     topThemes: ['Brutalism', 'Sovereignty', 'Stoicism'],
     synthesisCount: 5
+  },
+  synthesisLineage: {
+    totalRooms: 12,
+    totalArtifacts: 48,
+    wovenThreads: 8
   }
 });
 
@@ -50,12 +60,4 @@ export function toggleSoloMode() {
 
 export function updateUserAura(type: User['auraType'], color: string) {
   userSignal.value = { ...userSignal.value, auraType: type, auraColor: color };
-}
-
-export function updateWeeklyInsights(insights: User['weeklyInsights']) {
-  userSignal.value = { ...userSignal.value, weeklyInsights: insights };
-}
-
-export function incrementStreak() {
-  userSignal.value = { ...userSignal.value, cognitiveStreak: userSignal.value.cognitiveStreak + 1 };
 }
