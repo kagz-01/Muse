@@ -11,7 +11,11 @@ export interface Room {
   isPublic: boolean;
   count: number;
   updatedAt: string;
-  semanticTags: string[]; // AI-extracted tags for cross-room synthesis
+  semanticTags: string[];
+  resonanceMetrics: {
+    views: number;
+    wovenCount: number; // Number of times artifacts from this room were woven into public threads
+  };
   customStyling?: {
     wallpaper?: string;
     auraIntensity?: number;
@@ -29,7 +33,8 @@ export const roomsSignal = signal<Room[]>([
     isPublic: true,
     count: 5,
     updatedAt: new Date().toISOString(),
-    semanticTags: ['architecture', 'design', 'brutalism']
+    semanticTags: ['architecture', 'design', 'brutalism'],
+    resonanceMetrics: { views: 420, wovenCount: 12 }
   },
   {
     id: 'r2',
@@ -40,29 +45,20 @@ export const roomsSignal = signal<Room[]>([
     isPublic: false,
     count: 3,
     updatedAt: new Date().toISOString(),
-    semanticTags: ['stoicism', 'philosophy', 'mindfulness']
+    semanticTags: ['stoicism', 'philosophy', 'mindfulness'],
+    resonanceMetrics: { views: 0, wovenCount: 0 }
   }
 ]);
 
-export function addRoom(room: Omit<Room, 'id' | 'updatedAt' | 'count' | 'semanticTags'>) {
+export function addRoom(room: Omit<Room, 'id' | 'updatedAt' | 'count' | 'semanticTags' | 'resonanceMetrics'>) {
   const newId = 'r' + (roomsSignal.value.length + 1);
-  
-  // Semantic Conflict Check (Simulation)
-  const isDuplicate = roomsSignal.value.some(r => 
-    r.name.toLowerCase() === room.name.toLowerCase() || 
-    (room.name.toLowerCase() === 'michezo' && r.name.toLowerCase() === 'sports')
-  );
-
-  if (isDuplicate) {
-    console.warn(`Semantic conflict detected for room: ${room.name}. Suggesting merge...`);
-  }
-
   roomsSignal.value = [...roomsSignal.value, { 
     ...room, 
     id: newId, 
     updatedAt: new Date().toISOString(), 
     count: 0,
-    semanticTags: [] // Will be populated by AI after artifact collection
+    semanticTags: [],
+    resonanceMetrics: { views: 0, wovenCount: 0 }
   }];
 }
 

@@ -2,20 +2,35 @@ import { signal } from "@preact/signals";
 
 export type ThreadMood = 'contemplative' | 'curious' | 'dark' | 'hopeful' | 'urgent' | 'serene';
 
+export interface DialogueLayer {
+  id: string;
+  userId: string;
+  userName: string;
+  content: string;
+  type: 'insight' | 'challenge' | 'signal';
+  resonanceScore: number;
+  timestamp: string;
+}
+
 export interface Thread {
   id: string;
   title: string;
   description: string;
   mood: ThreadMood;
-  itemIds: string[]; // Artifacts woven into this thread
-  sourceRoomIds: string[]; // Rooms that provided the artifacts
+  itemIds: string[];
+  sourceRoomIds: string[];
   isPublic: boolean;
   updatedAt: string;
   coverImage?: string;
-  thesis?: string; // The AI-synthesized core question/pattern
-  synthesisScore: number; // 0-100% resonance between artifacts
+  thesis?: string;
+  synthesisScore: number;
+  resonanceMetrics: {
+    views: number;
+    connections: number; // Other threads that link back to this synthesis
+  };
+  dialogueLayers: DialogueLayer[]; // The "Rich Comment" section
   customStyling?: {
-    auraGradients: string[]; // Multi-room synthesis aura
+    auraGradients: string[];
     wallpaper?: string;
     fontFamily?: string;
   };
@@ -34,40 +49,46 @@ export const threadsSignal = signal<Thread[]>([
     coverImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
     thesis: 'If digital interfaces reflect the honesty of raw concrete, we can achieve true sovereignty.',
     synthesisScore: 88,
+    resonanceMetrics: { views: 1240, connections: 86 },
+    dialogueLayers: [
+      {
+        id: 'd1',
+        userId: 'u2',
+        userName: 'Elena',
+        content: 'This resonance between architecture and data is striking. Have you considered the material cost of digital storage as a form of "rawness"?',
+        type: 'insight',
+        resonanceScore: 42,
+        timestamp: new Date().toISOString()
+      }
+    ],
     customStyling: {
-      auraGradients: ['#6366f1', '#10b981'] // Indigo + Emerald
+      auraGradients: ['#6366f1', '#10b981']
     }
   }
 ]);
 
-export function addThread(thread: Omit<Thread, 'id' | 'updatedAt' | 'synthesisScore'>) {
+export function addThread(thread: Omit<Thread, 'id' | 'updatedAt' | 'synthesisScore' | 'resonanceMetrics' | 'dialogueLayers'>) {
   const newId = 't' + (threadsSignal.value.length + 1);
   threadsSignal.value = [...threadsSignal.value, { 
     ...thread, 
     id: newId, 
     updatedAt: new Date().toISOString(),
-    synthesisScore: Math.floor(Math.random() * 40) + 60 // Simulated AI score
+    synthesisScore: Math.floor(Math.random() * 40) + 60,
+    resonanceMetrics: { views: 0, connections: 0 },
+    dialogueLayers: []
   }];
 }
 
-export function updateThreadMood(id: string, mood: ThreadMood) {
-  threadsSignal.value = threadsSignal.value.map(t => t.id === id ? { ...t, mood } : t);
-}
-
-export function addItemToThread(threadId: string, itemId: string) {
+export function addDialogueLayer(threadId: string, layer: Omit<DialogueLayer, 'id' | 'resonanceScore' | 'timestamp'>) {
   threadsSignal.value = threadsSignal.value.map(t => {
     if (t.id === threadId) {
-      const newItemIds = t.itemIds.includes(itemId) ? t.itemIds : [...t.itemIds, itemId];
-      return { ...t, itemIds: newItemIds };
-    }
-    return t;
-  });
-}
-
-export function removeItemFromThread(threadId: string, itemId: string) {
-  threadsSignal.value = threadsSignal.value.map(t => {
-    if (t.id === threadId) {
-      return { ...t, itemIds: t.itemIds.filter(id => id !== itemId) };
+      const newLayer: DialogueLayer = {
+        ...layer,
+        id: 'd' + (t.dialogueLayers.length + 1),
+        resonanceScore: 0,
+        timestamp: new Date().toISOString()
+      };
+      return { ...t, dialogueLayers: [...t.dialogueLayers, newLayer] };
     }
     return t;
   });
