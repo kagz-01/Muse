@@ -1,5 +1,5 @@
-import { useState } from "preact/hooks";
-import { X } from "lucide-preact";
+import { useState, useEffect } from "preact/hooks";
+import { X, Shield, Activity, Zap, Lock, Globe, Mail, User } from "lucide-preact";
 import { login } from "../../signals/user.ts";
 
 interface AuthModalProps {
@@ -11,131 +11,189 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
   const [localMode, setLocalMode] = useState(initialMode);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
-    login(email);
-    globalThis.location.href = '/dashboard';
+    setIsSyncing(true);
+    
+    // Cinematic sync effect
+    setTimeout(() => {
+      setIsSyncing(false);
+      setIsSuccess(true);
+      setTimeout(() => {
+        login(email);
+        globalThis.location.href = '/dashboard';
+      }, 1000);
+    }, 1500);
   };
 
   const handleDemoEntry = () => {
-    login("demo@muse.app");
-    globalThis.location.href = "/dashboard?demo=1";
+    setIsSyncing(true);
+    setTimeout(() => {
+      login("demo@muse.app");
+      globalThis.location.href = "/dashboard?demo=1";
+    }, 1200);
   };
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-xl transition-opacity animate-in fade-in duration-300" 
+        className="absolute inset-0 bg-black/95 backdrop-blur-3xl transition-opacity animate-in fade-in duration-500" 
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-md z-10 animate-in zoom-in-95 duration-300">
-        {/* Glow */}
-        <div className="absolute -inset-4 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none" />
+      <div className="relative w-full max-w-xl z-10 animate-in zoom-in-95 duration-500">
+        
+        {/* SCANNING OVERLAY */}
+        <div className="absolute inset-x-0 h-1 bg-canvas-primary blur-md z-30 pointer-events-none animate-[scan_2s_linear_infinite]" />
 
-        <div className="relative bg-[#0f0f12] border border-white/10 rounded-[2.5rem] p-10 overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.6)]">
-          <div className="absolute -top-20 -right-20 w-48 h-48 bg-canvas-primary/15 blur-3xl rounded-full" />
-          <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-violet-600/10 blur-3xl rounded-full" />
+        <div className="relative bg-[#050505] border border-white/10 rounded-[3rem] p-12 overflow-hidden shadow-[0_60px_100px_rgba(0,0,0,0.8)]">
+          
+          {/* DECORATIVE SPECTRUM */}
+          <div className="absolute -top-32 -right-32 w-80 h-80 bg-canvas-primary/10 blur-[100px] rounded-full animate-pulse" />
+          <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-white/5 blur-[100px] rounded-full" />
 
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-6 right-6 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all cursor-pointer"
+            className="absolute top-8 right-8 w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all cursor-pointer z-50 hover:rotate-90"
           >
-            <X size={16} />
+            <X size={20} />
           </button>
 
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-8">
-              <img src="/assets/muse-logo.png" alt="Muse" className="h-10 w-10 object-contain rounded-xl" />
+            
+            {/* TERMINAL HEADER */}
+            <div className="flex items-center gap-4 mb-12">
+              <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-black font-bold text-xl shadow-2xl">
+                M
+              </div>
               <div>
-                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em]">Muse</p>
-                <p className="text-xs text-gray-500 font-serif italic">Turn consumption into creation</p>
+                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.5em] leading-none mb-2">System Access</p>
+                <h2 className="text-3xl font-bold tracking-tight text-white leading-none uppercase">
+                  {isSuccess ? "Resonance Verified" : localMode === 'signup' ? 'Initialize Flow' : 'Establish Link'}
+                </h2>
               </div>
             </div>
 
-            <h2 className="text-3xl font-bold tracking-tight mb-2">
-              {localMode === 'signup' ? 'Begin your Muse.' : 'Welcome back.'}
-            </h2>
-            <p className="text-sm text-gray-500 mb-8 font-serif italic">
-              {localMode === 'signup'
-                ? 'Your private creative loop starts here.'
-                : 'Your rooms are waiting.'}
-            </p>
+            {isSuccess ? (
+              <div className="py-20 text-center space-y-6 animate-in zoom-in-95 duration-500">
+                 <div className="w-20 h-20 bg-emerald-500/20 border border-emerald-500/40 rounded-full mx-auto flex items-center justify-center text-emerald-400">
+                    <Zap size={40} className="fill-emerald-400" />
+                 </div>
+                 <p className="text-xl font-serif italic text-gray-400">Connecting to your cognitive vault...</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8">
+                
+                {localMode === 'signup' && (
+                  <div className="space-y-3 group">
+                    <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                      <User size={12} /> Originator Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName((e.target as HTMLInputElement).value)}
+                      placeholder="ENTER IDENTITY"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
+                    />
+                  </div>
+                )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {localMode === 'signup' && (
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-                    Your Name
+                <div className="space-y-3 group">
+                  <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                    <Mail size={12} /> Uplink Address
                   </label>
                   <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName((e.target as HTMLInputElement).value)}
-                    placeholder="What shall we call you?"
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 transition-all text-sm"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
+                    placeholder="EMAIL@MUSE.SYSTEM"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
                   />
                 </div>
-              )}
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
-                  placeholder="you@example.com"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 transition-all text-sm"
-                />
+
+                <div className="space-y-3 group">
+                  <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                    <Lock size={12} /> Security Key
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono"
+                  />
+                </div>
+
+                <div className="pt-4 space-y-4">
+                  <button
+                    type="submit"
+                    disabled={isSyncing}
+                    className="group relative w-full py-6 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.3em] text-[11px] shadow-[0_20px_40px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:shadow-white/20 active:scale-95 transition-all cursor-pointer overflow-hidden disabled:opacity-50"
+                  >
+                    <div className="absolute inset-0 bg-canvas-primary/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                      {isSyncing ? "SYNCING RESONANCE..." : localMode === 'signup' ? 'INITIALIZE FLOW' : 'ESTABLISH LINK'} 
+                      {!isSyncing && <ArrowRight size={16} />}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleDemoEntry}
+                    className="w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px] hover:bg-white/10 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-3"
+                  >
+                    <Activity size={14} /> Enter as Guest Observer
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {!isSuccess && (
+              <div className="mt-12 pt-8 border-t border-white/5 flex flex-col items-center gap-6">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
+                  {localMode === 'signup' ? 'Already indexed?' : "New consciousness?"}
+                  <button
+                    type="button"
+                    onClick={() => setLocalMode(localMode === 'signup' ? 'login' : 'signup')}
+                    className="ml-3 text-white hover:text-canvas-primary transition-colors"
+                  >
+                    {localMode === 'signup' ? 'ESTABLISH LINK' : 'INITIALIZE FLOW'}
+                  </button>
+                </p>
+                
+                <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
+                   <Shield size={12} className="text-gray-600" />
+                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500">End-to-End Encryption Active</span>
+                </div>
               </div>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 transition-all text-sm"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-4 rounded-2xl bg-canvas-primary text-white font-bold uppercase tracking-widest text-[11px] shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] transition-all cursor-pointer mt-2"
-              >
-                {localMode === 'signup' ? 'Enter Muse →' : 'Continue →'}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDemoEntry}
-                className="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-gray-300 font-bold uppercase tracking-widest text-[10px] hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-              >
-                Continue As Demo
-              </button>
-            </form>
-
-            <p className="text-center text-xs text-gray-600 mt-6">
-              {localMode === 'signup' ? 'Already have an account? ' : "Don't have an account? "}
-              <button
-                type="button"
-                onClick={() => setLocalMode(localMode === 'signup' ? 'login' : 'signup')}
-                className="text-white hover:text-canvas-primary transition-colors font-semibold cursor-pointer"
-              >
-                {localMode === 'signup' ? 'Log in' : 'Sign up'}
-              </button>
-            </p>
-
-            <p className="text-center text-[10px] text-gray-700 mt-4 font-serif italic">
-              Demo mode — any input (or none) will work
-            </p>
+            )}
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes scan {
+          0% { transform: translateY(-100vh); opacity: 0; }
+          50% { opacity: 0.5; }
+          100% { transform: translateY(100vh); opacity: 0; }
+        }
+      `}</style>
+
     </div>
+  );
+}
+
+function ArrowRight({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14m-7-7 7 7-7 7"/>
+    </svg>
   );
 }
