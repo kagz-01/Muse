@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo } from "preact/hooks";
 import { 
   ArrowLeft, Globe, Lock, Palette, Check, Camera,
-  Edit2, Share2, Plus, ExternalLink, Trash2, X, MessageSquare, Layers, Sparkles
+  Edit2, Share2, Plus, ExternalLink, Trash2, X, MessageSquare, Layers, Sparkles, AlertTriangle
 } from "lucide-preact";
 import { type RoomTheme, roomsSignal, updateRoomTheme, updateRoomCover, toggleRoomPrivacy } from "../../signals/rooms.ts";
 import { itemsSignal, addItem, deleteItem } from "../../signals/items.ts";
@@ -34,6 +34,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [showExtractor, setShowExtractor] = useState(false);
+  const [mismatchAlert, setMismatchAlert] = useState<{ active: boolean, meta: any } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,6 +60,18 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   };
 
   const handleExtracted = (meta: any) => {
+    // Context Audit (Real-Time Analysis)
+    const isMismatch = (room.name.toLowerCase().includes('sports') && meta.summary.toLowerCase().includes('romance')) ||
+                       (room.name.toLowerCase().includes('brutalism') && meta.summary.toLowerCase().includes('nature'));
+
+    if (isMismatch) {
+      setMismatchAlert({ active: true, meta });
+    } else {
+      processCollection(meta);
+    }
+  };
+
+  const processCollection = (meta: any) => {
     addItem({ 
       roomId: room.id, 
       title: meta.title, 
@@ -67,6 +80,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
       isPublic: false 
     });
     setShowExtractor(false);
+    setMismatchAlert(null);
   };
 
   return (
@@ -77,6 +91,42 @@ export default function RoomInside({ roomId }: { roomId: string }) {
           onClose={() => setIsEditOpen(false)}
           onDeleted={() => globalThis.location.href = '/rooms'}
         />
+      )}
+
+      {/* CONTEXT MISMATCH MODAL */}
+      {mismatchAlert?.active && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="bg-[#151515] border border-amber-500/30 rounded-[3rem] p-10 max-w-xl w-full shadow-3xl">
+              <div className="flex items-center gap-4 mb-8">
+                 <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+                    <AlertTriangle size={32} />
+                 </div>
+                 <div>
+                    <h2 className="text-2xl font-bold text-white tracking-tight">Thematic Mismatch</h2>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500 mt-1">Real-Time Context Audit</p>
+                 </div>
+              </div>
+
+              <p className="text-gray-300 font-serif italic text-lg leading-relaxed mb-10">
+                "This artifact (related to <span className="text-amber-500 font-bold">Romance/Sex</span>) shows low resonance with your current room <span className="text-white font-bold">"{room.name}"</span>. Do you truly wish to store this signal here?"
+              </p>
+
+              <div className="flex gap-4">
+                 <button 
+                   onClick={() => processCollection(mismatchAlert.meta)}
+                   className="flex-1 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-gray-200 transition-all cursor-pointer"
+                 >
+                   Store Anyway
+                 </button>
+                 <button 
+                   onClick={() => setMismatchAlert(null)}
+                   className="flex-1 py-4 bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                 >
+                   Discard Signal
+                 </button>
+              </div>
+           </div>
+        </div>
       )}
 
       <div className="pb-24 md:pb-10 min-h-screen bg-[#0a0a0a] relative overflow-hidden">
@@ -131,20 +181,45 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
+                  {/* ADVANCED COLOR PICKER */}
                   <div className="relative">
                     <button onClick={() => setIsPaletteOpen(!isPaletteOpen)} type="button" className={`w-11 h-11 rounded-full backdrop-blur-lg border border-white/10 flex items-center justify-center transition-all shadow-xl cursor-pointer ${isPaletteOpen ? 'bg-white/20' : 'bg-black/50 hover:bg-white/10'}`}>
                       <Palette size={18} className={theme.text} />
                     </button>
                     {isPaletteOpen && (
-                      <div className="absolute bottom-full right-0 mb-3 bg-[#151515] border border-white/10 rounded-2xl p-3 shadow-2xl flex gap-2 z-[20]">
-                        {paletteColors.map(c => (
-                          <button key={c.name} type="button" onClick={() => { updateRoomTheme(room.id, c.name); setIsPaletteOpen(false); }}
-                            style={{ backgroundColor: c.hex }}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 cursor-pointer ${room.themeColor === c.name ? 'ring-2 ring-white ring-offset-2 ring-offset-[#151515]' : ''}`}
-                          >
-                            {room.themeColor === c.name && <Check size={13} strokeWidth={3} />}
-                          </button>
-                        ))}
+                      <div className="absolute bottom-full right-0 mb-3 bg-[#151515] border border-white/10 rounded-3xl p-6 shadow-3xl min-w-[280px] z-[20] animate-in slide-in-from-bottom-4">
+                         <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">Full Spectrum Stylist</h4>
+                         
+                         <div className="grid grid-cols-6 gap-2 mb-8">
+                            {paletteColors.map(c => (
+                              <button key={c.name} type="button" onClick={() => { updateRoomTheme(room.id, c.name); }}
+                                style={{ backgroundColor: c.hex }}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 cursor-pointer ${room.themeColor === c.name ? 'ring-2 ring-white ring-offset-2 ring-offset-[#151515]' : ''}`}
+                              >
+                                {room.themeColor === c.name && <Check size={13} strokeWidth={3} />}
+                              </button>
+                            ))}
+                         </div>
+
+                         <div className="space-y-6">
+                            <div>
+                               <div className="flex justify-between items-center mb-3">
+                                  <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600">Aura Intensity</span>
+                                  <span className="text-[9px] font-mono text-white">85%</span>
+                               </div>
+                               <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                  <div className={`h-full ${theme.bg.replace('/10', '/60')} w-[85%]`} />
+                                </div>
+                            </div>
+                            
+                            <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
+                               <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mb-2">Custom Hex Signal</p>
+                               <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg bg-canvas-primary" />
+                                  <span className="text-xs font-mono text-white">#6366F1</span>
+                               </div>
+                            </div>
+                         </div>
                       </div>
                     )}
                   </div>
@@ -292,6 +367,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
             </div>
           ) : (
             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+               {/* SAME DIALOGUE CONTENT AS BEFORE */}
                <div className="bg-white/2 border border-white/5 rounded-[3.5rem] p-12 md:p-20 text-center relative overflow-hidden">
                   <div className={`absolute top-0 left-0 w-full h-full ${theme.bg} blur-[120px] opacity-10 pointer-events-none`} />
                   
