@@ -7,69 +7,48 @@ export interface Item {
   sourceUrl: string;
   note?: string;
   isPublic: boolean;
-  createdAt: number;
+  createdAt: string;
+  // PERSISTENCE METADATA
+  storedContent?: string; // The extracted raw data (text, JSON, etc.)
+  localMediaPath?: string; // Path to the locally stored image/video
+  dataProvenance: {
+    platform: string;
+    extractedAt: string;
+    integrityHash: string;
+  };
 }
 
-const mockItems: Item[] = [
+export const itemsSignal = signal<Item[]>([
   {
-    id: '101',
-    roomId: 'visuals-architect', // updated to match actual default room IDs roughly
-    title: 'Brutalist Architecture Concept - Tokyo',
-    sourceUrl: 'https://pinterest.com/pin/brutalist-tokyo',
-    note: 'The stark concrete feels isolating but serene.',
-    isPublic: false,
-    createdAt: Date.now() - 86400000 * 2
-  },
-  {
-    id: '102',
-    roomId: 'music-ambience',
-    title: 'Ambient Rain Mix - 4 Hours',
-    sourceUrl: 'https://youtube.com/watch?v=ambient-rain',
-    note: 'Listened while viewing the concrete designs.',
+    id: 'i1',
+    roomId: 'r1',
+    title: 'Brutalist Principles in Digital Spaces',
+    sourceUrl: 'https://design.com/brutalism',
+    note: 'Raw materials are the only honest way to build.',
     isPublic: true,
-    createdAt: Date.now() - 86400000 * 1
-  },
-  {
-    id: '103',
-    roomId: 'ideas-articles',
-    title: 'The Age of Algorithmic Anxiety',
-    sourceUrl: 'https://theatlantic.com/tech/anxiety',
-    note: 'Exactly why I started using Muse. Grounding.',
-    isPublic: false,
-    createdAt: Date.now() - 4000000
-  },
-  {
-    id: '104',
-    roomId: 'visuals-architect',
-    title: 'Dieter Rams - 10 Principles',
-    sourceUrl: 'https://vitsoe.com/10-principles',
-    note: 'Less, but better. Always.',
-    isPublic: false,
-    createdAt: Date.now() - 20000000
-  },
-  {
-    id: '105',
-    roomId: 'technology',
-    title: 'AI and The Future of Solitude',
-    sourceUrl: 'https://wired.com/ai-solitude',
-    note: 'Interesting juxtaposition against the community pods.',
-    isPublic: true,
-    createdAt: Date.now() - 1000000
+    createdAt: new Date().toISOString(),
+    dataProvenance: {
+      platform: 'Web',
+      extractedAt: new Date().toISOString(),
+      integrityHash: 'sha256-...'
+    }
   }
-];
+]);
 
-export const itemsSignal = signal<Item[]>(mockItems);
-
-export function addItem(item: Omit<Item, 'id' | 'createdAt'>): Item {
-  const newItem: Item = { ...item, id: Date.now().toString(), createdAt: Date.now() };
+export function addItem(item: Omit<Item, 'id' | 'createdAt' | 'dataProvenance'>) {
+  const newItem: Item = {
+    ...item,
+    id: 'i' + (itemsSignal.value.length + 1),
+    createdAt: new Date().toISOString(),
+    dataProvenance: {
+      platform: item.sourceUrl.includes('x.com') ? 'X' : 'Web',
+      extractedAt: new Date().toISOString(),
+      integrityHash: 'sha256-' + Math.random().toString(16).slice(2, 10)
+    }
+  };
   itemsSignal.value = [newItem, ...itemsSignal.value];
-  return newItem;
 }
 
 export function deleteItem(id: string) {
-  itemsSignal.value = itemsSignal.value.filter(item => item.id !== id);
-}
-
-export function resetItems() {
-  itemsSignal.value = mockItems.map((item) => ({ ...item }));
+  itemsSignal.value = itemsSignal.value.filter(i => i.id !== id);
 }
