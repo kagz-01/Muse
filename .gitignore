@@ -9,6 +9,3 @@
 _fresh/
 # npm dependencies
 node_modules/
-
-# Reference frontend kept only for comparison
-Muse2/

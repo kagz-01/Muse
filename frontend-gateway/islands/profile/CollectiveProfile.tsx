@@ -1,13 +1,14 @@
 import { userSignal } from "../../signals/user.ts";
 import { threadsSignal } from "../../signals/threads.ts";
 import { 
-  Sparkles, Flame, Activity, Layers, GitCommit, 
+  Flame, Activity, Layers, GitCommit, 
   Globe, Zap, ArrowUpRight, Shield, Award, Cpu
 } from "lucide-preact";
+import { type Thread } from "../../signals/threads.ts";
 
 export default function CollectiveProfile() {
   const user = userSignal.value;
-  const threads = threadsSignal.value.filter(t => t.isPublic);
+  const threads = threadsSignal.value.filter((t: Thread) => t.isPublic);
 
   return (
     <div className="pb-24 md:pb-10 min-h-screen bg-[#0a0a0a] relative overflow-hidden">
@@ -49,7 +50,7 @@ export default function CollectiveProfile() {
               { label: 'Woven Synthesis', value: user.synthesisLineage.wovenThreads, sub: 'Public Threads', icon: GitCommit },
               { label: 'Cognitive Impact', value: user.resonance.connections, sub: 'Resonance Conn.', icon: Zap },
               { label: 'Signal Stream', value: user.synthesisLineage.totalArtifacts, sub: 'Sovereign Nodes', icon: Cpu },
-            ].map(stat => (
+            ].map((stat: any) => (
               <div key={stat.label} className="p-6 bg-white/5 border border-white/5 rounded-3xl backdrop-blur-md">
                  <stat.icon size={18} className="text-gray-600 mx-auto mb-4" />
                  <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
@@ -75,7 +76,7 @@ export default function CollectiveProfile() {
                   <div className="space-y-4">
                      <div className="text-[9px] font-bold uppercase tracking-widest text-gray-600">Primary Resonance Clusters</div>
                      <div className="flex flex-wrap gap-2">
-                        {user.weeklyInsights.topThemes.map(theme => (
+                        {user.weeklyInsights.topThemes.map((theme: string) => (
                           <span key={theme} className="px-4 py-2 bg-white/5 border border-white/5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white hover:border-canvas-primary/40 transition-colors cursor-pointer">
                              #{theme}
                           </span>
@@ -88,7 +89,10 @@ export default function CollectiveProfile() {
                   <Award size={40} className="text-amber-500 mb-6" />
                   <h4 className="text-lg font-bold text-white uppercase tracking-widest mb-2">Architect of Pattern</h4>
                   <p className="text-xs text-gray-500 font-serif italic mb-8">Awarded for woven synthesis involving 10+ source rooms.</p>
-                  <button className="w-full py-4 bg-white/5 border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-[9px] rounded-2xl hover:text-white transition-all">
+                  <button 
+                    type="button"
+                    className="w-full py-4 bg-white/5 border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-[9px] rounded-2xl hover:text-white transition-all"
+                  >
                      View Credentials
                   </button>
                </section>
@@ -100,13 +104,16 @@ export default function CollectiveProfile() {
                   <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
                      <Globe size={14} className="text-emerald-500" /> Public Synthesis Stream
                   </h3>
-                  <button className="text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors">
+                  <button 
+                    type="button"
+                    className="text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors"
+                  >
                      View All Patterns
                   </button>
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {threads.map(thread => (
+                  {threads.map((thread: Thread) => (
                     <div key={thread.id} className="group bg-[#111] border border-white/5 rounded-[3rem] overflow-hidden hover:border-white/20 transition-all duration-500 shadow-2xl">
                        <div className="h-48 relative overflow-hidden">
                           {thread.coverImage ? (
