@@ -2,6 +2,7 @@ import { ComponentChildren } from "preact";
 import { soloModeSignal } from "../../signals/user.ts";
 import { CaptureModal } from "../modals/index.ts";
 import ProfileOverlay from "../profile/ProfileOverlay.tsx";
+import SynthesisEngine from "../navigation/SynthesisEngine.tsx";
 
 export default function AppLayoutWrapper({ children }: { children: ComponentChildren }) {
   const soloMode = soloModeSignal.value;
@@ -22,6 +23,7 @@ export default function AppLayoutWrapper({ children }: { children: ComponentChil
       {children}
       <CaptureModal />
       <ProfileOverlay />
+      <SynthesisEngine />
     </div>
   );
 }
