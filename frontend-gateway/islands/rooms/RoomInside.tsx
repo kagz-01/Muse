@@ -1,12 +1,13 @@
 import { useState, useRef, useMemo } from "preact/hooks";
 import { 
   ArrowLeft, Globe, Lock, Palette, Check, Camera,
-  Edit2, Share2, Plus, ExternalLink, Trash2, X, MessageSquare, Layers, Sparkles, AlertTriangle
+  Edit2, Share2, Plus, ExternalLink, Trash2, MessageSquare, Layers, Sparkles, AlertTriangle
 } from "lucide-preact";
 import { type RoomTheme, roomsSignal, updateRoomTheme, updateRoomCover, toggleRoomPrivacy } from "../../signals/rooms.ts";
 import { itemsSignal, addItem, deleteItem } from "../../signals/items.ts";
 import EditRoomModal from "../modals/EditRoomModal.tsx";
 import ArtifactExtractor from "../../components/rooms/ArtifactExtractor.tsx";
+import { setSystemStatus } from "../../signals/intelligence.ts";
 
 const themeMapping: Record<RoomTheme, {
   border: string; shadow: string; text: string; bg: string; fill: string;
@@ -34,7 +35,10 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [showExtractor, setShowExtractor] = useState(false);
-  const [mismatchAlert, setMismatchAlert] = useState<{ active: boolean, meta: any } | null>(null);
+  const [mismatchAlert, setMismatchAlert] = useState<{ active: boolean, meta: { title: string; summary: string } } | null>(null);
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [dialogueInput, setDialogueInput] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,7 +63,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     }
   };
 
-  const handleExtracted = (meta: any) => {
+  const handleExtracted = (meta: { title: string; summary: string }) => {
     // Context Audit (Real-Time Analysis)
     const isMismatch = (room.name.toLowerCase().includes('sports') && meta.summary.toLowerCase().includes('romance')) ||
                        (room.name.toLowerCase().includes('brutalism') && meta.summary.toLowerCase().includes('nature'));
@@ -71,7 +75,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     }
   };
 
-  const processCollection = (meta: any) => {
+  const processCollection = (meta: { title: string; summary: string }) => {
     addItem({ 
       roomId: room.id, 
       title: meta.title, 
@@ -81,6 +85,36 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     });
     setShowExtractor(false);
     setMismatchAlert(null);
+  };
+
+  const handleDialogueAction = (action: string) => {
+    setIsAnalyzing(true);
+    setSystemStatus('Analyzing');
+    setAiResponse(null);
+    
+    // Simulate complex neural processing
+    setTimeout(() => {
+      let response = "";
+      switch(action) {
+        case 'Identify core themes':
+          response = "Neural mapping complete. Your collection focuses on 'Structural Integrity' and 'Industrial Brutalism'. 85% of artifacts share these semantic nodes.";
+          break;
+        case 'Find contradictions':
+          response = "Conflict detected. Your latest artifact on 'Nature-Inspired Design' contrasts with the brutalist foundation of this room.";
+          break;
+        case 'Suggest next collection':
+          response = "The collective suggests searching for 'Modernist Concrete' to reinforce the current thematic resonance.";
+          break;
+        case 'Synthesize to Thread':
+          response = "Sovereign synthesis ready. The patterns are stable enough to be woven into a formal intelligence document.";
+          break;
+        default:
+          response = "Your neural query has been synthesized. The patterns in this room are maturing toward deep resonance.";
+      }
+      setAiResponse(response);
+      setIsAnalyzing(false);
+      setSystemStatus('Idle');
+    }, 2000);
   };
 
   return (
@@ -113,12 +147,14 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
               <div className="flex gap-4">
                  <button 
+                   type="button"
                    onClick={() => processCollection(mismatchAlert.meta)}
                    className="flex-1 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-gray-200 transition-all cursor-pointer"
                  >
                    Store Anyway
                  </button>
                  <button 
+                   type="button"
                    onClick={() => setMismatchAlert(null)}
                    className="flex-1 py-4 bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:text-white hover:bg-white/10 transition-all cursor-pointer"
                  >
@@ -242,12 +278,14 @@ export default function RoomInside({ roomId }: { roomId: string }) {
           {/* TAB NAVIGATION */}
           <div className="flex items-center gap-6 mb-12">
              <button 
+               type="button"
                onClick={() => setActiveTab('collection')}
                className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${activeTab === 'collection' ? 'bg-white text-black shadow-2xl scale-105' : 'bg-white/5 border border-white/10 text-gray-500 hover:text-white'}`}
              >
                 <Layers size={16} /> Collection Phase
              </button>
              <button 
+               type="button"
                onClick={() => setActiveTab('dialogue')}
                className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${activeTab === 'dialogue' ? 'bg-white text-black shadow-2xl scale-105' : 'bg-white/5 border border-white/10 text-gray-500 hover:text-white'}`}
              >
@@ -391,13 +429,28 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                      
                      <div className="relative max-w-2xl mx-auto">
                         <textarea 
+                          value={dialogueInput}
+                          onInput={e => setDialogueInput((e.target as HTMLTextAreaElement).value)}
                           placeholder="What patterns are emerging in this room?"
                           className="w-full bg-white/5 border border-white/10 rounded-[2.5rem] px-10 py-8 text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.08] transition-all min-h-[160px] text-xl font-serif italic outline-none"
                         />
-                        <button className="absolute bottom-6 right-6 w-14 h-14 bg-white text-black rounded-2xl flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer">
-                           <Sparkles size={24} />
+                        <button 
+                          type="button"
+                          onClick={() => handleDialogueAction(dialogueInput || 'General Query')}
+                          disabled={isAnalyzing}
+                          className={`absolute bottom-6 right-6 w-14 h-14 bg-white text-black rounded-2xl flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer ${isAnalyzing ? 'opacity-50' : ''}`}
+                        >
+                           {isAnalyzing ? <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" /> : <Sparkles size={24} />}
                         </button>
                      </div>
+
+                     {aiResponse && (
+                       <div className="mt-8 p-8 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl animate-in fade-in slide-in-from-top-4 duration-500">
+                          <p className="text-indigo-400 font-serif italic text-lg leading-relaxed">
+                            "{aiResponse}"
+                          </p>
+                       </div>
+                     )}
 
                      <div className="mt-12 flex flex-wrap justify-center gap-4">
                         {[
@@ -406,7 +459,13 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                           'Suggest next collection',
                           'Synthesize to Thread'
                         ].map(action => (
-                          <button key={action} className="px-6 py-3 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-canvas-primary transition-all">
+                          <button 
+                            type="button"
+                            key={action} 
+                            onClick={() => handleDialogueAction(action)}
+                            disabled={isAnalyzing}
+                            className={`px-6 py-3 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-canvas-primary transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed`}
+                          >
                             {action}
                           </button>
                         ))}
@@ -436,7 +495,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                      <p className="text-gray-500 font-serif italic text-lg leading-relaxed mb-8">
                         Ready to weave these artifacts into a living document?
                      </p>
-                     <button className="w-full py-5 bg-canvas-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all">
+                     <button type="button" onClick={() => handleDialogueAction('Synthesize to Thread')} className="w-full py-5 bg-canvas-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
                         Initialize Pattern Thread
                      </button>
                   </div>

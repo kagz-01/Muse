@@ -22,10 +22,12 @@ import * as $api_joke from "./routes/api/joke.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $Error404 from "./islands/Error404.tsx";
 import * as $WalletConnectButton from "./islands/WalletConnectButton.tsx";
 import * as $connections_CommunityPulseStripIsland from "./islands/connections/CommunityPulseStripIsland.tsx";
 import * as $connections_ConnectionsHub from "./islands/connections/ConnectionsHub.tsx";
 import * as $connections_ThoughtStream from "./islands/connections/ThoughtStream.tsx";
+import * as $connections_WisdomMap from "./islands/connections/WisdomMap.tsx";
 import * as $connections_index from "./islands/connections/index.ts";
 import * as $create_CreateHub from "./islands/create/CreateHub.tsx";
 import * as $create_index from "./islands/create/index.ts";
@@ -56,6 +58,8 @@ import * as $modals_CreateRoomModal from "./islands/modals/CreateRoomModal.tsx";
 import * as $modals_CreateThreadModal from "./islands/modals/CreateThreadModal.tsx";
 import * as $modals_EditRoomModal from "./islands/modals/EditRoomModal.tsx";
 import * as $modals_index from "./islands/modals/index.ts";
+import * as $navigation_SynthesisEngine from "./islands/navigation/SynthesisEngine.tsx";
+import * as $profile_CollectiveProfile from "./islands/profile/CollectiveProfile.tsx";
 import * as $profile_ProfileOverlay from "./islands/profile/ProfileOverlay.tsx";
 import * as $profile_ProfilePage from "./islands/profile/ProfilePage.tsx";
 import * as $profile_index from "./islands/profile/index.ts";
@@ -94,11 +98,13 @@ const manifest = {
     "./routes/index.tsx": $index,
   },
   islands: {
+    "./islands/Error404.tsx": $Error404,
     "./islands/WalletConnectButton.tsx": $WalletConnectButton,
     "./islands/connections/CommunityPulseStripIsland.tsx":
       $connections_CommunityPulseStripIsland,
     "./islands/connections/ConnectionsHub.tsx": $connections_ConnectionsHub,
     "./islands/connections/ThoughtStream.tsx": $connections_ThoughtStream,
+    "./islands/connections/WisdomMap.tsx": $connections_WisdomMap,
     "./islands/connections/index.ts": $connections_index,
     "./islands/create/CreateHub.tsx": $create_CreateHub,
     "./islands/create/index.ts": $create_index,
@@ -129,6 +135,8 @@ const manifest = {
     "./islands/modals/CreateThreadModal.tsx": $modals_CreateThreadModal,
     "./islands/modals/EditRoomModal.tsx": $modals_EditRoomModal,
     "./islands/modals/index.ts": $modals_index,
+    "./islands/navigation/SynthesisEngine.tsx": $navigation_SynthesisEngine,
+    "./islands/profile/CollectiveProfile.tsx": $profile_CollectiveProfile,
     "./islands/profile/ProfileOverlay.tsx": $profile_ProfileOverlay,
     "./islands/profile/ProfilePage.tsx": $profile_ProfilePage,
     "./islands/profile/index.ts": $profile_index,

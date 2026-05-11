@@ -5,7 +5,7 @@ export const isCaptureOpenSignal = signal(false);
 export const isProfileOpenSignal = signal(false);
 export const isNotificationsOpenSignal = signal(false);
 
-export type AppTheme = "dark" | "light";
+export type AppTheme = "dark" | "dim" | "tint" | "light";
 export type AppAccentColor = "cyan" | "blue" | "purple" | "pink" | "green" | "yellow" | "red" | "white";
 export type AppFontSize = "small" | "medium" | "large";
 
@@ -145,7 +145,10 @@ export function setTheme(theme: AppTheme) {
 }
 
 export function toggleTheme() {
-  setTheme(appThemeSignal.value === "dark" ? "light" : "dark");
+  const themes: AppTheme[] = ["dark", "dim", "tint", "light"];
+  const currentIndex = themes.indexOf(appThemeSignal.value);
+  const nextIndex = (currentIndex + 1) % themes.length;
+  setTheme(themes[nextIndex]);
 }
 
 export function setAccentColor(accentColor: AppAccentColor) {

@@ -15,14 +15,36 @@
     color-scheme: dark;
   }
 
+  html[data-theme="dim"] {
+    --muse-bg: #1c1c1c;
+    --muse-surface: #242424;
+    --muse-surface-soft: #2a2a2a;
+    --muse-text: #e0e0e0;
+    --muse-muted: #888888;
+    --muse-border: rgba(255, 255, 255, 0.08);
+    --muse-overlay: rgba(28, 28, 28, 0.9);
+    color-scheme: dark;
+  }
+
+  html[data-theme="tint"] {
+    --muse-bg: #f2eedf;
+    --muse-surface: #ebe6d5;
+    --muse-surface-soft: #e3dec9;
+    --muse-text: #2a2a2a;
+    --muse-muted: #6b6b6b;
+    --muse-border: rgba(0, 0, 0, 0.1);
+    --muse-overlay: rgba(242, 238, 223, 0.9);
+    color-scheme: light;
+  }
+
   html[data-theme="light"] {
-    --muse-bg: #f7f3ea;
-    --muse-surface: #fffdf8;
-    --muse-surface-soft: #f1e9db;
-    --muse-text: #1d2430;
-    --muse-muted: #5f6874;
-    --muse-border: rgba(29, 36, 48, 0.14);
-    --muse-overlay: rgba(247, 243, 234, 0.9);
+    --muse-bg: #ffffff;
+    --muse-surface: #f9f9f9;
+    --muse-surface-soft: #f0f0f0;
+    --muse-text: #111111;
+    --muse-muted: #555555;
+    --muse-border: rgba(0, 0, 0, 0.08);
+    --muse-overlay: rgba(255, 255, 255, 0.9);
     color-scheme: light;
   }
 
@@ -41,41 +63,36 @@
   box-sizing: border-box;
 }
 
-html[data-theme="light"] img {
+html:is([data-theme="light"], [data-theme="tint"]) img {
   filter: saturate(0.96);
 }
 
-html[data-theme="light"] [class*="bg-canvas-bg-dark"] {
+html:is([data-theme="light"], [data-theme="tint"]) [class*="bg-canvas-bg-dark"] {
   background-color: var(--muse-bg) !important;
 }
 
-html[data-theme="light"] [class*="bg-canvas-card-dark"] {
+html:is([data-theme="light"], [data-theme="tint"]) [class*="bg-canvas-card-dark"] {
   background-color: var(--muse-surface) !important;
 }
 
-html[data-theme="light"] [class*="text-white"] {
+html:is([data-theme="light"], [data-theme="tint"]) [class*="text-white"] {
   color: var(--muse-text) !important;
 }
 
-html[data-theme="light"] .text-gray-300,
-html[data-theme="light"] .text-gray-400,
-html[data-theme="light"] .text-gray-500,
-html[data-theme="light"] .text-gray-600,
-html[data-theme="light"] .text-gray-700,
-html[data-theme="light"] .text-gray-800 {
+html:is([data-theme="light"], [data-theme="tint"]) :is(.text-gray-300, .text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800) {
   color: var(--muse-muted) !important;
 }
 
-html[data-theme="light"] [class*="border-white"] {
+html:is([data-theme="light"], [data-theme="tint"]) [class*="border-white"] {
   border-color: var(--muse-border) !important;
 }
 
-html[data-theme="light"] .glass-card {
+html:is([data-theme="light"], [data-theme="tint"]) .glass-card {
   background-color: var(--muse-surface);
   border-color: var(--muse-border);
 }
 
-html[data-theme="light"] .glass-panel {
+html:is([data-theme="light"], [data-theme="tint"]) .glass-panel {
   background-color: color-mix(in oklab, var(--muse-surface) 80%, transparent);
   border-color: var(--muse-border);
 }

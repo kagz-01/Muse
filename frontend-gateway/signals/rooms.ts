@@ -73,3 +73,15 @@ export function updateRoomCover(id: string, cover: string) {
 export function toggleRoomPrivacy(id: string) {
   roomsSignal.value = roomsSignal.value.map((r: Room) => r.id === id ? { ...r, isPublic: !r.isPublic } : r);
 }
+
+export function updateRoom(id: string, updates: Partial<Room>) {
+  roomsSignal.value = roomsSignal.value.map((r: Room) => r.id === id ? { ...r, ...updates, updatedAt: new Date().toISOString() } : r);
+}
+
+export function deleteRoom(id: string) {
+  roomsSignal.value = roomsSignal.value.filter((r: Room) => r.id !== id);
+}
+
+export function resetRooms() {
+  roomsSignal.value = [];
+}

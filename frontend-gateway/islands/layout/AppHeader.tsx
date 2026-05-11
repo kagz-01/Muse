@@ -3,6 +3,10 @@ import {
   Menu as MenuIcon,
   Bell,
   Sparkles,
+  Sun,
+  Moon,
+  Circle,
+  CloudSun,
 } from "lucide-preact";
 import { useEffect, useRef } from "preact/hooks";
 import { userSignal } from "../../signals/user.ts";
@@ -15,12 +19,15 @@ import {
   notificationsSignal,
   toggleMenu,
   toggleNotifications,
+  toggleTheme,
+  appThemeSignal,
   AppNotification
 } from "../../signals/ui.ts";
 import WalletConnectButton from "../WalletConnectButton.tsx";
 
 export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
   const isNotificationsOpen = isNotificationsOpenSignal.value;
+  const currentTheme = appThemeSignal.value;
   const notifications = notificationsSignal.value;
   const unreadCount = notifications.filter((n: AppNotification) => !n.isRead).length;
   const notificationPanelRef = useRef<HTMLDivElement>(null);
@@ -49,7 +56,7 @@ export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
   const isDemo = user?.email === "demo@muse.app";
 
   return (
-    <header className={`fixed top-0 left-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-3xl border-b border-white/5 transition-all duration-500 ${isDemo ? 'pt-8' : ''}`}>
+    <header className={`fixed top-0 left-0 w-full z-50 bg-[var(--muse-overlay)] backdrop-blur-3xl border-b border-white/5 transition-all duration-500 ${isDemo ? 'pt-8' : ''}`}>
       {isDemo && (
         <div className="absolute top-0 left-0 w-full h-8 bg-canvas-primary/10 border-b border-canvas-primary/20 flex items-center justify-center gap-4 px-6 overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
@@ -91,6 +98,19 @@ export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
             <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
             <span className="text-[9px] font-bold text-canvas-primary uppercase tracking-widest">Mirror Active</span>
           </div>
+
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:border-white/20 flex items-center justify-center transition-all text-gray-400 hover:text-white"
+            title={`Switch to next theme (Current: ${currentTheme})`}
+          >
+            {currentTheme === 'dark' && <Moon size={16} />}
+            {currentTheme === 'dim' && <Circle size={14} fill="currentColor" />}
+            {currentTheme === 'tint' && <CloudSun size={16} />}
+            {currentTheme === 'light' && <Sun size={16} fill="currentColor" />}
+          </button>
 
           <div className="relative" ref={notificationPanelRef}>
             <button

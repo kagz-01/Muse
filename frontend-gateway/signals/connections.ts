@@ -176,3 +176,18 @@ export function submitPerspective(content: string, targetId?: string, source?: s
     );
   }, 2000);
 }
+
+export const insightsSignal = signal<string[]>([
+  "Brutalism is trending across 3 rooms in your network.",
+  "Your synthesis on 'Digital Sovereignty' has 86 resonance connections.",
+  "Community dialogue is shifting toward minimalist aesthetics.",
+]);
+
+export const activeThemesSignal = signal<string[]>([
+  "Brutalism",
+  "Digital Sovereignty", 
+  "Stoicism",
+  "Minimalism",
+  "Collective Intelligence",
+  "Open Source Ethics",
+]);

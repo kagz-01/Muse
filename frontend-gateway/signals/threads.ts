@@ -97,3 +97,17 @@ export function addDialogueLayer(threadId: string, layer: Omit<DialogueLayer, 'i
 export function toggleThreadPrivacy(id: string) {
   threadsSignal.value = threadsSignal.value.map(t => t.id === id ? { ...t, isPublic: !t.isPublic } : t);
 }
+
+export function updateThreadMood(id: string, mood: ThreadMood) {
+  threadsSignal.value = threadsSignal.value.map(t => t.id === id ? { ...t, mood, updatedAt: new Date().toISOString() } : t);
+}
+
+export function removeItemFromThread(threadId: string, itemId: string) {
+  threadsSignal.value = threadsSignal.value.map(t =>
+    t.id === threadId ? { ...t, itemIds: t.itemIds.filter(i => i !== itemId), updatedAt: new Date().toISOString() } : t
+  );
+}
+
+export function resetThreads() {
+  threadsSignal.value = [];
+}

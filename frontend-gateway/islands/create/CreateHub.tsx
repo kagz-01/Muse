@@ -2,7 +2,7 @@ import { useState } from "preact/hooks";
 import { 
   Sparkles, BookOpen, Layers, Globe, 
   Music, Image as ImageIcon, 
-  ArrowRight, Link2, Zap, Layout, Lock, X 
+  Link2, Zap, Layout, Lock 
 } from "lucide-preact";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { addItem } from "../../signals/items.ts";
@@ -12,7 +12,7 @@ import CreateThreadModal from "../modals/CreateThreadModal.tsx";
 
 export default function CreateHub() {
   const rooms = roomsSignal.value;
-  const totalArtifacts = rooms.reduce((count, room) => count + room.count, 0);
+  const totalArtifacts = rooms.reduce((count: number, room: { count: number }) => count + room.count, 0);
   
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [showCreateThread, setShowCreateThread] = useState(false);
@@ -116,7 +116,7 @@ export default function CreateHub() {
                   className="bg-white/5 border border-white/10 text-gray-400 text-[10px] font-bold uppercase tracking-widest px-5 py-4 rounded-3xl focus:outline-none focus:border-indigo-500/30 transition-all cursor-pointer appearance-none pr-10"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'rgba(156, 163, 175, 0.5)\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.2rem' }}
                 >
-                  {rooms.map(room => (
+                  {rooms.map((room: { id: string; name: string }) => (
                     <option key={room.id} value={room.id} className="bg-[#111]">{room.name}</option>
                   ))}
                 </select>
@@ -251,40 +251,47 @@ export default function CreateHub() {
             <div className="h-px bg-white/5 flex-1" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl hover:border-white/20 transition-all cursor-pointer group shadow-lg">
-              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                <ImageIcon size={20} className="text-gray-400" />
+        <section>
+          <div className="flex items-center gap-4 mb-8">
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500">Upcoming Synthesis Nodes</h2>
+            <div className="h-px bg-white/5 flex-1" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-60">
+            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden">
+               <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white bg-black/80 px-4 py-2 rounded-full border border-white/10">In Development</span>
+               </div>
+              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center">
+                <ImageIcon size={20} className="text-gray-600" />
               </div>
-              <h4 className="text-xl font-bold mb-2 text-white">Mood Board Engine</h4>
-              <p className="text-sm text-gray-500 mb-8 leading-relaxed font-serif italic">Turn a Room or Thread into a high-fidelity visual grid for export.</p>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors flex items-center gap-2">
-                Launch Explorer <ArrowRight size={12} />
-              </div>
+              <h4 className="text-xl font-bold mb-2 text-gray-400">Mood Board Engine</h4>
+              <p className="text-sm text-gray-600 mb-8 leading-relaxed font-serif italic">Transmute rooms into high-fidelity visual grids for collective export.</p>
             </div>
             
-            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl hover:border-white/20 transition-all cursor-pointer group shadow-lg">
-              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center group-hover:bg-[#1DB954]/20 transition-colors">
-                <Music size={20} className="text-gray-400 group-hover:text-[#1DB954]" />
+            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden">
+               <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white bg-black/80 px-4 py-2 rounded-full border border-white/10">In Development</span>
+               </div>
+              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center">
+                <Music size={20} className="text-gray-600" />
               </div>
-              <h4 className="text-xl font-bold mb-2 text-white">Atmospheric Exports</h4>
-              <p className="text-sm text-gray-500 mb-8 leading-relaxed font-serif italic">Sync Room soundtracks directly into Spotify or Apple Music playlists.</p>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors flex items-center gap-2">
-                Connect API <ArrowRight size={12} />
-              </div>
+              <h4 className="text-xl font-bold mb-2 text-gray-400">Atmospheric Sync</h4>
+              <p className="text-sm text-gray-600 mb-8 leading-relaxed font-serif italic">Harmonize room soundtracks with external streaming protocols.</p>
             </div>
             
-            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl hover:border-white/20 transition-all cursor-pointer group shadow-lg">
-              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
-                <Globe size={20} className="text-gray-400 group-hover:text-indigo-400" />
+            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden">
+               <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white bg-black/80 px-4 py-2 rounded-full border border-white/10">In Development</span>
+               </div>
+              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center">
+                <Globe size={20} className="text-gray-600" />
               </div>
-              <h4 className="text-xl font-bold mb-2 text-white">Portrait Preview</h4>
-              <p className="text-sm text-gray-500 mb-8 leading-relaxed font-serif italic">Render your public persona. Curate what the world sees of your collection.</p>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors flex items-center gap-2">
-                View Persona <ArrowRight size={12} />
-              </div>
+              <h4 className="text-xl font-bold mb-2 text-gray-400">Portrait Preview</h4>
+              <p className="text-sm text-gray-600 mb-8 leading-relaxed font-serif italic">Render your public persona. Curate your contribution to the collective.</p>
             </div>
           </div>
+        </section>
         </section>
       </div>
     </div>
