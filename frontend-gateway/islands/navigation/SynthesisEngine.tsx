@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks";
 import { 
-  Sparkles, MessageSquare, GitCommit, 
+  MessageSquare, GitCommit, 
   Plus, X, Zap, Cpu, Activity
 } from "lucide-preact";
 import { intelligenceSignal, systemPulse } from "../../signals/intelligence.ts";
@@ -21,7 +21,7 @@ export default function SynthesisEngine() {
   const pulseClass = systemPulse.value;
 
   return (
-    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200]">
+    <div className="fixed bottom-24 right-6 z-[200]">
       
       {/* BACKDROP OVERLAY */}
       {isOpen && (
@@ -31,20 +31,30 @@ export default function SynthesisEngine() {
         />
       )}
 
-      <div className="relative">
-         {/* TRIGGER BUTTON */}
+      <div className="relative flex flex-col gap-3 items-end">
+         {/* MIRROR FLOATING BUBBLE */}
+         <a 
+           href="/mirror"
+           title="Mirror Insights"
+           className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--muse-surface)] border border-[var(--muse-border)] text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:border-canvas-primary/40 hover:bg-[var(--muse-surface-soft)] transition-all duration-300 shadow-xl opacity-60 hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer"
+         >
+            <Activity size={18} />
+         </a>
+
+         {/* SYNTHESIS ENGINE TRIGGER */}
          <button 
            type="button"
            onClick={() => setIsOpen(!isOpen)}
-           className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 shadow-[0_0_50px_rgba(255,255,255,0.15)] hover:shadow-[0_0_70px_rgba(255,255,255,0.25)] ${isOpen ? 'bg-white text-black rotate-45 scale-90' : 'bg-[#111] border border-white/10 text-white'}`}
+           title="Synthesis Engine"
+           className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl opacity-60 hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer ${isOpen ? 'bg-[var(--muse-text)] text-[var(--muse-bg)] rotate-45' : 'bg-[var(--muse-surface)] border border-[var(--muse-border)] text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:border-canvas-primary/40'}`}
          >
-            {isOpen ? <X size={28} /> : <Sparkles size={28} className="animate-pulse" />}
+            {isOpen ? <X size={18} /> : <Plus size={18} />}
          </button>
 
          {/* PHASE NODES */}
          {isOpen && (
-           <div className="absolute bottom-full mb-10 left-1/2 -translate-x-1/2 w-[420px]">
-              <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-10 fade-in duration-500">
+           <div className="absolute bottom-full mb-4 right-0 w-[320px] sm:w-[380px]">
+              <div className="grid grid-cols-2 gap-3.5 animate-in slide-in-from-bottom-6 fade-in duration-500">
                  {phases.map((phase, i) => (
                    <button 
                      type="button"
@@ -53,34 +63,34 @@ export default function SynthesisEngine() {
                         setActivePhase(phase.id);
                         setIsOpen(false);
                      }}
-                     className="bg-[#151515] border border-white/10 rounded-[2.5rem] p-6 text-left group hover:bg-white/[0.03] hover:border-white/20 transition-all active:scale-95"
+                     className="bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[2rem] p-5 text-left group hover:bg-[var(--muse-surface-soft)] hover:border-[var(--muse-text)]/20 transition-all active:scale-95 cursor-pointer"
                    >
-                      <div className="flex items-center justify-between mb-4">
-                         <div className={`w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center ${phase.color} group-hover:scale-110 transition-transform`}>
-                            <phase.icon size={24} />
+                      <div className="flex items-center justify-between mb-3">
+                         <div className={`w-10 h-10 rounded-xl bg-[var(--muse-surface-soft)] flex items-center justify-center ${phase.color} group-hover:scale-110 transition-transform`}>
+                            <phase.icon size={20} />
                          </div>
-                         <div className="px-2 py-1 bg-white/5 rounded-lg text-[7px] font-bold uppercase tracking-widest text-gray-600">Phase 0{i + 1}</div>
+                         <div className="px-2 py-0.5 bg-[var(--muse-surface-soft)] rounded-md text-[7px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">Phase 0{i + 1}</div>
                       </div>
-                      <h4 className="text-white font-bold uppercase tracking-widest text-[11px] mb-1">{phase.label}</h4>
-                      <p className="text-[9px] text-gray-500 uppercase tracking-widest leading-relaxed">{phase.desc}</p>
+                      <h4 className="text-[var(--muse-text)] font-bold uppercase tracking-widest text-[10px] mb-1">{phase.label}</h4>
+                      <p className="text-[8px] text-[var(--muse-muted)] uppercase tracking-widest leading-relaxed">{phase.desc}</p>
                    </button>
                  ))}
               </div>
 
               {/* SYSTEM STATUS */}
-              <div className="mt-6 p-6 bg-canvas-primary/5 border border-canvas-primary/20 rounded-[2rem] flex items-center justify-between animate-in fade-in slide-in-from-bottom-4 delay-300">
-                 <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-canvas-primary/20 flex items-center justify-center text-canvas-primary">
-                       <Cpu size={20} className={system.status !== 'Idle' ? 'animate-spin' : 'animate-spin-slow'} />
+              <div className="mt-4 p-5 bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[2rem] flex items-center justify-between animate-in fade-in slide-in-from-bottom-4 delay-300">
+                 <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[var(--muse-surface-soft)] flex items-center justify-center text-canvas-primary">
+                       <Cpu size={18} className={system.status !== 'Idle' ? 'animate-spin' : 'animate-spin-slow'} />
                     </div>
                     <div>
-                       <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500">Synthesis Engine</p>
-                       <p className="text-xs font-bold text-white uppercase tracking-widest">{system.status} · Calibrated</p>
+                       <p className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">Synthesis Engine</p>
+                       <p className="text-[11px] font-bold text-[var(--muse-text)] uppercase tracking-widest">{system.status} · Calibrated</p>
                     </div>
                  </div>
-                 <div className="flex items-center gap-3">
+                 <div className="flex items-center gap-2.5">
                     <div className={`w-2 h-2 rounded-full ${pulseClass}`} />
-                    <span className="text-[10px] font-mono text-gray-400">{system.nodeCount} Nodes</span>
+                    <span className="text-[10px] font-mono text-[var(--muse-muted)]">{system.nodeCount} Nodes</span>
                  </div>
               </div>
            </div>
@@ -90,3 +100,4 @@ export default function SynthesisEngine() {
     </div>
   );
 }
+

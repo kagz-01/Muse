@@ -1,5 +1,5 @@
-import { isMenuOpenSignal, closeMenu, toggleCapture, setAccentColor, appAccentSignal, AppAccentColor } from "../../signals/ui.ts";
-import { BookOpen, Plus, X, Network, Layout as LayoutIcon, ChevronRight, Sparkles, Activity, Shield, Wallet, Download, Settings as SettingsIcon, Lock } from "lucide-preact";
+import { isMenuOpenSignal, closeMenu, setAccentColor, appAccentSignal, AppAccentColor } from "../../signals/ui.ts";
+import { BookOpen, X, Home as HomeIcon, Users as UsersIcon, Layout as LayoutIcon, ChevronRight, Activity, Shield, Wallet, Download, Settings as SettingsIcon, Lock } from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 
 interface AppMenuProps {
@@ -14,10 +14,10 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
 
   // Muse 2.0 Unified Lifecycle Flow
   const cycleNav = [
-    { label: 'Pulse', path: '/dashboard', icon: <Sparkles size={24} />, desc: 'Awareness' },
-    { label: 'Vault', path: '/rooms', icon: <LayoutIcon size={24} />, desc: 'Collection' },
+    { label: 'Home', path: '/dashboard', icon: <HomeIcon size={24} />, desc: 'Awareness' },
+    { label: 'Rooms', path: '/rooms', icon: <LayoutIcon size={24} />, desc: 'Collection' },
     { label: 'Journal', path: '/journal', icon: <BookOpen size={24} />, desc: 'Contemplate' },
-    { label: 'Network', path: '/connections', icon: <Network size={24} />, desc: 'Collective' },
+    { label: 'Community', path: '/connections', icon: <UsersIcon size={24} />, desc: 'Collective' },
   ];
 
   const isActive = (path: string) => currentPath.startsWith(path);
@@ -25,53 +25,21 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
   return (
     <>
       {/* UNIVERSAL BOTTOM NAVIGATION (Cycle Bar) */}
-      <nav className="fixed bottom-0 left-0 w-full bg-[var(--muse-overlay)] backdrop-blur-3xl border-t border-[var(--muse-border)] flex justify-between items-center h-20 px-2 md:px-10 z-[60] pb-safe transition-all duration-300">
-        {/* Left Side: Collect & Analyze */}
-        <div className="flex flex-1 justify-around items-center h-full max-w-[40%]">
-          {cycleNav.slice(0, 2).map(item => (
-            <a 
-              key={item.label}
-              href={item.path}
-              className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all duration-300 ${isActive(item.path) ? 'text-canvas-primary scale-110' : 'text-[var(--muse-muted)] hover:text-[var(--muse-text)]'}`}
-            >
-              <div className={isActive(item.path) ? "drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]" : ""}>
-                {item.icon}
-              </div>
-              <span className={`text-[9px] font-bold uppercase tracking-tighter ${isActive(item.path) ? 'opacity-100' : 'opacity-0 md:opacity-40'}`}>{item.label}</span>
-            </a>
-          ))}
-        </div>
-
-        {/* Center: THE SYNTHESIS ENGINE */}
-        <div className="relative -top-8">
-          <div className="absolute inset-0 bg-canvas-primary/20 blur-2xl rounded-full animate-pulse" />
-          <button 
-            type="button"
-            onClick={toggleCapture}
-            className="relative w-16 h-16 bg-[var(--muse-text)] text-[var(--muse-bg)] rounded-[2rem] flex items-center justify-center shadow-2xl border-4 border-[var(--muse-bg)] active:scale-90 transition-all hover:scale-105 group overflow-hidden duration-300"
+      <nav className="fixed bottom-0 left-0 w-full bg-[var(--muse-overlay)] backdrop-blur-3xl border-t border-[var(--muse-border)] flex justify-around items-center h-20 px-4 md:px-32 z-[60] pb-safe transition-all duration-300">
+        {cycleNav.map(item => (
+          <a 
+            key={item.label}
+            href={item.path}
+            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-2xl transition-all duration-300 ${isActive(item.path) ? 'text-canvas-primary scale-110' : 'text-[var(--muse-muted)] hover:text-[var(--muse-text)]'}`}
           >
-            <div className="absolute inset-0 bg-canvas-primary/5 group-hover:bg-canvas-primary/10 transition-colors" />
-            <Plus size={32} className="relative z-10 group-hover:rotate-90 transition-transform duration-500" />
-            <div className="absolute -bottom-8 whitespace-nowrap text-[9px] font-bold text-[var(--muse-text)] uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity duration-300">Synthesize</div>
-          </button>
-        </div>
-
-        {/* Right Side: Contemplate & Network */}
-        <div className="flex flex-1 justify-around items-center h-full max-w-[40%]">
-          {cycleNav.slice(2, 4).map(item => (
-            <a 
-              key={item.label}
-              href={item.path}
-              className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all duration-300 ${isActive(item.path) ? 'text-canvas-primary scale-110' : 'text-[var(--muse-muted)] hover:text-[var(--muse-text)]'}`}
-            >
-              <div className={isActive(item.path) ? "drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]" : ""}>
-                {item.icon}
-              </div>
-              <span className={`text-[9px] font-bold uppercase tracking-tighter ${isActive(item.path) ? 'opacity-100' : 'opacity-0 md:opacity-40'}`}>{item.label}</span>
-            </a>
-          ))}
-        </div>
+            <div className={isActive(item.path) ? "drop-shadow-[0_0_8px_rgba(212,168,83,0.35)]" : ""}>
+              {item.icon}
+            </div>
+            <span className={`text-[9px] font-bold uppercase tracking-widest ${isActive(item.path) ? 'opacity-100 text-canvas-primary' : 'opacity-40 hover:opacity-100'}`}>{item.label}</span>
+          </a>
+        ))}
       </nav>
+
 
       {/* DRAWER MENU (Secondary Actions) */}
       <div 
