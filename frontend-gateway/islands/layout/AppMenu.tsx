@@ -10,6 +10,7 @@ import {
   BookOpen,
   ChevronRight,
   Download,
+  GitCommit,
   Home as HomeIcon,
   Layout as LayoutIcon,
   Lock,
@@ -44,6 +45,12 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
       path: "/rooms",
       icon: <LayoutIcon size={24} />,
       desc: "Collection",
+    },
+    {
+      label: "Threads",
+      path: "/threads",
+      icon: <GitCommit size={24} />,
+      desc: "Synthesize",
     },
     {
       label: "Journal",
