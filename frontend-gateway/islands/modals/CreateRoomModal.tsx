@@ -26,6 +26,7 @@ export default function CreateRoomModal({ onClose }: Props) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [emoji, setEmoji] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [category, setCategory] = useState<RoomCategory>("workspace");
   const [size, setSize] = useState<RoomSize>("medium");
   const [tags, setTags] = useState<string[]>([]);
@@ -242,13 +243,42 @@ export default function CreateRoomModal({ onClose }: Props) {
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Room Icon
             </label>
-            <input
-              value={emoji}
-              onInput={(e) => setEmoji((e.target as HTMLInputElement).value)}
-              placeholder="🏛️ Pick an emoji (optional)"
-              maxLength={8}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium text-center"
-            />
+            <div className="relative">
+              <input
+                value={emoji}
+                onInput={(e) => setEmoji((e.target as HTMLInputElement).value)}
+                placeholder="🏛️ Pick an emoji (optional)"
+                maxLength={8}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium text-center"
+              />
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
+                aria-label="Pick emoji"
+              >
+                😊
+              </button>
+
+              {showEmojiPicker && (
+                <div className="absolute left-0 mt-3 w-full bg-[#111] border border-white/10 rounded-2xl p-3 grid grid-cols-8 gap-2 z-50 shadow-3xl">
+                  {[
+                    "😀","😁","😂","🤣","😍","🥰","😎","🤔",
+                    "🎨","📔","🏛️","⚡","✨","🔥","🌿","🌧️",
+                    "🎯","📷","💡","🔒","🌊","🧠","📦","🔖",
+                  ].map((e) => (
+                    <button
+                      key={e}
+                      type="button"
+                      onClick={() => { setEmoji(e); setShowEmojiPicker(false); }}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/5 transition-colors"
+                    >
+                      <span className="text-lg">{e}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Category & Size */}
