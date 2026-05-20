@@ -116,11 +116,6 @@ export default function PulseHome() {
 
         <div className="relative z-10 grid gap-12 lg:grid-cols-[1.2fr_0.8fr] items-center">
           <div>
-            <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary mb-8">
-              <Activity size={14} className="animate-pulse" />
-              Resonance Active
-            </div>
-
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
               {greeting},{" "}
               <span className="text-gray-600 italic font-serif">

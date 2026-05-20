@@ -51,13 +51,6 @@ export default function CommunityPulseStrip() {
           {current.text}
         </span>
       </div>
-
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:flex items-center gap-1.5 opacity-30">
-        <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
-        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-          Live Pulse
-        </span>
-      </div>
     </div>
   );
 }

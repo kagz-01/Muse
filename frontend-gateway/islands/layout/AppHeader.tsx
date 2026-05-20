@@ -8,7 +8,11 @@ import {
   Sun,
 } from "lucide-preact";
 import { useEffect, useRef } from "preact/hooks";
-import { userSignal } from "../../signals/user.ts";
+import {
+  soloModeSignal,
+  toggleSoloMode,
+  userSignal,
+} from "../../signals/user.ts";
 import {
   AppNotification,
   appThemeSignal,
@@ -22,7 +26,6 @@ import {
   toggleNotifications,
   toggleTheme,
 } from "../../signals/ui.ts";
-import WalletConnectButton from "../WalletConnectButton.tsx";
 
 export default function AppHeader(
   { currentPath: _currentPath }: { currentPath?: string },
@@ -55,6 +58,7 @@ export default function AppHeader(
   }, [isNotificationsOpen]);
 
   const user = userSignal.value;
+  const isSoloMode = soloModeSignal.value;
   const isDemo = user?.email === "demo@muse.app";
 
   return (
@@ -111,13 +115,34 @@ export default function AppHeader(
         </div>
 
         <div className="flex items-center gap-3 md:gap-5">
-          {/* Mirror Status */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-canvas-primary/5 border border-canvas-primary/20 rounded-full">
-            <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
-            <span className="text-[9px] font-bold text-canvas-primary uppercase tracking-widest">
-              Mirror Active
-            </span>
-          </div>
+          {/* Network Mode Toggle */}
+          <button
+            type="button"
+            onClick={toggleSoloMode}
+            className={`hidden md:flex items-center gap-2 px-3 py-1.5 border rounded-full transition-all duration-300 cursor-pointer ${
+              isSoloMode
+                ? "bg-[var(--muse-surface-soft)] border-[var(--muse-border)] text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
+                : "bg-canvas-primary/5 border-canvas-primary/20 text-canvas-primary hover:bg-canvas-primary/10"
+            }`}
+          >
+            {isSoloMode
+              ? (
+                <>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--muse-muted)]" />
+                  <span className="text-[9px] font-bold uppercase tracking-widest">
+                    Solo Mode
+                  </span>
+                </>
+              )
+              : (
+                <>
+                  <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
+                  <span className="text-[9px] font-bold uppercase tracking-widest">
+                    Community
+                  </span>
+                </>
+              )}
+          </button>
 
           {/* Theme Toggle */}
           <button
@@ -192,10 +217,6 @@ export default function AppHeader(
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="hidden sm:block">
-            <WalletConnectButton />
           </div>
 
           <button

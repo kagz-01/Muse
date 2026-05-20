@@ -12,7 +12,12 @@ import {
   X,
   Zap,
 } from "lucide-preact";
-import { isCaptureOpenSignal, toggleCapture } from "../../signals/ui.ts";
+import {
+  addNotification,
+  appThemeSignal,
+  isCaptureOpenSignal,
+  toggleCapture,
+} from "../../signals/ui.ts";
 import { addRoom, roomsSignal } from "../../signals/rooms.ts";
 import { addItem } from "../../signals/items.ts";
 
@@ -98,6 +103,10 @@ export default function CaptureModal() {
       note,
       isPublic: false,
     });
+    addNotification(
+      "Synthesis Captured",
+      `"${title}" was committed to the vault.`,
+    );
 
     // Reset and close
     setStep("input");

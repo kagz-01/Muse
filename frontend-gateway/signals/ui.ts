@@ -44,33 +44,18 @@ const FONT_SIZE_MAP: Record<AppFontSize, string> = {
   large: "18px",
 };
 
-const initialNotifications: AppNotification[] = [
-  {
-    id: "n-1",
-    title: "New reply in Threads",
-    detail: "Alex replied to your discussion on Creative Identity.",
-    time: "2m ago",
-    isRead: false,
-  },
-  {
-    id: "n-2",
-    title: "Room activity spike",
-    detail: "Brutalist Architecture Room has 5 new captures.",
-    time: "16m ago",
-    isRead: false,
-  },
-  {
-    id: "n-3",
-    title: "Weekly insight ready",
-    detail: "Your weekly synthesis report is now available.",
-    time: "1h ago",
-    isRead: true,
-  },
-];
+export const notificationsSignal = signal<AppNotification[]>([]);
 
-export const notificationsSignal = signal<AppNotification[]>(
-  initialNotifications,
-);
+export function addNotification(title: string, detail: string) {
+  const newNotification: AppNotification = {
+    id: `n-${Date.now()}`,
+    title,
+    detail,
+    time: "Just now",
+    isRead: false,
+  };
+  notificationsSignal.value = [newNotification, ...notificationsSignal.value];
+}
 export const appThemeSignal = signal<AppTheme>("dark");
 export const appAccentSignal = signal<AppAccentColor>("cyan");
 export const appFontSizeSignal = signal<AppFontSize>("medium");
