@@ -149,13 +149,13 @@ export default function PulseHome() {
   ];
 
   return (
-    <div className="max-w-[1800px] mx-auto px-6 md:px-10 pt-8 pb-20 space-y-10 animate-in fade-in duration-1000">
+    <div className="w-full max-w-none px-6 md:px-10 pt-8 pb-20 space-y-10 animate-in fade-in duration-1000">
       {/* HERO SECTION: THE MONOLITH GREETER */}
       <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-linear-to-br from-white/[0.04] via-transparent to-transparent p-10 md:p-16 shadow-3xl">
         <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-canvas-primary/10 blur-[120px] animate-pulse" />
         <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-white/5 blur-[120px]" />
 
-        <div className="relative z-10 grid gap-12 lg:grid-cols-[1.2fr_0.8fr] items-center">
+        <div className="relative z-10 grid gap-12 xl:grid-cols-[1.15fr_0.85fr] items-center">
           <div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
               {greeting},{" "}
@@ -244,9 +244,9 @@ export default function PulseHome() {
       </section>
 
       {/* SECONDARY GRID: ACTIVITY & THEMES */}
-      <section className="grid gap-10 lg:grid-cols-[1.3fr_0.7fr]">
+      <section className="grid gap-10 xl:grid-cols-[1.2fr_0.8fr] items-start">
         {/* RECENT RESONANCE */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           <div className="flex items-center justify-between px-2">
             <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
               Recent Resonance{" "}
@@ -319,8 +319,8 @@ export default function PulseHome() {
         </div>
 
         {/* TRENDING CONSCIOUSNESS */}
-        <div className="space-y-8">
-          <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8">
+        <div className="space-y-8 min-w-0">
+          <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8 min-w-0">
             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
               <TrendingUp size={20} className="text-canvas-primary" />{" "}
               Active Themes
@@ -348,7 +348,7 @@ export default function PulseHome() {
           </div>
 
           {/* STATS STRIP */}
-          <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8">
+          <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8 min-w-0">
             <div className="flex items-center justify-between mb-5">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">
                 Service Health
@@ -360,7 +360,7 @@ export default function PulseHome() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
               {([
                 {
                   key: "ai",
@@ -377,7 +377,7 @@ export default function PulseHome() {
               ]).map((service) => (
                 <div
                   key={service.key}
-                  className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                  className="rounded-2xl border border-white/10 bg-black/20 p-4 min-w-[180px] flex-shrink-0"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
@@ -398,7 +398,7 @@ export default function PulseHome() {
             </div>
           </div>
 
-          <div className="bg-canvas-primary/10 rounded-[2.5rem] border border-canvas-primary/20 p-8 text-center">
+          <div className="bg-canvas-primary/10 rounded-[2.5rem] border border-canvas-primary/20 p-8 text-center min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary mb-2">
               Total Intelligence
             </p>
