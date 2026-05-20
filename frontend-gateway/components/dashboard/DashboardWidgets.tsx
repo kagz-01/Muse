@@ -14,11 +14,11 @@ export default function DashboardWidgets() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
         {/* Weekly Mirror Sneak Peek widget */}
         <a
           href="/mirror"
-          className="group relative overflow-hidden bg-linear-to-br from-[#1c1c1c] to-canvas-bg-dark rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-canvas-primary/30 transition-all duration-300 transform hover:-translate-y-1 block"
+          className="group relative overflow-hidden bg-linear-to-br from-[#1c1c1c] to-canvas-bg-dark rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-canvas-primary/30 transition-all duration-300 transform hover:-translate-y-1 block min-w-[320px] md:min-w-[380px] snap-start"
         >
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none">
           </div>
@@ -39,7 +39,7 @@ export default function DashboardWidgets() {
         {/* Meaningful Network Widget */}
         <a
           href="/connections"
-          className="group bg-[#1c1c1c] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-canvas-primary/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden block"
+          className="group bg-[#1c1c1c] rounded-3xl p-8 border border-white/5 shadow-lg cursor-pointer hover:border-canvas-primary/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden block min-w-[320px] md:min-w-[380px] snap-start"
         >
           <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none">
           </div>

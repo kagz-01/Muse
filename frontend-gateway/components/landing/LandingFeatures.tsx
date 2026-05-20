@@ -208,7 +208,7 @@ export default function LandingFeatures() {
             Muse sits in the middle. Where self-knowledge lives.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
           {PHASES.map((phase) => <PhaseCard key={phase.title} phase={phase} />)}
         </div>
       </section>
@@ -226,7 +226,7 @@ export default function LandingFeatures() {
             Muse isn't another algorithm. It's your honest mirror.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="flex gap-5 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
           {FEATURES.map((feature) => (
             <FeatureCard key={feature.title} feature={feature} />
           ))}
@@ -249,11 +249,11 @@ export default function LandingFeatures() {
             Muse finds what no single algorithm can see
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
           {FEATURED_INSIGHTS.map((insight) => (
             <div
               key={insight.title}
-              className="p-4 rounded-xl bg-gradient-to-br from-white/[0.02] to-white/[0.01] border border-white/5 hover:border-white/80/30 transition-all cursor-pointer group backdrop-blur-sm hover:shadow-lg hover:translate-y-[-5px]"
+              className="min-w-[220px] md:min-w-[240px] snap-start p-4 rounded-xl bg-gradient-to-br from-white/[0.02] to-white/[0.01] border border-white/5 hover:border-white/80/30 transition-all cursor-pointer group backdrop-blur-sm hover:shadow-lg hover:translate-y-[-5px]"
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[9px] font-mono text-gray-600">
@@ -283,7 +283,7 @@ export default function LandingFeatures() {
                 Your Muse Card
               </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div className="flex flex-col lg:flex-row gap-8 items-start">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
                   One link that shows<br />
@@ -375,11 +375,11 @@ export default function LandingFeatures() {
             Trusted by creators, thinkers, and the curious
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
           {TESTIMONIALS.map((t) => (
             <div
               key={t.author}
-              className="p-6 rounded-xl bg-gradient-to-br from-white/[0.02] to-white/[0.01] border border-white/5 hover:border-white/80/30 transition-all backdrop-blur-sm hover:shadow-lg hover:translate-y-[-5px]"
+              className="min-w-[260px] md:min-w-[300px] snap-start p-6 rounded-xl bg-gradient-to-br from-white/[0.02] to-white/[0.01] border border-white/5 hover:border-white/80/30 transition-all backdrop-blur-sm hover:shadow-lg hover:translate-y-[-5px]"
             >
               <div className="flex gap-1 mb-3">
                 {[...Array(t.rating)].map((_, j) => (

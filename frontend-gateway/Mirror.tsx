@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import {
@@ -92,9 +92,10 @@ export default function Mirror() {
     <div className="min-h-screen bg-canvas-bg-dark pb-24">
       <div className="fixed inset-0 pointer-events-none bg-canvas-primary/5 blur-3xl opacity-30" />
 
-      <div className="max-w-4xl mx-auto px-6 py-10 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 py-10 relative z-10">
         <button
           onClick={() => navigate(-1)}
+          type="button"
           className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-10 text-sm font-bold uppercase tracking-widest cursor-pointer"
         >
           <ArrowLeft size={16} /> Back
@@ -132,7 +133,7 @@ export default function Mirror() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
+          className="flex gap-4 overflow-x-auto pb-2 mb-12 snap-x snap-mandatory scrollbar-hide"
         >
           {stats.map((s, i) => (
             <motion.div
@@ -140,7 +141,7 @@ export default function Mirror() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 + i * 0.05 }}
-              className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex flex-col items-start gap-3"
+              className="min-w-[220px] md:min-w-[240px] flex-1 snap-start bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex flex-col items-start gap-3"
             >
               <div
                 className={`w-10 h-10 ${s.bg} rounded-2xl flex items-center justify-center`}
@@ -205,6 +206,7 @@ export default function Mirror() {
                   <button
                     key={room.id}
                     onClick={() => navigate(`/rooms/${room.id}`)}
+                    type="button"
                     className="w-full flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all cursor-pointer text-left"
                   >
                     <span className="text-sm font-bold text-white w-36 truncate shrink-0">
@@ -233,7 +235,7 @@ export default function Mirror() {
           transition={{ delay: 0.4 }}
           className="flex justify-center"
         >
-          <button className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 active:scale-95 transition-all cursor-pointer">
+          <button type="button" className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 active:scale-95 transition-all cursor-pointer">
             <Share2 size={16} /> Share Your Week
           </button>
         </motion.div>

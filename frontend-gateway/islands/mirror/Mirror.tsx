@@ -19,14 +19,15 @@ export default function Mirror() {
   const rooms = roomsSignal.value;
   const entries = journalSignal.value;
 
-  const now = Date.now();
+  const now: number = Date.now();
+  const weekStart: number = now - ONE_WEEK_MS;
   const weekItems = useMemo(
-    () => items.filter((i) => now - i.createdAt < ONE_WEEK_MS),
-    [items],
+    () => items.filter((i) => new Date(i.createdAt).getTime() >= weekStart),
+    [items, weekStart],
   );
   const weekEntries = useMemo(
-    () => entries.filter((e) => now - e.createdAt < ONE_WEEK_MS),
-    [entries],
+    () => entries.filter((e) => new Date(e.createdAt).getTime() >= weekStart),
+    [entries, weekStart],
   );
 
   // Top room by activity this week
@@ -89,7 +90,7 @@ export default function Mirror() {
     <div className="min-h-screen bg-canvas-bg-dark pb-24 relative overflow-hidden">
       <div className="fixed inset-0 pointer-events-none bg-canvas-primary/5 blur-3xl opacity-30" />
 
-      <div className="max-w-4xl mx-auto px-6 py-10 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 py-10 relative z-10">
         <button
           type="button"
           onClick={() => globalThis.history.back()}
@@ -119,11 +120,11 @@ export default function Mirror() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+        <div className="flex gap-4 overflow-x-auto pb-2 mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 snap-x snap-mandatory scrollbar-hide">
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex flex-col items-start gap-3 transition-all hover:bg-white/[0.05] hover:border-white/10"
+              className="min-w-[220px] md:min-w-[240px] flex-1 snap-start bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex flex-col items-start gap-3 transition-all hover:bg-white/[0.05] hover:border-white/10"
             >
               <div
                 className={`w-10 h-10 ${s.bg} rounded-2xl flex items-center justify-center`}

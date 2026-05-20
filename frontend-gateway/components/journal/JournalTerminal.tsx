@@ -1,29 +1,22 @@
-import { useMemo, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import {
   Activity,
   Aperture,
-  ArrowRight,
   BookOpen,
-  Check,
   GitCommit,
   Hash,
   Image as ImageIcon,
-  Layers,
-  MessageSquare,
   Palette,
   Send,
   Type,
 } from "lucide-preact";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { threadsSignal } from "../../signals/threads.ts";
-import { addJournalEntry, journalSignal } from "../../signals/journal.ts";
-import { userSignal } from "../../signals/user.ts";
+import { addJournalEntry } from "../../signals/journal.ts";
 
 export default function JournalTerminal() {
   const rooms = roomsSignal.value;
   const threads = threadsSignal.value;
-  const user = userSignal.value;
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [activeSources, setActiveSources] = useState<string[]>([]);
@@ -69,6 +62,7 @@ export default function JournalTerminal() {
           </h3>
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={() => setIsStylistOpen(!isStylistOpen)}
               className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all"
             >
@@ -93,8 +87,8 @@ export default function JournalTerminal() {
             <h4 className="text-[9px] font-bold uppercase tracking-widest text-gray-600 mb-6">
               Journal Stylist
             </h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+            <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+              <button type="button" className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
                 <Type
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"
@@ -103,7 +97,7 @@ export default function JournalTerminal() {
                   Typography
                 </span>
               </button>
-              <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+              <button type="button" className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
                 <ImageIcon
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"
@@ -112,7 +106,7 @@ export default function JournalTerminal() {
                   Wallpaper
                 </span>
               </button>
-              <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+              <button type="button" className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
                 <Palette
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"
@@ -121,7 +115,7 @@ export default function JournalTerminal() {
                   Spectrum
                 </span>
               </button>
-              <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+              <button type="button" className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
                 <Aperture
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"
@@ -156,6 +150,7 @@ export default function JournalTerminal() {
           <div className="flex flex-wrap gap-3">
             {rooms.map((room) => (
               <button
+                type="button"
                 key={room.id}
                 onClick={() => toggleSource(room.id)}
                 className={`px-6 py-2.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${
@@ -169,6 +164,7 @@ export default function JournalTerminal() {
             ))}
             {threads.map((thread) => (
               <button
+                type="button"
                 key={thread.id}
                 onClick={() => toggleSource(thread.id)}
                 className={`px-6 py-2.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${
@@ -191,6 +187,7 @@ export default function JournalTerminal() {
             </p>
           </div>
           <button
+            type="button"
             onClick={handleCapture}
             disabled={!content.trim() || isCapturing}
             className="px-12 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-30"
