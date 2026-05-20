@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import {
+  Aperture,
   Check,
   Clipboard,
   ExternalLink,
@@ -11,7 +12,6 @@ import {
   Link2,
   MessageSquare,
   RefreshCcw,
-  Sparkles,
   Video,
 } from "lucide-preact";
 import { roomsSignal } from "../../signals/rooms.ts";
@@ -93,7 +93,7 @@ export default function ArtifactExtractor(
           <div className="space-y-8 relative z-10">
             <div className="flex items-center justify-between">
               <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-                <Sparkles size={14} className="text-canvas-primary" />{" "}
+                <Aperture size={14} className="text-canvas-primary" />{" "}
                 Multi-Signal Extraction Terminal
               </h3>
               <div className="flex items-center gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
@@ -144,7 +144,7 @@ export default function ArtifactExtractor(
                     inputType !== "text" ? "top-1/2 -translate-y-1/2" : ""
                   }`}
                 >
-                  <Sparkles size={20} />
+                  <Aperture size={20} />
                 </button>
               )}
             </div>
@@ -246,7 +246,7 @@ export default function ArtifactExtractor(
                   <div className="mb-10 p-5 bg-canvas-primary/5 border border-canvas-primary/20 rounded-2xl flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-canvas-primary/20 flex items-center justify-center text-canvas-primary">
-                        <Sparkles size={16} />
+                        <Aperture size={16} />
                       </div>
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">

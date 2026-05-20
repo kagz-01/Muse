@@ -1,6 +1,6 @@
 import { useMemo } from "preact/hooks";
 import { WisdomNode, wisdomNodesSignal } from "../../signals/connections.ts";
-import { Activity, Sparkles, Zap } from "lucide-preact";
+import { Activity, Aperture, Zap } from "lucide-preact";
 
 export default function WisdomMap() {
   const nodes = wisdomNodesSignal.value;
@@ -102,7 +102,7 @@ export default function WisdomMap() {
       {/* MAP OVERLAY INFO */}
       <div className="absolute top-10 left-10 p-6 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/5 space-y-4">
         <div className="flex items-center gap-3">
-          <Sparkles size={16} className="text-canvas-primary" />
+          <Aperture size={16} className="text-canvas-primary" />
           <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-white">
             Wisdom Map v3.0
           </h3>

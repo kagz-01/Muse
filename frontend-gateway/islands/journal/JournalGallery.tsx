@@ -1,5 +1,6 @@
 import { useMemo, useState } from "preact/hooks";
 import {
+  Aperture,
   ArrowRight,
   BarChart3,
   BookOpen,
@@ -8,7 +9,6 @@ import {
   Flame,
   Plus,
   Search,
-  Sparkles,
   Star,
   Target,
 } from "lucide-preact";
@@ -391,7 +391,7 @@ ${e.body}
           >
             <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             <div className="w-14 h-14 rounded-2xl bg-violet-500/10 flex items-center justify-center shrink-0 shadow-[0_0_40px_rgba(139,92,246,0.1)]">
-              <Sparkles
+              <Aperture
                 size={24}
                 className="text-violet-400 group-hover:rotate-12 transition-transform"
               />

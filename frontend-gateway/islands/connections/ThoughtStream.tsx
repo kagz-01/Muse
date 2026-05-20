@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import {
   Activity,
+  Aperture,
   ArrowRight,
   BookOpen,
   CornerDownRight,
@@ -9,7 +10,6 @@ import {
   MessageSquare,
   RefreshCcw,
   ShieldCheck,
-  Sparkles,
   Zap,
 } from "lucide-preact";
 import {
@@ -81,7 +81,7 @@ export default function ThoughtStream() {
 
           <div className="flex flex-wrap gap-4">
             {[
-              { label: "Intuition", icon: Sparkles },
+              { label: "Intuition", icon: Aperture },
               { label: "Logic", icon: Activity },
               { label: "Skepticism", icon: Zap },
               { label: "Curiosity", icon: MessageSquare },

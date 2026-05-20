@@ -1,6 +1,6 @@
 import { roomsSignal } from "../../signals/rooms.ts";
 import { threadsSignal } from "../../signals/threads.ts";
-import { GitCommit, Hash, Layers, Sparkles } from "lucide-preact";
+import { Aperture, GitCommit, Hash, Layers } from "lucide-preact";
 
 export default function SynthesisWeb({ threadId }: { threadId: string }) {
   const thread = threadsSignal.value.find((t) => t.id === threadId);
@@ -20,7 +20,7 @@ export default function SynthesisWeb({ threadId }: { threadId: string }) {
             <Layers size={14} className="text-canvas-primary" /> Synthesis Web
           </h3>
           <div className="flex items-center gap-3 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
-            <Sparkles size={12} className="text-emerald-500" />
+            <Aperture size={12} className="text-emerald-500" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">
               {thread.synthesisScore}% Resonance
             </span>

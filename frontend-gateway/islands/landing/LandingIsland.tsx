@@ -1,12 +1,12 @@
 import { useEffect, useState } from "preact/hooks";
 import {
+  Aperture,
   ArrowRight,
   BookOpen,
   ChevronDown,
   Globe,
   Layers,
   PenTool,
-  Sparkles,
 } from "lucide-preact";
 import AuthModal from "../modals/AuthModal.tsx";
 
@@ -85,7 +85,7 @@ const FEATURES = [
       "Private introspection space. Slow down. Reflect. Understand what you truly think.",
   },
   {
-    icon: Sparkles,
+    icon: Aperture,
     color: "text-amber-400",
     glow: "bg-amber-500/10",
     title: "Weekly Mirror",

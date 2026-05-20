@@ -5,13 +5,13 @@ import {
   updateBlueprintThesis,
 } from "../../signals/blueprints.ts";
 import {
+  Aperture,
   ArrowRight,
   Check,
   Edit2,
   GitCommit,
   Layers,
   MessageSquare,
-  Sparkles,
   X,
 } from "lucide-preact";
 import { useState } from "preact/hooks";
@@ -29,7 +29,7 @@ export default function BlueprintReview() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-          <Sparkles size={14} className="text-canvas-primary" />{" "}
+          <Aperture size={14} className="text-canvas-primary" />{" "}
           Autonomous Blueprints
         </h3>
         <span className="px-3 py-1 bg-canvas-primary/10 border border-canvas-primary/30 rounded-lg text-[9px] font-bold uppercase tracking-widest text-canvas-primary">

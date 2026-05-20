@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "preact/hooks";
 import {
   AlertTriangle,
+  Aperture,
   ArrowLeft,
   Camera,
   Check,
@@ -13,7 +14,6 @@ import {
   Palette,
   Plus,
   Share2,
-  Sparkles,
   Trash2,
 } from "lucide-preact";
 import {
@@ -642,7 +642,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       </div>
                       <div className="h-px w-20 bg-linear-to-r from-transparent via-white/20 to-transparent" />
                       <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-canvas-primary shadow-2xl">
-                        <Sparkles size={32} />
+                        <Aperture size={32} />
                       </div>
                     </div>
 
@@ -683,7 +683,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                           ? (
                             <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
                           )
-                          : <Sparkles size={24} />}
+                          : <Aperture size={24} />}
                       </button>
                     </div>
 

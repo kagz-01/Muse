@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import {
+  Aperture,
   BookOpen,
   Globe,
   Image as ImageIcon,
@@ -8,7 +9,6 @@ import {
   Link2,
   Lock,
   Music,
-  Sparkles,
   Zap,
 } from "lucide-preact";
 import { roomsSignal } from "../../signals/rooms.ts";
@@ -186,7 +186,7 @@ export default function CreateHub() {
                     : (
                       <>
                         Seed Artifact{" "}
-                        <Sparkles size={14} className="text-indigo-400" />
+                        <Aperture size={14} className="text-indigo-400" />
                       </>
                     )}
                 </button>

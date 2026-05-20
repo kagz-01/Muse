@@ -1,12 +1,12 @@
 import { useState } from "preact/hooks";
 import {
   Activity,
+  Aperture,
   ChevronRight,
   Globe,
   Lock,
   MessageSquare,
   Search,
-  Sparkles,
   Users,
   Zap,
 } from "lucide-preact";
@@ -41,7 +41,7 @@ export default function ConnectionsHub() {
 
   const tabs: { id: Tab; icon: any; label: string }[] = [
     { id: "Stream", icon: Activity, label: "Thought Stream" },
-    { id: "Wisdom", icon: Sparkles, label: "Wisdom Map" },
+    { id: "Wisdom", icon: Aperture, label: "Wisdom Map" },
     { id: "Circles", icon: MessageSquare, label: "Active Circles" },
     { id: "People", icon: Users, label: "Collaborators" },
   ];
@@ -229,7 +229,7 @@ export default function ConnectionsHub() {
                       <h3 className="text-2xl font-bold text-white tracking-tight">
                         Pattern Clusters
                       </h3>
-                      <Sparkles size={24} className="text-canvas-primary" />
+                      <Aperture size={24} className="text-canvas-primary" />
                     </div>
 
                     <SharedThemeCluster />

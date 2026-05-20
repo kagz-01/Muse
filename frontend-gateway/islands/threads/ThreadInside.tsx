@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "preact/hooks";
 import {
   Activity,
+  Aperture,
   ArrowLeft,
   Camera,
   Check,
@@ -15,7 +16,6 @@ import {
   Palette,
   Plus,
   Share2,
-  Sparkles,
   Trash2,
   X,
 } from "lucide-preact";
@@ -247,7 +247,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                 </div>
 
                 <div className="p-10 bg-black/40 border border-white/5 rounded-[3.5rem] flex flex-col justify-center text-center">
-                  <Sparkles
+                  <Aperture
                     size={40}
                     className="text-canvas-primary mx-auto mb-6"
                   />

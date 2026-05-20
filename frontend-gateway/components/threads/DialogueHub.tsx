@@ -6,11 +6,11 @@ import {
 import { userSignal } from "../../signals/user.ts";
 import {
   AlertCircle,
+  Aperture,
   GitCommit,
   Heart,
   MessageSquare,
   Send,
-  Sparkles,
   Zap,
 } from "lucide-preact";
 import { useState } from "preact/hooks";
@@ -75,7 +75,7 @@ export default function DialogueHub({ threadId }: { threadId: string }) {
                       : "bg-white/5 border-white/5 text-gray-500 hover:text-white"
                   }`}
                 >
-                  {type === "insight" && <Sparkles size={12} />}
+                  {type === "insight" && <Aperture size={12} />}
                   {type === "challenge" && <AlertCircle size={12} />}
                   {type === "signal" && <Zap size={12} />}
                   {type}

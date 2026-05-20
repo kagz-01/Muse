@@ -1,6 +1,7 @@
 import { useMemo, useState } from "preact/hooks";
 import {
   Activity,
+  Aperture,
   ArrowRight,
   BookOpen,
   Check,
@@ -11,7 +12,6 @@ import {
   MessageSquare,
   Palette,
   Send,
-  Sparkles,
   Type,
 } from "lucide-preact";
 import { roomsSignal } from "../../signals/rooms.ts";
@@ -122,7 +122,7 @@ export default function JournalTerminal() {
                 </span>
               </button>
               <button className="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
-                <Sparkles
+                <Aperture
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"
                 />

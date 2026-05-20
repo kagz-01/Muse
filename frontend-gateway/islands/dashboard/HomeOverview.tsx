@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import {
+  Aperture,
   ArrowRight,
   BarChart3,
   BookOpen,
@@ -8,7 +9,6 @@ import {
   FolderOpen,
   MessageSquare,
   Plus,
-  Sparkles,
   Target,
   TrendingUp,
   Users,
@@ -142,7 +142,7 @@ export default function HomeOverview() {
         <div className="relative z-10 grid gap-8 lg:grid-cols-[1.4fr_0.9fr] items-start">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
-              <Sparkles size={12} className="text-canvas-primary" />
+              <Aperture size={12} className="text-canvas-primary" />
               Home Overview
             </div>
 

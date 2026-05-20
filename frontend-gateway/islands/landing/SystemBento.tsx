@@ -1,9 +1,9 @@
 import {
+  Aperture,
   BookOpen,
   Layout,
   Network,
   Shield,
-  Sparkles,
   Target,
   Zap,
 } from "lucide-preact";
@@ -14,7 +14,7 @@ export default function SystemBento() {
       title: "The Pulse",
       desc:
         "A unified mirror of your cognitive patterns. Real-time insights from your collection.",
-      icon: Sparkles,
+      icon: Aperture,
       span: "md:col-span-2",
       bg: "bg-canvas-primary/5",
       border: "border-canvas-primary/20",

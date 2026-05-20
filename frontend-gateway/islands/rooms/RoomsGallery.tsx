@@ -1,5 +1,6 @@
 import { useMemo, useState } from "preact/hooks";
 import {
+  Aperture,
   Archive,
   ArrowRight,
   Globe,
@@ -7,7 +8,6 @@ import {
   Layout,
   Pin,
   Plus,
-  Sparkles,
   Star,
   Users,
 } from "lucide-preact";
@@ -64,7 +64,7 @@ function RoomActionButton({
     ? Star
     : variant === "archive"
     ? Archive
-    : Sparkles;
+    : Aperture;
 
   return (
     <button
@@ -604,7 +604,7 @@ export default function RoomsGallery() {
               ? (
                 <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-white/10 bg-black/20 px-6 text-center">
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white">
-                    <Sparkles size={20} />
+                    <Aperture size={20} />
                   </div>
                   <h3 className="text-xl font-bold text-white">
                     No rooms in this tab yet

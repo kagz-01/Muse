@@ -1,4 +1,4 @@
-import { Activity, Sparkles, X, Zap } from "lucide-preact";
+import { Activity, Aperture, X, Zap } from "lucide-preact";
 
 export default function DemoVideo(
   { isOpen, onClose }: { isOpen: boolean; onClose: () => void },
@@ -37,7 +37,7 @@ export default function DemoVideo(
             <div className="pt-10 flex flex-wrap justify-center gap-4">
               {[
                 { label: "Capture Engine", icon: Zap },
-                { label: "Vault Architecture", icon: Sparkles },
+                { label: "Vault Architecture", icon: Aperture },
                 { label: "Mirror Synthesis", icon: Activity },
               ].map((tag) => (
                 <div

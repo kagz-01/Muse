@@ -1,4 +1,4 @@
-import { ArrowRight, Brain, ChevronDown, Play, Sparkles } from "lucide-preact";
+import { Aperture, ArrowRight, Brain, ChevronDown, Play } from "lucide-preact";
 
 const TRUST_BADGES = [
   {
@@ -110,7 +110,7 @@ export default function LandingHero(
                   key={i}
                   className="w-7 h-7 rounded-full bg-gradient-to-br from-white/80 to-white/80 border-2 border-[#050508] flex items-center justify-center"
                 >
-                  <Sparkles size={10} className="text-white" />
+                  <Aperture size={10} className="text-white" />
                 </div>
               ))}
             </div>

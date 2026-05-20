@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { MessageSquare, Sparkles, Users, Zap } from "lucide-preact";
+import { Aperture, MessageSquare, Users, Zap } from "lucide-preact";
 
 const PULSE_MESSAGES = [
   {
@@ -13,7 +13,7 @@ const PULSE_MESSAGES = [
     color: "text-amber-400",
   },
   {
-    icon: <Sparkles size={14} />,
+    icon: <Aperture size={14} />,
     text: "Global Theme: 'Identity' is surfacing today",
     color: "text-emerald-400",
   },

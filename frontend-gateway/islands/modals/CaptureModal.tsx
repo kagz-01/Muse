@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import {
+  Aperture,
   ArrowLeft,
   Check,
   ChevronRight,
@@ -8,7 +9,6 @@ import {
   Link2,
   Lock,
   Plus,
-  Sparkles,
   X,
   Zap,
 } from "lucide-preact";
@@ -212,7 +212,7 @@ export default function CaptureModal() {
                 >
                   {isScanning ? "Scanning Artifact..." : "Analyze Resonance"}
                   {!isScanning && (
-                    <Sparkles
+                    <Aperture
                       size={16}
                       className="text-canvas-primary group-hover:rotate-12 transition-transform"
                     />

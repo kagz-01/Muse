@@ -1,4 +1,4 @@
-import { ArrowRight, Globe, Sparkles, Users } from "lucide-preact";
+import { Aperture, ArrowRight, Globe, Users } from "lucide-preact";
 
 export interface CommunityRoom {
   id: string;
@@ -39,7 +39,7 @@ export default function CommunityRoomCard({ room }: Props) {
 
         <div className="mt-auto">
           <div className="flex items-center gap-2 mb-4">
-            <Sparkles size={14} className="text-indigo-400" />
+            <Aperture size={14} className="text-indigo-400" />
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               Public Realm
             </span>

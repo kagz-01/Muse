@@ -1,8 +1,8 @@
 import {
+  Aperture,
   ExternalLink,
   MessageCircle,
   Shield,
-  Sparkles,
   Zap,
 } from "lucide-preact";
 
@@ -83,7 +83,7 @@ export default function CollaboratorCard({ collaborator }: Props) {
             key={theme}
             className="text-[9px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2"
           >
-            <Sparkles size={8} /> {theme}
+            <Aperture size={8} /> {theme}
           </span>
         ))}
       </div>

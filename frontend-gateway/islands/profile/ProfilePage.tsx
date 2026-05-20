@@ -1,5 +1,5 @@
 import { useMemo, useState } from "preact/hooks";
-import { Activity, LogOut, Settings, Sparkles, Trophy } from "lucide-preact";
+import { Activity, Aperture, LogOut, Settings, Trophy } from "lucide-preact";
 import { logout, userSignal } from "../../signals/user.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
@@ -234,7 +234,7 @@ export default function ProfilePage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10">
               <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-4 flex items-center gap-2">
-                <Sparkles size={14} className="text-canvas-primary" />{" "}
+                <Aperture size={14} className="text-canvas-primary" />{" "}
                 Creative Signature
               </h3>
               <div className="flex flex-wrap gap-2">

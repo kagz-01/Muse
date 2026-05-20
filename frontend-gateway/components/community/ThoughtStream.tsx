@@ -1,6 +1,7 @@
 import { publicationsSignal } from "../../signals/publications.ts";
 import {
   Activity,
+  Aperture,
   ArrowUpRight,
   GitCommit,
   Globe,
@@ -9,7 +10,6 @@ import {
   MessageSquare,
   Share2,
   Shield,
-  Sparkles,
   Zap,
 } from "lucide-preact";
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import {
   Activity,
+  Aperture,
   ArrowRight,
   BarChart2,
   BarChart3,
@@ -11,7 +12,6 @@ import {
   Layers,
   MessageSquare,
   Plus,
-  Sparkles,
   Target,
   TrendingUp,
 } from "lucide-preact";
@@ -157,7 +157,7 @@ export default function PulseHome() {
           <div className="bg-black/40 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 space-y-8">
             <div className="flex items-center justify-between border-b border-white/5 pb-6">
               <div className="flex items-center gap-3">
-                <Sparkles size={20} className="text-canvas-primary" />
+                <Aperture size={20} className="text-canvas-primary" />
                 <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">
                   Mirror Insights
                 </span>

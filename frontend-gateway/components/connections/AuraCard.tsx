@@ -1,9 +1,9 @@
 import { Collaborator } from "../../signals/connections.ts";
 import {
   Activity,
+  Aperture,
   ChevronRight,
   MessageSquare,
-  Sparkles,
   UserPlus,
 } from "lucide-preact";
 
@@ -33,7 +33,7 @@ export default function AuraCard(
               {collaborator.status === "Online"
                 ? <Activity size={12} />
                 : collaborator.status === "Deep Focus"
-                ? <Sparkles size={12} />
+                ? <Aperture size={12} />
                 : "•"}
             </div>
           </div>

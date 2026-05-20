@@ -1,4 +1,4 @@
-import { ArrowRight, MessageSquare, Sparkles } from "lucide-preact";
+import { Aperture, ArrowRight, MessageSquare } from "lucide-preact";
 
 export default function DashboardWidgets() {
   return (
@@ -23,7 +23,7 @@ export default function DashboardWidgets() {
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none">
           </div>
           <div className="flex items-center gap-3 mb-6 relative z-10">
-            <Sparkles size={20} className="text-canvas-primary" />
+            <Aperture size={20} className="text-canvas-primary" />
             <h3 className="font-semibold text-white/90 tracking-tight">
               Weekly Mirror
             </h3>

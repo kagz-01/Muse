@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import {
   Activity,
+  Aperture,
   ArrowRight,
   Check,
   Cpu,
@@ -10,7 +11,6 @@ import {
   Lock,
   Send,
   Shield,
-  Sparkles,
   X,
   Zap,
 } from "lucide-preact";

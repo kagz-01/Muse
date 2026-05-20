@@ -1,11 +1,11 @@
 import { useMemo } from "preact/hooks";
 import {
+  Aperture,
   ArrowLeft,
   BarChart2,
   BookOpen,
   Layers,
   Share2,
-  Sparkles,
   TrendingUp,
 } from "lucide-preact";
 import { journalSignal } from "../../signals/journal.ts";
@@ -102,7 +102,7 @@ export default function Mirror() {
         <div className="mb-14 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex items-center gap-3 mb-4">
             <div className="animate-pulse">
-              <Sparkles size={24} className="text-canvas-primary" />
+              <Aperture size={24} className="text-canvas-primary" />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary">
               Weekly Mirror
@@ -147,7 +147,7 @@ export default function Mirror() {
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none" />
           <div className="relative z-10">
             <h2 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
-              <Sparkles size={20} className="text-canvas-primary" />{" "}
+              <Aperture size={20} className="text-canvas-primary" />{" "}
               Curator's Insights
             </h2>
             <div className="space-y-6">

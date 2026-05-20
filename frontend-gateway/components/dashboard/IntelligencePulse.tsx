@@ -1,10 +1,10 @@
 import { userSignal } from "../../signals/user.ts";
 import {
   Activity,
+  Aperture,
   ArrowUpRight,
   Flame,
   Layers,
-  Sparkles,
   TrendingUp,
 } from "lucide-preact";
 
@@ -75,7 +75,7 @@ export default function IntelligencePulse() {
         <div className="p-8 bg-canvas-primary/5 border border-canvas-primary/20 rounded-[2.5rem] flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-canvas-primary/20 flex items-center justify-center text-canvas-primary">
-              <Sparkles size={24} />
+              <Aperture size={24} />
             </div>
             <div>
               <h4 className="text-sm font-bold text-white uppercase tracking-widest">

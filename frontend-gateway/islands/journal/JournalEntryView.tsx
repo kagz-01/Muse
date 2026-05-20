@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import {
   AlertTriangle,
+  Aperture,
   ArrowLeft,
   Book,
   Calendar,
@@ -10,7 +11,6 @@ import {
   Link2,
   Lock,
   Plus,
-  Sparkles,
   Star,
   Trash2,
   X,
@@ -463,7 +463,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                   : "hover:text-white hover:bg-white/5 hover:border-white/20"
               }`}
             >
-              <Sparkles
+              <Aperture
                 size={16}
                 className={isProcessing
                   ? "animate-spin text-indigo-400"
@@ -490,7 +490,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             {aiInsights && (
               <div className="bg-[#111] border border-indigo-500/20 rounded-[2.5rem] p-8 card-glow glow-indigo relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-10">
-                  <Sparkles size={48} className="text-indigo-400" />
+                  <Aperture size={48} className="text-indigo-400" />
                 </div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-5 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
@@ -543,7 +543,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
               className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
               style={{ backgroundColor: cfg.color + "20" }}
             >
-              <Sparkles size={18} style={{ color: cfg.color }} />
+              <Aperture size={18} style={{ color: cfg.color }} />
             </div>
             <div className="flex-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-2">
