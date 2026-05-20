@@ -1,4 +1,5 @@
 import { signal } from "@preact/signals";
+import { threadsSignal, removeItemFromThread } from "./threads.ts";
 
 export interface Item {
   id: string;
@@ -76,7 +77,15 @@ export function addItem(
 }
 
 export function deleteItem(id: string) {
+  // Remove the item from the store
   itemsSignal.value = itemsSignal.value.filter((i: Item) => i.id !== id);
+
+  // Remove references to this item from all threads
+  threadsSignal.value.forEach((t) => {
+    if (t.itemIds.includes(id)) {
+      removeItemFromThread(t.id, id);
+    }
+  });
 }
 
 export function resetItems() {

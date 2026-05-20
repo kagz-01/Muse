@@ -1,5 +1,5 @@
 import { signal } from "@preact/signals";
-import { type ThreadMood } from "./threads.ts";
+import { type ThreadMood, addThread } from "./threads.ts";
 
 export interface ThreadBlueprint {
   id: string;
@@ -32,10 +32,28 @@ export const blueprintsSignal = signal<ThreadBlueprint[]>([
 ]);
 
 export function acceptBlueprint(id: string) {
-  blueprintsSignal.value = blueprintsSignal.value.map((bp) =>
-    bp.id === id ? { ...bp, status: "accepted" } : bp
+  const bp = blueprintsSignal.value.find((b) => b.id === id);
+  if (!bp) return;
+
+  // Mark blueprint accepted
+  blueprintsSignal.value = blueprintsSignal.value.map((b) =>
+    b.id === id ? { ...b, status: "accepted" } : b
   );
-  // In a real app, this would also add to the main threadsSignal
+
+  // Create a new thread from the blueprint
+  try {
+    addThread({
+      title: bp.suggestedTitle,
+      description: bp.suggestedDescription,
+      mood: bp.suggestedMood,
+      itemIds: bp.itemIds,
+      sourceRoomIds: bp.sourceRoomIds,
+      isPublic: true,
+      thesis: bp.thesis,
+    });
+  } catch {
+    // Best-effort: if thread creation fails, keep blueprint status but do not crash.
+  }
 }
 
 export function discardBlueprint(id: string) {

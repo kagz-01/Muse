@@ -1,4 +1,6 @@
 import { signal } from "@preact/signals";
+import { itemsSignal } from "./items.ts";
+import { threadsSignal } from "./threads.ts";
 
 export type RoomTheme =
   | "indigo"
@@ -124,7 +126,25 @@ export function updateRoom(id: string, updates: Partial<Room>) {
 }
 
 export function deleteRoom(id: string) {
+  // Remove the room itself
   roomsSignal.value = roomsSignal.value.filter((r: Room) => r.id !== id);
+
+  // Remove items belonging to the room
+  const removedItemIds = itemsSignal.value
+    .filter((it) => it.roomId === id)
+    .map((it) => it.id);
+
+  itemsSignal.value = itemsSignal.value.filter((it) => it.roomId !== id);
+
+  // Remove references to removed items and the room from threads
+  threadsSignal.value = threadsSignal.value
+    .map((t) => ({
+      ...t,
+      itemIds: t.itemIds.filter((iid) => !removedItemIds.includes(iid)),
+      sourceRoomIds: t.sourceRoomIds.filter((rid) => rid !== id),
+    }))
+    // Optionally remove threads that now have no items and no source rooms
+    .filter((t) => t.itemIds.length > 0 || t.sourceRoomIds.length > 0);
 }
 
 export function resetRooms() {
