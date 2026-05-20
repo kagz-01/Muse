@@ -1,30 +1,21 @@
-import { useMemo, useRef, useState } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 import {
   Activity,
   Aperture,
   ArrowLeft,
-  Camera,
-  Check,
-  Edit2,
-  ExternalLink,
   GitCommit,
   Globe,
-  Hash,
   Layers,
   Lock,
   MessageSquare,
   Palette,
-  Plus,
-  Share2,
   Trash2,
-  X,
 } from "lucide-preact";
 import {
   removeItemFromThread,
   type ThreadMood,
   threadsSignal,
   toggleThreadPrivacy,
-  updateThreadMood,
 } from "../../signals/threads.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
@@ -125,7 +116,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
           : <div className={`absolute inset-0 ${mood.bg}`} />}
         <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
 
-        <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 max-w-[1800px] mx-auto w-full z-10">
+        <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 w-full z-10">
           <div className="flex justify-between items-center">
             <a
               href="/threads"
@@ -143,6 +134,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
               </div>
               <button
                 onClick={() => toggleThreadPrivacy(thread.id)}
+                type="button"
                 className={`px-3.5 py-2 rounded-full backdrop-blur-md border shadow-lg flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
                   thread.isPublic
                     ? "bg-white/10 border-white/20 text-white"
@@ -177,10 +169,11 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
         </div>
       </header>
 
-      <main className="p-6 md:p-10 max-w-[1800px] mx-auto relative z-10 -mt-8">
+      <main className="p-6 md:p-10 w-full max-w-none relative z-10 -mt-8">
         <div className="flex items-center gap-6 mb-12">
           <button
             onClick={() => setActiveTab("synthesis")}
+            type="button"
             className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
               activeTab === "synthesis"
                 ? "bg-white text-black shadow-2xl scale-105"
@@ -191,6 +184,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
           </button>
           <button
             onClick={() => setActiveTab("artifacts")}
+            type="button"
             className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
               activeTab === "artifacts"
                 ? "bg-white text-black shadow-2xl scale-105"
@@ -203,11 +197,12 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
           <div className="ml-auto flex items-center gap-3">
             <button
               onClick={() => setIsPaletteOpen(!isPaletteOpen)}
+              type="button"
               className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all cursor-pointer"
             >
               <Palette size={20} />
             </button>
-            <button className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
+            <button type="button" className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
               Export Pattern
             </button>
           </div>
@@ -218,8 +213,8 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
               <SynthesisWeb threadId={thread.id} />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="md:col-span-2 p-12 bg-white/[0.02] border border-white/5 rounded-[3.5rem] relative overflow-hidden">
+              <div className="flex gap-8 overflow-x-auto pb-4 scrollbar-hide">
+                <div className="p-12 bg-white/[0.02] border border-white/5 rounded-[3.5rem] relative overflow-hidden min-w-[760px] flex-[1.6] flex-shrink-0">
                   <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-canvas-primary/40 to-transparent" />
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 mb-10 flex items-center gap-3">
                     <MessageSquare size={14} /> Contemplation Pulse
@@ -238,6 +233,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                     ].map((action) => (
                       <button
                         key={action}
+                        type="button"
                         className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all"
                       >
                         {action}
@@ -246,7 +242,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                   </div>
                 </div>
 
-                <div className="p-10 bg-black/40 border border-white/5 rounded-[3.5rem] flex flex-col justify-center text-center">
+                <div className="p-10 bg-black/40 border border-white/5 rounded-[3.5rem] flex flex-col justify-center text-center min-w-[320px] flex-[0.7] flex-shrink-0">
                   <Aperture
                     size={40}
                     className="text-canvas-primary mx-auto mb-6"
@@ -266,11 +262,11 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
             </div>
           )
           : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide animate-in fade-in slide-in-from-bottom-6 duration-700">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group hover:border-white/20 transition-all duration-500"
+                  className="bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group hover:border-white/20 transition-all duration-500 min-w-[320px] flex-shrink-0"
                 >
                   <div className="h-40 bg-white/5 relative overflow-hidden flex items-center justify-center">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-700">
@@ -294,6 +290,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                       <button
                         onClick={() =>
                           removeItemFromThread(thread.id, item.id)}
+                        type="button"
                         className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100"
                       >
                         <Trash2 size={14} />
