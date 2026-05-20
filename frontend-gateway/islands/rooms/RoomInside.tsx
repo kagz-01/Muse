@@ -128,6 +128,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   }
 
   const theme = themeMapping[room.themeColor] || themeMapping["indigo"];
+  const customHex = room.customThemeHex;
 
   const handleImageUpload = (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -259,7 +260,8 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
       <div className="pb-24 md:pb-10 min-h-screen bg-[#0a0a0a] relative overflow-hidden">
         <div
-          className={`fixed inset-0 pointer-events-none ${theme.bg} blur-[120px] opacity-20 transition-colors duration-1000`}
+          className={`fixed inset-0 pointer-events-none blur-[120px] opacity-20 transition-colors duration-1000 ${!customHex ? theme.bg : ""}`}
+          style={customHex ? { background: `linear-gradient(135deg, ${customHex}40, transparent)` } : undefined}
         />
 
         <header className="relative w-full h-[52vh] min-h-[400px] overflow-hidden group">
@@ -271,7 +273,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                 alt=""
               />
             )
-            : <div className={`absolute inset-0 ${theme.bg}`} />}
+            : <div className={`absolute inset-0 ${!customHex ? theme.bg : ""}`} style={customHex ? { background: `linear-gradient(135deg, ${customHex}40, transparent)` } : undefined} />}
 
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
@@ -346,16 +348,16 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                 <div className="flex items-center gap-3 shrink-0">
                   {/* ADVANCED COLOR PICKER */}
                   <div className="relative">
-                    <button
-                      onClick={() => setIsPaletteOpen(!isPaletteOpen)}
-                      type="button"
-                      className={`w-11 h-11 rounded-full backdrop-blur-lg border border-white/10 flex items-center justify-center transition-all shadow-xl cursor-pointer ${
+                      <button
+                        onClick={() => setIsPaletteOpen(!isPaletteOpen)}
+                        type="button"
+                        className={`w-11 h-11 rounded-full backdrop-blur-lg border border-white/10 flex items-center justify-center transition-all shadow-xl cursor-pointer ${
                         isPaletteOpen
                           ? "bg-white/20"
                           : "bg-black/50 hover:bg-white/10"
                       }`}
-                    >
-                      <Palette size={18} className={theme.text} />
+                      >
+                      <Palette size={18} style={{ color: customHex || undefined }} />
                     </button>
                     {isPaletteOpen && (
                       <div className="absolute bottom-full right-0 mb-3 bg-[#151515] border border-white/10 rounded-3xl p-6 shadow-3xl min-w-[280px] z-[20] animate-in slide-in-from-bottom-4">
@@ -492,7 +494,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                         Artifacts
                       </div>
-                      <div className="mt-2 text-2xl font-bold text-white">
+                        <div className="mt-2 text-2xl font-bold text-white">
                         {items.length}
                       </div>
                     </div>
@@ -508,8 +510,8 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                         Theme
                       </div>
-                      <div className={`mt-2 text-2xl font-bold ${theme.text}`}>
-                        {room.themeColor}
+                      <div className={`mt-2 text-2xl font-bold`} style={{ color: customHex || undefined }}>
+                        {customHex ? "Custom" : room.themeColor}
                       </div>
                     </div>
                   </div>
@@ -555,7 +557,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                         type="button"
                         className="px-12 py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-[12px] text-black cursor-pointer hover:-translate-y-1 active:scale-95 transition-all shadow-3xl"
                         style={{
-                          backgroundColor: paletteColors.find((c) =>
+                          backgroundColor: customHex || paletteColors.find((c) =>
                             c.name === room.themeColor
                           )?.hex || "#6366f1",
                         }}

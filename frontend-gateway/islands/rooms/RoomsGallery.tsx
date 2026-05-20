@@ -4,6 +4,7 @@ import {
   Archive,
   ArrowRight,
   Globe,
+  Lock,
   Pin,
   Plus,
   Star,
@@ -12,6 +13,7 @@ import {
 import { type Room, roomsSignal, type RoomTheme } from "../../signals/rooms.ts";
 import { collaboratorsSignal } from "../../signals/connections.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
+import VaultUnlockModal from "../modals/VaultUnlockModal.tsx";
 
 const themeGradients: Record<RoomTheme, string> = {
   indigo: "from-indigo-600/40",
@@ -102,14 +104,31 @@ function RoomCard({
   onStar: () => void;
   onArchive: () => void;
 }) {
-  const glowClass = themeGradients[room.themeColor as RoomTheme] ||
-    themeGradients.indigo;
+  const baseHexMap: Record<RoomTheme, string> = {
+    indigo: "#6366f1",
+    emerald: "#10b981",
+    rose: "#f43f5e",
+    amber: "#f59e0b",
+    cyan: "#06b6d4",
+    slate: "#64748b",
+  };
+  const hex = room.customThemeHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo;
+  const glowStyle = {
+    boxShadow: `0 20px 60px ${hex}33`,
+    background: `linear-gradient(135deg, ${hex}22, transparent)`,
+  } as any;
 
   return (
     <div
       onClick={onOpen}
-      className={`group relative flex h-full min-h-[320px] flex-col overflow-hidden rounded-[2.5rem] border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-text)] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
+      className={`group relative flex h-full min-h-[320px] flex-col overflow-hidden rounded-[2.5rem] border border-[var(--muse-border)] text-[var(--muse-text)] transition-all duration-500 cursor-pointer`}
+      style={glowStyle}
     >
+      {room.isVault && !room.isVaultUnlocked && (
+        <div className="absolute top-4 right-4 z-20 rounded-md border border-[var(--muse-border)] bg-[var(--muse-surface-soft)] p-2">
+          <Lock size={14} />
+        </div>
+      )}
       {/* Background Image - Always Visible but Subtle */}
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
         {room.coverImage ? (
@@ -125,7 +144,8 @@ function RoomCard({
           />
         ) : (
           <div
-            className={`h-full w-full bg-linear-to-br ${glowClass} to-transparent opacity-20`}
+            className="h-full w-full opacity-20"
+            style={{ background: `linear-gradient(135deg, ${hex}22, transparent)` }}
           />
         )}
         <div className="absolute inset-0 room-image-overlay" />
@@ -329,12 +349,34 @@ export default function RoomsGallery() {
   };
 
   const openRoom = (id: string) => {
+    const room = rooms.find((r) => r.id === id);
+    if (!room) return;
+    if (room.isVault && !room.isVaultUnlocked) {
+      setVaultToUnlock(id);
+      return;
+    }
+
     globalThis.location.href = `/rooms/${id}`;
+  };
+
+  const [vaultToUnlock, setVaultToUnlock] = useState<string | null>(null);
+
+  const onVaultUnlocked = (id?: string) => {
+    // After unlocking, navigate into the room
+    if (id) globalThis.location.href = `/rooms/${id}`;
+    else if (vaultToUnlock) globalThis.location.href = `/rooms/${vaultToUnlock}`;
   };
 
   return (
     <>
       {showCreate && <CreateRoomModal onClose={() => setShowCreate(false)} />}
+      {vaultToUnlock && (
+        <VaultUnlockModal
+          roomId={vaultToUnlock}
+          onClose={() => setVaultToUnlock(null)}
+          onSuccess={() => onVaultUnlocked(vaultToUnlock ?? undefined)}
+        />
+      )}
 
       <div className="p-6 md:p-10 w-full max-w-[1800px] mx-auto pb-24 md:pb-10 space-y-12">
         <section
@@ -544,7 +586,9 @@ export default function RoomsGallery() {
               )}
           </div>
 
-          <aside className="space-y-4 rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 md:p-6">
+          {/* Collaboration & Architecture moved into the `collab` tab content to avoid duplication */}
+          {activeTab === "collab" && (
+            <aside className="space-y-4 rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 md:p-6">
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div>
                 <h3 className={`text-xl font-bold tracking-tight ${textClass}`}>
@@ -597,6 +641,7 @@ export default function RoomsGallery() {
               </p>
             </div>
           </aside>
+          )}
         </section>
       </div>
     </>

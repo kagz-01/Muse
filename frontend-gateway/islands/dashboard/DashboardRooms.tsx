@@ -45,25 +45,29 @@ export default function DashboardRooms() {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
           {rooms.map((room) => {
-            const glowClass = themeGradients[room.themeColor] ||
-              themeGradients["indigo"];
+            const customHex = room.customThemeHex;
+            const glowClass = !customHex ? (themeGradients[room.themeColor] || themeGradients["indigo"]) : undefined;
             return (
               <a
                 key={room.id}
                 href={`/rooms/${room.id}`}
-                className="relative h-56 rounded-4xl overflow-hidden cursor-pointer group shadow-xl border border-white/5 hover:border-white/20 transition-all transform hover:-translate-y-1 w-full text-left"
+                className="flex-shrink-0 w-80 h-56 relative rounded-4xl overflow-hidden cursor-pointer group shadow-xl border border-white/5 hover:border-white/20 transition-all transform hover:-translate-y-1 text-left"
               >
-                <img
-                  src={room.coverImage}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+                {room.coverImage ? (
+                  <img
+                    src={room.coverImage}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                ) : (
+                  <div className="absolute inset-0" style={customHex ? { background: `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))` } : {}} />
+                )}
 
                 <div
-                  className={`absolute inset-0 bg-linear-to-t ${glowClass} via-canvas-bg-dark/60 to-canvas-bg-dark opacity-60 group-hover:opacity-80 transition-opacity duration-500`}
-                >
-                </div>
+                  className={`absolute inset-0 bg-linear-to-t ${glowClass ?? ""} via-canvas-bg-dark/60 to-canvas-bg-dark opacity-60 group-hover:opacity-80 transition-opacity duration-500`}
+                  style={customHex ? { background: `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))` } : undefined}
+                />
                 <div className="absolute inset-0 bg-linear-to-t from-canvas-bg-dark via-canvas-bg-dark/40 to-transparent opacity-90">
                 </div>
 

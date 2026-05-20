@@ -247,14 +247,14 @@ export default function CaptureModal() {
 
               <div className="min-h-[220px]">
                 {!isAddingRoom
-                  ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-lg mx-auto h-[220px] overflow-y-auto px-4 scrollbar-hide py-2">
+                    ? (
+                    <div className="flex gap-4 max-w-lg mx-auto h-[220px] overflow-x-auto px-4 scrollbar-hide py-2">
                       {rooms.map((room) => (
                         <button
                           type="button"
                           key={room.id}
                           onClick={() => setRoomId(room.id)}
-                          className={`p-6 rounded-4xl border transition-all flex flex-col items-center gap-4 group cursor-pointer ${
+                          className={`flex-shrink-0 w-44 p-6 rounded-4xl border transition-all flex flex-col items-center gap-4 group cursor-pointer ${
                             roomId === room.id
                               ? "bg-canvas-primary/10 border-canvas-primary shadow-[0_0_30px_rgba(99,102,241,0.2)]"
                               : "bg-[var(--muse-surface-soft)] border-[var(--muse-border)] hover:border-[var(--muse-text)]/20"
@@ -263,9 +263,10 @@ export default function CaptureModal() {
                           <div
                             className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
                               roomId === room.id
-                                ? "bg-canvas-primary text-white"
-                                : "bg-[var(--muse-surface)] text-[var(--muse-muted)] group-hover:text-[var(--muse-text)]"
+                                ? "text-white"
+                                : "text-[var(--muse-muted)] group-hover:text-[var(--muse-text)]"
                             }`}
+                            style={{ backgroundColor: room.customThemeHex || undefined }}
                           >
                             <Layout size={18} />
                           </div>
@@ -284,7 +285,7 @@ export default function CaptureModal() {
                       <button
                         type="button"
                         onClick={() => setIsAddingRoom(true)}
-                        className="p-6 rounded-4xl border border-dashed border-[var(--muse-border)] hover:border-canvas-primary/40 hover:bg-canvas-primary/5 transition-all flex flex-col items-center justify-center gap-4 group cursor-pointer"
+                        className="flex-shrink-0 w-44 p-6 rounded-4xl border border-dashed border-[var(--muse-border)] hover:border-canvas-primary/40 hover:bg-canvas-primary/5 transition-all flex flex-col items-center justify-center gap-4 group cursor-pointer"
                       >
                         <div className="w-10 h-10 rounded-full border border-dashed border-[var(--muse-border)] flex items-center justify-center group-hover:border-canvas-primary transition-colors">
                           <Plus

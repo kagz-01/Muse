@@ -33,15 +33,15 @@ export default function SynthesisWeb({ threadId }: { threadId: string }) {
               <div
                 className={`w-32 h-32 rounded-[2.5rem] border border-white/10 bg-black/40 flex items-center justify-center overflow-hidden transition-all duration-700 group-hover:scale-110 group-hover:border-canvas-primary/40 shadow-2xl`}
               >
-                {room.coverImage
-                  ? (
+                  {room.coverImage ? (
                     <img
                       src={room.coverImage}
                       className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity"
                       alt=""
                     />
-                  )
-                  : <div className="w-full h-full bg-white/5" />}
+                  ) : (
+                    <div className="w-full h-full" style={{ background: room.customThemeHex ? `linear-gradient(135deg, ${room.customThemeHex}40, transparent)` : undefined }} />
+                  )}
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
                   <Hash size={20} className="text-gray-500 mb-2" />
                   <p className="text-[9px] font-bold uppercase tracking-widest text-white leading-tight">

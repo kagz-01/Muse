@@ -7,7 +7,7 @@ import {
   Lock,
   X,
 } from "lucide-preact";
-import { addRoom, type RoomTheme, type RoomCategory, type RoomSize } from "../../signals/rooms.ts";
+import { addRoom, hashPassword, type RoomTheme, type RoomCategory, type RoomSize } from "../../signals/rooms.ts";
 
 interface Props {
   onClose: () => void;
@@ -34,6 +34,7 @@ export default function CreateRoomModal({ onClose }: Props) {
   const [themeColor, setThemeColor] = useState<RoomTheme>("indigo");
   const [coverImage, setCoverImage] = useState("");
   const [isPublic, setIsPublic] = useState(false);
+  const [vaultPassword, setVaultPassword] = useState("");
   const [error, setError] = useState("");
   const [useCustomColor, setUseCustomColor] = useState(false);
   const [customHue, setCustomHue] = useState(270); // indigo hue
@@ -90,13 +91,19 @@ export default function CreateRoomModal({ onClose }: Props) {
     ? { name: "custom", hex: currentColor, label: "Custom Color" }
     : paletteColors.find((c) => c.name === themeColor)!;
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!name.trim()) {
       setError("Give your room a name.");
       return;
     }
 
+    if (!isPublic && !vaultPassword.trim()) {
+      setError("Private rooms require a password.");
+      return;
+    }
     try {
+      const hashed = !isPublic ? await hashPassword(vaultPassword) : undefined;
+
       const newRoomId = addRoom({
         name: name.trim(),
         description: description.trim(),
@@ -109,6 +116,8 @@ export default function CreateRoomModal({ onClose }: Props) {
         customThemeHex: useCustomColor ? currentColor : undefined,
         coverImage,
         isPublic,
+        isVault: !isPublic,
+        vaultPassword: !isPublic ? hashed : undefined,
       });
       onClose();
       globalThis.location.href = `/rooms/${newRoomId}`;
@@ -237,7 +246,7 @@ export default function CreateRoomModal({ onClose }: Props) {
               value={emoji}
               onInput={(e) => setEmoji((e.target as HTMLInputElement).value)}
               placeholder="🏛️ Pick an emoji (optional)"
-              maxLength={2}
+              maxLength={8}
               className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium text-center"
             />
           </div>
@@ -341,17 +350,26 @@ export default function CreateRoomModal({ onClose }: Props) {
 
           {/* Theme Palette */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
+            <div className="mb-3 flex items-center justify-between">
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
                 Room Theme
               </label>
-              <button
-                onClick={() => setUseCustomColor(!useCustomColor)}
-                className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary hover:text-canvas-primary/80 transition-colors cursor-pointer"
-                type="button"
-              >
-                {useCustomColor ? "← Use Preset" : "Custom →"}
-              </button>
+              <div className="inline-flex rounded-full bg-white/5 p-1">
+                <button
+                  type="button"
+                  onClick={() => setUseCustomColor(false)}
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-colors ${!useCustomColor ? "bg-white/10 text-white" : "text-gray-400 hover:text-white"}`}
+                >
+                  Default
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseCustomColor(true)}
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-colors ${useCustomColor ? "bg-white/10 text-white" : "text-gray-400 hover:text-white"}`}
+                >
+                  Customize
+                </button>
+              </div>
             </div>
 
             {!useCustomColor ? (
@@ -360,7 +378,10 @@ export default function CreateRoomModal({ onClose }: Props) {
                   <button
                     key={color.name}
                     type="button"
-                    onClick={() => setThemeColor(color.name)}
+                    onClick={() => {
+                      setThemeColor(color.name);
+                      setUseCustomColor(false);
+                    }}
                     title={color.label}
                     className={`relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer ${
                       themeColor === color.name && !useCustomColor
@@ -555,6 +576,28 @@ export default function CreateRoomModal({ onClose }: Props) {
               </button>
             </div>
           </div>
+
+          {/* Vault Password (when Private selected) */}
+          {!isPublic && (
+            <div className="mb-6">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Vault Password
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  value={vaultPassword}
+                  onInput={(e) => setVaultPassword((e.target as HTMLInputElement).value)}
+                  placeholder="Choose a password to protect this vault"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm"
+                />
+                <button type="button" className="px-4 py-3 rounded-2xl bg-white/10 text-white hover:bg-white/15 transition-all text-sm font-bold">
+                  <Lock size={16} />
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mt-2 font-serif italic">You will need this password to unlock the room later.</p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex items-center gap-3">

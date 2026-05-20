@@ -159,7 +159,7 @@ export default function ConnectionsHub() {
                         ))}
                       </div>
 
-                      <div>
+                        <div>
                         <div className="flex items-center justify-between mb-10">
                           <h2 className="text-3xl font-bold text-white flex items-center gap-4">
                             <Globe size={32} className="text-gray-800" />{" "}
@@ -172,9 +172,11 @@ export default function ConnectionsHub() {
                             Explore All
                           </button>
                         </div>
-                        <div className="grid grid-cols-1 gap-8">
+                        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                           {communityRooms.map((room) => (
-                            <CommunityRoomCard key={room.id} room={room} />
+                            <div key={room.id} className="flex-shrink-0 w-80">
+                              <CommunityRoomCard room={room} />
+                            </div>
                           ))}
                         </div>
                       </div>

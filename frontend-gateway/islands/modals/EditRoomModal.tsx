@@ -64,6 +64,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
   };
 
   const selectedPalette = paletteColors.find((c) => c.name === themeColor)!;
+  const selectedHex = room.customThemeHex || selectedPalette.hex;
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -94,7 +95,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
         {/* Ambient glow */}
         <div
           className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500"
-          style={{ backgroundColor: selectedPalette.hex }}
+          style={{ backgroundColor: selectedHex }}
         />
 
         <div className="relative z-10 p-8">
@@ -224,7 +225,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
 
           {/* Visibility Toggle */}
           <div className="mb-8 p-1 bg-white/5 rounded-2xl flex gap-2">
-            <button
+                <button
               type="button"
               onClick={() => setIsPublic(false)}
               className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
@@ -235,7 +236,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             >
               <Lock size={14} />
               <span className="text-[9px] font-bold uppercase tracking-widest">
-                Private Vault
+                Private — Solo Mode
               </span>
             </button>
             <button
@@ -260,8 +261,8 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             type="button"
             className="w-full py-4 rounded-2xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer hover:-translate-y-0.5 active:scale-95 mb-4 text-white"
             style={{
-              backgroundColor: selectedPalette.hex,
-              boxShadow: `0 0 30px ${selectedPalette.hex}55`,
+              backgroundColor: selectedHex,
+              boxShadow: `0 0 30px ${selectedHex}55`,
             }}
           >
             Save Changes <Check size={16} />
