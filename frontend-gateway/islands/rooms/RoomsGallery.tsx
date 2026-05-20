@@ -15,15 +15,6 @@ import { collaboratorsSignal } from "../../signals/connections.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 import VaultUnlockModal from "../modals/VaultUnlockModal.tsx";
 
-const themeGradients: Record<RoomTheme, string> = {
-  indigo: "from-indigo-600/40",
-  emerald: "from-emerald-600/40",
-  amber: "from-amber-600/40",
-  rose: "from-rose-600/40",
-  cyan: "from-cyan-600/40",
-  slate: "from-slate-600/40",
-};
-
 type RoomTab = "all" | "pinned" | "vault" | "archived" | "starred" | "collab";
 type RoomSort = "latest" | "alphabetical";
 
@@ -113,10 +104,10 @@ function RoomCard({
     slate: "#64748b",
   };
   const hex = room.customThemeHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo;
-  const glowStyle = {
+  const glowStyle: JSX.CSSProperties = {
     boxShadow: `0 20px 60px ${hex}33`,
     background: `linear-gradient(135deg, ${hex}22, transparent)`,
-  } as any;
+  };
 
   return (
     <div
@@ -378,7 +369,7 @@ export default function RoomsGallery() {
         />
       )}
 
-      <div className="p-6 md:p-10 w-full max-w-[1800px] mx-auto pb-24 md:pb-10 space-y-12">
+      <div className="w-full max-w-none px-6 md:px-10 pb-24 md:pb-10 space-y-12">
         <section
           className={`relative overflow-hidden rounded-[3rem] ${surfaceClass} p-10 md:p-16 shadow-2xl`}
         >
@@ -498,8 +489,7 @@ export default function RoomsGallery() {
           </section>
         )}
 
-        <section className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-          <div className={`space-y-4 rounded-[2rem] ${softSurfaceClass} p-5 md:p-6`}>
+        <section className={`space-y-4 rounded-[2rem] ${softSurfaceClass} p-5 md:p-6`}>
             <div className="flex items-center justify-between gap-3 border-b border-[var(--muse-border)] pb-4">
               <div>
                 <h2 className={`text-2xl font-bold tracking-tight ${textClass}`}>
@@ -584,11 +574,10 @@ export default function RoomsGallery() {
                   </button>
                 </div>
               )}
-          </div>
-
           {/* Collaboration & Architecture moved into the `collab` tab content to avoid duplication */}
           {activeTab === "collab" && (
-            <aside className="space-y-4 rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 md:p-6">
+            <div className="mt-8 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+              <aside className="space-y-4 rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 md:p-6">
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div>
                 <h3 className={`text-xl font-bold tracking-tight ${textClass}`}>
@@ -641,6 +630,38 @@ export default function RoomsGallery() {
               </p>
             </div>
           </aside>
+
+              <div className={`space-y-4 rounded-[2rem] ${softSurfaceClass} p-5 md:p-6`}>
+                <div className="flex items-center justify-between gap-3 border-b border-[var(--muse-border)] pb-4">
+                  <div>
+                    <h2 className={`text-2xl font-bold tracking-tight ${textClass}`}>
+                      Collab Rooms
+                    </h2>
+                    <p className={`mt-1 text-sm font-serif italic ${mutedClass}`}>
+                      Shared rooms and collaboration surfaces now get the full column.
+                    </p>
+                  </div>
+                  <Users size={18} className="text-canvas-primary" />
+                </div>
+
+                <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                  {collabRooms.map((room) => (
+                    <div key={room.id} className="flex-shrink-0 w-80">
+                      <RoomCard
+                        room={room}
+                        pinned={pinnedIds.includes(room.id)}
+                        starred={starredIds.includes(room.id)}
+                        archived={archivedIds.includes(room.id)}
+                        onOpen={() => openRoom(room.id)}
+                        onPin={() => togglePin(room.id)}
+                        onStar={() => toggleStar(room.id)}
+                        onArchive={() => toggleArchive(room.id)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
         </section>
       </div>
