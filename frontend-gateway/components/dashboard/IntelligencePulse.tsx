@@ -2,9 +2,7 @@ import { userSignal } from "../../signals/user.ts";
 import {
   Activity,
   Aperture,
-  ArrowUpRight,
   Flame,
-  Layers,
   TrendingUp,
 } from "lucide-preact";
 
@@ -30,8 +28,8 @@ export default function IntelligencePulse() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-8 bg-white/2 border border-white/5 rounded-[2.5rem] text-center">
+        <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+          <div className="min-w-[220px] md:min-w-[260px] snap-start p-8 bg-white/2 border border-white/5 rounded-[2.5rem] text-center">
             <p className="text-[9px] font-bold uppercase tracking-widest text-gray-600 mb-2">
               Weekly Resonance
             </p>
@@ -43,7 +41,7 @@ export default function IntelligencePulse() {
             </div>
           </div>
 
-          <div className="p-8 bg-white/2 border border-white/5 rounded-[2.5rem] text-center">
+          <div className="min-w-[220px] md:min-w-[260px] snap-start p-8 bg-white/2 border border-white/5 rounded-[2.5rem] text-center">
             <p className="text-[9px] font-bold uppercase tracking-widest text-gray-600 mb-2">
               Active Syntheses
             </p>
@@ -55,7 +53,7 @@ export default function IntelligencePulse() {
             </p>
           </div>
 
-          <div className="p-8 bg-white/2 border border-white/5 rounded-[2.5rem] text-center flex flex-col justify-center">
+          <div className="min-w-[260px] md:min-w-[300px] snap-start p-8 bg-white/2 border border-white/5 rounded-[2.5rem] text-center flex flex-col justify-center">
             <p className="text-[9px] font-bold uppercase tracking-widest text-gray-600 mb-4">
               Top Cognitive Themes
             </p>
@@ -87,7 +85,7 @@ export default function IntelligencePulse() {
               </p>
             </div>
           </div>
-          <button className="px-6 py-3 bg-white text-black font-bold uppercase tracking-widest text-[9px] rounded-xl hover:-translate-y-1 transition-all">
+          <button type="button" className="px-6 py-3 bg-white text-black font-bold uppercase tracking-widest text-[9px] rounded-xl hover:-translate-y-1 transition-all">
             Review Blueprint
           </button>
         </div>
