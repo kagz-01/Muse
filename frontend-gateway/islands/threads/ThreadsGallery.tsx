@@ -113,13 +113,23 @@ export default function ThreadsGallery() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="flex gap-6 items-start overflow-x-auto pb-6 snap-x snap-mandatory">
           {filteredThreads.map((thread: Thread) => {
             const mood = moodMapping[thread.mood as ThreadMood];
+            const baseHexMap: Record<string, string> = {
+              indigo: "#6366f1",
+              cyan: "#06b6d4",
+              slate: "#64748b",
+              emerald: "#10b981",
+              rose: "#fb7185",
+              amber: "#f59e0b",
+            };
+            const hex = baseHexMap[mood.color] || baseHexMap.indigo;
             return (
               <div
                 key={thread.id}
-                className="group bg-[#111] border border-white/5 rounded-[3rem] overflow-hidden hover:border-white/20 transition-all duration-500 shadow-2xl relative"
+                className="group bg-[#111] border border-white/5 rounded-[3rem] overflow-hidden hover:border-white/20 transition-all duration-500 shadow-2xl relative min-w-[360px] flex-shrink-0 snap-start"
+                style={{ boxShadow: `0 20px 60px ${hex}33` }}
               >
                 <div className="absolute top-0 right-0 p-6 z-10">
                   {thread.isPublic
@@ -128,20 +138,24 @@ export default function ThreadsGallery() {
                 </div>
 
                 <div className="h-56 relative overflow-hidden">
-                  {thread.coverImage
-                    ? (
-                      <img
-                        src={thread.coverImage}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        alt=""
-                      />
-                    )
-                    : <div className={`w-full h-full ${mood.bg}`} />}
+                  {thread.coverImage ? (
+                    <img
+                      src={thread.coverImage}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      alt=""
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full"
+                      style={{ background: `linear-gradient(135deg, ${hex}22, transparent)` }}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
 
                   <div className="absolute bottom-6 left-8 flex items-center gap-3">
                     <div
-                      className={`px-3 py-1 rounded-lg ${mood.bg} border border-${mood.color}-500/30 text-[8px] font-bold uppercase tracking-[0.2em] ${mood.text}`}
+                      className="px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-[0.2em]"
+                      style={{ backgroundColor: hex + "22", border: `1px solid ${hex}33`, color: hex }}
                     >
                       {thread.mood}
                     </div>
