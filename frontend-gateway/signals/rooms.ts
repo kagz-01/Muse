@@ -10,14 +10,23 @@ export type RoomTheme =
   | "cyan"
   | "slate";
 
+export type RoomCategory = "workspace" | "journal" | "archive" | "brainstorm" | "inspiration";
+export type RoomSize = "small" | "medium" | "large";
+
 export interface Room {
   id: string;
   name: string;
   description?: string;
+  emoji?: string; // Room icon/emoji (e.g., 🎨, 📖, 🏗️)
+  category?: RoomCategory; // Room type/template (workspace, journal, archive, brainstorm, inspiration)
+  size?: RoomSize; // Room capacity (small, medium, large)
   themeColor: RoomTheme;
+  customThemeHex?: string; // Custom hex color chosen by user (overrides themeColor if present)
   coverImage?: string;
   isPublic: boolean;
   count: number;
+  tags: string[]; // Initial/managed tags for the room
+  notificationsEnabled: boolean; // User notification preference for room activity
   updatedAt: string;
   semanticTags: string[];
   resonanceMetrics: {
@@ -29,6 +38,10 @@ export interface Room {
     auraIntensity?: number;
     fontFamily?: string;
   };
+  // Vault-related properties
+  isVault?: boolean; // True if this is a private vault room (like Snapchat's "my eyes only")
+  vaultPassword?: string; // Encrypted/hashed password for vault access
+  isVaultUnlocked?: boolean; // True if user has unlocked this vault in session
 }
 
 const STORAGE_KEY = "muse_rooms_v1";
@@ -38,11 +51,16 @@ const INITIAL_ROOMS: Room[] = [
     id: "r1",
     name: "Aesthetic Brutalism",
     description: "A sanctuary for monolithic forms and raw digital honesty.",
+    emoji: "🏗️",
+    category: "inspiration",
+    size: "medium",
     themeColor: "indigo",
     coverImage:
       "https://images.unsplash.com/photo-1518005020250-58003994bf3b?auto=format&fit=crop&w=1200&q=80",
     isPublic: true,
     count: 5,
+    tags: ["architecture", "design", "brutalism", "visual"],
+    notificationsEnabled: true,
     updatedAt: new Date().toISOString(),
     semanticTags: ["architecture", "design", "brutalism"],
     resonanceMetrics: { views: 420, wovenCount: 12 },
@@ -51,11 +69,16 @@ const INITIAL_ROOMS: Room[] = [
     id: "r2",
     name: "Cognitive Stoicism",
     description: "Practices and signals for maintaining digital sovereignty.",
+    emoji: "🧠",
+    category: "journal",
+    size: "small",
     themeColor: "emerald",
     coverImage:
       "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
     isPublic: false,
     count: 3,
+    tags: ["stoicism", "philosophy", "mindfulness", "personal"],
+    notificationsEnabled: false,
     updatedAt: new Date().toISOString(),
     semanticTags: ["stoicism", "philosophy", "mindfulness"],
     resonanceMetrics: { views: 0, wovenCount: 0 },

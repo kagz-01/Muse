@@ -4,8 +4,6 @@ import {
   Archive,
   ArrowRight,
   Globe,
-  Layers,
-  Layout,
   Pin,
   Plus,
   Star,
@@ -24,16 +22,16 @@ const themeGradients: Record<RoomTheme, string> = {
   slate: "from-slate-600/40",
 };
 
-type RoomTab = "all" | "vault" | "archived" | "starred" | "collab";
+type RoomTab = "all" | "pinned" | "vault" | "archived" | "starred" | "collab";
 type RoomSort = "latest" | "alphabetical";
-type RoomView = "grid" | "carousel";
 
 const tabConfig: { id: RoomTab; label: string; helper: string }[] = [
-  { id: "all", label: "All", helper: "Everything active" },
-  { id: "vault", label: "Vault", helper: "Private rooms" },
-  { id: "archived", label: "Archived", helper: "Stored away" },
-  { id: "starred", label: "Starred", helper: "Pinned favorites" },
-  { id: "collab", label: "Collab", helper: "Shared rooms" },
+  { id: "all", label: "All", helper: "Everything active (pinned rooms appear at top)" },
+  { id: "pinned", label: "Pinned", helper: "Rooms you've marked to surface first" },
+  { id: "vault", label: "Vault", helper: "Private chambers—only you can access these" },
+  { id: "archived", label: "Archived", helper: "Stored away, but still available" },
+  { id: "starred", label: "Starred", helper: "Rooms you've marked as important" },
+  { id: "collab", label: "Collab", helper: "Public rooms you collaborate on" },
 ];
 
 const sortOptions: { id: RoomSort; label: string }[] = [
@@ -87,7 +85,6 @@ function RoomActionButton({
 
 function RoomCard({
   room,
-  mode,
   pinned,
   starred,
   archived,
@@ -97,7 +94,6 @@ function RoomCard({
   onArchive,
 }: {
   room: Room;
-  mode: RoomView;
   pinned: boolean;
   starred: boolean;
   archived: boolean;
@@ -109,121 +105,29 @@ function RoomCard({
   const glowClass = themeGradients[room.themeColor as RoomTheme] ||
     themeGradients.indigo;
 
-  if (mode === "carousel") {
-    return (
-      <div
-        onClick={onOpen}
-        className={`group relative w-[280px] md:w-[320px] shrink-0 h-[440px] snap-start overflow-hidden rounded-[2.5rem] border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-text)] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
-      >
-        {/* Background Image - Always Visible but Subtle */}
-        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
-          {room.coverImage
-            ? (
-              <img
-                src={room.coverImage}
-                className="h-full w-full object-cover opacity-50 group-hover:opacity-70 transition-opacity"
-                alt=""
-              />
-            )
-            : (
-              <div
-                className={`h-full w-full bg-linear-to-br ${glowClass} to-transparent opacity-20`}
-              />
-            )}
-          <div className="absolute inset-0 room-image-overlay" />
-        </div>
-
-        <div className="absolute inset-0 flex flex-col justify-between p-8 z-10">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex flex-wrap gap-2">
-              {pinned && (
-                <span className="rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface-soft)] px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--muse-text)] shadow-lg backdrop-blur-md">
-                  Pinned
-                </span>
-              )}
-              {starred && (
-                <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-300 shadow-lg backdrop-blur-md">
-                  Starred
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-              <RoomActionButton
-                variant="star"
-                label="Star room"
-                active={starred}
-                onClick={onStar}
-              />
-              <RoomActionButton
-                variant="archive"
-                label="Archive room"
-                active={archived}
-                onClick={onArchive}
-              />
-            </div>
-          </div>
-
-          <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-            <div className="mb-4 flex items-center gap-2">
-              <span
-                className={`inline-block w-2 h-2 rounded-full animate-pulse bg-current ${
-                  themeGradients[room.themeColor as RoomTheme]?.replace(
-                    "from-",
-                    "text-",
-                  ).replace("/40", "") || "text-indigo-400"
-                }`}
-              />
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)]">
-                {room.isPublic ? "Collective" : "Vault"}
-              </span>
-            </div>
-            <h3 className="text-3xl font-bold tracking-tight text-[var(--muse-text)] drop-shadow-2xl group-hover:text-canvas-primary transition-colors duration-300">
-              {room.name}
-            </h3>
-            <p className="mt-4 line-clamp-2 text-base text-[var(--muse-muted)] font-serif italic leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
-              {room.description || "A curated sanctuary for your artifacts."}
-            </p>
-            <div className="mt-8 flex items-center justify-between border-t border-[var(--muse-border)] pt-6">
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-1">
-                    Artifacts
-                  </span>
-                  <span className="text-sm font-bold text-[var(--muse-text)]">
-                    {room.count}
-                  </span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-[var(--muse-surface-soft)] text-[var(--muse-text)] border border-[var(--muse-border)] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500">
-                <ArrowRight size={20} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       onClick={onOpen}
       className={`group relative flex h-full min-h-[320px] flex-col overflow-hidden rounded-[2.5rem] border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-text)] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
     >
       {/* Background Image - Always Visible but Subtle */}
-      <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
-        {room.coverImage
-          ? (
-            <img
-              src={room.coverImage}
-              className="h-full w-full object-cover opacity-40 group-hover:opacity-60 transition-opacity"
-              alt=""
-            />
-          )
-          : (
-            <div
-              className={`h-full w-full bg-linear-to-br ${glowClass} to-transparent opacity-20`}
-            />
-          )}
+        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+        {room.coverImage ? (
+          <img
+            src={room.coverImage}
+            className="h-full w-full object-cover opacity-40 group-hover:opacity-60 transition-opacity"
+            alt=""
+          />
+        ) : room.customThemeHex ? (
+          <div
+            className="h-full w-full opacity-40"
+            style={{ background: `linear-gradient(135deg, ${room.customThemeHex}40, transparent)` }}
+          />
+        ) : (
+          <div
+            className={`h-full w-full bg-linear-to-br ${glowClass} to-transparent opacity-20`}
+          />
+        )}
         <div className="absolute inset-0 room-image-overlay" />
       </div>
 
@@ -232,15 +136,12 @@ function RoomCard({
           <div className="flex-1 min-w-0">
             <div className="mb-4 flex items-center gap-2">
               <span
-                className={`inline-block w-2 h-2 rounded-full animate-pulse bg-current ${
-                  themeGradients[room.themeColor as RoomTheme]?.replace(
-                    "from-",
-                    "text-",
-                  ).replace("/40", "") || "text-indigo-400"
-                }`}
-              />
-              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)]">
-                {room.isPublic ? "Collective Space" : "Private Vault"}
+                className={`inline-block w-2 h-2 rounded-full animate-pulse `}
+                style={{ backgroundColor: room.customThemeHex || undefined }}
+              >
+              </span>
+              <span className="rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface-soft)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)]">
+                {room.isPublic ? "Open room" : "Private room"}
               </span>
             </div>
             <h3 className="text-2xl font-bold tracking-tight text-[var(--muse-text)] group-hover:text-canvas-primary transition-colors duration-300">
@@ -262,7 +163,7 @@ function RoomCard({
             />
             <RoomActionButton
               variant="pin"
-              label="Pin room"
+              label={pinned ? "Unpin room" : "Pin room"}
               active={pinned}
               onClick={onPin}
             />
@@ -290,14 +191,10 @@ function RoomCard({
                   Theme
                 </span>
                 <span
-                  className={`text-xs font-bold uppercase ${
-                    themeGradients[room.themeColor as RoomTheme]?.replace(
-                      "from-",
-                      "text-",
-                    ).replace("/40", "") || "text-indigo-400"
-                  }`}
+                  className={`text-xs font-bold uppercase`}
+                  style={{ color: room.customThemeHex || undefined }}
                 >
-                  {room.themeColor}
+                  {room.customThemeHex ? "Custom" : room.themeColor}
                 </span>
               </div>
             </div>
@@ -316,7 +213,6 @@ export default function RoomsGallery() {
   const [showCreate, setShowCreate] = useState(false);
   const [activeTab, setActiveTab] = useState<RoomTab>("all");
   const [sortBy, setSortBy] = useState<RoomSort>("latest");
-  const [viewMode, setViewMode] = useState<RoomView>("grid");
   const [pinnedIds, setPinnedIds] = useState<string[]>(
     rooms.slice(0, 2).map((room) => room.id),
   );
@@ -351,6 +247,8 @@ export default function RoomsGallery() {
 
   const tabRooms = useMemo(() => {
     switch (activeTab) {
+      case "pinned":
+        return activeRooms.filter((room) => pinnedIds.includes(room.id));
       case "vault":
         return vaultRooms;
       case "archived":
@@ -359,7 +257,7 @@ export default function RoomsGallery() {
         return starredRooms;
       case "collab":
         return collabRooms;
-      default:
+      default: // "all"
         return activeRooms;
     }
   }, [
@@ -369,6 +267,7 @@ export default function RoomsGallery() {
     collabRooms,
     starredRooms,
     vaultRooms,
+    pinnedIds,
   ]);
 
   const sortedRooms = useMemo(() => {
@@ -392,9 +291,14 @@ export default function RoomsGallery() {
     [activeRooms, pinnedIds, roomOrder],
   );
 
-  const visibleRooms = sortedRooms.filter((room) =>
-    !pinnedIds.includes(room.id)
-  );
+  const visibleRooms = useMemo(() => {
+    // When in "all" tab, exclude pinned rooms from the main grid (they show separately above)
+    // For other tabs, show all rooms that match the tab filter
+    if (activeTab === "all") {
+      return sortedRooms.filter((room) => !pinnedIds.includes(room.id));
+    }
+    return sortedRooms;
+  }, [sortedRooms, activeTab, pinnedIds]);
 
   const togglePin = (id: string) => {
     setPinnedIds((current) =>
@@ -441,9 +345,8 @@ export default function RoomsGallery() {
 
           <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-3xl">
-              <div className={`inline-flex items-center gap-3 rounded-full ${softSurfaceClass} px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary`}>
-                <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
-                Room Atlas
+              <div className={`inline-flex items-center rounded-full ${softSurfaceClass} px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary`}>
+                Collect your thoughts
               </div>
               <h1 className={`mt-8 max-w-4xl text-5xl md:text-7xl font-bold tracking-tight leading-[1.05] ${textClass}`}>
                 Rooms that welcome the mind.
@@ -467,17 +370,6 @@ export default function RoomsGallery() {
                 className="w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-[var(--muse-text)] px-8 py-5 text-[12px] font-bold uppercase tracking-[0.2em] text-[var(--muse-bg)] shadow-[0_20px_50px_rgba(0,0,0,0.18)] transition-all hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(0,0,0,0.28)] active:scale-95"
               >
                 + Create a Room
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setViewMode(viewMode === "grid" ? "carousel" : "grid")}
-                className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-[11px] font-bold uppercase tracking-widest ${softSurfaceClass} ${textClass} transition-all hover:border-[var(--muse-border)] hover:bg-[var(--muse-surface-soft)]`}
-              >
-                {viewMode === "grid"
-                  ? <Layers size={14} />
-                  : <Layout size={14} />}
-                {viewMode === "grid" ? "Carousel" : "Grid"} View
               </button>
             </div>
           </div>
@@ -523,14 +415,13 @@ export default function RoomsGallery() {
                 ))}
               </div>
               <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)]">
-                Keep the filters lean. Sort by recency or alphabet, then pin
-                whatever should stay at the top.
+                Compact carousel view: 5-6 rooms across, scroll horizontally.
               </p>
             </div>
           </div>
         </section>
 
-        {pinnedRooms.length > 0 && (
+        {pinnedRooms.length > 0 && activeTab === "all" && (
           <section className="space-y-4">
             <div className="flex items-end justify-between gap-3 px-1">
               <div>
@@ -546,19 +437,16 @@ export default function RoomsGallery() {
               </div>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:-mx-10 md:px-10">
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
               {pinnedRooms.map((room) => (
-                <div key={room.id} className="snap-start">
+                <div key={room.id} className="flex-shrink-0 w-80">
                   <RoomCard
                     room={room}
-                    mode="carousel"
                     pinned
                     starred={starredIds.includes(room.id)}
                     archived={archivedIds.includes(room.id)}
-                    onOpen={() =>
-                      openRoom(room.id)}
-                    onPin={() =>
-                      togglePin(room.id)}
+                    onOpen={() => openRoom(room.id)}
+                    onPin={() => togglePin(room.id)}
                     onStar={() => toggleStar(room.id)}
                     onArchive={() => toggleArchive(room.id)}
                   />
@@ -581,18 +469,22 @@ export default function RoomsGallery() {
                     ? "Starred Rooms"
                     : activeTab === "collab"
                     ? "Collab Rooms"
+                    : activeTab === "pinned"
+                    ? "Pinned Rooms"
                     : "All Rooms"}
                 </h2>
                 <p className={`mt-1 text-sm font-serif italic ${mutedClass}`}>
                   {activeTab === "archived"
                     ? "Stored away, but still available when needed."
                     : activeTab === "vault"
-                    ? "Private rooms that stay out of public view."
+                    ? "Private chambers—only you can access these."
                     : activeTab === "starred"
-                    ? "Rooms you have marked as especially important."
+                    ? "Rooms you've marked as important and worth revisiting."
                     : activeTab === "collab"
-                    ? "Public rooms shared with your broader network."
-                    : "Your active room system, ready to explore."}
+                    ? "Public rooms you collaborate on with others. Share thoughts, weave context."
+                    : activeTab === "pinned"
+                    ? "Rooms you've pinned to surface first when viewing all your chambers."
+                    : "Your active room system—all non-archived chambers, with pinned rooms at the top."}
                 </p>
               </div>
               <div className="hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
@@ -616,57 +508,17 @@ export default function RoomsGallery() {
                   </p>
                 </div>
               )
-              : viewMode === "grid"
-              ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-                  {visibleRooms.map((room) => (
-                    <RoomCard
-                      key={room.id}
-                      room={room}
-                      mode="grid"
-                      pinned={pinnedIds.includes(room.id)}
-                      starred={starredIds.includes(room.id)}
-                      archived={archivedIds.includes(room.id)}
-                      onOpen={() => openRoom(room.id)}
-                      onPin={() => togglePin(room.id)}
-                      onStar={() => toggleStar(room.id)}
-                      onArchive={() => toggleArchive(room.id)}
-                    />
-                  ))}
-
-                  <button
-                    onClick={() => setShowCreate(true)}
-                    type="button"
-                    className="min-h-[270px] rounded-[2rem] border-2 border-dashed border-[var(--muse-border)] bg-transparent p-6 text-left transition-all hover:border-canvas-primary/25 hover:bg-[var(--muse-surface)] cursor-pointer"
-                  >
-                    <div className="flex h-full flex-col items-center justify-center text-center">
-                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-[var(--muse-border)] text-[var(--muse-muted)] transition-colors group-hover:border-[var(--muse-text)]">
-                        <Plus size={24} />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                        Create a room
-                      </span>
-                      <p className="mt-2 text-xs text-[var(--muse-muted)] font-serif italic">
-                        Start with a chamber, then shape its atmosphere.
-                      </p>
-                    </div>
-                  </button>
-                </div>
-              )
               : (
-                <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:-mx-10 md:px-10">
+                <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                   {visibleRooms.map((room) => (
-                    <div key={room.id} className="snap-start">
+                    <div key={room.id} className="flex-shrink-0 w-80">
                       <RoomCard
                         room={room}
-                        mode="carousel"
                         pinned={pinnedIds.includes(room.id)}
                         starred={starredIds.includes(room.id)}
                         archived={archivedIds.includes(room.id)}
-                        onOpen={() =>
-                          openRoom(room.id)}
-                        onPin={() =>
-                          togglePin(room.id)}
+                        onOpen={() => openRoom(room.id)}
+                        onPin={() => togglePin(room.id)}
                         onStar={() => toggleStar(room.id)}
                         onArchive={() => toggleArchive(room.id)}
                       />
@@ -676,15 +528,13 @@ export default function RoomsGallery() {
                   <button
                     onClick={() => setShowCreate(true)}
                     type="button"
-                    className="w-[280px] md:w-[320px] shrink-0 h-[440px] rounded-[2.5rem] border-2 border-dashed border-[var(--muse-border)] bg-transparent px-6 py-8 text-left transition-all hover:border-canvas-primary/20 hover:bg-[var(--muse-surface)] cursor-pointer snap-start group z-10"
+                    className="flex-shrink-0 w-80 min-h-[270px] rounded-[2rem] border-2 border-dashed border-[var(--muse-border)] bg-transparent p-6 text-left transition-all hover:border-canvas-primary/25 hover:bg-[var(--muse-surface)] cursor-pointer"
                   >
-                    <div className="flex h-full min-h-[270px] flex-col items-center justify-center text-center">
-                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-[var(--muse-border)] text-[var(--muse-muted)] transition-colors hover:border-[var(--muse-text)]">
+                    <div className="flex h-full flex-col items-center justify-center text-center">
+                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-[var(--muse-border)] text-[var(--muse-muted)] transition-colors group-hover:border-[var(--muse-text)]">
                         <Plus size={24} />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                        Create a room
-                      </span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">Create a room</span>
                       <p className="mt-2 text-xs text-[var(--muse-muted)] font-serif italic">
                         Start with a chamber, then shape its atmosphere.
                       </p>
@@ -737,12 +587,13 @@ export default function RoomsGallery() {
             <div className={`rounded-3xl ${softSurfaceClass} p-4`}>
               <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
                 <Globe size={12} className="text-emerald-300" />
-                Vault note
+                Room Architecture
               </div>
               <p className={`mt-2 text-sm leading-relaxed font-serif italic ${mutedClass}`}>
-                Private rooms stay in Vault. Public rooms move into Collab,
-                giving the page a clear split between what is held closely and
-                what is ready to be seen.
+                <strong>Vault:</strong> Your private chambers—password protected, seen only by you.<br/><br/>
+                <strong>Collab:</strong> Public rooms you share with collaborators. Invite others to weave shared context and artifacts with you.<br/><br/>
+                <strong>Pinned:</strong> Rooms you surface first. They appear at the top of your "All" view, helping you return to what matters most.<br/><br/>
+                <strong>Starred:</strong> Rooms you love. Mark them for quick revisiting without affecting their visual position.
               </p>
             </div>
           </aside>

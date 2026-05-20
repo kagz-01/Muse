@@ -7,7 +7,7 @@ import {
   Lock,
   X,
 } from "lucide-preact";
-import { addRoom, type RoomTheme } from "../../signals/rooms.ts";
+import { addRoom, type RoomTheme, type RoomCategory, type RoomSize } from "../../signals/rooms.ts";
 
 interface Props {
   onClose: () => void;
@@ -25,13 +25,41 @@ const paletteColors: { name: RoomTheme; hex: string; label: string }[] = [
 export default function CreateRoomModal({ onClose }: Props) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [emoji, setEmoji] = useState("");
+  const [category, setCategory] = useState<RoomCategory>("workspace");
+  const [size, setSize] = useState<RoomSize>("medium");
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [themeColor, setThemeColor] = useState<RoomTheme>("indigo");
   const [coverImage, setCoverImage] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState("");
+  const [useCustomColor, setUseCustomColor] = useState(false);
+  const [customHue, setCustomHue] = useState(270); // indigo hue
+  const [customSaturation, setCustomSaturation] = useState(100);
+  const [customLightness, setCustomLightness] = useState(60);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const colorCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Convert HSL to Hex
+  const hslToHex = (h: number, s: number, l: number): string => {
+    const a = (s * Math.min(l, 100 - l)) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color)
+        .toString(16)
+        .padStart(2, "0");
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
+
+  const currentColor = useCustomColor
+    ? hslToHex(customHue, customSaturation, customLightness)
+    : paletteColors.find((c) => c.name === themeColor)?.hex || "#6366f1";
 
   useEffect(() => {
     nameRef.current?.focus();
@@ -58,7 +86,9 @@ export default function CreateRoomModal({ onClose }: Props) {
     }
   };
 
-  const selectedPalette = paletteColors.find((c) => c.name === themeColor)!;
+  const selectedPalette = useCustomColor
+    ? { name: "custom", hex: currentColor, label: "Custom Color" }
+    : paletteColors.find((c) => c.name === themeColor)!;
 
   const handleCreate = () => {
     if (!name.trim()) {
@@ -70,7 +100,13 @@ export default function CreateRoomModal({ onClose }: Props) {
       const newRoomId = addRoom({
         name: name.trim(),
         description: description.trim(),
+        emoji: emoji || "🏛️",
+        category,
+        size,
+        tags,
+        notificationsEnabled,
         themeColor,
+        customThemeHex: useCustomColor ? currentColor : undefined,
         coverImage,
         isPublic,
       });
@@ -90,7 +126,7 @@ export default function CreateRoomModal({ onClose }: Props) {
         {/* Ambient glow */}
         <div
           className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500"
-          style={{ backgroundColor: selectedPalette.hex }}
+          style={{ backgroundColor: currentColor }}
         />
 
         <div className="relative z-10 p-8">
@@ -192,66 +228,332 @@ export default function CreateRoomModal({ onClose }: Props) {
             />
           </div>
 
-          {/* Theme Palette */}
-          <div className="mb-8">
-            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-              Room Theme
+          {/* Room Emoji */}
+          <div className="mb-5">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Room Icon
             </label>
-            <div className="flex gap-3 flex-wrap">
-              {paletteColors.map((color) => (
+            <input
+              value={emoji}
+              onInput={(e) => setEmoji((e.target as HTMLInputElement).value)}
+              placeholder="🏛️ Pick an emoji (optional)"
+              maxLength={2}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium text-center"
+            />
+          </div>
+
+          {/* Category & Size */}
+          <div className="grid grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Category
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory((e.target as HTMLSelectElement).value as RoomCategory)}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+              >
+                <option value="workspace">🏢 Workspace</option>
+                <option value="journal">📔 Journal</option>
+                <option value="archive">🗂️ Archive</option>
+                <option value="brainstorm">⚡ Brainstorm</option>
+                <option value="inspiration">✨ Inspiration</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Size
+              </label>
+              <select
+                value={size}
+                onChange={(e) => setSize((e.target as HTMLSelectElement).value as RoomSize)}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+              >
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Tags
+            </label>
+            <div className="flex gap-2 mb-3 flex-wrap">
+              {tags.map((tag, idx) => (
                 <button
-                  key={color.name}
+                  key={idx}
+                  onClick={() => setTags(tags.filter((_, i) => i !== idx))}
+                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-canvas-primary/20 text-canvas-primary text-xs font-bold uppercase tracking-widest hover:bg-canvas-primary/30 transition-all cursor-pointer"
                   type="button"
-                  onClick={() => setThemeColor(color.name)}
-                  title={color.label}
-                  className={`relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer ${
-                    themeColor === color.name
-                      ? "ring-2 ring-white ring-offset-2 ring-offset-[#111318] scale-110"
-                      : ""
-                  }`}
-                  style={{ backgroundColor: color.hex }}
                 >
-                  {themeColor === color.name && (
-                    <Check
-                      size={16}
-                      strokeWidth={3}
-                      className="text-white drop-shadow"
-                    />
-                  )}
+                  {tag} <X size={12} />
                 </button>
               ))}
             </div>
+            <div className="flex gap-2">
+              <input
+                value={tagInput}
+                onInput={(e) => setTagInput((e.target as HTMLInputElement).value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && tagInput.trim()) {
+                    setTags([...tags, tagInput.trim()]);
+                    setTagInput("");
+                  }
+                }}
+                placeholder="Add tag (press Enter)"
+                className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm"
+              />
+              <button
+                onClick={() => {
+                  if (tagInput.trim()) {
+                    setTags([...tags, tagInput.trim()]);
+                    setTagInput("");
+                  }
+                }}
+                type="button"
+                className="px-4 py-3 rounded-2xl bg-white/10 text-white hover:bg-white/15 transition-all text-sm font-bold"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          {/* Notifications */}
+          <div className="mb-8">
+            <label className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all">
+              <input
+                type="checkbox"
+                checked={notificationsEnabled}
+                onChange={(e) => setNotificationsEnabled((e.target as HTMLInputElement).checked)}
+                className="w-5 h-5 rounded-lg accent-canvas-primary"
+              />
+              <div>
+                <p className="text-sm font-bold text-white">Notifications</p>
+                <p className="text-xs text-gray-400 font-serif italic">
+                  Get alerts when this room gets new activity
+                </p>
+              </div>
+            </label>
+          </div>
+
+          {/* Theme Palette */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
+                Room Theme
+              </label>
+              <button
+                onClick={() => setUseCustomColor(!useCustomColor)}
+                className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary hover:text-canvas-primary/80 transition-colors cursor-pointer"
+                type="button"
+              >
+                {useCustomColor ? "← Use Preset" : "Custom →"}
+              </button>
+            </div>
+
+            {!useCustomColor ? (
+              <div className="flex gap-3 flex-wrap">
+                {paletteColors.map((color) => (
+                  <button
+                    key={color.name}
+                    type="button"
+                    onClick={() => setThemeColor(color.name)}
+                    title={color.label}
+                    className={`relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer ${
+                      themeColor === color.name && !useCustomColor
+                        ? "ring-2 ring-white ring-offset-2 ring-offset-[#111318] scale-110"
+                        : ""
+                    }`}
+                    style={{ backgroundColor: color.hex }}
+                  >
+                    {themeColor === color.name && !useCustomColor && (
+                      <Check
+                        size={16}
+                        strokeWidth={3}
+                        className="text-white drop-shadow"
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-5 bg-white/5 rounded-2xl p-5 border border-white/10">
+                {/* Hue Circle */}
+                <div className="flex flex-col items-center">
+                  <svg
+                    width="180"
+                    height="180"
+                    viewBox="0 0 180 180"
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      const svg = e.currentTarget;
+                      const rect = svg.getBoundingClientRect();
+                      const cx = rect.width / 2;
+                      const cy = rect.height / 2;
+                      const x = e.clientX - rect.left - cx;
+                      const y = e.clientY - rect.top - cy;
+                      const angle = Math.atan2(y, x) * (180 / Math.PI) + 90;
+                      setCustomHue((angle + 360) % 360);
+                    }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="hueGradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="0%"
+                      >
+                        <stop offset="0%" stopColor="hsl(0, 100%, 60%)" />
+                        <stop offset="16.67%" stopColor="hsl(60, 100%, 60%)" />
+                        <stop offset="33.33%" stopColor="hsl(120, 100%, 60%)" />
+                        <stop offset="50%" stopColor="hsl(180, 100%, 60%)" />
+                        <stop offset="66.67%" stopColor="hsl(240, 100%, 60%)" />
+                        <stop offset="83.33%" stopColor="hsl(300, 100%, 60%)" />
+                        <stop offset="100%" stopColor="hsl(360, 100%, 60%)" />
+                      </linearGradient>
+                    </defs>
+                    <circle
+                      cx="90"
+                      cy="90"
+                      r="75"
+                      fill="url(#hueGradient)"
+                      opacity="0.8"
+                    />
+                    <circle
+                      cx="90"
+                      cy="90"
+                      r="70"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      opacity="0.3"
+                    />
+                    {/* Indicator */}
+                    <circle
+                      cx={90 + 65 * Math.cos((customHue - 90) * (Math.PI / 180))}
+                      cy={90 + 65 * Math.sin((customHue - 90) * (Math.PI / 180))}
+                      r="6"
+                      fill="white"
+                      stroke="black"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-3">
+                    Click to choose hue
+                  </p>
+                </div>
+
+                {/* Saturation Slider */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Saturation
+                    </label>
+                    <span className="text-[10px] font-bold text-canvas-primary">
+                      {customSaturation}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={customSaturation}
+                    onChange={(e) =>
+                      setCustomSaturation(Number((e.target as HTMLInputElement).value))}
+                    className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                  />
+                </div>
+
+                {/* Lightness Slider */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Lightness
+                    </label>
+                    <span className="text-[10px] font-bold text-canvas-primary">
+                      {customLightness}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={customLightness}
+                    onChange={(e) =>
+                      setCustomLightness(Number((e.target as HTMLInputElement).value))}
+                    className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                  />
+                </div>
+
+                {/* Color Preview */}
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-16 h-16 rounded-xl border border-white/20 shadow-lg"
+                    style={{ backgroundColor: currentColor }}
+                  />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Preview
+                    </p>
+                    <p className="text-sm font-mono text-gray-300 mt-1">
+                      {currentColor}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           {/* Visibility Toggle */}
-          <div className="mb-8 p-1 bg-white/5 rounded-3xl flex gap-2">
-            <button
-              onClick={() => setIsPublic(false)}
-              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                !isPublic
-                  ? "bg-white/10 text-white shadow-xl"
-                  : "text-gray-500 hover:text-gray-300"
-              }`}
-              type="button"
-            >
-              <Lock size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                Private Vault
-              </span>
-            </button>
-            <button
-              onClick={() => setIsPublic(true)}
-              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                isPublic
-                  ? "bg-canvas-primary/20 text-canvas-primary shadow-xl shadow-canvas-primary/5"
-                  : "text-gray-500 hover:text-gray-300"
-              }`}
-              type="button"
-            >
-              <Globe size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                Community Hub
-              </span>
-            </button>
+          <div className="mb-8">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+              Room Mode
+            </label>
+            <div className="space-y-2">
+              <button
+                onClick={() => setIsPublic(false)}
+                className={`w-full p-4 rounded-xl border transition-all text-left cursor-pointer ${
+                  !isPublic
+                    ? "border-white/30 bg-white/10 shadow-xl"
+                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                }`}
+                type="button"
+              >
+                <div className="flex items-center gap-3">
+                  <Lock size={16} className={!isPublic ? "text-white" : "text-gray-500"} />
+                  <div>
+                    <p className="text-sm font-bold text-white">Private — Solo Mode</p>
+                    <p className="text-xs text-gray-400 font-serif italic">
+                      Only you can access this room
+                    </p>
+                  </div>
+                </div>
+              </button>
+              <button
+                onClick={() => setIsPublic(true)}
+                className={`w-full p-4 rounded-xl border transition-all text-left cursor-pointer ${
+                  isPublic
+                    ? "border-canvas-primary/40 bg-canvas-primary/15 shadow-xl"
+                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                }`}
+                type="button"
+              >
+                <div className="flex items-center gap-3">
+                  <Globe size={16} className={isPublic ? "text-canvas-primary" : "text-gray-500"} />
+                  <div>
+                    <p className={`text-sm font-bold ${isPublic ? "text-canvas-primary" : "text-white"}`}>
+                      Community — Shared Mode
+                    </p>
+                    <p className="text-xs text-gray-400 font-serif italic">
+                      Collaborate & share with others
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
 
           {/* Actions */}
@@ -268,8 +570,8 @@ export default function CreateRoomModal({ onClose }: Props) {
               type="button"
               className="flex-[2] py-4 rounded-2xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer hover:-translate-y-0.5 active:scale-95 text-white"
               style={{
-                backgroundColor: selectedPalette.hex,
-                boxShadow: `0 0 30px ${selectedPalette.hex}55`,
+                backgroundColor: currentColor,
+                boxShadow: `0 0 30px ${currentColor}55`,
               }}
             >
               Create Room <ArrowRight size={16} />
