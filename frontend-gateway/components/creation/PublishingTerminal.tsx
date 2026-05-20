@@ -1,27 +1,19 @@
 import { useState } from "preact/hooks";
 import {
   Activity,
-  Aperture,
-  ArrowRight,
-  Check,
   Cpu,
   GitCommit,
   Globe,
-  Layers,
   Lock,
-  Send,
   Shield,
-  X,
   Zap,
 } from "lucide-preact";
 import { threadsSignal } from "../../signals/threads.ts";
-import { journalSignal } from "../../signals/journal.ts";
 import { publishThought } from "../../signals/publications.ts";
 import { userSignal } from "../../signals/user.ts";
 
 export default function PublishingTerminal() {
   const threads = threadsSignal.value;
-  const journal = journalSignal.value;
   const user = userSignal.value;
 
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
@@ -71,18 +63,19 @@ export default function PublishingTerminal() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="flex flex-col lg:flex-row gap-12">
           {/* SOURCE SELECTION */}
           <div className="space-y-8">
             <h4 className="text-[9px] font-bold uppercase tracking-widest text-gray-600">
               Select Synthesis Source
             </h4>
-            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-4 scrollbar-hide">
+            <div className="flex gap-4 overflow-x-auto pb-2 pr-1 scrollbar-hide snap-x snap-mandatory">
               {threads.map((thread) => (
                 <button
+                  type="button"
                   key={thread.id}
                   onClick={() => setSelectedThreadId(thread.id)}
-                  className={`w-full p-6 rounded-[2rem] border text-left transition-all ${
+                  className={`min-w-[260px] lg:min-w-[300px] snap-start p-6 rounded-[2rem] border text-left transition-all ${
                     selectedThreadId === thread.id
                       ? "bg-canvas-primary/10 border-canvas-primary shadow-xl"
                       : "bg-white/5 border-white/5 hover:border-white/20"
@@ -107,8 +100,9 @@ export default function PublishingTerminal() {
             <h4 className="text-[9px] font-bold uppercase tracking-widest text-gray-600">
               Sovereignty Options
             </h4>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="flex flex-col gap-4">
               <button
+                type="button"
                 onClick={() => setIsImmutable(!isImmutable)}
                 className={`p-6 rounded-[2rem] border text-left transition-all flex items-center justify-between ${
                   isImmutable
@@ -170,6 +164,7 @@ export default function PublishingTerminal() {
             </p>
           </div>
           <button
+            type="button"
             onClick={handlePublish}
             disabled={!content.trim() || isPublishing}
             className="px-16 py-6 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.15)] hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-4 disabled:opacity-30"

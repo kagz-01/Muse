@@ -1,16 +1,12 @@
 import { publicationsSignal } from "../../signals/publications.ts";
 import {
   Activity,
-  Aperture,
   ArrowUpRight,
   GitCommit,
   Globe,
   Heart,
-  Layers,
   MessageSquare,
-  Share2,
   Shield,
-  Zap,
 } from "lucide-preact";
 
 export default function ThoughtStream() {
@@ -26,6 +22,7 @@ export default function ThoughtStream() {
         <div className="flex gap-2">
           {["Live", "Resonant", "Newest"].map((tab) => (
             <button
+              type="button"
               key={tab}
               className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all"
             >
@@ -35,11 +32,11 @@ export default function ThoughtStream() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-12">
+      <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
         {publications.map((pub) => (
           <div
             key={pub.id}
-            className="group bg-[#111318] border border-white/5 rounded-[3.5rem] p-10 md:p-12 relative overflow-hidden shadow-2xl hover:border-white/10 transition-all duration-500"
+            className="group min-w-[320px] md:min-w-[520px] snap-start bg-[#111318] border border-white/5 rounded-[3.5rem] p-10 md:p-12 relative overflow-hidden shadow-2xl hover:border-white/10 transition-all duration-500"
           >
             {/* THOUGHT AURA */}
             <div
@@ -112,7 +109,7 @@ export default function ThoughtStream() {
                 </div>
                 <div className="h-10 w-px bg-white/5" />
                 <div className="flex items-center gap-6">
-                  <button className="flex items-center gap-2 group/btn">
+                  <button type="button" className="flex items-center gap-2 group/btn">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-rose-500/10 group-hover/btn:border-rose-500/30 transition-all">
                       <Heart
                         size={16}
@@ -123,7 +120,7 @@ export default function ThoughtStream() {
                       {pub.resonanceScore} Resonance
                     </span>
                   </button>
-                  <button className="flex items-center gap-2 group/btn">
+                  <button type="button" className="flex items-center gap-2 group/btn">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-canvas-primary/10 group-hover/btn:border-canvas-primary/30 transition-all">
                       <GitCommit
                         size={16}
@@ -134,7 +131,7 @@ export default function ThoughtStream() {
                       Weave
                     </span>
                   </button>
-                  <button className="flex items-center gap-2 group/btn">
+                  <button type="button" className="flex items-center gap-2 group/btn">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-emerald-500/10 group-hover/btn:border-emerald-500/30 transition-all">
                       <MessageSquare
                         size={16}
@@ -155,7 +152,7 @@ export default function ThoughtStream() {
                       Ledger ID: {pub.txId}
                     </span>
                   </div>
-                  <button className="text-[9px] font-bold uppercase tracking-widest text-gray-700 hover:text-white transition-colors flex items-center gap-2">
+                  <button type="button" className="text-[9px] font-bold uppercase tracking-widest text-gray-700 hover:text-white transition-colors flex items-center gap-2">
                     View Source Evidence <ArrowUpRight size={12} />
                   </button>
                 </div>
