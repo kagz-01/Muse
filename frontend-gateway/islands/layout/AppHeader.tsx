@@ -2,7 +2,6 @@ import {
   Search,
   Menu as MenuIcon,
   Bell,
-  Sparkles,
   Sun,
   Moon,
   Circle,
@@ -77,8 +76,8 @@ export default function AppHeader({ currentPath: _currentPath }: { currentPath?:
             href="/dashboard"
             className="cursor-pointer flex items-center gap-3 group"
           >
-            <div className="w-10 h-10 bg-[var(--muse-text)] text-[var(--muse-bg)] rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-all duration-500 shadow-2xl">
-               <Sparkles size={20} className="text-[var(--muse-bg)]" />
+            <div className="w-10 h-10 bg-[var(--muse-surface)] rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-all duration-500 shadow-2xl border border-[var(--muse-border)] overflow-hidden p-1.5">
+               <img src="/assets/muse-logo.png" alt="Muse Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-bold tracking-tight text-[var(--muse-text)] leading-none transition-colors duration-300">Muse</span>
