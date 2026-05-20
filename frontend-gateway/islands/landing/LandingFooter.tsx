@@ -83,10 +83,10 @@ export default function LandingFooter() {
       {/* GLOW EFFECT */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-canvas-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="max-w-[1800px] mx-auto px-6 md:px-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 md:gap-12 mb-32">
+      <div className="w-full max-w-none px-6 md:px-10">
+        <div className="flex gap-12 overflow-x-auto pb-8 mb-32 scrollbar-hide">
           {/* BRAND BLOCK */}
-          <div className="lg:col-span-2 space-y-10">
+          <div className="space-y-10 min-w-[360px] flex-[1.4] flex-shrink-0">
             <div className="flex items-center gap-4">
               <div className="h-14 w-14 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold shadow-2xl transition-all duration-300">
                 <InfinityIcon size={28} strokeWidth={2.5} />
@@ -123,7 +123,7 @@ export default function LandingFooter() {
 
           {/* LINK COLUMNS */}
           {sections.map((section) => (
-            <div key={section.title} className="space-y-8">
+            <div key={section.title} className="space-y-8 min-w-[220px] flex-shrink-0">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--muse-text)] transition-colors duration-300">
                 {section.title}
               </h4>
