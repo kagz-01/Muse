@@ -61,7 +61,7 @@ export default function App({ Component }: PageProps) {
     }
 
     const savedTheme = localStorage.getItem("muse-theme");
-    if (savedTheme === "light" || savedTheme === "dark") {
+    if (["dark", "dim", "tint", "light"].includes(savedTheme)) {
       resolvedTheme = savedTheme;
     }
 

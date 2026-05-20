@@ -5,44 +5,44 @@
 @layer base {
   :root {
     --muse-accent-rgb: 212 168 83;
-    --muse-bg: #0c0b09;
-    --muse-surface: #141210;
-    --muse-surface-soft: #1a1714;
+    --muse-bg: #030303;
+    --muse-surface: #0a0a0a;
+    --muse-surface-soft: #121212;
     --muse-text: #f4f3f0;
     --muse-muted: #a5a5a5;
-    --muse-border: rgba(255, 255, 255, 0.12);
-    --muse-overlay: rgba(12, 11, 9, 0.92);
+    --muse-border: rgba(255, 255, 255, 0.08);
+    --muse-overlay: rgba(3, 3, 3, 0.92);
     color-scheme: dark;
   }
 
   html[data-theme="dim"] {
-    --muse-bg: #1c1c1c;
-    --muse-surface: #242424;
-    --muse-surface-soft: #2a2a2a;
-    --muse-text: #e0e0e0;
-    --muse-muted: #888888;
-    --muse-border: rgba(255, 255, 255, 0.08);
-    --muse-overlay: rgba(28, 28, 28, 0.9);
+    --muse-bg: #161618;
+    --muse-surface: #1e1e20;
+    --muse-surface-soft: #27272a;
+    --muse-text: #ececec;
+    --muse-muted: #94a3b8;
+    --muse-border: rgba(255, 255, 255, 0.06);
+    --muse-overlay: rgba(22, 22, 24, 0.9);
     color-scheme: dark;
   }
 
   html[data-theme="tint"] {
-    --muse-bg: #f2eedf;
+    --muse-bg: #f3efdc;
     --muse-surface: #ebe6d5;
     --muse-surface-soft: #e3dec9;
-    --muse-text: #2a2a2a;
-    --muse-muted: #6b6b6b;
+    --muse-text: #1a1a1a;
+    --muse-muted: #64748b;
     --muse-border: rgba(0, 0, 0, 0.1);
-    --muse-overlay: rgba(242, 238, 223, 0.9);
+    --muse-overlay: rgba(243, 239, 220, 0.9);
     color-scheme: light;
   }
 
   html[data-theme="light"] {
     --muse-bg: #ffffff;
-    --muse-surface: #f9f9f9;
-    --muse-surface-soft: #f0f0f0;
-    --muse-text: #111111;
-    --muse-muted: #555555;
+    --muse-surface: #f8fafc;
+    --muse-surface-soft: #f1f5f9;
+    --muse-text: #0f172a;
+    --muse-muted: #475569;
     --muse-border: rgba(0, 0, 0, 0.08);
     --muse-overlay: rgba(255, 255, 255, 0.9);
     color-scheme: light;
@@ -75,12 +75,18 @@ html:is([data-theme="light"], [data-theme="tint"]) [class*="bg-canvas-card-dark"
   background-color: var(--muse-surface) !important;
 }
 
-html:is([data-theme="light"], [data-theme="tint"]) [class*="text-white"] {
+/* Aggressive Theme Overrides for Text Visibility */
+html:is([data-theme="light"], [data-theme="tint"]) :is(.text-white, .text-gray-100, .text-gray-200, .text-gray-300, .text-slate-100, .text-slate-200) {
   color: var(--muse-text) !important;
 }
 
-html:is([data-theme="light"], [data-theme="tint"]) :is(.text-gray-300, .text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800) {
+html:is([data-theme="light"], [data-theme="tint"]) :is(.text-gray-400, .text-gray-500, .text-gray-600) {
   color: var(--muse-muted) !important;
+}
+
+/* Fix background transparencies that become invisible on light themes */
+html:is([data-theme="light"], [data-theme="tint"]) :is(.bg-white\/5, .bg-white\/10, .bg-white\/20, .bg-white\/8, .bg-canvas-primary\/10, .bg-canvas-primary\/5) {
+  background-color: color-mix(in srgb, var(--muse-text) 8%, transparent) !important;
 }
 
 html:is([data-theme="light"], [data-theme="tint"]) [class*="border-white"] {
@@ -93,7 +99,7 @@ html:is([data-theme="light"], [data-theme="tint"]) .glass-card {
 }
 
 html:is([data-theme="light"], [data-theme="tint"]) .glass-panel {
-  background-color: color-mix(in oklab, var(--muse-surface) 80%, transparent);
+  background-color: var(--muse-surface-soft);
   border-color: var(--muse-border);
 }
 

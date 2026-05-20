@@ -1,32 +1,32 @@
-import { Sparkles, Activity, Shield, Github, Twitter, MessageSquare, ArrowUpRight } from "lucide-preact";
+import { Activity, Shield, Twitter, ArrowUpRight, Instagram, Facebook, Video, MessageCircle, Infinity as InfinityIcon } from "lucide-preact";
 
 export default function LandingFooter() {
   const sections = [
     {
       title: "Ecosystem",
       links: [
-        { label: "The Pulse", href: "/dashboard" },
-        { label: "Vault Archive", href: "/rooms" },
-        { label: "Synthesis Engine", href: "/create" },
-        { label: "Mirror Analytics", href: "/mirror" },
+        { label: "Personal Insights", href: "/mirror" },
+        { label: "AI Synthesis", href: "/create" },
+        { label: "Community Spaces", href: "/rooms" },
+        { label: "Activity Feed", href: "/dashboard" },
       ]
     },
     {
-      title: "Vision",
+      title: "About",
       links: [
-        { label: "Philosophy", href: "#" },
-        { label: "Protocol", href: "#" },
-        { label: "Roadmap", href: "#" },
-        { label: "Whitepaper", href: "#" },
+        { label: "Our Mission", href: "#" },
+        { label: "System Architecture", href: "#" },
+        { label: "Future Vision", href: "#" },
+        { label: "Documentation", href: "#" },
       ]
     },
     {
-      title: "Network",
+      title: "Ledger",
       links: [
-        { label: "Collective", href: "/connections" },
-        { label: "Governance", href: "#" },
-        { label: "Nodes", href: "#" },
-        { label: "API", href: "#" },
+        { label: "Encrypted Vault", href: "#" },
+        { label: "Node Status", href: "#" },
+        { label: "Proof of Resonance", href: "#" },
+        { label: "Developer API", href: "#" },
       ]
     }
   ];
@@ -44,8 +44,8 @@ export default function LandingFooter() {
           {/* BRAND BLOCK */}
           <div className="lg:col-span-2 space-y-10">
             <div className="flex items-center gap-4">
-              <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-black font-bold text-xl shadow-2xl">
-                M
+              <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-black font-bold shadow-2xl">
+                <InfinityIcon size={28} strokeWidth={2.5} />
               </div>
               <div className="flex flex-col">
                 <span className="text-2xl font-bold tracking-tighter text-white leading-none">MUSE</span>
@@ -58,9 +58,15 @@ export default function LandingFooter() {
             </p>
 
             <div className="flex items-center gap-6">
-              {[Twitter, Github, MessageSquare].map((Icon, i) => (
-                <a key={i} href="#" className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-gray-500 hover:text-white hover:border-white/10 transition-all">
-                  <Icon size={20} />
+              {[
+                { icon: Twitter, label: "X" }, 
+                { icon: Video, label: "TikTok" }, 
+                { icon: MessageCircle, label: "WhatsApp" }, 
+                { icon: Instagram, label: "Instagram" }, 
+                { icon: Facebook, label: "Facebook" }
+              ].map(({ icon: Icon, label }, i) => (
+                <a key={i} href="#" aria-label={label} title={label} className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-gray-500 hover:text-white hover:border-white/10 hover:bg-white/10 transition-all">
+                  <Icon size={18} />
                 </a>
               ))}
             </div>

@@ -2,9 +2,13 @@ import { useState } from "preact/hooks";
 import AuthModal from "../modals/AuthModal.tsx";
 import SpectralHero from "./SpectralHero.tsx";
 import SystemBento from "./SystemBento.tsx";
+import AboutSection from "./AboutSection.tsx";
+import LedgerSection from "./LedgerSection.tsx";
 import LandingFooter from "./LandingFooter.tsx";
 import DemoVideo from "./DemoVideo.tsx";
 import { login } from "../../signals/user.ts";
+import { toggleTheme, appThemeSignal } from "../../signals/ui.ts";
+import { Infinity as InfinityIcon, Sun, Moon, Circle, CloudSun } from "lucide-preact";
 
 export default function LandingPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
@@ -18,6 +22,8 @@ export default function LandingPage() {
     login("demo@muse.app");
     globalThis.location.href = "/dashboard?demo=1";
   };
+
+  const currentTheme = appThemeSignal.value;
 
   return (
     <div className="bg-[#050505] text-white font-sans overflow-x-hidden selection:bg-canvas-primary selection:text-white">
@@ -41,8 +47,8 @@ export default function LandingPage() {
       {/* Header */}
       <header className="fixed top-0 left-0 w-full px-6 md:px-12 py-8 flex justify-between items-center z-[100] backdrop-blur-3xl bg-black/20 border-b border-white/5">
         <div className="flex items-center gap-3 group cursor-pointer" onClick={() => globalThis.location.href = '/'}>
-          <div className="h-10 w-10 bg-white rounded-2xl flex items-center justify-center text-black font-bold text-lg shadow-[0_0_20px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform">
-            M
+          <div className="h-10 w-10 bg-white rounded-2xl flex items-center justify-center text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform">
+            <InfinityIcon size={24} strokeWidth={2.5} />
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tighter text-white leading-none">MUSE</span>
@@ -51,7 +57,7 @@ export default function LandingPage() {
         </div>
 
         <nav className="hidden md:flex items-center gap-10">
-          {['Vision', 'Ecosystem', 'Ledger'].map(link => (
+          {['About', 'Ecosystem', 'Ledger'].map(link => (
             <a key={link} href={`#${link.toLowerCase()}`} className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-colors">
               {link}
             </a>
@@ -61,10 +67,22 @@ export default function LandingPage() {
         <div className="flex items-center gap-6">
           <button
             type="button"
+            onClick={toggleTheme}
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:border-white/20 flex items-center justify-center transition-all text-gray-400 hover:text-white"
+            title={`Switch to next theme (Current: ${currentTheme})`}
+          >
+            {currentTheme === 'dark' && <Moon size={16} />}
+            {currentTheme === 'dim' && <Circle size={14} fill="currentColor" />}
+            {currentTheme === 'tint' && <CloudSun size={16} />}
+            {currentTheme === 'light' && <Sun size={16} fill="currentColor" />}
+          </button>
+          
+          <button
+            type="button"
             onClick={() => setAuthMode("login")}
             className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors hidden sm:block"
           >
-            Terminal Access
+            Login
           </button>
           <button
             type="button"
@@ -72,7 +90,7 @@ export default function LandingPage() {
             className="group relative px-6 py-3 rounded-full bg-white text-black text-[10px] font-bold uppercase tracking-widest shadow-2xl hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer overflow-hidden"
           >
             <div className="absolute inset-0 bg-canvas-primary/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
-            <span className="relative z-10">Initialize Flow</span>
+            <span className="relative z-10">Get Started</span>
           </button>
         </div>
       </header>
@@ -85,9 +103,13 @@ export default function LandingPage() {
           onGuestEntry={handleGuestEntry}
         />
         
+        <AboutSection />
+        
         <div id="ecosystem">
           <SystemBento />
         </div>
+
+        <LedgerSection />
 
         {/* FOOTER CTA */}
         <section className="max-w-[1800px] mx-auto px-6 py-32 text-center">
@@ -104,14 +126,14 @@ export default function LandingPage() {
                  onClick={() => setAuthMode('signup')}
                  className="px-12 py-6 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full shadow-3xl hover:-translate-y-1 active:scale-95 transition-all cursor-pointer"
                >
-                 Begin Initialization
+                 Get Started
                </button>
                <button 
                  type="button"
                  onClick={handleGuestEntry}
                  className="px-12 py-6 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white/10 transition-all cursor-pointer"
                >
-                 Enter Observer Mode
+                 Continue as Guest
                </button>
             </div>
           </div>

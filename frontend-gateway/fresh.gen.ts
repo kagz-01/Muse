@@ -38,10 +38,12 @@ import * as $dashboard_index from "./islands/dashboard/index.ts";
 import * as $journal_JournalEntryView from "./islands/journal/JournalEntryView.tsx";
 import * as $journal_JournalGallery from "./islands/journal/JournalGallery.tsx";
 import * as $journal_index from "./islands/journal/index.ts";
+import * as $landing_AboutSection from "./islands/landing/AboutSection.tsx";
 import * as $landing_DemoVideo from "./islands/landing/DemoVideo.tsx";
 import * as $landing_LandingFooter from "./islands/landing/LandingFooter.tsx";
 import * as $landing_LandingIsland from "./islands/landing/LandingIsland.tsx";
 import * as $landing_LandingPage from "./islands/landing/LandingPage.tsx";
+import * as $landing_LedgerSection from "./islands/landing/LedgerSection.tsx";
 import * as $landing_SpectralHero from "./islands/landing/SpectralHero.tsx";
 import * as $landing_SystemBento from "./islands/landing/SystemBento.tsx";
 import * as $landing_index from "./islands/landing/index.ts";
@@ -115,10 +117,12 @@ const manifest = {
     "./islands/journal/JournalEntryView.tsx": $journal_JournalEntryView,
     "./islands/journal/JournalGallery.tsx": $journal_JournalGallery,
     "./islands/journal/index.ts": $journal_index,
+    "./islands/landing/AboutSection.tsx": $landing_AboutSection,
     "./islands/landing/DemoVideo.tsx": $landing_DemoVideo,
     "./islands/landing/LandingFooter.tsx": $landing_LandingFooter,
     "./islands/landing/LandingIsland.tsx": $landing_LandingIsland,
     "./islands/landing/LandingPage.tsx": $landing_LandingPage,
+    "./islands/landing/LedgerSection.tsx": $landing_LedgerSection,
     "./islands/landing/SpectralHero.tsx": $landing_SpectralHero,
     "./islands/landing/SystemBento.tsx": $landing_SystemBento,
     "./islands/landing/index.ts": $landing_index,

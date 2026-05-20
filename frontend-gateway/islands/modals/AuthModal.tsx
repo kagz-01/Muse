@@ -1,5 +1,5 @@
-import { useState, useEffect } from "preact/hooks";
-import { X, Shield, Activity, Zap, Lock, Globe, Mail, User } from "lucide-preact";
+import { useState } from "preact/hooks";
+import { X, Shield, Activity, Zap, Lock, Mail, User, Infinity as InfinityIcon } from "lucide-preact";
 import { login } from "../../signals/user.ts";
 
 interface AuthModalProps {
@@ -69,12 +69,12 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
             {/* TERMINAL HEADER */}
             <div className="flex items-center gap-4 mb-12">
               <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-black font-bold text-xl shadow-2xl">
-                M
+                <InfinityIcon size={28} strokeWidth={2.5} />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.5em] leading-none mb-2">System Access</p>
+                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.5em] leading-none mb-2">Welcome</p>
                 <h2 className="text-3xl font-bold tracking-tight text-white leading-none uppercase">
-                  {isSuccess ? "Resonance Verified" : localMode === 'signup' ? 'Initialize Flow' : 'Establish Link'}
+                  {isSuccess ? "Verified" : localMode === 'signup' ? 'Get Started' : 'Login'}
                 </h2>
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                 {localMode === 'signup' && (
                   <div className="space-y-3 group">
                     <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                      <User size={12} /> Originator Name
+                      <User size={12} /> Full Name
                     </label>
                     <input
                       type="text"
@@ -107,7 +107,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
 
                 <div className="space-y-3 group">
                   <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                    <Mail size={12} /> Uplink Address
+                    <Mail size={12} /> Email Address
                   </label>
                   <input
                     type="email"
@@ -121,7 +121,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
 
                 <div className="space-y-3 group">
                   <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                    <Lock size={12} /> Security Key
+                    <Lock size={12} /> Password
                   </label>
                   <input
                     type="password"
@@ -139,7 +139,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                   >
                     <div className="absolute inset-0 bg-canvas-primary/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
                     <span className="relative z-10 flex items-center justify-center gap-3">
-                      {isSyncing ? "SYNCING RESONANCE..." : localMode === 'signup' ? 'INITIALIZE FLOW' : 'ESTABLISH LINK'} 
+                      {isSyncing ? "AUTHENTICATING..." : localMode === 'signup' ? 'GET STARTED' : 'LOGIN'} 
                       {!isSyncing && <ArrowRight size={16} />}
                     </span>
                   </button>
@@ -149,7 +149,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                     onClick={handleDemoEntry}
                     className="w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px] hover:bg-white/10 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-3"
                   >
-                    <Activity size={14} /> Enter as Guest Observer
+                    <Activity size={14} /> Continue as Guest
                   </button>
                 </div>
               </form>
@@ -158,13 +158,13 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
             {!isSuccess && (
               <div className="mt-12 pt-8 border-t border-white/5 flex flex-col items-center gap-6">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
-                  {localMode === 'signup' ? 'Already indexed?' : "New consciousness?"}
+                  {localMode === 'signup' ? 'Already have an account?' : "New to Muse?"}
                   <button
                     type="button"
                     onClick={() => setLocalMode(localMode === 'signup' ? 'login' : 'signup')}
                     className="ml-3 text-white hover:text-canvas-primary transition-colors"
                   >
-                    {localMode === 'signup' ? 'ESTABLISH LINK' : 'INITIALIZE FLOW'}
+                    {localMode === 'signup' ? 'LOGIN' : 'GET STARTED'}
                   </button>
                 </p>
                 
