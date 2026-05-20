@@ -8,7 +8,7 @@ export default function AppLayout({ Component, url }: PageProps) {
       <AppMenu currentPath={url.pathname} />
       
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto w-full relative scroll-smooth bg-canvas-bg-dark pt-32 md:pt-36">
+      <main className="flex-1 overflow-y-auto w-full relative scroll-smooth bg-[var(--muse-bg)] text-[var(--muse-text)] pt-32 md:pt-36 transition-colors duration-300">
         <Component />
       </main>
       

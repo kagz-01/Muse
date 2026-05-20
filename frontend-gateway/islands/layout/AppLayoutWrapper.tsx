@@ -9,7 +9,7 @@ export default function AppLayoutWrapper({ children }: { children: ComponentChil
 
   return (
     <div 
-      className={`flex flex-col min-h-screen w-full bg-canvas-bg-dark text-white overflow-hidden pb-safe transition-all duration-1000 ${
+      className={`flex flex-col min-h-screen w-full bg-[var(--muse-bg)] text-[var(--muse-text)] overflow-hidden pb-safe transition-all duration-300 ${
         soloMode ? 'border-[6px] border-canvas-primary/20 shadow-[inset_0_0_50px_rgba(99,102,241,0.1)]' : 'border-0'
       }`}
     >

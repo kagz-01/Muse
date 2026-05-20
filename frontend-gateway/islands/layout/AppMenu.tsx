@@ -1,5 +1,5 @@
 import { isMenuOpenSignal, closeMenu, toggleCapture, setAccentColor, appAccentSignal, AppAccentColor } from "../../signals/ui.ts";
-import { BookOpen, Plus, X, Network, Layout as LayoutIcon, ChevronRight, Sparkles, Activity, Shield, Wallet, Download, Settings as SettingsIcon } from "lucide-preact";
+import { BookOpen, Plus, X, Network, Layout as LayoutIcon, ChevronRight, Sparkles, Activity, Shield, Wallet, Download, Settings as SettingsIcon, Lock } from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 
 interface AppMenuProps {
@@ -25,14 +25,14 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
   return (
     <>
       {/* UNIVERSAL BOTTOM NAVIGATION (Cycle Bar) */}
-      <nav className="fixed bottom-0 left-0 w-full bg-[#0a0a0a]/90 backdrop-blur-3xl border-t border-white/5 flex justify-between items-center h-20 px-2 md:px-10 z-[60] pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+      <nav className="fixed bottom-0 left-0 w-full bg-[var(--muse-overlay)] backdrop-blur-3xl border-t border-[var(--muse-border)] flex justify-between items-center h-20 px-2 md:px-10 z-[60] pb-safe transition-all duration-300">
         {/* Left Side: Collect & Analyze */}
         <div className="flex flex-1 justify-around items-center h-full max-w-[40%]">
           {cycleNav.slice(0, 2).map(item => (
             <a 
               key={item.label}
               href={item.path}
-              className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all duration-300 ${isActive(item.path) ? 'text-canvas-primary scale-110' : 'text-gray-500 hover:text-gray-300'}`}
+              className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all duration-300 ${isActive(item.path) ? 'text-canvas-primary scale-110' : 'text-[var(--muse-muted)] hover:text-[var(--muse-text)]'}`}
             >
               <div className={isActive(item.path) ? "drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]" : ""}>
                 {item.icon}
@@ -48,11 +48,11 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
           <button 
             type="button"
             onClick={toggleCapture}
-            className="relative w-16 h-16 bg-white text-black rounded-[2rem] flex items-center justify-center shadow-[0_20px_40px_rgba(255,255,255,0.2)] border-4 border-[#0a0a0a] active:scale-90 transition-all hover:scale-105 group overflow-hidden"
+            className="relative w-16 h-16 bg-[var(--muse-text)] text-[var(--muse-bg)] rounded-[2rem] flex items-center justify-center shadow-2xl border-4 border-[var(--muse-bg)] active:scale-90 transition-all hover:scale-105 group overflow-hidden duration-300"
           >
             <div className="absolute inset-0 bg-canvas-primary/5 group-hover:bg-canvas-primary/10 transition-colors" />
             <Plus size={32} className="relative z-10 group-hover:rotate-90 transition-transform duration-500" />
-            <div className="absolute -bottom-8 whitespace-nowrap text-[9px] font-bold text-white uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity">Synthesize</div>
+            <div className="absolute -bottom-8 whitespace-nowrap text-[9px] font-bold text-[var(--muse-text)] uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity duration-300">Synthesize</div>
           </button>
         </div>
 
@@ -62,7 +62,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
             <a 
               key={item.label}
               href={item.path}
-              className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all duration-300 ${isActive(item.path) ? 'text-canvas-primary scale-110' : 'text-gray-500 hover:text-gray-300'}`}
+              className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all duration-300 ${isActive(item.path) ? 'text-canvas-primary scale-110' : 'text-[var(--muse-muted)] hover:text-[var(--muse-text)]'}`}
             >
               <div className={isActive(item.path) ? "drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]" : ""}>
                 {item.icon}
@@ -79,31 +79,31 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
       >
         <div 
           onClick={closeMenu}
-          className="absolute inset-0 bg-canvas-bg-dark/60 backdrop-blur-md cursor-pointer"
+          className="absolute inset-0 bg-[var(--muse-bg)]/60 backdrop-blur-md cursor-pointer"
         />
 
         <div 
-          className={`relative w-full max-w-[280px] h-full bg-[#111111] border-l border-white/5 shadow-2xl flex flex-col p-8 overflow-y-auto transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`relative w-full max-w-[280px] h-full bg-[var(--muse-surface)] border-l border-[var(--muse-border)] shadow-2xl flex flex-col p-8 overflow-y-auto transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
         >
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em]">System Menu</h2>
-            <button type="button" onClick={closeMenu} className="p-2 bg-white/5 rounded-xl text-gray-500 hover:text-white transition-all cursor-pointer">
+            <button type="button" onClick={closeMenu} className="p-2 bg-[var(--muse-surface-soft)] rounded-xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all cursor-pointer duration-300">
               <X size={20} />
             </button>
           </div>
 
           <div className="space-y-6">
             {/* PROFILE WIDGET */}
-            <div className="bg-white/5 rounded-[2rem] p-6 border border-white/10">
+            <div className="bg-[var(--muse-surface-soft)] rounded-[2rem] p-6 border border-[var(--muse-border)] transition-all duration-300">
               <div className="flex items-center gap-4 mb-5">
-                <img src={user?.avatarUrl} className="w-14 h-14 rounded-2xl object-cover border border-white/10" alt="" />
+                <img src={user?.avatarUrl} className="w-14 h-14 rounded-2xl object-cover border border-[var(--muse-border)] transition-all duration-300" alt="" />
                 <div>
-                  <h3 className="text-sm font-bold text-white tracking-tight">{user?.name}</h3>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{user?.username}</p>
+                  <h3 className="text-sm font-bold text-[var(--muse-text)] tracking-tight transition-colors duration-300">{user?.name}</h3>
+                  <p className="text-[10px] text-[var(--muse-muted)] font-bold uppercase tracking-widest transition-colors duration-300">{user?.username}</p>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <a href={isDemo ? "/" : "/profile"} onClick={closeMenu} className="flex items-center justify-between p-3 rounded-xl bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all">
+                <a href={isDemo ? "/" : "/profile"} onClick={closeMenu} className="flex items-center justify-between p-3 rounded-xl bg-[var(--muse-surface)] text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all duration-300">
                   {isDemo ? "Establish Soul Link" : "Manage Persona"} <ChevronRight size={14} />
                 </a>
               </div>
@@ -115,7 +115,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   <Activity size={16} className="text-canvas-primary" />
                   <span className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary">Observer Mode</span>
                 </div>
-                <p className="text-[11px] text-gray-400 leading-relaxed font-serif italic">
+                <p className="text-[11px] text-[var(--muse-muted)] leading-relaxed font-serif italic transition-colors duration-300">
                   You are observing a sample consciousness. Actions are temporary.
                 </p>
                 <button 
@@ -129,27 +129,27 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
             )}
 
             {/* LEDGER & PRIVACY WIDGET */}
-            <div className="bg-white/5 rounded-[2rem] p-6 border border-white/10 space-y-5">
+            <div className="bg-[var(--muse-surface-soft)] rounded-[2rem] p-6 border border-[var(--muse-border)] space-y-5 transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Shield size={16} className="text-canvas-primary" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Visibility</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">Visibility</span>
                 </div>
                 <span className="text-[9px] font-bold px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg uppercase tracking-widest border border-emerald-500/20">Public</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Wallet size={16} className="text-canvas-primary" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Ledger Status</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">Ledger Status</span>
                 </div>
-                <span className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">Secured</span>
+                <span className="text-[9px] font-bold text-[var(--muse-muted)] uppercase tracking-widest transition-colors duration-300">Secured</span>
               </div>
             </div>
 
             {/* AURA WIDGET */}
-            <div className="bg-white/5 rounded-[2rem] p-6 border border-white/10">
+            <div className="bg-[var(--muse-surface-soft)] rounded-[2rem] p-6 border border-[var(--muse-border)] transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">System Aura</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">System Aura</span>
                 <span className="text-[9px] font-bold text-canvas-primary uppercase tracking-widest">Resonance</span>
               </div>
               <div className="flex flex-wrap gap-2.5">
@@ -158,7 +158,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                     type="button"
                     key={color}
                     onClick={() => setAccentColor(color)}
-                    className={`w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-90 ${appAccentSignal.value === color ? 'border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-white/10'}`}
+                    className={`w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-90 ${appAccentSignal.value === color ? 'border-[var(--muse-text)] scale-110 shadow-2xl' : 'border-[var(--muse-border)]'}`}
                     style={{ backgroundColor: color === 'white' ? '#f1f5f9' : color }}
                   />
                 ))}
@@ -170,18 +170,18 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
               <a 
                 href={isDemo ? "/" : "/settings"} 
                 onClick={isDemo ? (e) => { e.preventDefault(); globalThis.location.href='/'; } : closeMenu} 
-                className={`relative flex flex-col items-center gap-3 p-5 rounded-3xl border transition-all ${isDemo ? 'bg-white/[0.02] border-white/5 text-gray-700' : 'bg-white/5 border-white/5 hover:border-white/20 text-gray-400 hover:text-white'}`}
+                className={`relative flex flex-col items-center gap-3 p-5 rounded-3xl border transition-all duration-300 ${isDemo ? 'bg-[var(--muse-surface-soft)]/20 border-[var(--muse-border)] text-[var(--muse-muted)] opacity-60' : 'bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 text-[var(--muse-muted)] hover:text-[var(--muse-text)]'}`}
               >
-                {isDemo && <Lock size={12} className="absolute top-4 right-4 text-gray-800" />}
+                {isDemo && <Lock size={12} className="absolute top-4 right-4 text-[var(--muse-muted)]" />}
                 <SettingsIcon size={20} />
                 <span className="text-[9px] font-bold uppercase tracking-widest">{isDemo ? 'Unlock' : 'Settings'}</span>
               </a>
               <button 
                 type="button" 
                 onClick={isDemo ? () => globalThis.location.href='/' : undefined}
-                className={`relative flex flex-col items-center gap-3 p-5 rounded-3xl border transition-all cursor-pointer ${isDemo ? 'bg-white/[0.02] border-white/5 text-gray-700' : 'bg-white/5 border-white/5 hover:border-white/20 text-gray-400 hover:text-white'}`}
+                className={`relative flex flex-col items-center gap-3 p-5 rounded-3xl border transition-all cursor-pointer duration-300 ${isDemo ? 'bg-[var(--muse-surface-soft)]/20 border-[var(--muse-border)] text-[var(--muse-muted)] opacity-60' : 'bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 text-[var(--muse-muted)] hover:text-[var(--muse-text)]'}`}
               >
-                {isDemo && <Lock size={12} className="absolute top-4 right-4 text-gray-800" />}
+                {isDemo && <Lock size={12} className="absolute top-4 right-4 text-[var(--muse-muted)]" />}
                 <Download size={20} />
                 <span className="text-[9px] font-bold uppercase tracking-widest">{isDemo ? 'Unlock' : 'Export Soul'}</span>
               </button>
@@ -193,12 +193,12 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                 <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
                   <Activity size={12} /> Mirror Sync
                 </p>
-                <p className="text-[11px] text-gray-400 leading-relaxed mb-4 font-serif italic">Your digital soul is synchronizing with the collective consciousness.</p>
-                <a href="/mirror" onClick={closeMenu} className="text-[9px] font-bold text-white uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all">
+                <p className="text-[11px] text-[var(--muse-muted)] leading-relaxed mb-4 font-serif italic transition-colors duration-300">Your digital soul is synchronizing with the collective consciousness.</p>
+                <a href="/mirror" onClick={closeMenu} className="text-[9px] font-bold text-[var(--muse-text)] uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all">
                   Deep Intelligence <ChevronRight size={14} />
                 </a>
              </div>
-             <p className="mt-8 text-center text-[8px] font-bold text-gray-800 uppercase tracking-[0.4em]">Muse v2.0 • Phase Alpha</p>
+             <p className="mt-8 text-center text-[8px] font-bold text-[var(--muse-muted)] opacity-50 uppercase tracking-[0.4em] transition-colors duration-300">Muse v2.0 • Phase Alpha</p>
           </div>
         </div>
       </div>

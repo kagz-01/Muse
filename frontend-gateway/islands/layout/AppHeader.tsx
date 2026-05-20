@@ -25,7 +25,7 @@ import {
 } from "../../signals/ui.ts";
 import WalletConnectButton from "../WalletConnectButton.tsx";
 
-export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
+export default function AppHeader({ currentPath: _currentPath }: { currentPath?: string }) {
   const isNotificationsOpen = isNotificationsOpenSignal.value;
   const currentTheme = appThemeSignal.value;
   const notifications = notificationsSignal.value;
@@ -56,7 +56,7 @@ export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
   const isDemo = user?.email === "demo@muse.app";
 
   return (
-    <header className={`fixed top-0 left-0 w-full z-50 bg-[var(--muse-overlay)] backdrop-blur-3xl border-b border-white/5 transition-all duration-500 ${isDemo ? 'pt-8' : ''}`}>
+    <header className={`fixed top-0 left-0 w-full z-50 bg-[var(--muse-overlay)] backdrop-blur-3xl border-b border-[var(--muse-border)] transition-all duration-500 ${isDemo ? 'pt-8' : ''}`}>
       {isDemo && (
         <div className="absolute top-0 left-0 w-full h-8 bg-canvas-primary/10 border-b border-canvas-primary/20 flex items-center justify-center gap-4 px-6 overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
@@ -65,7 +65,7 @@ export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
           <button 
             type="button"
             onClick={() => globalThis.location.href = '/'}
-            className="text-[9px] font-bold uppercase tracking-widest text-white hover:text-canvas-primary transition-colors cursor-pointer"
+            className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-text)] hover:text-canvas-primary transition-colors cursor-pointer"
           >
             Register to Establish Soul Link
           </button>
@@ -77,16 +77,16 @@ export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
             href="/dashboard"
             className="cursor-pointer flex items-center gap-3 group"
           >
-            <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-all duration-500 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-               <Sparkles size={20} className="text-black" />
+            <div className="w-10 h-10 bg-[var(--muse-text)] text-[var(--muse-bg)] rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-all duration-500 shadow-2xl">
+               <Sparkles size={20} className="text-[var(--muse-bg)]" />
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight text-white leading-none">Muse</span>
+              <span className="text-lg font-bold tracking-tight text-[var(--muse-text)] leading-none transition-colors duration-300">Muse</span>
               <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-canvas-primary mt-1">Intelligence</span>
             </div>
           </a>
 
-          <div className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-white/5 border border-white/8 rounded-full text-gray-500 cursor-text hover:border-white/20 transition-all min-w-[320px]">
+          <div className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-full text-[var(--muse-muted)] cursor-text hover:border-[var(--muse-text)]/20 transition-all duration-300 min-w-[320px]">
             <Search size={14} />
             <span className="text-[10px] font-bold uppercase tracking-widest">Search your collective consciousness...</span>
           </div>
@@ -103,7 +103,7 @@ export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
           <button
             type="button"
             onClick={toggleTheme}
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:border-white/20 flex items-center justify-center transition-all text-gray-400 hover:text-white"
+            className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 flex items-center justify-center transition-all text-[var(--muse-muted)] hover:text-[var(--muse-text)] duration-300"
             title={`Switch to next theme (Current: ${currentTheme})`}
           >
             {currentTheme === 'dark' && <Moon size={16} />}
@@ -119,28 +119,28 @@ export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${
                 unreadCount > 0
                   ? "bg-canvas-primary/20 border border-canvas-primary/45"
-                  : "bg-white/5 border border-white/10 hover:border-white/20"
+                  : "bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 duration-300"
               }`}
             >
-              <Bell size={16} className={unreadCount > 0 ? "text-canvas-primary" : "text-gray-400"} />
+              <Bell size={16} className={unreadCount > 0 ? "text-canvas-primary" : "text-[var(--muse-muted)]"} />
               {unreadCount > 0 && (
-                <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-canvas-primary border-2 border-[#0a0a0a]" />
+                <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-canvas-primary border-2 border-[var(--muse-bg)]" />
               )}
             </button>
 
             {isNotificationsOpen && (
-              <div className="absolute right-0 mt-4 w-[340px] rounded-[2.5rem] border border-white/10 bg-[#111111] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4">
-                <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between">
+              <div className="absolute right-0 mt-4 w-[340px] rounded-[2.5rem] border border-[var(--muse-border)] bg-[var(--muse-surface)] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 transition-colors duration-300">
+                <div className="px-6 py-5 border-b border-[var(--muse-border)] flex items-center justify-between">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-canvas-primary">Signals</h4>
-                  <button type="button" onClick={markAllNotificationsRead} className="text-[9px] font-bold uppercase text-gray-500 hover:text-white transition-colors">Dismiss All</button>
+                  <button type="button" onClick={markAllNotificationsRead} className="text-[9px] font-bold uppercase text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors duration-300">Dismiss All</button>
                 </div>
                 <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
                   {notifications.length === 0 ? (
-                    <div className="p-10 text-center text-gray-600 text-xs italic">No active signals.</div>
+                    <div className="p-10 text-center text-[var(--muse-muted)] text-xs italic">No active signals.</div>
                   ) : notifications.map((n) => (
-                    <button type="button" key={n.id} onClick={() => markNotificationRead(n.id)} className="w-full p-6 text-left border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
-                      <p className="text-sm font-bold text-white mb-1">{n.title}</p>
-                      <p className="text-[11px] text-gray-500 leading-relaxed">{n.detail}</p>
+                    <button type="button" key={n.id} onClick={() => markNotificationRead(n.id)} className="w-full p-6 text-left border-b border-[var(--muse-border)] hover:bg-[var(--muse-surface-soft)] transition-colors duration-300">
+                      <p className="text-sm font-bold text-[var(--muse-text)] mb-1">{n.title}</p>
+                      <p className="text-[11px] text-[var(--muse-muted)] leading-relaxed">{n.detail}</p>
                     </button>
                   ))}
                 </div>
@@ -155,7 +155,7 @@ export default function AppHeader({ _currentPath }: { _currentPath?: string }) {
           <button
             onClick={toggleMenu}
             type="button"
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-canvas-primary transition-all shadow-lg active:scale-95"
+            className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:border-canvas-primary transition-all shadow-lg active:scale-95 duration-300"
           >
             <MenuIcon size={18} />
           </button>
