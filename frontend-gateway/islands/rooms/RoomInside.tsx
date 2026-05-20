@@ -1,3 +1,4 @@
+import { type CSSProperties } from "preact";
 import { useMemo, useRef, useState } from "preact/hooks";
 import {
   AlertTriangle,
@@ -138,10 +139,10 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     slate: "#64748b",
   };
   const hex = customHex || baseHexMap[room.themeColor] || baseHexMap.indigo;
-  const glowStyle = {
+  const glowStyle: CSSProperties = {
     boxShadow: `0 20px 60px ${hex}33`,
     background: `linear-gradient(135deg, ${hex}22, transparent)`,
-  } as any;
+  };
 
   const handleImageUpload = (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -307,7 +308,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
             <Camera size={18} />
           </button>
 
-          <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 max-w-[1800px] mx-auto w-full z-10">
+          <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 w-full z-10">
             <div className="flex justify-between items-center">
               <a
                 href="/rooms"
@@ -455,7 +456,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
           </div>
         </header>
 
-        <main className="p-6 md:p-10 max-w-[1800px] mx-auto relative z-10 -mt-4">
+        <main className="p-6 md:p-10 w-full max-w-none relative z-10 -mt-4">
           {/* TAB NAVIGATION */}
           <div className="flex items-center gap-6 mb-12">
             <button
@@ -502,8 +503,8 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 rounded-[2rem] border border-white/5 bg-black/25 p-4 md:p-5 backdrop-blur-sm">
-                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                  <div className="flex gap-3 overflow-x-auto rounded-[2rem] border border-white/5 bg-black/25 p-4 md:p-5 backdrop-blur-sm scrollbar-hide">
+                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center min-w-[160px] flex-shrink-0">
                       <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                         Artifacts
                       </div>
@@ -511,7 +512,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                         {items.length}
                       </div>
                     </div>
-                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center min-w-[160px] flex-shrink-0">
                       <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                         Access
                       </div>
@@ -519,7 +520,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                         {room.isPublic ? "Pub" : "Vault"}
                       </div>
                     </div>
-                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
+                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center min-w-[160px] flex-shrink-0">
                       <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                         Theme
                       </div>
@@ -580,21 +581,21 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     </div>
                   )
                   : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                       {items.map((item) => (
-                            <div
-                              key={item.id}
-                              className={`bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group transition-all duration-500`}
-                              style={glowStyle}
-                            >
-                              <div
-                                className={`h-40 relative overflow-hidden`}
-                                style={{ background: customHex ? `linear-gradient(135deg, ${customHex}40, transparent)` : undefined }}
-                              >
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
-                                <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
-                                  <ExternalLink size={40} className={theme.text} />
-                                </div>
+                        <div
+                          key={item.id}
+                          className="bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group transition-all duration-500 min-w-[320px] flex-shrink-0"
+                          style={glowStyle}
+                        >
+                          <div
+                            className="h-40 relative overflow-hidden"
+                            style={{ background: customHex ? `linear-gradient(135deg, ${customHex}40, transparent)` : undefined }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                              <ExternalLink size={40} className={theme.text} />
+                            </div>
                             <a
                               href={item.sourceUrl}
                               target="_blank"
@@ -607,9 +608,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
                           <div className="p-7">
                             <div className="flex flex-col gap-1 mb-4">
-                              <span
-                                className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}
-                              >
+                              <span className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}>
                                 Artifact
                               </span>
                               <h4 className="font-bold text-lg leading-tight text-white/90 group-hover:text-white transition-colors line-clamp-2">
@@ -624,9 +623,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                             )}
 
                             <div className="flex items-center justify-between mt-auto pt-5 border-t border-white/5">
-                              <span
-                                className={`text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-gray-500`}
-                              >
+                              <span className="text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-gray-500">
                                 Sourced from collective
                               </span>
                               <button
@@ -733,8 +730,8 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[3rem]">
+                <div className="flex gap-8 overflow-x-auto pb-4 scrollbar-hide">
+                  <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[3rem] min-w-[420px] flex-[1.2] flex-shrink-0">
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6 flex items-center gap-2">
                       <Layers size={14} /> Cognitive Lineage
                     </h4>
@@ -759,7 +756,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     </div>
                   </div>
 
-                  <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[3rem] flex flex-col justify-center">
+                  <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[3rem] flex flex-col justify-center min-w-[320px] flex-[0.8] flex-shrink-0">
                     <p className="text-gray-500 font-serif italic text-lg leading-relaxed mb-8">
                       Ready to weave these artifacts into a living document?
                     </p>
