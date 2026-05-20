@@ -66,14 +66,14 @@ export default function CaptureModal() {
 
   const handleCreateRoom = () => {
     if (!newRoomName.trim()) return;
-    const newRoom = addRoom(
-      newRoomName.trim(),
-      "",
-      "indigo",
-      "",
-      newRoomIsPublic,
-    );
-    setRoomId(newRoom.id);
+    const newRoomId = addRoom({
+      name: newRoomName.trim(),
+      description: "",
+      themeColor: "indigo",
+      coverImage: "",
+      isPublic: newRoomIsPublic,
+    });
+    setRoomId(newRoomId);
     setIsAddingRoom(false);
     setNewRoomName("");
     setNewRoomIsPublic(false);

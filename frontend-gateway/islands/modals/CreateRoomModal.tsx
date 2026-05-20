@@ -67,15 +67,15 @@ export default function CreateRoomModal({ onClose }: Props) {
     }
 
     try {
-      const newRoom = addRoom(
-        name.trim(),
-        description.trim(),
+      const newRoomId = addRoom({
+        name: name.trim(),
+        description: description.trim(),
         themeColor,
         coverImage,
         isPublic,
-      );
+      });
       onClose();
-      globalThis.location.href = `/rooms/${newRoom.id}`;
+      globalThis.location.href = `/rooms/${newRoomId}`;
     } catch (_err) {
       setError("Failed to establish room identity.");
     }

@@ -25,11 +25,7 @@ const themeGradients: Record<RoomTheme, string> = {
 };
 
 type RoomTab = "all" | "vault" | "archived" | "starred" | "collab";
-type RoomSort =
-  | "latest"
-  | "alphabetical"
-  | "most-artifacts"
-  | "least-artifacts";
+type RoomSort = "latest" | "alphabetical";
 type RoomView = "grid" | "carousel";
 
 const tabConfig: { id: RoomTab; label: string; helper: string }[] = [
@@ -43,9 +39,13 @@ const tabConfig: { id: RoomTab; label: string; helper: string }[] = [
 const sortOptions: { id: RoomSort; label: string }[] = [
   { id: "latest", label: "Latest" },
   { id: "alphabetical", label: "A-Z" },
-  { id: "most-artifacts", label: "Most artifacts" },
-  { id: "least-artifacts", label: "Least artifacts" },
 ];
+
+const surfaceClass = "border border-[var(--muse-border)] bg-[var(--muse-surface)]";
+const softSurfaceClass =
+  "border border-[var(--muse-border)] bg-[var(--muse-surface-soft)]";
+const textClass = "text-[var(--muse-text)]";
+const mutedClass = "text-[var(--muse-muted)]";
 
 function RoomActionButton({
   variant,
@@ -113,7 +113,7 @@ function RoomCard({
     return (
       <div
         onClick={onOpen}
-        className={`group relative w-[280px] md:w-[320px] shrink-0 h-[440px] snap-start overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#111] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
+        className={`group relative w-[280px] md:w-[320px] shrink-0 h-[440px] snap-start overflow-hidden rounded-[2.5rem] border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-text)] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
       >
         {/* Background Image - Always Visible but Subtle */}
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
@@ -137,12 +137,12 @@ function RoomCard({
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-wrap gap-2">
               {pinned && (
-                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-lg backdrop-blur-md">
+                <span className="rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface-soft)] px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--muse-text)] shadow-lg backdrop-blur-md">
                   Pinned
                 </span>
               )}
               {starred && (
-                <span className="rounded-full border border-white/10 bg-amber-500/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-amber-300 shadow-lg backdrop-blur-md">
+                <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-300 shadow-lg backdrop-blur-md">
                   Starred
                 </span>
               )}
@@ -173,28 +173,28 @@ function RoomCard({
                   ).replace("/40", "") || "text-indigo-400"
                 }`}
               />
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/40">
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)]">
                 {room.isPublic ? "Collective" : "Vault"}
               </span>
             </div>
-            <h3 className="text-3xl font-bold tracking-tight text-white drop-shadow-2xl group-hover:text-canvas-primary transition-colors duration-300">
+            <h3 className="text-3xl font-bold tracking-tight text-[var(--muse-text)] drop-shadow-2xl group-hover:text-canvas-primary transition-colors duration-300">
               {room.name}
             </h3>
-            <p className="mt-4 line-clamp-2 text-base text-gray-300 font-serif italic leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+            <p className="mt-4 line-clamp-2 text-base text-[var(--muse-muted)] font-serif italic leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
               {room.description || "A curated sanctuary for your artifacts."}
             </p>
-            <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-6">
+            <div className="mt-8 flex items-center justify-between border-t border-[var(--muse-border)] pt-6">
               <div className="flex items-center gap-4">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mb-1">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-1">
                     Artifacts
                   </span>
-                  <span className="text-sm font-bold text-white">
+                  <span className="text-sm font-bold text-[var(--muse-text)]">
                     {room.count}
                   </span>
                 </div>
               </div>
-              <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500">
+              <div className="w-12 h-12 rounded-full bg-[var(--muse-surface-soft)] text-[var(--muse-text)] border border-[var(--muse-border)] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500">
                 <ArrowRight size={20} />
               </div>
             </div>
@@ -207,7 +207,7 @@ function RoomCard({
   return (
     <div
       onClick={onOpen}
-      className={`group relative flex h-full min-h-[320px] flex-col overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#111] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
+      className={`group relative flex h-full min-h-[320px] flex-col overflow-hidden rounded-[2.5rem] border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-text)] transition-all duration-500 cursor-pointer card-glow glow-${room.themeColor}`}
     >
       {/* Background Image - Always Visible but Subtle */}
       <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
@@ -239,11 +239,11 @@ function RoomCard({
                   ).replace("/40", "") || "text-indigo-400"
                 }`}
               />
-              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)]">
                 {room.isPublic ? "Collective Space" : "Private Vault"}
               </span>
             </div>
-            <h3 className="text-2xl font-bold tracking-tight text-white group-hover:text-canvas-primary transition-colors duration-300">
+            <h3 className="text-2xl font-bold tracking-tight text-[var(--muse-text)] group-hover:text-canvas-primary transition-colors duration-300">
               {room.name}
             </h3>
           </div>
@@ -270,23 +270,23 @@ function RoomCard({
         </div>
 
         <div className="translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-          <p className="mt-4 line-clamp-2 text-sm text-gray-300 font-serif italic leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+          <p className="mt-4 line-clamp-2 text-sm text-[var(--muse-muted)] font-serif italic leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
             {room.description ||
               "A curated space for your digital consciousness."}
           </p>
-          <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5">
+          <div className="mt-6 flex items-center justify-between border-t border-[var(--muse-border)] pt-5">
             <div className="flex items-center gap-4">
               <div className="flex flex-col">
-                <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500 mb-0.5">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-0.5">
                   Artifacts
                 </span>
-                <span className="text-xs font-bold text-white">
+                <span className="text-xs font-bold text-[var(--muse-text)]">
                   {room.count}
                 </span>
               </div>
-              <div className="w-px h-6 bg-white/10" />
+              <div className="w-px h-6 bg-[var(--muse-border)]" />
               <div className="flex flex-col">
-                <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500 mb-0.5">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-0.5">
                   Theme
                 </span>
                 <span
@@ -301,7 +301,7 @@ function RoomCard({
                 </span>
               </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-all duration-500">
+            <div className="w-10 h-10 rounded-full bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-text)] group-hover:bg-[var(--muse-text)] group-hover:text-[var(--muse-bg)] transition-all duration-500">
               <ArrowRight size={16} />
             </div>
           </div>
@@ -376,10 +376,6 @@ export default function RoomsGallery() {
     switch (sortBy) {
       case "alphabetical":
         return list.sort((a, b) => a.name.localeCompare(b.name));
-      case "most-artifacts":
-        return list.sort((a, b) => b.count - a.count);
-      case "least-artifacts":
-        return list.sort((a, b) => a.count - b.count);
       case "latest":
       default:
         return list.sort((a, b) =>
@@ -437,26 +433,30 @@ export default function RoomsGallery() {
       {showCreate && <CreateRoomModal onClose={() => setShowCreate(false)} />}
 
       <div className="p-6 md:p-10 w-full max-w-[1800px] mx-auto pb-24 md:pb-10 space-y-12">
-        <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
-          <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-canvas-primary/10 to-transparent blur-3xl pointer-events-none" />
+        <section
+          className={`relative overflow-hidden rounded-[3rem] ${surfaceClass} p-10 md:p-16 shadow-2xl`}
+        >
+          <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-canvas-primary/15 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none [background-image:radial-gradient(circle_at_20%_20%,var(--muse-text)_1px,transparent_1px)] [background-size:36px_36px]" />
 
           <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary">
+              <div className={`inline-flex items-center gap-3 rounded-full ${softSurfaceClass} px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary`}>
                 <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
-                Collection Engine
+                Room Atlas
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white">
-                Curate Your
-                <span className="inline-block italic font-serif text-canvas-primary bg-gradient-to-r from-canvas-primary to-indigo-400 bg-clip-text text-transparent ml-3 pr-12 pb-6 -mr-12 -mb-6">
-                  Digital Soul.
+              <h1 className={`mt-8 max-w-4xl text-5xl md:text-7xl font-bold tracking-tight leading-[1.05] ${textClass}`}>
+                Rooms that welcome the mind.
+                <span className="mt-3 block max-w-3xl text-4xl md:text-6xl italic font-serif text-canvas-primary bg-gradient-to-r from-canvas-primary to-indigo-400 bg-clip-text text-transparent">
+                  Curate your digital soul.
                 </span>
               </h1>
-              <p className="mt-8 max-w-3xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-8">
-                Your Rooms are more than just digital storage. They are the
-                sanctuary for your collected artifacts—the raw materials of your
-                consciousness, secured by blockchain and refined by
-                intelligence.
+              <p className={`mt-8 max-w-3xl text-lg md:text-xl leading-relaxed font-serif italic border-l-2 ${mutedClass} border-[var(--muse-border)] pl-8`}>
+                Your rooms are not bins. They are chambers of attention, built
+                to hold the artifacts that matter and present them with quiet
+                gravity. Each room should feel discovered from a distance,
+                entered with intention, and remembered as a place where your
+                thinking finally had architecture.
               </p>
             </div>
 
@@ -464,15 +464,15 @@ export default function RoomsGallery() {
               <button
                 type="button"
                 onClick={() => setShowCreate(true)}
-                className="w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-8 py-5 text-[12px] font-bold uppercase tracking-[0.2em] text-black shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-all hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(255,255,255,0.25)] active:scale-95"
+                className="w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-[var(--muse-text)] px-8 py-5 text-[12px] font-bold uppercase tracking-[0.2em] text-[var(--muse-bg)] shadow-[0_20px_50px_rgba(0,0,0,0.18)] transition-all hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(0,0,0,0.28)] active:scale-95"
               >
-                + Initialize Room
+                + Create a Room
               </button>
               <button
                 type="button"
                 onClick={() =>
                   setViewMode(viewMode === "grid" ? "carousel" : "grid")}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:border-white/20 hover:bg-white/10"
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-[11px] font-bold uppercase tracking-widest ${softSurfaceClass} ${textClass} transition-all hover:border-[var(--muse-border)] hover:bg-[var(--muse-surface-soft)]`}
               >
                 {viewMode === "grid"
                   ? <Layers size={14} />
@@ -483,7 +483,7 @@ export default function RoomsGallery() {
           </div>
 
           <div className="relative z-10 mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-[1.75rem] border border-white/5 bg-black/20 p-5">
+            <div className={`rounded-[1.75rem] ${softSurfaceClass} p-5`}>
               <div className="flex flex-wrap items-center gap-2">
                 {tabConfig.map((tab) => (
                   <button
@@ -493,19 +493,19 @@ export default function RoomsGallery() {
                     className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
                       activeTab === tab.id
                         ? "border-canvas-primary/40 bg-canvas-primary/15 text-canvas-primary"
-                        : "border-white/10 bg-white/5 text-gray-500 hover:border-white/20 hover:text-white"
+                        : "border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-muted)] hover:border-canvas-primary/25 hover:text-[var(--muse-text)]"
                     }`}
                   >
                     {tab.label}
                   </button>
                 ))}
               </div>
-              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-600">
+              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)]">
                 {tabConfig.find((tab) => tab.id === activeTab)?.helper}
               </p>
             </div>
 
-            <div className="rounded-[1.75rem] border border-white/5 bg-black/20 p-5">
+            <div className={`rounded-[1.75rem] ${softSurfaceClass} p-5`}>
               <div className="flex flex-wrap items-center gap-2">
                 {sortOptions.map((option) => (
                   <button
@@ -514,16 +514,17 @@ export default function RoomsGallery() {
                     onClick={() => setSortBy(option.id)}
                     className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
                       sortBy === option.id
-                        ? "border-white/20 bg-white text-black"
-                        : "border-white/10 bg-white/5 text-gray-500 hover:border-white/20 hover:text-white"
+                        ? "border-canvas-primary/30 bg-canvas-primary text-[var(--muse-bg)]"
+                        : "border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-muted)] hover:border-canvas-primary/25 hover:text-[var(--muse-text)]"
                     }`}
                   >
                     {option.label}
                   </button>
                 ))}
               </div>
-              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-600">
-                Pin multiple rooms, then sort the rest by the order you want.
+              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)]">
+                Keep the filters lean. Sort by recency or alphabet, then pin
+                whatever should stay at the top.
               </p>
             </div>
           </div>
@@ -533,14 +534,14 @@ export default function RoomsGallery() {
           <section className="space-y-4">
             <div className="flex items-end justify-between gap-3 px-1">
               <div>
-                <h2 className="text-xl font-bold tracking-tight text-white">
+                <h2 className={`text-xl font-bold tracking-tight ${textClass}`}>
                   Pinned Rooms
                 </h2>
-                <p className="text-sm text-gray-500 font-serif italic">
-                  Stack the rooms you want at the top.
+                <p className={`text-sm font-serif italic ${mutedClass}`}>
+                  The first rooms people should notice when they arrive.
                 </p>
               </div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                 {pinnedRooms.length} pinned
               </div>
             </div>
@@ -568,10 +569,10 @@ export default function RoomsGallery() {
         )}
 
         <section className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-          <div className="space-y-4 rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 md:p-6">
-            <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-4">
+          <div className={`space-y-4 rounded-[2rem] ${softSurfaceClass} p-5 md:p-6`}>
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--muse-border)] pb-4">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-white">
+                <h2 className={`text-2xl font-bold tracking-tight ${textClass}`}>
                   {activeTab === "archived"
                     ? "Archived Rooms"
                     : activeTab === "vault"
@@ -582,7 +583,7 @@ export default function RoomsGallery() {
                     ? "Collab Rooms"
                     : "All Rooms"}
                 </h2>
-                <p className="mt-1 text-sm text-gray-400 font-serif italic">
+                <p className={`mt-1 text-sm font-serif italic ${mutedClass}`}>
                   {activeTab === "archived"
                     ? "Stored away, but still available when needed."
                     : activeTab === "vault"
@@ -594,7 +595,7 @@ export default function RoomsGallery() {
                     : "Your active room system, ready to explore."}
                 </p>
               </div>
-              <div className="hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <div className="hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                 <ArrowRight size={12} className="text-canvas-primary" />
                 {visibleRooms.length} rooms
               </div>
@@ -602,16 +603,16 @@ export default function RoomsGallery() {
 
             {visibleRooms.length === 0
               ? (
-                <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-white/10 bg-black/20 px-6 text-center">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white">
+                <div className={`flex min-h-[260px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-[var(--muse-border)] bg-[var(--muse-surface)] px-6 text-center`}>
+                  <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface-soft)] ${textClass}`}>
                     <Aperture size={20} />
                   </div>
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className={`text-xl font-bold ${textClass}`}>
                     No rooms in this tab yet
                   </h3>
-                  <p className="mt-2 max-w-md text-sm text-gray-400 font-serif italic leading-relaxed">
-                    This section will fill as you start pinning, archiving,
-                    starring, or locking rooms away.
+                  <p className={`mt-2 max-w-md text-sm font-serif italic leading-relaxed ${mutedClass}`}>
+                    This chamber will fill as you begin pinning, archiving,
+                    starring, and sharing rooms with purpose.
                   </p>
                 </div>
               )
@@ -636,17 +637,17 @@ export default function RoomsGallery() {
                   <button
                     onClick={() => setShowCreate(true)}
                     type="button"
-                    className="min-h-[270px] rounded-[2rem] border-2 border-dashed border-white/10 bg-transparent p-6 text-left transition-all hover:border-white/25 hover:bg-white/[0.02] cursor-pointer"
+                    className="min-h-[270px] rounded-[2rem] border-2 border-dashed border-[var(--muse-border)] bg-transparent p-6 text-left transition-all hover:border-canvas-primary/25 hover:bg-[var(--muse-surface)] cursor-pointer"
                   >
                     <div className="flex h-full flex-col items-center justify-center text-center">
-                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-gray-600 text-gray-500 transition-colors group-hover:border-white">
+                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-[var(--muse-border)] text-[var(--muse-muted)] transition-colors group-hover:border-[var(--muse-text)]">
                         <Plus size={24} />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-                        Create Expressive Room
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                        Create a room
                       </span>
-                      <p className="mt-2 text-xs text-gray-600 font-serif italic">
-                        Use the template-first flow.
+                      <p className="mt-2 text-xs text-[var(--muse-muted)] font-serif italic">
+                        Start with a chamber, then shape its atmosphere.
                       </p>
                     </div>
                   </button>
@@ -675,17 +676,17 @@ export default function RoomsGallery() {
                   <button
                     onClick={() => setShowCreate(true)}
                     type="button"
-                    className="w-[280px] md:w-[320px] shrink-0 h-[440px] rounded-[2.5rem] border-2 border-dashed border-white/10 bg-transparent px-6 py-8 text-left transition-all hover:border-canvas-primary/20 hover:bg-canvas-primary/[0.02] cursor-pointer snap-start group z-10"
+                    className="w-[280px] md:w-[320px] shrink-0 h-[440px] rounded-[2.5rem] border-2 border-dashed border-[var(--muse-border)] bg-transparent px-6 py-8 text-left transition-all hover:border-canvas-primary/20 hover:bg-[var(--muse-surface)] cursor-pointer snap-start group z-10"
                   >
                     <div className="flex h-full min-h-[270px] flex-col items-center justify-center text-center">
-                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-gray-600 text-gray-500 transition-colors hover:border-white">
+                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-[var(--muse-border)] text-[var(--muse-muted)] transition-colors hover:border-[var(--muse-text)]">
                         <Plus size={24} />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-                        Create Expressive Room
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                        Create a room
                       </span>
-                      <p className="mt-2 text-xs text-gray-600 font-serif italic">
-                        Use the template-first flow.
+                      <p className="mt-2 text-xs text-[var(--muse-muted)] font-serif italic">
+                        Start with a chamber, then shape its atmosphere.
                       </p>
                     </div>
                   </button>
@@ -696,11 +697,11 @@ export default function RoomsGallery() {
           <aside className="space-y-4 rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 md:p-6">
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div>
-                <h3 className="text-xl font-bold tracking-tight text-white">
+                <h3 className={`text-xl font-bold tracking-tight ${textClass}`}>
                   Collaboration
                 </h3>
-                <p className="mt-1 text-sm text-gray-400 font-serif italic">
-                  What is shared, and who is around.
+                <p className={`mt-1 text-sm font-serif italic ${mutedClass}`}>
+                  The rooms that are shared, and the people orbiting them.
                 </p>
               </div>
               <Users size={18} className="text-canvas-primary" />
@@ -710,7 +711,7 @@ export default function RoomsGallery() {
               {collaboratorsSignal.value.map((person) => (
                 <div
                   key={person.id}
-                  className="rounded-3xl border border-white/5 bg-black/20 p-4"
+                  className={`rounded-3xl ${softSurfaceClass} p-4`}
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -719,29 +720,29 @@ export default function RoomsGallery() {
                       className="h-11 w-11 rounded-2xl object-cover"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-white">{person.name}</p>
-                      <p className="text-xs text-gray-500">{person.role}</p>
+                      <p className={`font-semibold ${textClass}`}>{person.name}</p>
+                      <p className="text-xs text-[var(--muse-muted)]">{person.role}</p>
                     </div>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-gray-400">
+                    <span className="rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                       {person.status}
                     </span>
                   </div>
-                  <p className="mt-3 text-sm text-gray-400 font-serif italic leading-relaxed">
+                  <p className={`mt-3 text-sm font-serif italic leading-relaxed ${mutedClass}`}>
                     {person.bio}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="rounded-3xl border border-white/5 bg-black/20 p-4">
+            <div className={`rounded-3xl ${softSurfaceClass} p-4`}>
               <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
                 <Globe size={12} className="text-emerald-300" />
-                Locked / Vault note
+                Vault note
               </div>
-              <p className="mt-2 text-sm text-gray-300 leading-relaxed font-serif italic">
-                Private rooms stay in the Vault tab. Public rooms are grouped
-                into Collab, giving you a simple way to separate what is shared
-                from what stays hidden.
+              <p className={`mt-2 text-sm leading-relaxed font-serif italic ${mutedClass}`}>
+                Private rooms stay in Vault. Public rooms move into Collab,
+                giving the page a clear split between what is held closely and
+                what is ready to be seen.
               </p>
             </div>
           </aside>

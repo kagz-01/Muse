@@ -91,14 +91,16 @@ export function addRoom(
   >,
 ) {
   const newId = "r" + (roomsSignal.value.length + 1);
-  roomsSignal.value = [...roomsSignal.value, {
+  const newRoom: Room = {
     ...room,
     id: newId,
     updatedAt: new Date().toISOString(),
     count: 0,
     semanticTags: [],
     resonanceMetrics: { views: 0, wovenCount: 0 },
-  }];
+  };
+  roomsSignal.value = [...roomsSignal.value, newRoom];
+  return newId;
 }
 
 export function updateRoomTheme(id: string, theme: RoomTheme) {
