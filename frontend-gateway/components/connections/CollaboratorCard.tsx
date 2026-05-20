@@ -29,7 +29,9 @@ export default function CollaboratorCard({ collaborator }: Props) {
   };
 
   return (
-    <div className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:bg-white/[0.04] hover:border-indigo-500/30 card-glow glow-indigo shadow-2xl overflow-hidden">
+    <div className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:bg-white/[0.04] hover:border-indigo-500/30 shadow-2xl overflow-hidden"
+      style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
+    >
       <div className="relative z-10 flex items-start justify-between mb-8">
         <div className="relative">
           <div className="w-20 h-20 rounded-2xl overflow-hidden border border-white/10 group-hover:border-indigo-500/40 transition-colors shadow-2xl">

@@ -18,10 +18,11 @@ interface Props {
 export default function ActiveCircleCard({ circle, onJoin }: Props) {
   return (
     <div
-      className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:border-indigo-500/30 card-glow glow-indigo shadow-2xl flex flex-col h-[400px] overflow-hidden cursor-pointer"
+      className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:border-indigo-500/30 shadow-2xl flex flex-col h-[400px] overflow-hidden cursor-pointer"
       onClick={() => {
         globalThis.location.href = `/threads/${circle.id}?type=circle`;
       }}
+      style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
     >
       <div className="flex justify-between items-start gap-4 mb-6">
         <div className="flex-1">

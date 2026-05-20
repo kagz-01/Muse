@@ -490,7 +490,9 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
         {(aiInsights || blockchainResult) && (
           <div className="mb-16 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
             {aiInsights && (
-              <div className="bg-[#111] border border-indigo-500/20 rounded-[2.5rem] p-8 card-glow glow-indigo relative overflow-hidden">
+              <div className="bg-[#111] border border-indigo-500/20 rounded-[2.5rem] p-8 relative overflow-hidden"
+                style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
+              >
                 <div className="absolute top-0 right-0 p-8 opacity-10">
                   <Aperture size={48} className="text-indigo-400" />
                 </div>
@@ -508,7 +510,9 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
               </div>
             )}
             {blockchainResult && (
-              <div className="bg-[#111] border border-violet-500/20 rounded-[2.5rem] p-8 card-glow glow-violet relative overflow-hidden">
+              <div className="bg-[#111] border border-violet-500/20 rounded-[2.5rem] p-8 relative overflow-hidden"
+                style={{ boxShadow: `0 20px 60px rgba(139,92,246,0.12)` }}
+              >
                 <div className="absolute top-0 right-0 p-8 opacity-10">
                   <Lock size={48} className="text-violet-400" />
                 </div>
