@@ -134,12 +134,12 @@ export default function HomeOverview() {
   ];
 
   return (
-    <div className="max-w-[1800px] mx-auto px-6 md:px-10 pt-8 pb-10 space-y-8">
+    <div className="w-full max-w-none px-6 md:px-10 pt-8 pb-10 space-y-8">
       <section className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-linear-to-br from-white/[0.04] via-white/[0.02] to-transparent p-8 md:p-10 shadow-2xl">
         <div className="absolute -top-16 -right-12 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-20 -left-16 h-56 w-56 rounded-full bg-canvas-primary/10 blur-3xl" />
 
-        <div className="relative z-10 grid gap-8 lg:grid-cols-[1.4fr_0.9fr] items-start">
+        <div className="relative z-10 grid gap-8 lg:grid-cols-[1.35fr_1fr] items-start">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
               <Aperture size={12} className="text-canvas-primary" />
@@ -236,8 +236,8 @@ export default function HomeOverview() {
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
-        <div className="space-y-6 rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8">
+      <section className="grid gap-6 xl:grid-cols-[1.35fr_0.95fr] items-start">
+        <div className="space-y-6 rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8 min-w-0">
           <div className="flex items-center justify-between gap-4 border-b border-white/5 pb-4">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-white">
@@ -255,13 +255,13 @@ export default function HomeOverview() {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
             {stats.map((stat) => {
               const Icon = stat.icon;
               return (
                 <div
                   key={stat.label}
-                  className="rounded-3xl border border-white/5 bg-black/20 p-5"
+                  className="rounded-3xl border border-white/5 bg-black/20 p-5 min-w-[260px] flex-shrink-0"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -316,8 +316,8 @@ export default function HomeOverview() {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8">
+        <div className="space-y-6 min-w-0">
+          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8 min-w-0">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold tracking-tight text-white">
@@ -330,11 +330,11 @@ export default function HomeOverview() {
               <Users size={18} className="text-canvas-primary" />
             </div>
 
-            <div className="mt-5 space-y-4">
-              {circles.slice(0, 2).map((circle) => (
+            <div className="mt-5 flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {circles.slice(0, 4).map((circle) => (
                 <div
                   key={circle.id}
-                  className="rounded-3xl border border-white/5 bg-black/20 p-4"
+                  className="rounded-3xl border border-white/5 bg-black/20 p-4 min-w-[240px] flex-shrink-0"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -354,7 +354,7 @@ export default function HomeOverview() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8">
+          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8 min-w-0">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold tracking-tight text-white">
@@ -367,11 +367,11 @@ export default function HomeOverview() {
               <TrendingUp size={18} className="text-canvas-primary" />
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-2.5">
+            <div className="mt-5 flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
               {topThemes.map((theme) => (
                 <span
                   key={theme}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300"
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300 flex-shrink-0"
                 >
                   {theme}
                 </span>
