@@ -32,7 +32,7 @@ export default function LandingFooter() {
   ];
 
   return (
-    <footer className="relative bg-[#050505] border-t border-white/5 pt-32 pb-20 overflow-hidden">
+    <footer className="relative bg-[var(--muse-bg)] border-t border-[var(--muse-border)] pt-32 pb-20 overflow-hidden transition-all duration-300">
       
       {/* GLOW EFFECT */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-canvas-primary/5 blur-[120px] rounded-full pointer-events-none" />
@@ -44,16 +44,16 @@ export default function LandingFooter() {
           {/* BRAND BLOCK */}
           <div className="lg:col-span-2 space-y-10">
             <div className="flex items-center gap-4">
-              <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-black font-bold shadow-2xl">
+              <div className="h-14 w-14 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold shadow-2xl transition-all duration-300">
                 <InfinityIcon size={28} strokeWidth={2.5} />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold tracking-tighter text-white leading-none">MUSE</span>
+                <span className="text-2xl font-bold tracking-tighter text-[var(--muse-text)] leading-none transition-colors duration-300">MUSE</span>
                 <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-canvas-primary mt-2 leading-none">Intelligence</span>
               </div>
             </div>
             
-            <p className="max-w-md text-gray-500 font-serif italic text-lg leading-relaxed">
+            <p className="max-w-md text-[var(--muse-muted)] font-serif italic text-lg leading-relaxed transition-colors duration-300">
               "The bridge between consumption and consciousness. Every artifact captured is a neuron in your digital soul."
             </p>
 
@@ -65,7 +65,7 @@ export default function LandingFooter() {
                 { icon: Instagram, label: "Instagram" }, 
                 { icon: Facebook, label: "Facebook" }
               ].map(({ icon: Icon, label }, i) => (
-                <a key={i} href="#" aria-label={label} title={label} className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-gray-500 hover:text-white hover:border-white/10 hover:bg-white/10 transition-all">
+                <a key={i} href="#" aria-label={label} title={label} className="w-10 h-10 rounded-xl bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:border-[var(--muse-border)] hover:bg-[var(--muse-surface-soft)] transition-all duration-300">
                   <Icon size={18} />
                 </a>
               ))}
@@ -75,11 +75,11 @@ export default function LandingFooter() {
           {/* LINK COLUMNS */}
           {sections.map(section => (
             <div key={section.title} className="space-y-8">
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-white">{section.title}</h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--muse-text)] transition-colors duration-300">{section.title}</h4>
               <ul className="space-y-4">
                 {section.links.map(link => (
                   <li key={link.label}>
-                    <a href={link.href} className="text-gray-500 hover:text-white transition-colors flex items-center gap-2 group text-sm font-medium">
+                    <a href={link.href} className="text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors flex items-center gap-2 group text-sm font-medium duration-300">
                       {link.label}
                       <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                     </a>
@@ -92,25 +92,25 @@ export default function LandingFooter() {
         </div>
 
         {/* SYSTEM STATUS BAR */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-10 pt-12 border-t border-white/5">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-10 pt-12 border-t border-[var(--muse-border)] transition-colors duration-300">
           <div className="flex flex-wrap justify-center items-center gap-8">
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">System Resonance Stable</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">System Resonance Stable</span>
             </div>
             <div className="flex items-center gap-3">
-              <Shield size={14} className="text-gray-600" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Encrypted Ledger</span>
+              <Shield size={14} className="text-[var(--muse-muted)] transition-colors duration-300" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">Encrypted Ledger</span>
             </div>
             <div className="flex items-center gap-3">
-              <Activity size={14} className="text-gray-600" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Latency: 2ms</span>
+              <Activity size={14} className="text-[var(--muse-muted)] transition-colors duration-300" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">Latency: 2ms</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-800">
+          <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] opacity-60 transition-colors duration-300">
              <span>© 2026 Muse Intelligence Protocol</span>
-             <span className="h-4 w-px bg-white/5" />
+             <span className="h-4 w-px bg-[var(--muse-border)]" />
              <span>Built on Sovereignty</span>
           </div>
         </div>

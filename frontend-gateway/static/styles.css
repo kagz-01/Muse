@@ -5,44 +5,44 @@
 @layer base {
   :root {
     --muse-accent-rgb: 212 168 83;
-    --muse-bg: #030303;
-    --muse-surface: #0a0a0a;
+    --muse-bg: #000000;
+    --muse-surface: #080808;
     --muse-surface-soft: #121212;
     --muse-text: #f4f3f0;
     --muse-muted: #a5a5a5;
     --muse-border: rgba(255, 255, 255, 0.08);
-    --muse-overlay: rgba(3, 3, 3, 0.92);
+    --muse-overlay: rgba(0, 0, 0, 0.92);
     color-scheme: dark;
   }
 
   html[data-theme="dim"] {
-    --muse-bg: #161618;
-    --muse-surface: #1e1e20;
-    --muse-surface-soft: #27272a;
+    --muse-bg: #121212;
+    --muse-surface: #1a1a1a;
+    --muse-surface-soft: #242424;
     --muse-text: #ececec;
     --muse-muted: #94a3b8;
     --muse-border: rgba(255, 255, 255, 0.06);
-    --muse-overlay: rgba(22, 22, 24, 0.9);
+    --muse-overlay: rgba(18, 18, 18, 0.9);
     color-scheme: dark;
   }
 
   html[data-theme="tint"] {
-    --muse-bg: #f3efdc;
-    --muse-surface: #ebe6d5;
-    --muse-surface-soft: #e3dec9;
+    --muse-bg: #f0f0f0;
+    --muse-surface: #e5e5e5;
+    --muse-surface-soft: #dcdcdc;
     --muse-text: #1a1a1a;
-    --muse-muted: #64748b;
+    --muse-muted: #555555;
     --muse-border: rgba(0, 0, 0, 0.1);
-    --muse-overlay: rgba(243, 239, 220, 0.9);
+    --muse-overlay: rgba(240, 240, 240, 0.9);
     color-scheme: light;
   }
 
   html[data-theme="light"] {
     --muse-bg: #ffffff;
-    --muse-surface: #f8fafc;
-    --muse-surface-soft: #f1f5f9;
-    --muse-text: #0f172a;
-    --muse-muted: #475569;
+    --muse-surface: #f5f5f5;
+    --muse-surface-soft: #e5e5e5;
+    --muse-text: #000000;
+    --muse-muted: #444444;
     --muse-border: rgba(0, 0, 0, 0.08);
     --muse-overlay: rgba(255, 255, 255, 0.9);
     color-scheme: light;

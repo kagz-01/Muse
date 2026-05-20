@@ -89,7 +89,8 @@ function updateStoredAppearance(partial: Partial<{ theme: AppTheme; accentColor:
 function resolveSavedTheme(): AppTheme {
   try {
     const direct = globalThis.localStorage?.getItem(THEME_STORAGE_KEY);
-    if (direct === "light" || direct === "dark") return direct;
+    const themes: AppTheme[] = ["dark", "dim", "tint", "light"];
+    if (themes.includes(direct as AppTheme)) return direct as AppTheme;
 
     const settingsRaw = globalThis.localStorage?.getItem("muse-fresh-settings");
     if (settingsRaw) {
