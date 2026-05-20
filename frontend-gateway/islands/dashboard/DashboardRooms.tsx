@@ -48,12 +48,25 @@ export default function DashboardRooms() {
         <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
           {rooms.map((room) => {
             const customHex = room.customThemeHex;
-            const glowClass = !customHex ? (themeGradients[room.themeColor] || themeGradients["indigo"]) : undefined;
+            const baseHexMap: Record<RoomTheme, string> = {
+              indigo: "#6366f1",
+              emerald: "#10b981",
+              rose: "#f43f5e",
+              amber: "#f59e0b",
+              cyan: "#06b6d4",
+              slate: "#64748b",
+            };
+            const hex = customHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo;
+            const glowStyle = {
+              boxShadow: `0 18px 50px ${hex}33`,
+              background: customHex ? `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))` : undefined,
+            } as any;
             return (
               <a
                 key={room.id}
                 href={`/rooms/${room.id}`}
                 className="flex-shrink-0 w-80 h-56 relative rounded-4xl overflow-hidden cursor-pointer group shadow-xl border border-white/5 hover:border-white/20 transition-all transform hover:-translate-y-1 text-left"
+                style={glowStyle}
               >
                 {room.coverImage ? (
                   <img
@@ -65,7 +78,7 @@ export default function DashboardRooms() {
                 )}
 
                 <div
-                  className={`absolute inset-0 bg-linear-to-t ${glowClass ?? ""} via-canvas-bg-dark/60 to-canvas-bg-dark opacity-60 group-hover:opacity-80 transition-opacity duration-500`}
+                  className={`absolute inset-0 bg-linear-to-t via-canvas-bg-dark/60 to-canvas-bg-dark opacity-60 group-hover:opacity-80 transition-opacity duration-500`}
                   style={customHex ? { background: `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))` } : undefined}
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-canvas-bg-dark via-canvas-bg-dark/40 to-transparent opacity-90">

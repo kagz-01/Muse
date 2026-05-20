@@ -129,6 +129,19 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
   const theme = themeMapping[room.themeColor] || themeMapping["indigo"];
   const customHex = room.customThemeHex;
+  const baseHexMap: Record<RoomTheme, string> = {
+    indigo: "#6366f1",
+    emerald: "#10b981",
+    rose: "#f43f5e",
+    amber: "#f59e0b",
+    cyan: "#06b6d4",
+    slate: "#64748b",
+  };
+  const hex = customHex || baseHexMap[room.themeColor] || baseHexMap.indigo;
+  const glowStyle = {
+    boxShadow: `0 20px 60px ${hex}33`,
+    background: `linear-gradient(135deg, ${hex}22, transparent)`,
+  } as any;
 
   const handleImageUpload = (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -569,17 +582,19 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                   : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                       {items.map((item) => (
-                        <div
-                          key={item.id}
-                          className={`bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group transition-all duration-500 card-glow glow-${room.themeColor}`}
-                        >
-                          <div
-                            className={`h-40 ${theme.bg} relative overflow-hidden`}
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
-                              <ExternalLink size={40} className={theme.text} />
-                            </div>
+                            <div
+                              key={item.id}
+                              className={`bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden group transition-all duration-500`}
+                              style={glowStyle}
+                            >
+                              <div
+                                className={`h-40 relative overflow-hidden`}
+                                style={{ background: customHex ? `linear-gradient(135deg, ${customHex}40, transparent)` : undefined }}
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
+                                <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                                  <ExternalLink size={40} className={theme.text} />
+                                </div>
                             <a
                               href={item.sourceUrl}
                               target="_blank"
