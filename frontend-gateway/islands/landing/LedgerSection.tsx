@@ -4,7 +4,7 @@ export default function LedgerSection() {
   return (
     <section
       id="ledger"
-      className="max-w-[1800px] mx-auto px-6 md:px-10 py-32 space-y-20 relative border-t border-[var(--muse-border)] transition-colors duration-300"
+      className="w-full max-w-none px-6 md:px-10 py-32 space-y-20 relative border-t border-[var(--muse-border)] transition-colors duration-300"
     >
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-4">
         <div className="max-w-2xl">
@@ -22,7 +22,7 @@ export default function LedgerSection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
         {[
           {
             title: "Encrypted Vault",
@@ -51,7 +51,7 @@ export default function LedgerSection() {
         ].map((item) => (
           <div
             key={item.title}
-            className={`${item.bg} border border-[var(--muse-border)] rounded-[2.5rem] p-10 flex flex-col gap-8 hover:scale-[1.02] transition-all duration-300`}
+            className={`${item.bg} border border-[var(--muse-border)] rounded-[2.5rem] p-10 flex flex-col gap-8 hover:scale-[1.02] transition-all duration-300 min-w-[340px] flex-shrink-0`}
           >
             <div
               className={`w-12 h-12 rounded-xl bg-black/20 flex items-center justify-center ${item.color} transition-colors duration-300`}
