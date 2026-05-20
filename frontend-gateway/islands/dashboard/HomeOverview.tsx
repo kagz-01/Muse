@@ -4,8 +4,8 @@ import {
   BarChart3,
   BookOpen,
   CircleDot,
-  FolderOpen,
   Flame,
+  FolderOpen,
   MessageSquare,
   Plus,
   Sparkles,
@@ -15,9 +15,19 @@ import {
 } from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
-import { journalSignal, getJournalStreak, getTodayWordCount, getJournalTitle } from "../../signals/journal.ts";
+import {
+  getJournalStreak,
+  getJournalTitle,
+  getTodayWordCount,
+  journalSignal,
+} from "../../signals/journal.ts";
 import { threadsSignal } from "../../signals/threads.ts";
-import { circlesSignal, collaboratorsSignal, insightsSignal, activeThemesSignal } from "../../signals/connections.ts";
+import {
+  activeThemesSignal,
+  circlesSignal,
+  collaboratorsSignal,
+  insightsSignal,
+} from "../../signals/connections.ts";
 
 function timeOfDayGreeting() {
   const hour = new Date().getHours();
@@ -62,28 +72,62 @@ export default function HomeOverview() {
   const topThemes = activeThemesSignal.value.slice(0, 4);
 
   const stats = [
-    { label: "Artifacts", value: totalArtifacts, helper: `${publicRooms} public rooms`, icon: FolderOpen },
-    { label: "Journal streak", value: `${streak}d`, helper: `${todayWords} words today`, icon: Flame },
-    { label: "Threads", value: threads.length, helper: `${publicThreads} public`, icon: MessageSquare },
-    { label: "Community circles", value: circles.length, helper: `${collaborators.length} collaborators`, icon: Users },
+    {
+      label: "Artifacts",
+      value: totalArtifacts,
+      helper: `${publicRooms} public rooms`,
+      icon: FolderOpen,
+    },
+    {
+      label: "Journal streak",
+      value: `${streak}d`,
+      helper: `${todayWords} words today`,
+      icon: Flame,
+    },
+    {
+      label: "Threads",
+      value: threads.length,
+      helper: `${publicThreads} public`,
+      icon: MessageSquare,
+    },
+    {
+      label: "Community circles",
+      value: circles.length,
+      helper: `${collaborators.length} collaborators`,
+      icon: Users,
+    },
   ];
 
   const recentActivity = [
     {
-      title: latestEntry ? getJournalTitle(latestEntry) : "No journal entries yet",
-      detail: latestEntry ? `${latestEntry.wordCount} words · ${formatRelativeTime(latestEntry.createdAt)}` : "Start your first reflection",
+      title: latestEntry
+        ? getJournalTitle(latestEntry)
+        : "No journal entries yet",
+      detail: latestEntry
+        ? `${latestEntry.wordCount} words · ${
+          formatRelativeTime(latestEntry.createdAt)
+        }`
+        : "Start your first reflection",
       icon: BookOpen,
       href: latestEntry ? `/journal/${latestEntry.id}` : "/journal",
     },
     {
       title: latestRoom ? latestRoom.name : "No rooms yet",
-      detail: latestRoom ? `${latestRoom.count} artifacts · ${latestRoom.isPublic ? "Public" : "Solo"}` : "Create your first room",
+      detail: latestRoom
+        ? `${latestRoom.count} artifacts · ${
+          latestRoom.isPublic ? "Public" : "Solo"
+        }`
+        : "Create your first room",
       icon: FolderOpen,
       href: latestRoom ? `/rooms/${latestRoom.id}` : "/rooms",
     },
     {
       title: latestThread ? latestThread.title : "No threads yet",
-      detail: latestThread ? `${latestThread.itemIds.length} linked artifacts · ${latestThread.isPublic ? "Community" : "Solo"}` : "Start a thread",
+      detail: latestThread
+        ? `${latestThread.itemIds.length} linked artifacts · ${
+          latestThread.isPublic ? "Community" : "Solo"
+        }`
+        : "Start a thread",
       icon: MessageSquare,
       href: latestThread ? `/threads/${latestThread.id}` : "/threads",
     },
@@ -110,7 +154,9 @@ export default function HomeOverview() {
             </h1>
 
             <p className="mt-5 max-w-2xl text-gray-400 text-base md:text-lg leading-relaxed font-serif italic">
-              A quiet dashboard for collecting, contemplating, and turning patterns into output. This is the skeleton; the real intelligence will layer in here next.
+              A quiet dashboard for collecting, contemplating, and turning
+              patterns into output. This is the skeleton; the real intelligence
+              will layer in here next.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -138,8 +184,12 @@ export default function HomeOverview() {
           <div className="space-y-4 rounded-[1.75rem] border border-white/5 bg-black/25 p-5 backdrop-blur-sm">
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">Weekly Mirror</p>
-                <p className="mt-1 text-sm text-gray-300">Fast signals from your current week</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+                  Weekly Mirror
+                </p>
+                <p className="mt-1 text-sm text-gray-300">
+                  Fast signals from your current week
+                </p>
               </div>
               <BarChart3 size={18} className="text-canvas-primary" />
             </div>
@@ -148,13 +198,22 @@ export default function HomeOverview() {
               {stats.slice(0, 2).map((stat) => {
                 const Icon = stat.icon;
                 return (
-                  <div key={stat.label} className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                  <div
+                    key={stat.label}
+                    className="rounded-2xl border border-white/5 bg-white/[0.03] p-4"
+                  >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{stat.label}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                        {stat.label}
+                      </span>
                       <Icon size={14} className="text-canvas-primary" />
                     </div>
-                    <p className="mt-3 text-2xl font-bold text-white">{stat.value}</p>
-                    <p className="mt-1 text-[10px] uppercase tracking-widest text-gray-600">{stat.helper}</p>
+                    <p className="mt-3 text-2xl font-bold text-white">
+                      {stat.value}
+                    </p>
+                    <p className="mt-1 text-[10px] uppercase tracking-widest text-gray-600">
+                      {stat.helper}
+                    </p>
                   </div>
                 );
               })}
@@ -167,7 +226,9 @@ export default function HomeOverview() {
               </div>
               <p className="mt-3 text-sm text-gray-300 leading-relaxed font-serif italic">
                 {activeCollaborator
-                  ? `${activeCollaborator.name} is ${activeCollaborator.status.toLowerCase()} around ${activeCollaborator.sharedThemes.join(" + ")}.`
+                  ? `${activeCollaborator.name} is ${activeCollaborator.status.toLowerCase()} around ${
+                    activeCollaborator.sharedThemes.join(" + ")
+                  }.`
                   : "No active collaborators yet."}
               </p>
             </div>
@@ -179,10 +240,17 @@ export default function HomeOverview() {
         <div className="space-y-6 rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8">
           <div className="flex items-center justify-between gap-4 border-b border-white/5 pb-4">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">Contemplation</h2>
-              <p className="mt-1 text-sm text-gray-400 font-serif italic">Your latest patterns and insights.</p>
+              <h2 className="text-2xl font-bold tracking-tight text-white">
+                Contemplation
+              </h2>
+              <p className="mt-1 text-sm text-gray-400 font-serif italic">
+                Your latest patterns and insights.
+              </p>
             </div>
-            <a href="/mirror" className="text-[11px] font-bold uppercase tracking-widest text-canvas-primary hover:text-white transition-colors">
+            <a
+              href="/mirror"
+              className="text-[11px] font-bold uppercase tracking-widest text-canvas-primary hover:text-white transition-colors"
+            >
               Open Mirror
             </a>
           </div>
@@ -191,19 +259,28 @@ export default function HomeOverview() {
             {stats.map((stat) => {
               const Icon = stat.icon;
               return (
-                <div key={stat.label} className="rounded-3xl border border-white/5 bg-black/20 p-5">
+                <div
+                  key={stat.label}
+                  className="rounded-3xl border border-white/5 bg-black/20 p-5"
+                >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/5 text-white">
                         <Icon size={18} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{stat.label}</p>
-                        <p className="text-2xl font-bold text-white">{stat.value}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                          {stat.label}
+                        </p>
+                        <p className="text-2xl font-bold text-white">
+                          {stat.value}
+                        </p>
                       </div>
                     </div>
                   </div>
-                  <p className="mt-4 text-xs uppercase tracking-widest text-gray-600">{stat.helper}</p>
+                  <p className="mt-4 text-xs uppercase tracking-widest text-gray-600">
+                    {stat.helper}
+                  </p>
                 </div>
               );
             })}
@@ -223,11 +300,16 @@ export default function HomeOverview() {
                       <Icon size={18} />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-white">{item.title}</p>
+                      <p className="text-sm font-semibold text-white">
+                        {item.title}
+                      </p>
                       <p className="text-xs text-gray-500">{item.detail}</p>
                     </div>
                   </div>
-                  <ArrowRight size={16} className="text-gray-600 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+                  <ArrowRight
+                    size={16}
+                    className="text-gray-600 transition-transform group-hover:translate-x-1 group-hover:text-white"
+                  />
                 </a>
               );
             })}
@@ -238,19 +320,30 @@ export default function HomeOverview() {
           <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold tracking-tight text-white">Community Hub</h3>
-                <p className="mt-1 text-sm text-gray-400 font-serif italic">Active circles and collaborators.</p>
+                <h3 className="text-xl font-bold tracking-tight text-white">
+                  Community Hub
+                </h3>
+                <p className="mt-1 text-sm text-gray-400 font-serif italic">
+                  Active circles and collaborators.
+                </p>
               </div>
               <Users size={18} className="text-canvas-primary" />
             </div>
 
             <div className="mt-5 space-y-4">
               {circles.slice(0, 2).map((circle) => (
-                <div key={circle.id} className="rounded-3xl border border-white/5 bg-black/20 p-4">
+                <div
+                  key={circle.id}
+                  className="rounded-3xl border border-white/5 bg-black/20 p-4"
+                >
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-white">{circle.name}</p>
-                      <p className="mt-1 text-xs text-gray-500">{circle.description}</p>
+                      <p className="text-sm font-semibold text-white">
+                        {circle.name}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        {circle.description}
+                      </p>
                     </div>
                     <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       {circle.memberCount}
@@ -264,24 +357,34 @@ export default function HomeOverview() {
           <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 md:p-8">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold tracking-tight text-white">Trending Themes</h3>
-                <p className="mt-1 text-sm text-gray-400 font-serif italic">What is surfacing right now.</p>
+                <h3 className="text-xl font-bold tracking-tight text-white">
+                  Trending Themes
+                </h3>
+                <p className="mt-1 text-sm text-gray-400 font-serif italic">
+                  What is surfacing right now.
+                </p>
               </div>
               <TrendingUp size={18} className="text-canvas-primary" />
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2.5">
               {topThemes.map((theme) => (
-                <span key={theme} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300">
+                <span
+                  key={theme}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300"
+                >
                   {theme}
                 </span>
               ))}
             </div>
 
             <div className="mt-6 rounded-3xl border border-white/5 bg-black/20 p-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">Community signal</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+                Community signal
+              </p>
               <p className="mt-2 text-sm text-gray-300 leading-relaxed font-serif italic">
-                {insightsSignal.value[0] || "Community dialogue is still forming."}
+                {insightsSignal.value[0] ||
+                  "Community dialogue is still forming."}
               </p>
             </div>
           </div>

@@ -6,7 +6,15 @@ export const isProfileOpenSignal = signal(false);
 export const isNotificationsOpenSignal = signal(false);
 
 export type AppTheme = "dark" | "dim" | "tint" | "light";
-export type AppAccentColor = "cyan" | "blue" | "purple" | "pink" | "green" | "yellow" | "red" | "white";
+export type AppAccentColor =
+  | "cyan"
+  | "blue"
+  | "purple"
+  | "pink"
+  | "green"
+  | "yellow"
+  | "red"
+  | "white";
 export type AppFontSize = "small" | "medium" | "large";
 
 export type AppNotification = {
@@ -60,16 +68,25 @@ const initialNotifications: AppNotification[] = [
   },
 ];
 
-export const notificationsSignal = signal<AppNotification[]>(initialNotifications);
+export const notificationsSignal = signal<AppNotification[]>(
+  initialNotifications,
+);
 export const appThemeSignal = signal<AppTheme>("dark");
 export const appAccentSignal = signal<AppAccentColor>("cyan");
 export const appFontSizeSignal = signal<AppFontSize>("medium");
 
-function updateStoredAppearance(partial: Partial<{ theme: AppTheme; accentColor: AppAccentColor; fontSize: AppFontSize }>) {
+function updateStoredAppearance(
+  partial: Partial<
+    { theme: AppTheme; accentColor: AppAccentColor; fontSize: AppFontSize }
+  >,
+) {
   try {
     const settingsRaw = globalThis.localStorage?.getItem("muse-fresh-settings");
     const parsed = settingsRaw
-      ? JSON.parse(settingsRaw) as { appearance?: Record<string, unknown>; [key: string]: unknown }
+      ? JSON.parse(settingsRaw) as {
+        appearance?: Record<string, unknown>;
+        [key: string]: unknown;
+      }
       : {};
 
     const next = {
@@ -80,7 +97,10 @@ function updateStoredAppearance(partial: Partial<{ theme: AppTheme; accentColor:
       },
     };
 
-    globalThis.localStorage?.setItem("muse-fresh-settings", JSON.stringify(next));
+    globalThis.localStorage?.setItem(
+      "muse-fresh-settings",
+      JSON.stringify(next),
+    );
   } catch {
     // Best effort persistence.
   }
@@ -94,11 +114,15 @@ function resolveSavedTheme(): AppTheme {
 
     const settingsRaw = globalThis.localStorage?.getItem("muse-fresh-settings");
     if (settingsRaw) {
-      const parsed = JSON.parse(settingsRaw) as { appearance?: { theme?: string } };
+      const parsed = JSON.parse(settingsRaw) as {
+        appearance?: { theme?: string };
+      };
       if (parsed.appearance?.theme === "light") return "light";
       if (parsed.appearance?.theme === "dark") return "dark";
       if (parsed.appearance?.theme === "system") {
-        return globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        return globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
       }
     }
   } catch {

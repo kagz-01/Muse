@@ -8,22 +8,22 @@ export default {
     extend: {
       colors: {
         canvas: {
-          'bg-dark': '#0C0B09', // Warm near-black
-          'bg-light': '#fafafa',
-          primary: 'rgb(var(--muse-accent-rgb) / <alpha-value>)',
-          'card-dark': '#141210', // Warm card surface
-          'card-light': '#f3f4f6',
-          teal: '#2A9D8F', // AI/mood accent
-          'gold-dim': '#8C6D35', // Muted gold for subtle states
-        }
+          "bg-dark": "#0C0B09", // Warm near-black
+          "bg-light": "#fafafa",
+          primary: "rgb(var(--muse-accent-rgb) / <alpha-value>)",
+          "card-dark": "#141210", // Warm card surface
+          "card-light": "#f3f4f6",
+          teal: "#2A9D8F", // AI/mood accent
+          "gold-dim": "#8C6D35", // Muted gold for subtle states
+        },
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        serif: ['Newsreader', 'ui-serif', 'Georgia', 'serif'],
+        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ["Newsreader", "ui-serif", "Georgia", "serif"],
       },
       borderRadius: {
-        '4xl': '2rem',
-      }
+        "4xl": "2rem",
+      },
     },
   },
 } satisfies Config;

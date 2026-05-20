@@ -1,12 +1,24 @@
 import { useState } from "preact/hooks";
-import { 
-  MessageSquare, Sparkles, Activity, Zap, ArrowRight, CornerDownRight, 
-  BookOpen, Layout, ShieldCheck, Cpu, RefreshCcw 
+import {
+  Activity,
+  ArrowRight,
+  BookOpen,
+  CornerDownRight,
+  Cpu,
+  Layout,
+  MessageSquare,
+  RefreshCcw,
+  ShieldCheck,
+  Sparkles,
+  Zap,
 } from "lucide-preact";
-import { perspectivesSignal as persSig, submitPerspective as subPers } from "../../signals/connections.ts";
+import {
+  perspectivesSignal as persSig,
+  submitPerspective as subPers,
+} from "../../signals/connections.ts";
 
 export default function ThoughtStream() {
-  const [newThought, setNewThought] = useState('');
+  const [newThought, setNewThought] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   const perspectives = persSig.value;
@@ -15,153 +27,191 @@ export default function ThoughtStream() {
     e.preventDefault();
     if (!newThought.trim()) return;
     subPers(newThought, replyingTo || undefined);
-    setNewThought('');
+    setNewThought("");
     setReplyingTo(null);
   };
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      
       {/* INPUT HUB */}
       <div className="bg-white/2 border border-white/5 rounded-[3rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 h-full w-1/3 bg-canvas-primary/5 blur-[80px] pointer-events-none" />
-        
+
         <div className="relative z-10 space-y-8">
-           <div className="flex items-center justify-between">
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-                 <MessageSquare size={14} className="text-canvas-primary" /> Contribute Perspective
-              </h2>
-              <div className="flex items-center gap-4">
-                 <div className="flex items-center gap-2 text-[9px] font-bold text-emerald-500 uppercase tracking-widest">
-                    <ShieldCheck size={12} /> Ledger Active
-                 </div>
-                 {replyingTo && (
-                   <button 
-                     onClick={() => setReplyingTo(null)}
-                     className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary hover:text-white transition-colors"
-                   >
-                     Cancel Reply
-                   </button>
-                 )}
+          <div className="flex items-center justify-between">
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+              <MessageSquare size={14} className="text-canvas-primary" />{" "}
+              Contribute Perspective
+            </h2>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-[9px] font-bold text-emerald-500 uppercase tracking-widest">
+                <ShieldCheck size={12} /> Ledger Active
               </div>
-           </div>
-
-           <form onSubmit={handleSubmit} className="relative">
-              <textarea 
-                value={newThought}
-                onInput={(e) => setNewThought((e.target as HTMLTextAreaElement).value)}
-                placeholder={replyingTo ? "Synthesize your response..." : "What patterns are you noticing?"}
-                className="w-full bg-white/5 border border-white/10 rounded-[2.5rem] px-10 py-8 text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.07] transition-all min-h-[160px] text-xl font-serif italic outline-none"
-              />
-              <button 
-                type="submit"
-                className="absolute bottom-8 right-8 w-16 h-16 bg-white text-black rounded-2xl flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-              >
-                <ArrowRight size={28} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-           </form>
-
-           <div className="flex flex-wrap gap-4">
-              {[
-                { label: 'Intuition', icon: Sparkles },
-                { label: 'Logic', icon: Activity },
-                { label: 'Skepticism', icon: Zap },
-                { label: 'Curiosity', icon: MessageSquare }
-              ].map(tone => (
-                <button key={tone.label} className="px-6 py-3 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-canvas-primary transition-all flex items-center gap-2">
-                  <tone.icon size={12} className="text-canvas-primary" /> {tone.label}
+              {replyingTo && (
+                <button
+                  onClick={() => setReplyingTo(null)}
+                  className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary hover:text-white transition-colors"
+                >
+                  Cancel Reply
                 </button>
-              ))}
-           </div>
+              )}
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="relative">
+            <textarea
+              value={newThought}
+              onInput={(e) =>
+                setNewThought((e.target as HTMLTextAreaElement).value)}
+              placeholder={replyingTo
+                ? "Synthesize your response..."
+                : "What patterns are you noticing?"}
+              className="w-full bg-white/5 border border-white/10 rounded-[2.5rem] px-10 py-8 text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.07] transition-all min-h-[160px] text-xl font-serif italic outline-none"
+            />
+            <button
+              type="submit"
+              className="absolute bottom-8 right-8 w-16 h-16 bg-white text-black rounded-2xl flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+            >
+              <ArrowRight
+                size={28}
+                className="group-hover:translate-x-1 transition-transform"
+              />
+            </button>
+          </form>
+
+          <div className="flex flex-wrap gap-4">
+            {[
+              { label: "Intuition", icon: Sparkles },
+              { label: "Logic", icon: Activity },
+              { label: "Skepticism", icon: Zap },
+              { label: "Curiosity", icon: MessageSquare },
+            ].map((tone) => (
+              <button
+                key={tone.label}
+                className="px-6 py-3 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-canvas-primary transition-all flex items-center gap-2"
+              >
+                <tone.icon size={12} className="text-canvas-primary" />{" "}
+                {tone.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* THE STREAM */}
       <div className="relative space-y-10">
-        
         <div className="absolute left-8 top-0 bottom-0 w-px bg-linear-to-b from-canvas-primary/40 via-white/5 to-transparent pointer-events-none" />
 
         {perspectives.map((pers, i) => (
-          <div 
-            key={pers.id} 
+          <div
+            key={pers.id}
             className={`relative pl-24 animate-in fade-in slide-in-from-left-4 duration-500`}
             style={{ animationDelay: `${i * 100}ms` }}
           >
-            <div 
+            <div
               className={`absolute left-7 top-8 w-4 h-4 rounded-full border-4 border-[#0a0a0a] z-10 transition-all duration-700`}
-              style={{ backgroundColor: pers.author.aura, boxShadow: `0 0 20px ${pers.author.aura}` }}
+              style={{
+                backgroundColor: pers.author.aura,
+                boxShadow: `0 0 20px ${pers.author.aura}`,
+              }}
             />
-            
-            <div className={`group relative bg-white/[0.03] border border-white/5 rounded-[3rem] p-10 transition-all hover:bg-white/[0.05] hover:border-white/10 ${pers.relationship === 'Challenging' ? 'border-amber-500/20' : ''}`}>
-               
-               {/* ANALYZING OVERLAY */}
-               {pers.isAnalyzing && (
-                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-[3rem] z-20 flex items-center justify-center gap-4 animate-in fade-in duration-300">
-                    <div className="flex items-center gap-3 px-6 py-3 bg-white/10 border border-white/10 rounded-2xl">
-                       <Cpu size={16} className="text-canvas-primary animate-pulse" />
-                       <span className="text-[10px] font-bold uppercase tracking-widest text-white">Parallel Analysis Node #4 Active</span>
-                       <RefreshCcw size={14} className="text-gray-500 animate-spin" />
-                    </div>
-                 </div>
-               )}
 
-               <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-[12px] font-bold border border-white/10`} style={{ backgroundColor: `${pers.author.aura}15`, color: pers.author.aura }}>
-                        {pers.author.name.charAt(0)}
-                     </div>
-                     <div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-white">{pers.author.name}</span>
-                        <div className="flex items-center gap-3 mt-1">
-                           <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">{pers.timestamp}</span>
-                           {pers.source && (
-                             <span className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-canvas-primary/60">
-                                {pers.source === 'Journal' ? <BookOpen size={10} /> : <Layout size={10} />}
-                                {pers.source}
-                             </span>
-                           )}
-                        </div>
-                     </div>
+            <div
+              className={`group relative bg-white/[0.03] border border-white/5 rounded-[3rem] p-10 transition-all hover:bg-white/[0.05] hover:border-white/10 ${
+                pers.relationship === "Challenging" ? "border-amber-500/20" : ""
+              }`}
+            >
+              {/* ANALYZING OVERLAY */}
+              {pers.isAnalyzing && (
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-[3rem] z-20 flex items-center justify-center gap-4 animate-in fade-in duration-300">
+                  <div className="flex items-center gap-3 px-6 py-3 bg-white/10 border border-white/10 rounded-2xl">
+                    <Cpu
+                      size={16}
+                      className="text-canvas-primary animate-pulse"
+                    />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white">
+                      Parallel Analysis Node #4 Active
+                    </span>
+                    <RefreshCcw
+                      size={14}
+                      className="text-gray-500 animate-spin"
+                    />
                   </div>
+                </div>
+              )}
 
-                  <div className="flex items-center gap-4">
-                    {pers.txId && (
-                      <div className="px-3 py-1 bg-white/5 border border-white/5 rounded-lg text-[8px] font-mono text-gray-600 group-hover:text-emerald-500/60 transition-colors">
-                        TX: {pers.txId}
-                      </div>
-                    )}
-                    {pers.relationship !== 'Initial' && (
-                      <div className={`px-4 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-widest border ${
-                        pers.relationship === 'Challenging' ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
-                        pers.relationship === 'Resonating' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' :
-                        'bg-canvas-primary/10 border-canvas-primary/30 text-canvas-primary'
-                      }`}>
-                        {pers.relationship}
-                      </div>
-                    )}
-                  </div>
-               </div>
-
-               <p className="text-2xl font-serif italic text-gray-200 leading-relaxed max-w-4xl">
-                  {pers.content}
-               </p>
-
-               <div className="mt-8 pt-8 border-t border-white/[0.03] flex items-center gap-8">
-                  <button 
-                    onClick={() => setReplyingTo(pers.id)}
-                    className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`w-10 h-10 rounded-2xl flex items-center justify-center text-[12px] font-bold border border-white/10`}
+                    style={{
+                      backgroundColor: `${pers.author.aura}15`,
+                      color: pers.author.aura,
+                    }}
                   >
-                    <CornerDownRight size={16} /> Synthesize Perspective
-                  </button>
-                  <button className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-                    <Activity size={16} /> 12 Resonance
-                  </button>
-               </div>
+                    {pers.author.name.charAt(0)}
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-white">
+                      {pers.author.name}
+                    </span>
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
+                        {pers.timestamp}
+                      </span>
+                      {pers.source && (
+                        <span className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-canvas-primary/60">
+                          {pers.source === "Journal"
+                            ? <BookOpen size={10} />
+                            : <Layout size={10} />}
+                          {pers.source}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  {pers.txId && (
+                    <div className="px-3 py-1 bg-white/5 border border-white/5 rounded-lg text-[8px] font-mono text-gray-600 group-hover:text-emerald-500/60 transition-colors">
+                      TX: {pers.txId}
+                    </div>
+                  )}
+                  {pers.relationship !== "Initial" && (
+                    <div
+                      className={`px-4 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-widest border ${
+                        pers.relationship === "Challenging"
+                          ? "bg-amber-500/10 border-amber-500/30 text-amber-500"
+                          : pers.relationship === "Resonating"
+                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500"
+                          : "bg-canvas-primary/10 border-canvas-primary/30 text-canvas-primary"
+                      }`}
+                    >
+                      {pers.relationship}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-2xl font-serif italic text-gray-200 leading-relaxed max-w-4xl">
+                {pers.content}
+              </p>
+
+              <div className="mt-8 pt-8 border-t border-white/[0.03] flex items-center gap-8">
+                <button
+                  onClick={() => setReplyingTo(pers.id)}
+                  className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                >
+                  <CornerDownRight size={16} /> Synthesize Perspective
+                </button>
+                <button className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                  <Activity size={16} /> 12 Resonance
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
-
     </div>
   );
 }

@@ -20,31 +20,33 @@ export interface Item {
 
 export const itemsSignal = signal<Item[]>([
   {
-    id: 'i1',
-    roomId: 'r1',
-    title: 'Brutalist Principles in Digital Spaces',
-    sourceUrl: 'https://design.com/brutalism',
-    note: 'Raw materials are the only honest way to build.',
+    id: "i1",
+    roomId: "r1",
+    title: "Brutalist Principles in Digital Spaces",
+    sourceUrl: "https://design.com/brutalism",
+    note: "Raw materials are the only honest way to build.",
     isPublic: true,
     createdAt: new Date().toISOString(),
     dataProvenance: {
-      platform: 'Web',
+      platform: "Web",
       extractedAt: new Date().toISOString(),
-      integrityHash: 'sha256-...'
-    }
-  }
+      integrityHash: "sha256-...",
+    },
+  },
 ]);
 
-export function addItem(item: Omit<Item, 'id' | 'createdAt' | 'dataProvenance'>) {
+export function addItem(
+  item: Omit<Item, "id" | "createdAt" | "dataProvenance">,
+) {
   const newItem: Item = {
     ...item,
-    id: 'i' + (itemsSignal.value.length + 1),
+    id: "i" + (itemsSignal.value.length + 1),
     createdAt: new Date().toISOString(),
     dataProvenance: {
-      platform: item.sourceUrl.includes('x.com') ? 'X' : 'Web',
+      platform: item.sourceUrl.includes("x.com") ? "X" : "Web",
       extractedAt: new Date().toISOString(),
-      integrityHash: 'sha256-' + Math.random().toString(16).slice(2, 10)
-    }
+      integrityHash: "sha256-" + Math.random().toString(16).slice(2, 10),
+    },
   };
   itemsSignal.value = [newItem, ...itemsSignal.value];
 }

@@ -1,30 +1,39 @@
 import { useState } from "preact/hooks";
-import { X, Shield, Activity, Zap, Lock, Mail, User, Infinity as InfinityIcon } from "lucide-preact";
+import {
+  Activity,
+  Infinity as InfinityIcon,
+  Lock,
+  Mail,
+  Shield,
+  User,
+  X,
+  Zap,
+} from "lucide-preact";
 import { login } from "../../signals/user.ts";
 
 interface AuthModalProps {
-  initialMode: 'signup' | 'login';
+  initialMode: "signup" | "login";
   onClose: () => void;
 }
 
 export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
   const [localMode, setLocalMode] = useState(initialMode);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
     setIsSyncing(true);
-    
+
     // Cinematic sync effect
     setTimeout(() => {
       setIsSyncing(false);
       setIsSuccess(true);
       setTimeout(() => {
         login(email);
-        globalThis.location.href = '/dashboard';
+        globalThis.location.href = "/dashboard";
       }, 1000);
     }, 1500);
   };
@@ -40,18 +49,16 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/95 backdrop-blur-3xl transition-opacity animate-in fade-in duration-500" 
+      <div
+        className="absolute inset-0 bg-black/95 backdrop-blur-3xl transition-opacity animate-in fade-in duration-500"
         onClick={onClose}
       />
 
       <div className="relative w-full max-w-xl z-10 animate-in zoom-in-95 duration-500">
-        
         {/* SCANNING OVERLAY */}
         <div className="absolute inset-x-0 h-1 bg-canvas-primary blur-md z-30 pointer-events-none animate-[scan_2s_linear_infinite]" />
 
         <div className="relative bg-[#050505] border border-white/10 rounded-[3rem] p-12 overflow-hidden shadow-[0_60px_100px_rgba(0,0,0,0.8)]">
-          
           {/* DECORATIVE SPECTRUM */}
           <div className="absolute -top-32 -right-32 w-80 h-80 bg-canvas-primary/10 blur-[100px] rounded-full animate-pulse" />
           <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-white/5 blur-[100px] rounded-full" />
@@ -65,112 +72,131 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
           </button>
 
           <div className="relative z-10">
-            
             {/* TERMINAL HEADER */}
             <div className="flex items-center gap-4 mb-12">
               <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-black font-bold text-xl shadow-2xl">
                 <InfinityIcon size={28} strokeWidth={2.5} />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.5em] leading-none mb-2">Welcome</p>
+                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.5em] leading-none mb-2">
+                  Welcome
+                </p>
                 <h2 className="text-3xl font-bold tracking-tight text-white leading-none uppercase">
-                  {isSuccess ? "Verified" : localMode === 'signup' ? 'Get Started' : 'Login'}
+                  {isSuccess
+                    ? "Verified"
+                    : localMode === "signup"
+                    ? "Get Started"
+                    : "Login"}
                 </h2>
               </div>
             </div>
 
-            {isSuccess ? (
-              <div className="py-20 text-center space-y-6 animate-in zoom-in-95 duration-500">
-                 <div className="w-20 h-20 bg-emerald-500/20 border border-emerald-500/40 rounded-full mx-auto flex items-center justify-center text-emerald-400">
+            {isSuccess
+              ? (
+                <div className="py-20 text-center space-y-6 animate-in zoom-in-95 duration-500">
+                  <div className="w-20 h-20 bg-emerald-500/20 border border-emerald-500/40 rounded-full mx-auto flex items-center justify-center text-emerald-400">
                     <Zap size={40} className="fill-emerald-400" />
-                 </div>
-                 <p className="text-xl font-serif italic text-gray-400">Connecting to your cognitive vault...</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-8">
-                
-                {localMode === 'signup' && (
+                  </div>
+                  <p className="text-xl font-serif italic text-gray-400">
+                    Connecting to your cognitive vault...
+                  </p>
+                </div>
+              )
+              : (
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  {localMode === "signup" && (
+                    <div className="space-y-3 group">
+                      <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                        <User size={12} /> Full Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={name}
+                        onChange={(e) =>
+                          setName((e.target as HTMLInputElement).value)}
+                        placeholder="ENTER IDENTITY"
+                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
+                      />
+                    </div>
+                  )}
+
                   <div className="space-y-3 group">
                     <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                      <User size={12} /> Full Name
+                      <Mail size={12} /> Email Address
                     </label>
                     <input
-                      type="text"
+                      type="email"
                       required
-                      value={name}
-                      onChange={(e) => setName((e.target as HTMLInputElement).value)}
-                      placeholder="ENTER IDENTITY"
+                      value={email}
+                      onChange={(e) =>
+                        setEmail((e.target as HTMLInputElement).value)}
+                      placeholder="EMAIL@MUSE.SYSTEM"
                       className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
                     />
                   </div>
-                )}
 
-                <div className="space-y-3 group">
-                  <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                    <Mail size={12} /> Email Address
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
-                    placeholder="EMAIL@MUSE.SYSTEM"
-                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
-                  />
-                </div>
+                  <div className="space-y-3 group">
+                    <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                      <Lock size={12} /> Password
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="••••••••"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono"
+                    />
+                  </div>
 
-                <div className="space-y-3 group">
-                  <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                    <Lock size={12} /> Password
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••"
-                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono"
-                  />
-                </div>
+                  <div className="pt-4 space-y-4">
+                    <button
+                      type="submit"
+                      disabled={isSyncing}
+                      className="group relative w-full py-6 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.3em] text-[11px] shadow-[0_20px_40px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:shadow-white/20 active:scale-95 transition-all cursor-pointer overflow-hidden disabled:opacity-50"
+                    >
+                      <div className="absolute inset-0 bg-canvas-primary/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+                      <span className="relative z-10 flex items-center justify-center gap-3">
+                        {isSyncing
+                          ? "AUTHENTICATING..."
+                          : localMode === "signup"
+                          ? "GET STARTED"
+                          : "LOGIN"}
+                        {!isSyncing && <ArrowRight size={16} />}
+                      </span>
+                    </button>
 
-                <div className="pt-4 space-y-4">
-                  <button
-                    type="submit"
-                    disabled={isSyncing}
-                    className="group relative w-full py-6 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.3em] text-[11px] shadow-[0_20px_40px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:shadow-white/20 active:scale-95 transition-all cursor-pointer overflow-hidden disabled:opacity-50"
-                  >
-                    <div className="absolute inset-0 bg-canvas-primary/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
-                    <span className="relative z-10 flex items-center justify-center gap-3">
-                      {isSyncing ? "AUTHENTICATING..." : localMode === 'signup' ? 'GET STARTED' : 'LOGIN'} 
-                      {!isSyncing && <ArrowRight size={16} />}
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleDemoEntry}
-                    className="w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px] hover:bg-white/10 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-3"
-                  >
-                    <Activity size={14} /> Continue as Guest
-                  </button>
-                </div>
-              </form>
-            )}
+                    <button
+                      type="button"
+                      onClick={handleDemoEntry}
+                      className="w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px] hover:bg-white/10 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-3"
+                    >
+                      <Activity size={14} /> Continue as Guest
+                    </button>
+                  </div>
+                </form>
+              )}
 
             {!isSuccess && (
               <div className="mt-12 pt-8 border-t border-white/5 flex flex-col items-center gap-6">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
-                  {localMode === 'signup' ? 'Already have an account?' : "New to Muse?"}
+                  {localMode === "signup"
+                    ? "Already have an account?"
+                    : "New to Muse?"}
                   <button
                     type="button"
-                    onClick={() => setLocalMode(localMode === 'signup' ? 'login' : 'signup')}
+                    onClick={() =>
+                      setLocalMode(localMode === "signup" ? "login" : "signup")}
                     className="ml-3 text-white hover:text-canvas-primary transition-colors"
                   >
-                    {localMode === 'signup' ? 'LOGIN' : 'GET STARTED'}
+                    {localMode === "signup" ? "LOGIN" : "GET STARTED"}
                   </button>
                 </p>
-                
+
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
-                   <Shield size={12} className="text-gray-600" />
-                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500">End-to-End Encryption Active</span>
+                  <Shield size={12} className="text-gray-600" />
+                  <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500">
+                    End-to-End Encryption Active
+                  </span>
                 </div>
               </div>
             )}
@@ -178,22 +204,32 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
         </div>
       </div>
 
-      <style>{`
+      <style>
+        {`
         @keyframes scan {
           0% { transform: translateY(-100vh); opacity: 0; }
           50% { opacity: 0.5; }
           100% { transform: translateY(100vh); opacity: 0; }
         }
-      `}</style>
-
+      `}
+      </style>
     </div>
   );
 }
 
 function ArrowRight({ size }: { size: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 12h14m-7-7 7 7-7 7"/>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M5 12h14m-7-7 7 7-7 7" />
     </svg>
   );
 }
