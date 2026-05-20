@@ -44,10 +44,11 @@ export default function SemanticConflictResolver(
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
             <button
+              type="button"
               onClick={() => onResolve("merge")}
-              className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
+              className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
             >
               <Merge
                 size={20}
@@ -61,8 +62,9 @@ export default function SemanticConflictResolver(
               </p>
             </button>
             <button
+              type="button"
               onClick={() => onResolve("separate")}
-              className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
+              className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
             >
               <X
                 size={20}
@@ -76,8 +78,9 @@ export default function SemanticConflictResolver(
               </p>
             </button>
             <button
+              type="button"
               onClick={() => onResolve("cluster")}
-              className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
+              className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
             >
               <GitBranch
                 size={20}
