@@ -112,14 +112,16 @@ export function addThread(
   >,
 ) {
   const newId = "t" + (threadsSignal.value.length + 1);
-  threadsSignal.value = [...threadsSignal.value, {
+  const newThread: Thread = {
     ...thread,
     id: newId,
     updatedAt: new Date().toISOString(),
     synthesisScore: Math.floor(Math.random() * 40) + 60,
     resonanceMetrics: { views: 0, connections: 0 },
     dialogueLayers: [],
-  }];
+  };
+  threadsSignal.value = [...threadsSignal.value, newThread];
+  return newId;
 }
 
 export function addDialogueLayer(

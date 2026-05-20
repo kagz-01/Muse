@@ -94,7 +94,7 @@ export default function CreateThreadModal({ onClose }: Props) {
       setError("Give your thread a title.");
       return;
     }
-    const thread = addThread({
+    const newId = addThread({
       title: title.trim(),
       description: description.trim(),
       thesis: thesis.trim(),
@@ -103,7 +103,7 @@ export default function CreateThreadModal({ onClose }: Props) {
       isPublic,
     });
     onClose();
-    globalThis.location.href = `/threads/${thread.id}`;
+    globalThis.location.href = `/threads/${newId}`;
   };
 
   return (

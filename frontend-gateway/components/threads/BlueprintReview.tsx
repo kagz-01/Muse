@@ -22,6 +22,7 @@ export default function BlueprintReview() {
   );
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedThesis, setEditedThesis] = useState("");
+  const [acceptedMap, setAcceptedMap] = useState<Record<string, string>>({});
 
   if (blueprints.length === 0) return null;
 
@@ -122,7 +123,10 @@ export default function BlueprintReview() {
 
               <div className="flex gap-4">
                 <button
-                  onClick={() => acceptBlueprint(bp.id)}
+                  onClick={() => {
+                    const newId = acceptBlueprint(bp.id);
+                    if (newId) setAcceptedMap((m) => ({ ...m, [bp.id]: newId }));
+                  }}
                   className="flex-1 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:scale-[1.02] transition-all shadow-xl flex items-center justify-center gap-3"
                 >
                   <Check size={16} /> Accept Blueprint
@@ -134,6 +138,19 @@ export default function BlueprintReview() {
                   <X size={16} />
                 </button>
               </div>
+              {acceptedMap[bp.id]
+                ? (
+                  <div className="mt-4 text-sm text-green-400">
+                    Blueprint accepted —{' '}
+                    <a
+                      href={`/threads/${acceptedMap[bp.id]}`}
+                      className="underline"
+                    >
+                      View thread
+                    </a>
+                  </div>
+                )
+                : null}
             </div>
           </div>
         ))}

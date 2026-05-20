@@ -33,16 +33,16 @@ export const blueprintsSignal = signal<ThreadBlueprint[]>([
 
 export function acceptBlueprint(id: string) {
   const bp = blueprintsSignal.value.find((b) => b.id === id);
-  if (!bp) return;
+  if (!bp) return undefined;
 
   // Mark blueprint accepted
   blueprintsSignal.value = blueprintsSignal.value.map((b) =>
     b.id === id ? { ...b, status: "accepted" } : b
   );
 
-  // Create a new thread from the blueprint
+  // Create a new thread from the blueprint and return its id
   try {
-    addThread({
+    const newId = addThread({
       title: bp.suggestedTitle,
       description: bp.suggestedDescription,
       mood: bp.suggestedMood,
@@ -51,8 +51,10 @@ export function acceptBlueprint(id: string) {
       isPublic: true,
       thesis: bp.thesis,
     });
+    return newId;
   } catch {
     // Best-effort: if thread creation fails, keep blueprint status but do not crash.
+    return undefined;
   }
 }
 
