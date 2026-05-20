@@ -68,7 +68,7 @@ export default function CreateHub() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
-      <div className="p-6 md:p-10 max-w-[1800px] mx-auto w-full space-y-12">
+      <div className="w-full max-w-none px-6 md:px-10 space-y-12">
         {showCreateRoom && (
           <CreateRoomModal onClose={() => setShowCreateRoom(false)} />
         )}
@@ -238,10 +238,10 @@ export default function CreateHub() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        <div className="flex gap-6 overflow-x-auto pb-4 mb-20 scrollbar-hide">
           <div
             onClick={() => setShowCreateRoom(true)}
-            className="group relative h-[400px] rounded-4xl overflow-hidden cursor-pointer border border-white/5 hover:border-indigo-500/40 transition-all duration-500 shadow-2xl"
+            className="group relative h-[400px] w-[360px] flex-shrink-0 rounded-4xl overflow-hidden cursor-pointer border border-white/5 hover:border-indigo-500/40 transition-all duration-500 shadow-2xl"
           >
             <div className="absolute inset-0 bg-linear-to-b from-indigo-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
@@ -266,7 +266,7 @@ export default function CreateHub() {
               e.stopPropagation();
               setShowCreateThread(true);
             }}
-            className="group relative h-[400px] rounded-4xl overflow-hidden cursor-pointer border border-white/5 hover:border-violet-600/40 transition-all duration-500 shadow-2xl z-10"
+            className="group relative h-[400px] w-[360px] flex-shrink-0 rounded-4xl overflow-hidden cursor-pointer border border-white/5 hover:border-violet-600/40 transition-all duration-500 shadow-2xl z-10"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-violet-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
@@ -288,7 +288,7 @@ export default function CreateHub() {
 
           <div
             onClick={() => handleStartJournal(false)}
-            className="group relative h-[400px] rounded-4xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/30 transition-all duration-500 shadow-2xl"
+            className="group relative h-[400px] w-[360px] flex-shrink-0 rounded-4xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/30 transition-all duration-500 shadow-2xl"
           >
             <div className="absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
@@ -345,8 +345,8 @@ export default function CreateHub() {
               <div className="h-px bg-white/5 flex-1" />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-60">
-              <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden">
+            <div className="flex gap-6 overflow-x-auto pb-4 opacity-60 scrollbar-hide">
+              <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden min-w-[320px] flex-shrink-0">
                 <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white bg-black/80 px-4 py-2 rounded-full border border-white/10">
                     In Development
@@ -364,7 +364,7 @@ export default function CreateHub() {
                 </p>
               </div>
 
-              <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden">
+              <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden min-w-[320px] flex-shrink-0">
                 <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white bg-black/80 px-4 py-2 rounded-full border border-white/10">
                     In Development
@@ -381,7 +381,7 @@ export default function CreateHub() {
                 </p>
               </div>
 
-              <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden">
+              <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl relative group overflow-hidden min-w-[320px] flex-shrink-0">
                 <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white bg-black/80 px-4 py-2 rounded-full border border-white/10">
                     In Development
