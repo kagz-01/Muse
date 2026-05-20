@@ -1,9 +1,9 @@
+import { type CSSProperties } from "preact";
 import { useMemo, useState } from "preact/hooks";
 import {
   Aperture,
   Archive,
   ArrowRight,
-  Globe,
   Lock,
   Pin,
   Plus,
@@ -11,7 +11,6 @@ import {
   Users,
 } from "lucide-preact";
 import { type Room, roomsSignal, type RoomTheme } from "../../signals/rooms.ts";
-import { collaboratorsSignal } from "../../signals/connections.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 import VaultUnlockModal from "../modals/VaultUnlockModal.tsx";
 
@@ -104,7 +103,7 @@ function RoomCard({
     slate: "#64748b",
   };
   const hex = room.customThemeHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo;
-  const glowStyle: JSX.CSSProperties = {
+  const glowStyle: CSSProperties = {
     boxShadow: `0 20px 60px ${hex}33`,
     background: `linear-gradient(135deg, ${hex}22, transparent)`,
   };
@@ -574,92 +573,36 @@ export default function RoomsGallery() {
                   </button>
                 </div>
               )}
-          {/* Collaboration & Architecture moved into the `collab` tab content to avoid duplication */}
+          {/* Collab tab now uses one surface: shared rooms only. */}
           {activeTab === "collab" && (
-            <div className="mt-8 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-              <aside className="space-y-4 rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 md:p-6">
-            <div className="flex items-center justify-between border-b border-white/5 pb-4">
-              <div>
-                <h3 className={`text-xl font-bold tracking-tight ${textClass}`}>
-                  Collaboration
-                </h3>
-                <p className={`mt-1 text-sm font-serif italic ${mutedClass}`}>
-                  The rooms that are shared, and the people orbiting them.
-                </p>
-              </div>
-              <Users size={18} className="text-canvas-primary" />
-            </div>
-
-            <div className="space-y-3">
-              {collaboratorsSignal.value.map((person) => (
-                <div
-                  key={person.id}
-                  className={`rounded-3xl ${softSurfaceClass} p-4`}
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={person.avatar}
-                      alt=""
-                      className="h-11 w-11 rounded-2xl object-cover"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className={`font-semibold ${textClass}`}>{person.name}</p>
-                      <p className="text-xs text-[var(--muse-muted)]">{person.role}</p>
-                    </div>
-                    <span className="rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                      {person.status}
-                    </span>
-                  </div>
-                  <p className={`mt-3 text-sm font-serif italic leading-relaxed ${mutedClass}`}>
-                    {person.bio}
+            <div className={`mt-8 space-y-4 rounded-[2rem] ${softSurfaceClass} p-5 md:p-6`}>
+              <div className="flex items-center justify-between gap-3 border-b border-[var(--muse-border)] pb-4">
+                <div>
+                  <h2 className={`text-2xl font-bold tracking-tight ${textClass}`}>
+                    Collab Rooms
+                  </h2>
+                  <p className={`mt-1 text-sm font-serif italic ${mutedClass}`}>
+                    Collaboration and collab rooms now share the same surface.
                   </p>
                 </div>
-              ))}
-            </div>
-
-            <div className={`rounded-3xl ${softSurfaceClass} p-4`}>
-              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                <Globe size={12} className="text-emerald-300" />
-                Room Architecture
+                <Users size={18} className="text-canvas-primary" />
               </div>
-              <p className={`mt-2 text-sm leading-relaxed font-serif italic ${mutedClass}`}>
-                <strong>Vault:</strong> Your private chambers—password protected, seen only by you.<br/><br/>
-                <strong>Collab:</strong> Public rooms you share with collaborators. Invite others to weave shared context and artifacts with you.<br/><br/>
-                <strong>Pinned:</strong> Rooms you surface first. They appear at the top of your "All" view, helping you return to what matters most.<br/><br/>
-                <strong>Starred:</strong> Rooms you love. Mark them for quick revisiting without affecting their visual position.
-              </p>
-            </div>
-          </aside>
 
-              <div className={`space-y-4 rounded-[2rem] ${softSurfaceClass} p-5 md:p-6`}>
-                <div className="flex items-center justify-between gap-3 border-b border-[var(--muse-border)] pb-4">
-                  <div>
-                    <h2 className={`text-2xl font-bold tracking-tight ${textClass}`}>
-                      Collab Rooms
-                    </h2>
-                    <p className={`mt-1 text-sm font-serif italic ${mutedClass}`}>
-                      Shared rooms and collaboration surfaces now get the full column.
-                    </p>
+              <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                {collabRooms.map((room) => (
+                  <div key={room.id} className="flex-shrink-0 w-80">
+                    <RoomCard
+                      room={room}
+                      pinned={pinnedIds.includes(room.id)}
+                      starred={starredIds.includes(room.id)}
+                      archived={archivedIds.includes(room.id)}
+                      onOpen={() => openRoom(room.id)}
+                      onPin={() => togglePin(room.id)}
+                      onStar={() => toggleStar(room.id)}
+                      onArchive={() => toggleArchive(room.id)}
+                    />
                   </div>
-                  <Users size={18} className="text-canvas-primary" />
-                </div>
-
-                <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                  {collabRooms.map((room) => (
-                    <div key={room.id} className="flex-shrink-0 w-80">
-                      <RoomCard
-                        room={room}
-                        pinned={pinnedIds.includes(room.id)}
-                        starred={starredIds.includes(room.id)}
-                        archived={archivedIds.includes(room.id)}
-                        onOpen={() => openRoom(room.id)}
-                        onPin={() => togglePin(room.id)}
-                        onStar={() => toggleStar(room.id)}
-                        onArchive={() => toggleArchive(room.id)}
-                      />
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
             </div>
           )}
