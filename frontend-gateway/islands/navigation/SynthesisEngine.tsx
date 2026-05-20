@@ -1,4 +1,4 @@
-import { Activity, Plus } from "lucide-preact";
+import { Aperture, Plus } from "lucide-preact";
 import { toggleCapture } from "../../signals/ui.ts";
 
 export default function SynthesisEngine() {
@@ -8,9 +8,9 @@ export default function SynthesisEngine() {
       <a
         href="/mirror"
         title="Mirror Insights"
-        className="w-12 h-12 rounded-full flex items-center justify-center bg-canvas-primary/10 border border-canvas-primary/30 text-canvas-primary hover:bg-canvas-primary/20 transition-all duration-300 shadow-[0_0_15px_rgba(var(--muse-accent-rgb),0.2)] hover:shadow-[0_0_20px_rgba(var(--muse-accent-rgb),0.4)] opacity-80 hover:opacity-100 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md animate-in slide-in-from-bottom-4 duration-500"
+        className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-tr from-white/10 via-white/5 to-white/20 border border-white/20 text-[var(--muse-text)] hover:bg-white/20 transition-all duration-300 shadow-[inset_0_4px_10px_rgba(255,255,255,0.3),0_0_15px_rgba(var(--muse-accent-rgb),0.2)] hover:shadow-[inset_0_4px_15px_rgba(255,255,255,0.5),0_0_20px_rgba(var(--muse-accent-rgb),0.4)] opacity-80 hover:opacity-100 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-500"
       >
-        <Activity size={18} />
+        <Aperture size={20} className="opacity-80" />
       </a>
 
       {/* REMEMBER / SYNTHESIZE TRIGGER */}

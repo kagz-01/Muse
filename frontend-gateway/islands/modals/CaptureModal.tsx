@@ -14,7 +14,6 @@ import {
 } from "lucide-preact";
 import {
   addNotification,
-  appThemeSignal,
   isCaptureOpenSignal,
   toggleCapture,
 } from "../../signals/ui.ts";

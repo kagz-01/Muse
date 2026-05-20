@@ -6,9 +6,7 @@ import {
   setAccentColor,
 } from "../../signals/ui.ts";
 import {
-  Activity,
   BookOpen,
-  ChevronRight,
   Download,
   GitCommit,
   Home as HomeIcon,
@@ -17,7 +15,6 @@ import {
   Settings as SettingsIcon,
   Shield,
   Users as UsersIcon,
-  Wallet,
   X,
 } from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
@@ -133,95 +130,95 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
             </button>
           </div>
 
-          <div className="space-y-6">
-            {/* PROFILE WIDGET */}
-            <div className="bg-[var(--muse-surface-soft)] rounded-[2rem] p-6 border border-[var(--muse-border)] transition-all duration-300">
-              <div className="flex items-center gap-4 mb-5">
-                <img
-                  src={user?.avatarUrl}
-                  className="w-14 h-14 rounded-2xl object-cover border border-[var(--muse-border)] transition-all duration-300"
-                  alt=""
-                />
-                <div>
-                  <h3 className="text-sm font-bold text-[var(--muse-text)] tracking-tight transition-colors duration-300">
-                    {user?.name}
-                  </h3>
-                  <p className="text-[10px] text-[var(--muse-muted)] font-bold uppercase tracking-widest transition-colors duration-300">
-                    {user?.username}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <a
-                  href={isDemo ? "/" : "/profile"}
-                  onClick={closeMenu}
-                  className="flex items-center justify-between p-3 rounded-xl bg-[var(--muse-surface)] text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all duration-300"
-                >
-                  {isDemo ? "Establish Soul Link" : "Manage Persona"}{" "}
-                  <ChevronRight size={14} />
-                </a>
-              </div>
-            </div>
-
-            {isDemo && (
-              <div className="bg-canvas-primary/5 border border-canvas-primary/20 rounded-[2rem] p-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <Activity size={16} className="text-canvas-primary" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary">
-                    Observer Mode
-                  </span>
-                </div>
-                <p className="text-[11px] text-[var(--muse-muted)] leading-relaxed font-serif italic transition-colors duration-300">
-                  You are observing a sample consciousness. Actions are
-                  temporary.
+          <div className="flex flex-col flex-1">
+            {/* PROFILE HEAD */}
+            <div className="flex items-center gap-4 mb-8 px-2">
+              <img
+                src={user?.avatarUrl}
+                className="w-12 h-12 rounded-full object-cover border border-[var(--muse-border)]"
+                alt=""
+              />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-[var(--muse-text)] tracking-tight truncate">
+                  {user?.name}
+                </h3>
+                <p className="text-[10px] text-[var(--muse-muted)] font-bold uppercase tracking-widest truncate">
+                  {user?.username}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => globalThis.location.href = "/"}
-                  className="w-full py-3 bg-canvas-primary text-white text-[9px] font-bold uppercase tracking-widest rounded-xl shadow-lg hover:shadow-canvas-primary/20 transition-all cursor-pointer"
-                >
-                  Register to Save
-                </button>
-              </div>
-            )}
-
-            {/* LEDGER & PRIVACY WIDGET */}
-            <div className="bg-[var(--muse-surface-soft)] rounded-[2rem] p-6 border border-[var(--muse-border)] space-y-5 transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Shield size={16} className="text-canvas-primary" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">
-                    Visibility
-                  </span>
-                </div>
-                <span className="text-[9px] font-bold px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg uppercase tracking-widest border border-emerald-500/20">
-                  Public
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Wallet size={16} className="text-canvas-primary" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">
-                    Ledger Status
-                  </span>
-                </div>
-                <span className="text-[9px] font-bold text-[var(--muse-muted)] uppercase tracking-widest transition-colors duration-300">
-                  Secured
-                </span>
               </div>
             </div>
 
-            {/* AURA WIDGET */}
-            <div className="bg-[var(--muse-surface-soft)] rounded-[2rem] p-6 border border-[var(--muse-border)] transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] transition-colors duration-300">
-                  System Aura
+            {/* MAIN NAVIGATION LIST */}
+            <div className="flex flex-col gap-1 space-y-1">
+              <a
+                href={isDemo ? "/" : "/profile"}
+                onClick={closeMenu}
+                className="flex items-center gap-4 p-3 rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors"
+              >
+                <UsersIcon size={20} />
+                <span className="text-xs font-bold uppercase tracking-widest">
+                  {isDemo ? "Establish Soul Link" : "Profile"}
                 </span>
-                <span className="text-[9px] font-bold text-canvas-primary uppercase tracking-widest">
-                  Resonance
+              </a>
+
+              <a
+                href={isDemo ? "/" : "/settings"}
+                onClick={isDemo
+                  ? (e) => {
+                    e.preventDefault();
+                    globalThis.location.href = "/";
+                  }
+                  : closeMenu}
+                className="flex items-center gap-4 p-3 rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors relative"
+              >
+                <SettingsIcon size={20} />
+                <span className="text-xs font-bold uppercase tracking-widest">
+                  Settings
                 </span>
-              </div>
-              <div className="flex flex-wrap gap-2.5">
+                {isDemo && (
+                  <Lock size={12} className="absolute right-4 opacity-50" />
+                )}
+              </a>
+
+              <button
+                type="button"
+                onClick={isDemo
+                  ? () => globalThis.location.href = "/"
+                  : undefined}
+                className="flex items-center gap-4 p-3 w-full rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors cursor-pointer relative"
+              >
+                <Shield size={20} />
+                <span className="text-xs font-bold uppercase tracking-widest text-left flex-1">
+                  Security & Ledger
+                </span>
+                {isDemo && (
+                  <Lock size={12} className="absolute right-4 opacity-50" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={isDemo
+                  ? () => globalThis.location.href = "/"
+                  : undefined}
+                className="flex items-center gap-4 p-3 w-full rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors cursor-pointer relative"
+              >
+                <Download size={20} />
+                <span className="text-xs font-bold uppercase tracking-widest text-left flex-1">
+                  Export Data
+                </span>
+                {isDemo && (
+                  <Lock size={12} className="absolute right-4 opacity-50" />
+                )}
+              </button>
+            </div>
+
+            {/* THEME SELECTOR MINI */}
+            <div className="mt-8 px-3">
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)] mb-3 block px-1">
+                System Resonance
+              </span>
+              <div className="flex flex-wrap gap-2">
                 {([
                   "cyan",
                   "blue",
@@ -236,10 +233,10 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                     type="button"
                     key={color}
                     onClick={() => setAccentColor(color)}
-                    className={`w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-90 ${
+                    className={`w-5 h-5 rounded-full border transition-all hover:scale-110 active:scale-90 ${
                       appAccentSignal.value === color
-                        ? "border-[var(--muse-text)] scale-110 shadow-2xl"
-                        : "border-[var(--muse-border)]"
+                        ? "border-[var(--muse-text)] scale-110 shadow-md"
+                        : "border-transparent"
                     }`}
                     style={{
                       backgroundColor: color === "white" ? "#f1f5f9" : color,
@@ -249,78 +246,11 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
               </div>
             </div>
 
-            {/* SYSTEM CONTROLS */}
-            <div className="grid grid-cols-2 gap-3">
-              <a
-                href={isDemo ? "/" : "/settings"}
-                onClick={isDemo
-                  ? (e) => {
-                    e.preventDefault();
-                    globalThis.location.href = "/";
-                  }
-                  : closeMenu}
-                className={`relative flex flex-col items-center gap-3 p-5 rounded-3xl border transition-all duration-300 ${
-                  isDemo
-                    ? "bg-[var(--muse-surface-soft)]/20 border-[var(--muse-border)] text-[var(--muse-muted)] opacity-60"
-                    : "bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
-                }`}
-              >
-                {isDemo && (
-                  <Lock
-                    size={12}
-                    className="absolute top-4 right-4 text-[var(--muse-muted)]"
-                  />
-                )}
-                <SettingsIcon size={20} />
-                <span className="text-[9px] font-bold uppercase tracking-widest">
-                  {isDemo ? "Unlock" : "Settings"}
-                </span>
-              </a>
-              <button
-                type="button"
-                onClick={isDemo
-                  ? () => globalThis.location.href = "/"
-                  : undefined}
-                className={`relative flex flex-col items-center gap-3 p-5 rounded-3xl border transition-all cursor-pointer duration-300 ${
-                  isDemo
-                    ? "bg-[var(--muse-surface-soft)]/20 border-[var(--muse-border)] text-[var(--muse-muted)] opacity-60"
-                    : "bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
-                }`}
-              >
-                {isDemo && (
-                  <Lock
-                    size={12}
-                    className="absolute top-4 right-4 text-[var(--muse-muted)]"
-                  />
-                )}
-                <Download size={20} />
-                <span className="text-[9px] font-bold uppercase tracking-widest">
-                  {isDemo ? "Unlock" : "Export Soul"}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-auto pt-8">
-            <div className="bg-gradient-to-br from-canvas-primary/10 to-transparent rounded-3xl p-6 border border-canvas-primary/20">
-              <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                <Activity size={12} /> Mirror Sync
+            <div className="mt-auto pt-8 pb-4 px-2">
+              <p className="text-center text-[8px] font-bold text-[var(--muse-muted)] opacity-50 uppercase tracking-[0.4em]">
+                Muse v2.0 • Phase Alpha
               </p>
-              <p className="text-[11px] text-[var(--muse-muted)] leading-relaxed mb-4 font-serif italic transition-colors duration-300">
-                Your digital soul is synchronizing with the collective
-                consciousness.
-              </p>
-              <a
-                href="/mirror"
-                onClick={closeMenu}
-                className="text-[9px] font-bold text-[var(--muse-text)] uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all"
-              >
-                Deep Intelligence <ChevronRight size={14} />
-              </a>
             </div>
-            <p className="mt-8 text-center text-[8px] font-bold text-[var(--muse-muted)] opacity-50 uppercase tracking-[0.4em] transition-colors duration-300">
-              Muse v2.0 • Phase Alpha
-            </p>
           </div>
         </div>
       </div>
