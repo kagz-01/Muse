@@ -1,26 +1,22 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import {
-  Activity,
   Aperture,
   ArrowRight,
   BarChart2,
-  BarChart3,
   BookOpen,
   ChevronRight,
-  Flame,
   FolderOpen,
   Layers,
   MessageSquare,
-  Plus,
-  Target,
   TrendingUp,
+  Wifi,
+  WifiOff,
 } from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import {
   getJournalStreak,
   getJournalTitle,
-  getTodayWordCount,
   journalSignal,
 } from "../../signals/journal.ts";
 import { threadsSignal } from "../../signals/threads.ts";
@@ -28,6 +24,21 @@ import { activeThemesSignal } from "../../signals/connections.ts";
 import { itemsSignal } from "../../signals/items.ts";
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+type ServiceStatus = "up" | "down";
+
+interface ServiceHealthResponse {
+  status: "healthy" | "degraded";
+  checkedAt: string;
+  services: {
+    ai: { status: ServiceStatus; statusCode: number | null; endpoint: string };
+    blockchain: {
+      status: ServiceStatus;
+      statusCode: number | null;
+      endpoint: string;
+    };
+  };
+}
 
 function timeOfDayGreeting() {
   const hour = new Date().getHours();
@@ -47,6 +58,12 @@ function formatRelativeTime(timestamp: number): string {
   return `${days}d ago`;
 }
 
+function toMillis(timestamp: string | number): number {
+  if (typeof timestamp === "number") return timestamp;
+  const parsed = Date.parse(timestamp);
+  return Number.isNaN(parsed) ? Date.now() : parsed;
+}
+
 export default function PulseHome() {
   const user = userSignal.value;
   const rooms = roomsSignal.value;
@@ -54,15 +71,40 @@ export default function PulseHome() {
   const threads = threadsSignal.value;
   const items = itemsSignal.value;
   const [greeting, setGreeting] = useState("Good morning");
+  const [serviceHealth, setServiceHealth] = useState<ServiceHealthResponse | null>(
+    null,
+  );
 
   useEffect(() => {
     setGreeting(timeOfDayGreeting());
   }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadHealth = async () => {
+      try {
+        const response = await fetch("/api/health/services", {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) return;
+        const data = await response.json() as ServiceHealthResponse;
+        setServiceHealth(data);
+      } catch {
+        // Best effort dashboard telemetry.
+      }
+    };
+
+    loadHealth();
+
+    return () => controller.abort();
+  }, []);
+
   // --- MIRROR LOGIC ---
   const now = Date.now();
   const weekItems = useMemo(
-    () => items.filter((i) => now - i.createdAt < ONE_WEEK_MS),
+    () => items.filter((i) => now - toMillis(i.createdAt) < ONE_WEEK_MS),
     [items],
   );
   const weekEntries = useMemo(
@@ -79,7 +121,6 @@ export default function PulseHome() {
   const topRoom = rooms.find((r) => r.id === topRoomId);
 
   const streak = getJournalStreak();
-  const todayWords = getTodayWordCount();
   const topThemes = activeThemesSignal.value.slice(0, 4);
 
   const latestEntry = journalEntries[0];
@@ -235,7 +276,7 @@ export default function PulseHome() {
                   ? `${latestThread.itemIds.length} items`
                   : "No threads",
                 time: latestThread
-                  ? formatRelativeTime(latestThread.createdAt)
+                  ? formatRelativeTime(toMillis(latestThread.updatedAt))
                   : "",
                 icon: MessageSquare,
                 href: "/threads",
@@ -244,7 +285,7 @@ export default function PulseHome() {
                 title: latestRoom ? latestRoom.name : "Rooms",
                 detail: latestRoom ? `${latestRoom.count} total` : "No rooms",
                 time: latestRoom
-                  ? formatRelativeTime(latestRoom.createdAt)
+                  ? formatRelativeTime(toMillis(latestRoom.updatedAt))
                   : "",
                 icon: FolderOpen,
                 href: "/rooms",
@@ -307,6 +348,56 @@ export default function PulseHome() {
           </div>
 
           {/* STATS STRIP */}
+          <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8">
+            <div className="flex items-center justify-between mb-5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">
+                Service Health
+              </p>
+              <div className="text-[9px] uppercase tracking-widest text-gray-600">
+                {serviceHealth?.checkedAt
+                  ? formatRelativeTime(toMillis(serviceHealth.checkedAt))
+                  : "No signal"}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {([
+                {
+                  key: "ai",
+                  label: "AI Engine",
+                  state: serviceHealth?.services.ai.status,
+                  code: serviceHealth?.services.ai.statusCode,
+                },
+                {
+                  key: "blockchain",
+                  label: "Ledger Node",
+                  state: serviceHealth?.services.blockchain.status,
+                  code: serviceHealth?.services.blockchain.statusCode,
+                },
+              ]).map((service) => (
+                <div
+                  key={service.key}
+                  className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                      {service.label}
+                    </span>
+                    {service.state === "up"
+                      ? <Wifi size={14} className="text-emerald-400" />
+                      : <WifiOff size={14} className="text-rose-400" />}
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+                    {service.state === "up" ? "Online" : "Offline"}
+                  </p>
+                  <p className="text-[9px] text-gray-500 mt-1">
+                    HTTP {service.code ?? "-"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="bg-canvas-primary/10 rounded-[2.5rem] border border-canvas-primary/20 p-8 text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary mb-2">
               Total Intelligence

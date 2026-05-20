@@ -29,7 +29,9 @@ export interface Room {
   };
 }
 
-export const roomsSignal = signal<Room[]>([
+const STORAGE_KEY = "muse_rooms_v1";
+
+const INITIAL_ROOMS: Room[] = [
   {
     id: "r1",
     name: "Aesthetic Brutalism",
@@ -56,7 +58,29 @@ export const roomsSignal = signal<Room[]>([
     semanticTags: ["stoicism", "philosophy", "mindfulness"],
     resonanceMetrics: { views: 0, wovenCount: 0 },
   },
-]);
+];
+
+function loadRooms(): Room[] {
+  if (typeof localStorage === "undefined") return INITIAL_ROOMS;
+
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return INITIAL_ROOMS;
+
+  try {
+    const parsed = JSON.parse(stored) as Room[];
+    return Array.isArray(parsed) ? parsed : INITIAL_ROOMS;
+  } catch {
+    return INITIAL_ROOMS;
+  }
+}
+
+export const roomsSignal = signal<Room[]>(loadRooms());
+
+if (typeof localStorage !== "undefined") {
+  roomsSignal.subscribe((rooms: Room[]) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
+  });
+}
 
 export function addRoom(
   room: Omit<

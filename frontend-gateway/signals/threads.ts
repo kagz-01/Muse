@@ -42,7 +42,9 @@ export interface Thread {
   };
 }
 
-export const threadsSignal = signal<Thread[]>([
+const STORAGE_KEY = "muse_threads_v1";
+
+const INITIAL_THREADS: Thread[] = [
   {
     id: "t1",
     title: "The Honesty of Raw Materials",
@@ -75,7 +77,29 @@ export const threadsSignal = signal<Thread[]>([
       auraGradients: ["#6366f1", "#10b981"],
     },
   },
-]);
+];
+
+function loadThreads(): Thread[] {
+  if (typeof localStorage === "undefined") return INITIAL_THREADS;
+
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return INITIAL_THREADS;
+
+  try {
+    const parsed = JSON.parse(stored) as Thread[];
+    return Array.isArray(parsed) ? parsed : INITIAL_THREADS;
+  } catch {
+    return INITIAL_THREADS;
+  }
+}
+
+export const threadsSignal = signal<Thread[]>(loadThreads());
+
+if (typeof localStorage !== "undefined") {
+  threadsSignal.subscribe((threads: Thread[]) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+  });
+}
 
 export function addThread(
   thread: Omit<

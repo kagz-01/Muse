@@ -27,6 +27,8 @@ import { itemsSignal } from "../../signals/items.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { moodConfig } from "./JournalGallery.tsx";
 import {
+  AIInsightsResponse,
+  BlockchainStoreResponse,
   getAIInsights,
   mintReward,
   storeJournalOnBlockchain,
@@ -138,11 +140,11 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
 
   // Web3 & AI Integration States
   const [isProcessing, setIsProcessing] = useState(false);
-  const [aiInsights, setAiInsights] = useState<
-    { summary?: string; status?: string } | null
-  >(null);
+  const [aiInsights, setAiInsights] = useState<AIInsightsResponse | null>(
+    null,
+  );
   const [blockchainResult, setBlockchainResult] = useState<
-    { solana_transaction_id: string; arweave_hash: string } | null
+    BlockchainStoreResponse | null
   >(null);
 
   const handleSecureAndAnalyze = async () => {
@@ -154,7 +156,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
 
     try {
       // 1. Get AI Insights
-      const aiData = await getAIInsights(body);
+      const aiData = await getAIInsights(body, user.id);
       setAiInsights(aiData);
 
       // 2. Store on Blockchain if wallet is connected
@@ -498,7 +500,9 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                   AI Semantic Analysis
                 </p>
                 <p className="text-gray-300 font-serif italic text-lg leading-relaxed relative z-10">
-                  "{aiInsights.summary || aiInsights.status ||
+                  "{aiInsights.message ||
+                    aiInsights.keywords?.join(", ") ||
+                    aiInsights.status ||
                     "Your neural patterns have been successfully mapped to the collective consciousness."}"
                 </p>
               </div>
@@ -519,7 +523,8 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                       Transaction ID
                     </p>
                     <p className="text-[10px] text-gray-400 font-mono bg-white/5 p-2 rounded-lg truncate">
-                      {blockchainResult.solana_transaction_id}
+                      {blockchainResult.solana_transaction_id ||
+                        "Transaction unavailable"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 text-[10px] text-emerald-400 font-bold uppercase tracking-[0.2em]">
@@ -656,7 +661,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-5 flex items-center gap-2.5">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-5 flex items-center gap-2.5">
                 <Hash size={13} className="text-rose-400" /> Introspection Tags
               </label>
               <div className="flex flex-wrap gap-2.5">

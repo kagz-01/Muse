@@ -18,7 +18,9 @@ export interface Item {
   };
 }
 
-export const itemsSignal = signal<Item[]>([
+const STORAGE_KEY = "muse_items_v1";
+
+const INITIAL_ITEMS: Item[] = [
   {
     id: "i1",
     roomId: "r1",
@@ -33,7 +35,29 @@ export const itemsSignal = signal<Item[]>([
       integrityHash: "sha256-...",
     },
   },
-]);
+];
+
+function loadItems(): Item[] {
+  if (typeof localStorage === "undefined") return INITIAL_ITEMS;
+
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return INITIAL_ITEMS;
+
+  try {
+    const parsed = JSON.parse(stored) as Item[];
+    return Array.isArray(parsed) ? parsed : INITIAL_ITEMS;
+  } catch {
+    return INITIAL_ITEMS;
+  }
+}
+
+export const itemsSignal = signal<Item[]>(loadItems());
+
+if (typeof localStorage !== "undefined") {
+  itemsSignal.subscribe((items: Item[]) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  });
+}
 
 export function addItem(
   item: Omit<Item, "id" | "createdAt" | "dataProvenance">,

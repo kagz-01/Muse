@@ -18,6 +18,7 @@ import * as $_app_threads_id_ from "./routes/(app)/threads/[id].tsx";
 import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
@@ -94,6 +95,7 @@ const manifest = {
     "./routes/(app)/threads/index.tsx": $_app_threads_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/api/health/services.ts": $api_health_services,
     "./routes/api/joke.ts": $api_joke,
     "./routes/auth.tsx": $auth,
     "./routes/greet/[name].tsx": $greet_name_,
