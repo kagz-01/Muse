@@ -52,7 +52,7 @@ export default function SystemBento() {
   ];
 
   return (
-    <section className="max-w-[1800px] mx-auto px-6 md:px-10 py-32 space-y-20 transition-all duration-300">
+    <section className="w-full max-w-none px-6 md:px-10 py-32 space-y-20 transition-all duration-300">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-4">
         <div className="max-w-2xl">
           <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--muse-muted)] mb-6 flex items-center gap-3 transition-colors duration-300">
@@ -71,11 +71,11 @@ export default function SystemBento() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
         {features.map((f) => (
           <div
             key={f.title}
-            className={`${f.span} group relative overflow-hidden rounded-[2.5rem] border ${f.border} ${f.bg} p-10 transition-all hover:scale-[1.01] hover:shadow-2xl duration-300`}
+            className={`${f.span} group relative overflow-hidden rounded-[2.5rem] border ${f.border} ${f.bg} p-10 transition-all hover:scale-[1.01] hover:shadow-2xl duration-300 min-w-[360px] flex-shrink-0`}
           >
             <div className="absolute top-0 right-0 p-8 text-[var(--muse-surface-soft)] group-hover:text-[var(--muse-border)] transition-colors duration-300">
               <f.icon size={120} strokeWidth={0.5} />
@@ -102,14 +102,14 @@ export default function SystemBento() {
       </div>
 
       {/* SYSTEM STATS BANNER */}
-      <div className="bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[3rem] p-8 md:p-16 flex flex-wrap justify-between gap-12 transition-all duration-300">
+      <div className="bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[3rem] p-8 md:p-16 flex gap-8 overflow-x-auto pb-2 scrollbar-hide transition-all duration-300">
         {[
           { label: "Data Integrity", val: "100%", icon: Shield },
           { label: "Synthesis Latency", val: "2ms", icon: Zap },
           { label: "Open Standards", val: "W3C", icon: Layout },
           { label: "Network Effect", val: "Global", icon: Network },
         ].map((s) => (
-          <div key={s.label} className="flex items-center gap-6">
+          <div key={s.label} className="flex items-center gap-6 min-w-[220px] flex-shrink-0">
             <div className="w-12 h-12 rounded-full border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] transition-all duration-300">
               <s.icon size={20} />
             </div>
