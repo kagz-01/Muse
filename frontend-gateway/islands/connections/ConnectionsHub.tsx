@@ -39,7 +39,7 @@ export default function ConnectionsHub() {
   const communityRooms = communityRoomsSignal.value;
   const soloMode = soloModeSignal.value;
 
-  const tabs: { id: Tab; icon: any; label: string }[] = [
+  const tabs: { id: Tab; icon: typeof Activity; label: string }[] = [
     { id: "Stream", icon: Activity, label: "Thought Stream" },
     { id: "Wisdom", icon: Aperture, label: "Wisdom Map" },
     { id: "Circles", icon: MessageSquare, label: "Active Circles" },
@@ -51,7 +51,7 @@ export default function ConnectionsHub() {
       {/* Community Pulse Header */}
       <CommunityPulseStrip />
 
-      <div className="p-6 md:p-10 max-w-[1800px] mx-auto w-full space-y-12">
+      <div className="w-full max-w-none px-6 md:px-10 space-y-12">
         {/* HERO SECTION */}
         <section className="relative overflow-hidden rounded-[4rem] border border-white/5 bg-[#0d0d0d] p-12 md:p-20 shadow-2xl">
           <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
@@ -141,21 +141,22 @@ export default function ConnectionsHub() {
               </div>
             )
             : (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <div className="lg:col-span-8">
+              <div className="grid gap-16 xl:grid-cols-[1.15fr_0.85fr] items-start animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="min-w-0">
                   {activeTab === "Stream" && <ThoughtStream />}
 
                   {activeTab === "Wisdom" && <WisdomMap />}
 
                   {activeTab === "Circles" && (
                     <div className="space-y-16">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                         {circles.map((circle) => (
-                          <ActiveCircleCard
-                            key={circle.id}
-                            circle={circle}
-                            onJoin={() => joinCircle(circle.id)}
-                          />
+                          <div key={circle.id} className="w-[360px] flex-shrink-0">
+                            <ActiveCircleCard
+                              circle={circle}
+                              onJoin={() => joinCircle(circle.id)}
+                            />
+                          </div>
                         ))}
                       </div>
 
@@ -204,7 +205,7 @@ export default function ConnectionsHub() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                         {collaborators
                           .filter((c) =>
                             c.name.toLowerCase().includes(
@@ -212,10 +213,11 @@ export default function ConnectionsHub() {
                             )
                           )
                           .map((collaborator) => (
-                            <AuraCard
-                              key={collaborator.id}
-                              collaborator={collaborator}
-                            />
+                            <div key={collaborator.id} className="w-[320px] flex-shrink-0">
+                              <AuraCard
+                                collaborator={collaborator}
+                              />
+                            </div>
                           ))}
                       </div>
                     </div>
@@ -223,7 +225,7 @@ export default function ConnectionsHub() {
                 </div>
 
                 {/* Right Rail: Themes & Pulse */}
-                <div className="lg:col-span-4 space-y-12">
+                <div className="space-y-12 min-w-0">
                   <SyncStatus />
 
                   <div className="bg-white/2 border border-white/5 rounded-[3rem] p-10 backdrop-blur-3xl sticky top-24">
