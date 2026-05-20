@@ -422,7 +422,7 @@ ${e.body}
             </div>
           )
           : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="flex gap-6 items-start overflow-x-auto pb-6 snap-x snap-mandatory">
               {filtered.map((entry, i) => {
                 const cfg = moodConfig[entry.mood];
                 const title = getJournalTitle(entry);
@@ -430,7 +430,8 @@ ${e.body}
                   <a
                     key={entry.id}
                     href={`/journal/${entry.id}`}
-                    className="group relative bg-[#111318] border border-white/5 rounded-4xl p-8 cursor-pointer hover:border-white/15 hover:-translate-y-1 hover:bg-[#15181e] transition-all duration-300 overflow-hidden shadow-2xl block"
+                    className="group relative bg-[#111318] border border-white/5 rounded-4xl p-8 cursor-pointer hover:border-white/15 hover:-translate-y-1 hover:bg-[#15181e] transition-all duration-300 overflow-hidden shadow-2xl block min-w-[360px] flex-shrink-0 snap-start"
+                    style={{ boxShadow: `0 20px 60px ${cfg.color}33` }}
                   >
                     {entry.isFavorited && (
                       <div className="absolute top-8 right-8 z-20">
@@ -443,8 +444,8 @@ ${e.body}
                     )}
 
                     <div
-                      className="absolute -top-10 -left-10 w-32 h-32 rounded-full blur-[80px] opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none"
-                      style={{ backgroundColor: cfg.color }}
+                      className="absolute -top-10 -left-10 w-32 h-32 rounded-full blur-[80px] opacity-[0.06] group-hover:opacity-[0.14] transition-opacity pointer-events-none"
+                      style={{ background: `radial-gradient(circle at 30% 30%, ${cfg.color}22 0px, transparent 40%)` }}
                     />
 
                     <div className="relative z-10">
