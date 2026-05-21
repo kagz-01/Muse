@@ -300,14 +300,14 @@ export default function CreateHub() {
                   className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 cursor-pointer"
                   type="button"
                 >
-                  <Lock size={12} /> Solo
+                  <Icons.Lock size={12} /> Solo
                 </button>
                 <button
                   onClick={() => handleStartJournal(true)}
                   className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all flex items-center gap-2 cursor-pointer"
                   type="button"
                 >
-                  <Globe size={12} /> Public
+                  <Icons.Globe size={12} /> Public
                 </button>
               </div>
 
