@@ -1,37 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import {
-  Award,
-  Bell,
-  Calendar,
-  Camera,
-  CheckCircle,
-  Clock,
-  Compass,
-  Database,
-  Download,
-  Eye,
-  Globe,
-  Heart,
-  Key,
-  Link2,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Monitor,
-  Moon,
-  Newspaper,
-  Palette,
-  Plus,
-  RotateCcw,
-  Shield,
-  Smartphone,
-  Sun,
-  Trash2,
-  Type,
-  User,
-  UserPlus,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import {
   addLink,
   logout,
@@ -121,43 +89,43 @@ const DEFAULT_NOTIFICATIONS: NotificationSettings = {
 const NOTIFICATION_OPTIONS: Array<{
   key: keyof NotificationSettings;
   label: string;
-  icon: typeof MessageCircle;
+  icon: import("preact").ComponentType<Record<string, unknown>>;
   description: string;
 }> = [
   {
     key: "notifyOnReply",
     label: "New replies to my threads",
-    icon: MessageCircle,
+    icon: Icons.MessageCircle,
     description: "Get notified when someone responds to your threads.",
   },
   {
     key: "notifyOnLike",
     label: "Likes on my content",
-    icon: Heart,
+    icon: Icons.Heart,
     description: "See when people appreciate your work.",
   },
   {
     key: "notifyOnFollow",
     label: "New followers",
-    icon: UserPlus,
+    icon: Icons.UserPlus,
     description: "Stay informed when someone starts following you.",
   },
   {
     key: "notifyOnAchievement",
     label: "Achievement unlocks",
-    icon: Award,
+    icon: Icons.Award,
     description: "Celebrate progress when you hit milestones.",
   },
   {
     key: "weeklyDigest",
     label: "Weekly digest",
-    icon: Newspaper,
+    icon: Icons.Newspaper,
     description: "Receive a weekly summary of activity.",
   },
   {
     key: "productUpdates",
     label: "Product updates",
-    icon: Zap,
+    icon: Icons.Zap,
     description: "Hear about new features and releases.",
   },
 ];
@@ -181,11 +149,11 @@ const ACCENT_OPTIONS: Array<
 ];
 
 const THEME_OPTIONS: Array<
-  { value: AppearanceSettings["theme"]; label: string; icon: typeof Sun }
+  { value: AppearanceSettings["theme"]; label: string; icon: import("preact").ComponentType<Record<string, unknown>> }
 > = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "System", icon: Monitor },
+  { value: "light", label: "Light", icon: Icons.Sun },
+  { value: "dark", label: "Dark", icon: Icons.Moon },
+  { value: "system", label: "System", icon: Icons.Monitor },
 ];
 
 const FONT_SIZE_OPTIONS: Array<
@@ -1090,12 +1058,12 @@ export default function Settings() {
     );
   }
 
-  const tabs: Array<{ id: SettingsTab; label: string; icon: typeof User }> = [
-    { id: "profile", label: "Profile", icon: User },
-    { id: "appearance", label: "Appearance", icon: Palette },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "privacy", label: "Privacy", icon: Shield },
-    { id: "data", label: "Data", icon: Database },
+  const tabs: Array<{ id: SettingsTab; label: string; icon: import("preact").ComponentType<Record<string, unknown>> }> = [
+    { id: "profile", label: "Profile", icon: Icons.User },
+    { id: "appearance", label: "Appearance", icon: Icons.Palette },
+    { id: "notifications", label: "Notifications", icon: Icons.Bell },
+    { id: "privacy", label: "Privacy", icon: Icons.Shield },
+    { id: "data", label: "Data", icon: Icons.Database },
   ];
 
   const handleProfileUpdate = (updates: Partial<UserModel>) => {
