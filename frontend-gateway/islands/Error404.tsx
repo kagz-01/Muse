@@ -1,5 +1,5 @@
 import { Head } from "$fresh/runtime.ts";
-import { AlertTriangle, Home, RefreshCw } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function Error404() {
   return (
@@ -18,7 +18,7 @@ export default function Error404() {
           <div className="relative mx-auto w-32 h-32">
             <div className="absolute inset-0 bg-rose-500/20 blur-3xl rounded-full animate-pulse" />
             <div className="relative w-32 h-32 rounded-[2.5rem] bg-white/5 border border-rose-500/30 flex items-center justify-center text-rose-500 shadow-3xl">
-              <AlertTriangle size={64} strokeWidth={1.5} />
+              <Icons.AlertTriangle size={64} strokeWidth={1.5} />
             </div>
           </div>
 
@@ -41,14 +41,14 @@ export default function Error404() {
               href="/"
               className="w-full sm:w-auto px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-3xl hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
             >
-              <Home size={16} /> Return to Nexus
+              <Icons.Home size={16} /> Return to Nexus
             </a>
             <button
               type="button"
               onClick={() => globalThis.location.reload()}
               className="w-full sm:w-auto px-10 py-5 bg-white/5 border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:text-white hover:bg-white/10 transition-all flex items-center justify-center gap-3"
             >
-              <RefreshCw size={16} /> Re-Sync Terminal
+              <Icons.RefreshCw size={16} /> Re-Sync Terminal
             </button>
           </div>
 
