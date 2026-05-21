@@ -1,6 +1,6 @@
 // Use a simple record type for inline style objects
 import { useMemo, useState } from "preact/hooks";
-import Icons from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { type Room, roomsSignal, type RoomTheme } from "../../signals/rooms.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 import VaultUnlockModal from "../modals/VaultUnlockModal.tsx";
