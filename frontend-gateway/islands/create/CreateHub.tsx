@@ -1,16 +1,5 @@
 import { useState } from "preact/hooks";
-import {
-  Aperture,
-  BookOpen,
-  Globe,
-  Image as ImageIcon,
-  Layers,
-  Layout,
-  Link2,
-  Lock,
-  Music,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { addItem } from "../../signals/items.ts";
 import { addEntry } from "../../signals/journal.ts";
@@ -130,7 +119,7 @@ export default function CreateHub() {
               className="relative p-1 bg-white/[0.03] border border-white/10 group-focus-within:border-indigo-500/40 rounded-4xl flex flex-col md:flex-row items-center gap-2 transition-all duration-500 backdrop-blur-xl overflow-hidden"
             >
               <div className="flex-1 flex items-center pl-8 w-full">
-                <Link2
+                <Icons.Link2
                   size={24}
                   className={seedUrl ? "text-indigo-400" : "text-gray-500"}
                 />
@@ -180,13 +169,13 @@ export default function CreateHub() {
                     : seedSuccess
                     ? (
                       <>
-                        Success <Zap size={14} className="fill-white" />
+                        Success <Icons.Zap size={14} className="fill-white" />
                       </>
                     )
                     : (
                       <>
                         Seed Artifact{" "}
-                        <Aperture size={14} className="text-indigo-400" />
+                        <Icons.Aperture size={14} className="text-indigo-400" />
                       </>
                     )}
                 </button>
@@ -207,7 +196,7 @@ export default function CreateHub() {
                     !seedIsPublic ? "bg-white/10 text-white" : "text-gray-600"
                   }`}
                 >
-                  <Lock size={10} />
+                  <Icons.Lock size={10} />
                   <span className="text-[8px] font-bold uppercase tracking-widest">
                     Solo
                   </span>
@@ -221,7 +210,7 @@ export default function CreateHub() {
                       : "text-gray-600"
                   }`}
                 >
-                  <Globe size={10} />
+                  <Icons.Globe size={10} />
                   <span className="text-[8px] font-bold uppercase tracking-widest">
                     Public
                   </span>
@@ -246,7 +235,7 @@ export default function CreateHub() {
             <div className="absolute inset-0 bg-linear-to-b from-indigo-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
               <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-4xl flex items-center justify-center mb-8 transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-xl">
-                <Layout size={36} className="text-indigo-400" />
+                <Icons.Layout size={36} className="text-indigo-400" />
               </div>
               <h3 className="text-3xl font-bold mb-3 tracking-tight text-white">
                 Expressive Room
@@ -271,7 +260,7 @@ export default function CreateHub() {
             <div className="absolute inset-0 bg-gradient-to-b from-violet-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
               <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-4xl flex items-center justify-center mb-8 transform group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 shadow-xl">
-                <Layers size={36} className="text-violet-400" />
+                <Icons.Layers size={36} className="text-violet-400" />
               </div>
               <h3 className="text-3xl font-bold mb-3 tracking-tight text-white">
                 Thematic Thread
@@ -293,7 +282,7 @@ export default function CreateHub() {
             <div className="absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="absolute inset-0 p-10 flex flex-col items-center justify-center text-center">
               <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-4xl flex items-center justify-center mb-8 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-xl">
-                <BookOpen size={36} className="text-white" />
+                <Icons.BookOpen size={36} className="text-white" />
               </div>
               <h3 className="text-3xl font-bold mb-3 tracking-tight text-white">
                 Introspective Entry
@@ -353,7 +342,7 @@ export default function CreateHub() {
                   </span>
                 </div>
                 <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center">
-                  <ImageIcon size={20} className="text-gray-600" />
+                  <Icons.Image size={20} className="text-gray-600" />
                 </div>
                 <h4 className="text-xl font-bold mb-2 text-gray-400">
                   Mood Board Engine
@@ -371,7 +360,7 @@ export default function CreateHub() {
                   </span>
                 </div>
                 <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center">
-                  <Music size={20} className="text-gray-600" />
+                  <Icons.Music size={20} className="text-gray-600" />
                 </div>
                 <h4 className="text-xl font-bold mb-2 text-gray-400">
                   Atmospheric Sync
@@ -388,7 +377,7 @@ export default function CreateHub() {
                   </span>
                 </div>
                 <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl mb-6 flex items-center justify-center">
-                  <Globe size={20} className="text-gray-600" />
+                  <Icons.Globe size={20} className="text-gray-600" />
                 </div>
                 <h4 className="text-xl font-bold mb-2 text-gray-400">
                   Portrait Preview
