@@ -1,24 +1,24 @@
 import { useEffect, useState } from "preact/hooks";
-import { Aperture, MessageSquare, Users, Zap } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 const PULSE_MESSAGES = [
   {
-    icon: <Zap size={14} />,
+    icon: <Icons.Zap size={14} />,
     text: "3 Circles Growing in 'Architecture of Silence'",
     color: "text-canvas-primary",
   },
   {
-    icon: <Users size={14} />,
+    icon: <Icons.Users size={14} />,
     text: "Amina El-Sayed is reflecting in 'Silence'",
     color: "text-amber-400",
   },
   {
-    icon: <Aperture size={14} />,
+    icon: <Icons.Aperture size={14} />,
     text: "Global Theme: 'Identity' is surfacing today",
     color: "text-emerald-400",
   },
   {
-    icon: <MessageSquare size={14} />,
+    icon: <Icons.MessageSquare size={14} />,
     text: "New Perspective: Marcus shared a direct insight",
     color: "text-rose-400",
   },
