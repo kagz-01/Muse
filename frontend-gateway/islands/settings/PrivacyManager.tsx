@@ -1,4 +1,4 @@
-import { Check, Eye, EyeOff, Globe, ShieldCheck, X } from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { togglePublicSetting, User, userSignal } from "../../signals/user.ts";
 
 interface PrivacyManagerProps {
@@ -54,7 +54,7 @@ export default function PrivacyManager(
         <div className="flex justify-between items-start mb-10">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Globe size={14} className="text-emerald-500" />
+              <Icons.Globe size={14} className="text-emerald-500" />
               <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
                 Community Permissions
               </span>
@@ -63,12 +63,12 @@ export default function PrivacyManager(
               Privacy Manager
             </h2>
           </div>
-          <button
+            <button
             type="button"
             onClick={onClose}
             className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-gray-500 hover:text-white transition-all cursor-pointer"
           >
-            <X size={20} />
+            <Icons.X size={20} />
           </button>
         </div>
 
@@ -87,8 +87,8 @@ export default function PrivacyManager(
                       {s.label}
                     </p>
                     {isActive
-                      ? <Eye size={12} className="text-emerald-500" />
-                      : <EyeOff size={12} className="text-gray-600" />}
+                      ? <Icons.Eye size={12} className="text-emerald-500" />
+                        : <Icons.EyeOff size={12} className="text-gray-600" />}
                   </div>
                   <p className="text-[11px] text-gray-500 font-serif italic">
                     {s.desc}
@@ -108,7 +108,7 @@ export default function PrivacyManager(
                     }`}
                   >
                     {isActive && (
-                      <Check size={12} className="text-emerald-600" />
+                      <Icons.Check size={12} className="text-emerald-600" />
                     )}
                   </div>
                 </button>
@@ -119,7 +119,7 @@ export default function PrivacyManager(
 
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col gap-4">
           <div className="flex items-center gap-3 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
-            <ShieldCheck size={18} className="text-emerald-500 shrink-0" />
+            <Icons.ShieldCheck size={18} className="text-emerald-500 shrink-0" />
             <p className="text-[10px] text-emerald-500/70 font-bold uppercase tracking-widest leading-relaxed">
               Changes are applied instantly to your public portrait.
             </p>
