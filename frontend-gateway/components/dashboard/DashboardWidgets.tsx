@@ -1,4 +1,4 @@
-import { Aperture, ArrowRight, MessageSquare } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function DashboardWidgets() {
   return (
@@ -23,7 +23,7 @@ export default function DashboardWidgets() {
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none">
           </div>
           <div className="flex items-center gap-3 mb-6 relative z-10">
-            <Aperture size={20} className="text-canvas-primary" />
+            <Icons.Aperture size={20} className="text-canvas-primary" />
             <h3 className="font-semibold text-white/90 tracking-tight">
               Weekly Mirror
             </h3>
@@ -31,8 +31,8 @@ export default function DashboardWidgets() {
           <p className="text-sm text-gray-400 mb-6 font-serif italic leading-relaxed relative z-10 pr-4">
             "You've been collecting a lot of ambient music lately..."
           </p>
-          <div className="flex items-center gap-2 text-xs font-medium text-canvas-primary relative z-10 group-hover:translate-x-1 transition-transform">
-            Reflect now <ArrowRight size={14} />
+            <div className="flex items-center gap-2 text-xs font-medium text-canvas-primary relative z-10 group-hover:translate-x-1 transition-transform">
+            Reflect now <Icons.ArrowRight size={14} />
           </div>
         </a>
 
@@ -46,7 +46,7 @@ export default function DashboardWidgets() {
           <div className="flex flex-col h-full relative z-10">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <MessageSquare size={20} className="text-canvas-primary" />
+                <Icons.MessageSquare size={20} className="text-canvas-primary" />
                 <h3 className="font-bold text-white tracking-tight">
                   Community Hub
                 </h3>
@@ -84,7 +84,7 @@ export default function DashboardWidgets() {
                 </div>
               </div>
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-canvas-primary group-hover:translate-x-1 transition-transform">
-                Enter Dialogue <ArrowRight size={14} />
+                Enter Dialogue <Icons.ArrowRight size={14} />
               </div>
             </div>
           </div>
