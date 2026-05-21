@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { userSignal } from "../../signals/user.ts";
-import { Aperture, HelpCircle, Leaf, Send } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export type DialogueTone = "Reflect" | "Build" | "Ask";
 
@@ -89,12 +89,12 @@ export default function ThoughtfulComposer(
         </div>
 
         <div className="flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-2xl h-fit">
-          {mode === "Reflect" && <Leaf size={14} className="text-indigo-400" />}
+          {mode === "Reflect" && <Icons.Leaf size={14} className="text-indigo-400" />}
           {mode === "Build" && (
-            <Aperture size={14} className="text-emerald-400" />
+            <Icons.Aperture size={14} className="text-emerald-400" />
           )}
           {mode === "Ask" && (
-            <HelpCircle
+            <Icons.HelpCircle
               size={14}
               className="text-amber-400"
             />
@@ -143,7 +143,7 @@ export default function ThoughtfulComposer(
             : mode === "Build"
             ? "Add Perspective"
             : "Publish Reflection"}
-          <Send size={14} className="ml-1" />
+          <Icons.Send size={14} className="ml-1" />
         </button>
       </div>
     </div>
