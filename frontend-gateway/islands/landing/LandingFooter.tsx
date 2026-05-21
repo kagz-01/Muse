@@ -1,9 +1,4 @@
-import {
-  Activity,
-  ArrowUpRight,
-  Infinity as InfinityIcon,
-  Shield,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function LandingFooter() {
   const socialLinks = [
@@ -89,7 +84,7 @@ export default function LandingFooter() {
           <div className="space-y-10 min-w-[360px] flex-[1.4] flex-shrink-0">
             <div className="flex items-center gap-4">
               <div className="h-14 w-14 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold shadow-2xl transition-all duration-300">
-                <InfinityIcon size={28} strokeWidth={2.5} />
+                <Icons.Infinity size={28} strokeWidth={2.5} />
               </div>
               <div className="flex flex-col">
                 <span className="text-2xl font-bold tracking-tighter text-[var(--muse-text)] leading-none transition-colors duration-300">
@@ -135,7 +130,7 @@ export default function LandingFooter() {
                       className="text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors flex items-center gap-2 group text-sm font-medium duration-300"
                     >
                       {link.label}
-                      <ArrowUpRight
+                      <Icons.ArrowUpRight
                         size={12}
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                       />
@@ -157,7 +152,7 @@ export default function LandingFooter() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <Shield
+              <Icons.Shield
                 size={14}
                 className="text-[var(--muse-muted)] transition-colors duration-300"
               />
@@ -166,7 +161,7 @@ export default function LandingFooter() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <Activity
+              <Icons.Activity
                 size={14}
                 className="text-[var(--muse-muted)] transition-colors duration-300"
               />
