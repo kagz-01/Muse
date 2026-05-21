@@ -1,4 +1,4 @@
-import { Activity, Aperture, X, Zap } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function DemoVideo(
   { isOpen, onClose }: { isOpen: boolean; onClose: () => void },
@@ -20,8 +20,8 @@ export default function DemoVideo(
 
           {/* In a real scenario, we'd use a <video> tag here */}
           <div className="relative text-center space-y-8 p-12">
-            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 animate-pulse">
-              <Activity size={40} className="text-canvas-primary" />
+              <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 animate-pulse">
+              <Icons.Activity size={40} className="text-canvas-primary" />
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter uppercase">
               System Intelligence{" "}
@@ -36,9 +36,9 @@ export default function DemoVideo(
 
             <div className="pt-10 flex flex-wrap justify-center gap-4">
               {[
-                { label: "Capture Engine", icon: Zap },
-                { label: "Vault Architecture", icon: Aperture },
-                { label: "Mirror Synthesis", icon: Activity },
+                { label: "Capture Engine", icon: Icons.Zap },
+                { label: "Vault Architecture", icon: Icons.Aperture },
+                { label: "Mirror Synthesis", icon: Icons.Activity },
               ].map((tag) => (
                 <div
                   key={tag.label}
@@ -69,7 +69,7 @@ export default function DemoVideo(
           onClick={onClose}
           className="absolute top-10 right-10 w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all cursor-pointer z-50 hover:rotate-90"
         >
-          <X size={24} />
+          <Icons.X size={24} />
         </button>
 
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 rounded-full bg-black/60 border border-white/10 backdrop-blur-3xl text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500">
