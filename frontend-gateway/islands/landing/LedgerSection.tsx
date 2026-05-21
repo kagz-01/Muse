@@ -1,4 +1,4 @@
-import { Activity, Database, Lock, Shield } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function LedgerSection() {
   return (
@@ -8,8 +8,8 @@ export default function LedgerSection() {
     >
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-4">
         <div className="max-w-2xl">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--muse-muted)] mb-6 flex items-center gap-3 transition-colors duration-300">
-            <Database size={14} /> The Ledger
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--muse-muted)] mb-6 flex items-center gap-3 transition-colors duration-300">
+            <Icons.Database size={14} /> The Ledger
           </h2>
           <h3 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--muse-text)] leading-tight transition-colors duration-300">
             Cryptographically{" "}
@@ -28,7 +28,7 @@ export default function LedgerSection() {
             title: "Encrypted Vault",
             desc:
               "Military-grade encryption ensures only you hold the keys to your cognitive data.",
-            icon: Lock,
+            icon: Icons.Lock,
             color: "text-[var(--muse-text)]",
             bg: "bg-[var(--muse-surface)]",
           },
@@ -36,7 +36,7 @@ export default function LedgerSection() {
             title: "Proof of Resonance",
             desc:
               "A verifiable trail of your intellectual growth, completely untampered.",
-            icon: Shield,
+            icon: Icons.Shield,
             color: "text-emerald-400",
             bg: "bg-emerald-500/5",
           },
@@ -44,7 +44,7 @@ export default function LedgerSection() {
             title: "Node Status",
             desc:
               "Global distribution with 99.99% uptime. The network never sleeps.",
-            icon: Activity,
+            icon: Icons.Activity,
             color: "text-canvas-primary",
             bg: "bg-canvas-primary/5",
           },
