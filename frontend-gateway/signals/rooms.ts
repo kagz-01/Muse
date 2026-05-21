@@ -232,8 +232,8 @@ export async function unlockVault(id: string, password: string): Promise<boolean
         sessionStorage.setItem(key, JSON.stringify(current));
       }
     }
-  } catch {
-    // ignore
+  } catch (_err) {
+    void _err;
   }
 
   return true;
@@ -244,5 +244,7 @@ export function clearSessionVaultUnlocks() {
     if (typeof sessionStorage !== "undefined") {
       sessionStorage.removeItem("muse_vault_unlocked_v1");
     }
-  } catch {}
+  } catch (_err) {
+    void _err;
+  }
 }

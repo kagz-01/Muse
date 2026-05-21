@@ -1,13 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import {
-  AlertTriangle,
-  Check,
-  Globe,
-  ImagePlus,
-  Lock,
-  Trash2,
-  X,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import {
   deleteRoom,
   type Room,
@@ -32,14 +24,14 @@ const paletteColors: { name: RoomTheme; hex: string; label: string }[] = [
 
 export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
   const [name, setName] = useState(room.name);
-  const [description, setDescription] = useState(room.description);
+  const [description, setDescription] = useState(room.description ?? "");
   const [themeColor, setThemeColor] = useState<RoomTheme>(room.themeColor);
   const [coverPreview, setCoverPreview] = useState(room.coverImage);
   const [isPublic, setIsPublic] = useState(room.isPublic);
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const fileRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -73,7 +65,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
     }
     updateRoom(room.id, {
       name: name.trim(),
-      description: description.trim(),
+      description: (description ?? "").trim(),
       themeColor,
       coverImage: coverPreview,
       isPublic,
@@ -114,7 +106,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
               type="button"
               className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
             >
-              <X size={18} />
+              <Icons.X size={18} />
             </button>
           </div>
 
@@ -137,7 +129,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                 )
                 : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-gray-300 transition-colors">
-                    <ImagePlus size={24} />
+                    <Icons.ImagePlus size={24} />
                     <span className="text-xs font-bold uppercase tracking-widest">
                       Upload Cover Photo
                     </span>
@@ -212,7 +204,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                   style={{ backgroundColor: color.hex }}
                 >
                   {themeColor === color.name && (
-                    <Check
+                    <Icons.Check
                       size={16}
                       strokeWidth={3}
                       className="text-white drop-shadow"
@@ -234,7 +226,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                   : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              <Lock size={14} />
+              <Icons.Lock size={14} />
               <span className="text-[9px] font-bold uppercase tracking-widest">
                 Private — Solo Mode
               </span>
@@ -248,7 +240,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                   : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              <Globe size={14} />
+              <Icons.Globe size={14} />
               <span className="text-[9px] font-bold uppercase tracking-widest">
                 Community Hub
               </span>
@@ -265,7 +257,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
               boxShadow: `0 0 30px ${selectedHex}55`,
             }}
           >
-            Save Changes <Check size={16} />
+            Save Changes <Icons.Check size={16} />
           </button>
 
           {/* Delete Zone */}
@@ -276,13 +268,13 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                 type="button"
                 className="w-full py-3 rounded-2xl border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-widest hover:bg-rose-500/10 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                <Trash2 size={14} /> Delete Room
+                <Icons.Trash2 size={14} /> Delete Room
               </button>
             )
             : (
               <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-4">
                 <div className="flex items-center gap-2 text-rose-400 text-sm font-bold mb-3">
-                  <AlertTriangle size={16} /> This action cannot be undone.
+                  <Icons.AlertTriangle size={16} /> This action cannot be undone.
                 </div>
                 <div className="flex gap-2">
                   <button

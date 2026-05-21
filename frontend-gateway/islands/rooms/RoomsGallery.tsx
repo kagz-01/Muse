@@ -1,15 +1,6 @@
-import { type CSSProperties } from "preact";
+// Use a simple record type for inline style objects
 import { useMemo, useState } from "preact/hooks";
-import {
-  Aperture,
-  Archive,
-  ArrowRight,
-  Lock,
-  Pin,
-  Plus,
-  Star,
-  Users,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import { type Room, roomsSignal, type RoomTheme } from "../../signals/rooms.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 import VaultUnlockModal from "../modals/VaultUnlockModal.tsx";
@@ -49,12 +40,12 @@ function RoomActionButton({
   onClick: () => void;
 }) {
   const Icon = variant === "pin"
-    ? Pin
+    ? Icons.Pin
     : variant === "star"
-    ? Star
+    ? Icons.Star
     : variant === "archive"
-    ? Archive
-    : Aperture;
+    ? Icons.Archive
+    : Icons.Aperture;
 
   return (
     <button
@@ -103,7 +94,7 @@ function RoomCard({
     slate: "#64748b",
   };
   const hex = room.customThemeHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo;
-  const glowStyle: CSSProperties = {
+  const glowStyle: Record<string, string> = {
     boxShadow: `0 20px 60px ${hex}33`,
     background: `linear-gradient(135deg, ${hex}22, transparent)`,
   };
@@ -116,7 +107,7 @@ function RoomCard({
     >
       {room.isVault && !room.isVaultUnlocked && (
         <div className="absolute top-4 right-4 z-20 rounded-md border border-[var(--muse-border)] bg-[var(--muse-surface-soft)] p-2">
-          <Lock size={14} />
+          <Icons.Lock size={14} />
         </div>
       )}
       {/* Background Image - Always Visible but Subtle */}
@@ -209,7 +200,7 @@ function RoomCard({
               </div>
             </div>
             <div className="w-10 h-10 rounded-full bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-text)] group-hover:bg-[var(--muse-text)] group-hover:text-[var(--muse-bg)] transition-all duration-500">
-              <ArrowRight size={16} />
+              <Icons.ArrowRight size={16} />
             </div>
           </div>
         </div>
@@ -519,7 +510,7 @@ export default function RoomsGallery() {
                 </p>
               </div>
               <div className="hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                <ArrowRight size={12} className="text-canvas-primary" />
+                <Icons.ArrowRight size={12} className="text-canvas-primary" />
                 {visibleRooms.length} rooms
               </div>
             </div>
@@ -528,7 +519,7 @@ export default function RoomsGallery() {
               ? (
                 <div className={`flex min-h-[260px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-[var(--muse-border)] bg-[var(--muse-surface)] px-6 text-center`}>
                   <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface-soft)] ${textClass}`}>
-                    <Aperture size={20} />
+                    <Icons.Aperture size={20} />
                   </div>
                   <h3 className={`text-xl font-bold ${textClass}`}>
                     No rooms in this tab yet
@@ -563,7 +554,7 @@ export default function RoomsGallery() {
                   >
                     <div className="flex h-full flex-col items-center justify-center text-center">
                       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-[var(--muse-border)] text-[var(--muse-muted)] transition-colors group-hover:border-[var(--muse-text)]">
-                        <Plus size={24} />
+                        <Icons.Plus size={24} />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">Create a room</span>
                       <p className="mt-2 text-xs text-[var(--muse-muted)] font-serif italic">
@@ -585,7 +576,7 @@ export default function RoomsGallery() {
                     Collaboration and collab rooms now share the same surface.
                   </p>
                 </div>
-                <Users size={18} className="text-canvas-primary" />
+                <Icons.Users size={18} className="text-canvas-primary" />
               </div>
 
               <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">

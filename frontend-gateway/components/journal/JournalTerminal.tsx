@@ -1,18 +1,21 @@
 import { useState } from "preact/hooks";
-import {
-  Activity,
-  Aperture,
-  BookOpen,
-  GitCommit,
-  Hash,
-  Image as ImageIcon,
-  Palette,
-  Send,
-  Type,
-} from "lucide-preact";
+import type { JSX } from "preact";
+import type { Room } from "../../signals/rooms.ts";
+import type { Thread } from "../../signals/threads.ts";
+
+// Lightweight icon stubs to avoid JSX typing issues in the sandbox environment.
+const Activity = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🔄</span>;
+const Aperture = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🔆</span>;
+const BookOpen = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>📖</span>;
+const GitCommit = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>📝</span>;
+const Hash = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>#</span>;
+const ImageIcon = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🖼️</span>;
+const Palette = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🎨</span>;
+const Send = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>📤</span>;
+const Type = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🔤</span>;
 import { roomsSignal } from "../../signals/rooms.ts";
 import { threadsSignal } from "../../signals/threads.ts";
-import { addJournalEntry } from "../../signals/journal.ts";
+import { addEntry } from "../../signals/journal.ts";
 
 export default function JournalTerminal() {
   const rooms = roomsSignal.value;
@@ -24,8 +27,8 @@ export default function JournalTerminal() {
   const [isStylistOpen, setIsStylistOpen] = useState(false);
 
   const toggleSource = (id: string) => {
-    setActiveSources((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    setActiveSources((prev: string[]) =>
+      prev.includes(id) ? prev.filter((s: string) => s !== id) : [...prev, id]
     );
   };
 
@@ -35,13 +38,8 @@ export default function JournalTerminal() {
 
     // Simulate AI analysis and capture
     setTimeout(() => {
-      addJournalEntry({
-        title: title || "Untitled Contemplation",
-        content,
-        sourceIds: activeSources,
-        isReflectionOnly: activeSources.length === 0,
-        sentiment: "analytical",
-      });
+      const body = `${title ? `# ${title}\n\n` : ""}${content}\n\nSources: ${activeSources.join(", ")}`;
+      addEntry(body, false);
       setTitle("");
       setContent("");
       setActiveSources([]);
@@ -148,7 +146,7 @@ export default function JournalTerminal() {
             Contextual Anchors
           </h4>
           <div className="flex flex-wrap gap-3">
-            {rooms.map((room) => (
+            {rooms.map((room: Room) => (
               <button
                 type="button"
                 key={room.id}
@@ -162,7 +160,7 @@ export default function JournalTerminal() {
                 <Hash size={12} className="inline mr-2" /> {room.name}
               </button>
             ))}
-            {threads.map((thread) => (
+            {threads.map((thread: Thread) => (
               <button
                 type="button"
                 key={thread.id}

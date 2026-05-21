@@ -1,13 +1,5 @@
 import { useMemo } from "preact/hooks";
-import {
-  Aperture,
-  ArrowLeft,
-  BarChart2,
-  BookOpen,
-  Layers,
-  Share2,
-  TrendingUp,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import { journalSignal } from "../../signals/journal.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
@@ -43,28 +35,28 @@ export default function Mirror() {
     {
       label: "Artifacts saved",
       value: weekItems.length,
-      icon: Layers,
+      icon: Icons.Layers,
       color: "text-canvas-primary",
       bg: "bg-canvas-primary/10",
     },
     {
       label: "Journal entries",
       value: weekEntries.length,
-      icon: BookOpen,
+      icon: Icons.BookOpen,
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
     },
     {
       label: "Rooms explored",
       value: new Set(weekItems.map((i) => i.roomId)).size,
-      icon: BarChart2,
+      icon: Icons.BarChart2,
       color: "text-amber-400",
       bg: "bg-amber-500/10",
     },
     {
       label: "Public artifacts",
       value: weekItems.filter((i) => i.isPublic).length,
-      icon: TrendingUp,
+      icon: Icons.TrendingUp,
       color: "text-rose-400",
       bg: "bg-rose-500/10",
     },
@@ -90,20 +82,20 @@ export default function Mirror() {
     <div className="min-h-screen bg-canvas-bg-dark pb-24 relative overflow-hidden">
       <div className="fixed inset-0 pointer-events-none bg-canvas-primary/5 blur-3xl opacity-30" />
 
-      <div className="max-w-6xl mx-auto px-6 py-10 relative z-10">
-        <button
+      <div className="w-full max-w-none px-6 md:px-10 py-10 relative z-10">
+          <button
           type="button"
           onClick={() => globalThis.history.back()}
           className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-10 text-sm font-bold uppercase tracking-widest cursor-pointer"
         >
-          <ArrowLeft size={16} /> Back
+          <Icons.ArrowLeft size={16} /> Back
         </button>
 
         {/* Header */}
         <div className="mb-14 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex items-center gap-3 mb-4">
             <div className="animate-pulse">
-              <Aperture size={24} className="text-canvas-primary" />
+              <Icons.Aperture size={24} className="text-canvas-primary" />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary">
               Weekly Mirror
@@ -145,10 +137,10 @@ export default function Mirror() {
 
         {/* Reflections */}
         <div className="bg-white/[0.02] border border-white/5 rounded-4xl p-8 md:p-12 mb-10 relative overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200">
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none" />
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none" />
           <div className="relative z-10">
             <h2 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
-              <Aperture size={20} className="text-canvas-primary" />{" "}
+              <Icons.Aperture size={20} className="text-canvas-primary" />{" "}
               Curator's Insights
             </h2>
             <div className="space-y-6">
@@ -168,7 +160,7 @@ export default function Mirror() {
         {rooms.length > 0 && (
           <div className="mb-10 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300">
             <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2">
-              <BarChart2 size={14} /> Room Activity This Week
+              <Icons.BarChart2 size={14} /> Room Activity This Week
             </h2>
             <div className="space-y-3">
               {rooms.map((room) => {
@@ -204,11 +196,11 @@ export default function Mirror() {
 
         {/* Share CTA */}
         <div className="flex justify-center animate-in fade-in slide-in-from-bottom-20 duration-700 delay-400">
-          <button
+            <button
             type="button"
             className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 active:scale-95 transition-all cursor-pointer"
           >
-            <Share2 size={16} /> Share Your Week
+            <Icons.Share2 size={16} /> Share Your Week
           </button>
         </div>
       </div>

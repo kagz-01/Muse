@@ -4,16 +4,7 @@ import {
   discardBlueprint,
   updateBlueprintThesis,
 } from "../../signals/blueprints.ts";
-import {
-  Aperture,
-  ArrowRight,
-  Check,
-  Edit2,
-  GitCommit,
-  Layers,
-  MessageSquare,
-  X,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import { useState } from "preact/hooks";
 
 export default function BlueprintReview() {
@@ -30,7 +21,7 @@ export default function BlueprintReview() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-          <Aperture size={14} className="text-canvas-primary" />{" "}
+          <Icons.Aperture size={14} className="text-canvas-primary" />{" "}
           Autonomous Blueprints
         </h3>
         <span className="px-3 py-1 bg-canvas-primary/10 border border-canvas-primary/30 rounded-lg text-[9px] font-bold uppercase tracking-widest text-canvas-primary">
@@ -38,11 +29,11 @@ export default function BlueprintReview() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-8">
+      <div className="flex gap-8 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
         {blueprints.map((bp) => (
           <div
             key={bp.id}
-            className="bg-[#111318] border border-white/10 rounded-[2.5rem] p-10 relative overflow-hidden shadow-3xl group"
+            className="min-w-[320px] snap-start inline-block bg-[#111318] border border-white/10 rounded-[2.5rem] p-10 relative overflow-hidden shadow-3xl group"
           >
             <div className="absolute top-0 right-0 h-full w-1/3 bg-canvas-primary/5 blur-[100px] pointer-events-none" />
 
@@ -68,7 +59,7 @@ export default function BlueprintReview() {
 
               <div className="p-8 bg-white/2 border border-white/5 rounded-[2rem] relative overflow-hidden">
                 <h5 className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-2">
-                  <GitCommit size={14} /> Synthesized Thesis
+                  <Icons.GitCommit size={14} /> Synthesized Thesis
                 </h5>
                 {editingId === bp.id
                   ? (
@@ -86,7 +77,7 @@ export default function BlueprintReview() {
                       "{bp.thesis}"
                     </p>
                   )}
-                <button
+                <button type="button"
                   onClick={() => {
                     if (editingId === bp.id) {
                       updateBlueprintThesis(bp.id, editedThesis);
@@ -98,7 +89,7 @@ export default function BlueprintReview() {
                   }}
                   className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all"
                 >
-                  <Edit2 size={16} />
+                  <Icons.Edit2 size={16} />
                 </button>
               </div>
 
@@ -122,20 +113,21 @@ export default function BlueprintReview() {
               </div>
 
               <div className="flex gap-4">
-                <button
+                  <button type="button"
                   onClick={() => {
                     const newId = acceptBlueprint(bp.id);
                     if (newId) setAcceptedMap((m) => ({ ...m, [bp.id]: newId }));
                   }}
                   className="flex-1 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:scale-[1.02] transition-all shadow-xl flex items-center justify-center gap-3"
                 >
-                  <Check size={16} /> Accept Blueprint
+                  <Icons.Check size={16} /> Accept Blueprint
                 </button>
                 <button
+                  type="button"
                   onClick={() => discardBlueprint(bp.id)}
                   className="px-8 py-4 bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:text-white hover:bg-white/10 transition-all"
                 >
-                  <X size={16} />
+                  <Icons.X size={16} />
                 </button>
               </div>
               {acceptedMap[bp.id]

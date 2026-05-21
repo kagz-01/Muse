@@ -1,20 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import {
-  AlertTriangle,
-  Aperture,
-  ArrowLeft,
-  Book,
-  Calendar,
-  Check,
-  ChevronDown,
-  Hash,
-  Link2,
-  Lock,
-  Plus,
-  Star,
-  Trash2,
-  X,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import {
   deleteJournalEntry,
   type JournalEntry as _JournalEntry,
@@ -174,7 +159,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
     }
   };
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -272,7 +257,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             href="/journal"
             className="w-11 h-11 rounded-2xl border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 hover:border-white/20 transition-all shadow-lg"
           >
-            <ArrowLeft size={20} />
+            <Icons.ArrowLeft size={20} />
           </a>
 
           <div className="relative">
@@ -288,7 +273,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             >
               <span className="text-lg leading-none">{cfg.emoji}</span>
               {mood === "custom" && customMoodText ? customMoodText : cfg.label}
-              <ChevronDown size={14} className="opacity-50" />
+              <Icons.ChevronDown size={14} className="opacity-50" />
             </button>
 
             {showMoodPicker && (
@@ -296,7 +281,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500 mb-5 px-1">
                   How are you feeling?
                 </p>
-                <div className="grid grid-cols-2 gap-2.5 mb-5">
+                <div className="flex gap-2.5 mb-5 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide">
                   {moods.filter(([m]) => m !== "custom").map(([m, c]) => (
                     <button
                       key={m}
@@ -305,7 +290,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                         setMood(m as JournalMood);
                         setShowMoodPicker(false);
                       }}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold cursor-pointer transition-all text-left ${
+                      className={`min-w-[140px] flex-shrink-0 snap-start flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold cursor-pointer transition-all text-left ${
                         mood === m
                           ? "text-white"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -368,7 +353,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             ))}
           </div>
 
-          <button
+            <button
             onClick={() => toggleFavoriteJournal(entry.id)}
             type="button"
             className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
@@ -377,7 +362,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
             }`}
           >
-            <Star
+            <Icons.Star
               size={20}
               fill={entry.isFavorited ? "currentColor" : "transparent"}
             />
@@ -406,7 +391,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
               type="button"
               className="w-11 h-11 rounded-2xl border border-white/10 flex items-center justify-center text-gray-600 hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/5 transition-all cursor-pointer shadow-lg"
             >
-              <Trash2 size={18} />
+              <Icons.Trash2 size={18} />
             </button>
           </div>
         </div>
@@ -414,8 +399,8 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
 
       {showDelete && (
         <div className="bg-rose-500/5 border-b border-rose-500/10 px-6 md:px-10 py-6 flex items-center justify-between relative z-20 animate-in slide-in-from-top-2 duration-300 backdrop-blur-md">
-          <div className="flex items-center gap-4 text-[11px] font-bold text-rose-300 uppercase tracking-[0.25em]">
-            <AlertTriangle size={20} className="text-rose-500" />{" "}
+            <div className="flex items-center gap-4 text-[11px] font-bold text-rose-300 uppercase tracking-[0.25em]">
+            <Icons.AlertTriangle size={20} className="text-rose-500" />{" "}
             Confirm permanent deletion.
           </div>
           <div className="flex items-center gap-6">
@@ -437,11 +422,11 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col max-w-5xl mx-auto w-full px-6 md:px-16 py-16 relative z-10">
+      <main className="flex-1 flex flex-col w-full max-w-none px-6 md:px-10 py-16 relative z-10">
         <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <Calendar size={14} className="opacity-40" />
+              <Icons.Calendar size={14} className="opacity-40" />
               <p
                 className="text-[12px] font-bold uppercase tracking-[0.4em] text-white"
                 style={{ color: cfg.color }}
@@ -465,7 +450,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                   : "hover:text-white hover:bg-white/5 hover:border-white/20"
               }`}
             >
-              <Aperture
+              <Icons.Aperture
                 size={16}
                 className={isProcessing
                   ? "animate-spin text-indigo-400"
@@ -478,7 +463,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
               type="button"
               className="flex items-center gap-3 group text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-all cursor-pointer shadow-xl px-6 py-3.5 rounded-2xl border border-white/10 hover:bg-white/5"
             >
-              <Book
+              <Icons.Book
                 size={16}
                 className="group-hover:rotate-12 transition-transform text-violet-400"
               />
@@ -494,7 +479,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
               >
                 <div className="absolute top-0 right-0 p-8 opacity-10">
-                  <Aperture size={48} className="text-indigo-400" />
+                  <Icons.Aperture size={48} className="text-indigo-400" />
                 </div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-5 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
@@ -514,7 +499,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 style={{ boxShadow: `0 20px 60px rgba(139,92,246,0.12)` }}
               >
                 <div className="absolute top-0 right-0 p-8 opacity-10">
-                  <Lock size={48} className="text-violet-400" />
+                  <Icons.Lock size={48} className="text-violet-400" />
                 </div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-violet-400 mb-5 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-violet-400" />
@@ -533,7 +518,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                   </div>
                   <div className="flex items-center gap-3 text-[10px] text-emerald-400 font-bold uppercase tracking-[0.2em]">
                     <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                      <Check size={14} strokeWidth={3} />
+                      <Icons.Check size={14} strokeWidth={3} />
                     </div>
                     Proof of Thought Secured
                   </div>
@@ -552,7 +537,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
               className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
               style={{ backgroundColor: cfg.color + "20" }}
             >
-              <Aperture size={18} style={{ color: cfg.color }} />
+              <Icons.Aperture size={18} style={{ color: cfg.color }} />
             </div>
             <div className="flex-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-2">
@@ -587,7 +572,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
           <div>
             <div className="flex items-center justify-between mb-6">
               <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 flex items-center gap-2.5">
-                <Link2 size={13} className="text-violet-400" />{" "}
+                <Icons.Link2 size={13} className="text-violet-400" />{" "}
                 Inspiration Artifacts
               </label>
               <button
@@ -595,7 +580,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 type="button"
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
               >
-                <Plus size={11} /> Link From Rooms
+                <Icons.Plus size={11} /> Link From Rooms
               </button>
             </div>
 
@@ -619,7 +604,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                     type="button"
                     className="text-gray-700 hover:text-rose-400 transition-colors ml-2 cursor-pointer"
                   >
-                    <X size={14} />
+                    <Icons.X size={14} />
                   </button>
                 </div>
               ))}
@@ -630,7 +615,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-5">
                   Your Room Collective
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
                   {unlinkable.length === 0
                     ? (
                       <p className="text-gray-600 text-xs italic p-2">
@@ -642,9 +627,9 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                         key={item.id}
                         type="button"
                         onClick={() => toggleLinkedItem(item.id)}
-                        className="group w-full flex items-center gap-4 px-5 py-3.5 rounded-2xl border border-transparent hover:border-white/10 hover:bg-white/5 transition-all text-left cursor-pointer"
+                        className="group min-w-[260px] flex-shrink-0 snap-start flex items-center gap-4 px-5 py-3.5 rounded-2xl border border-transparent hover:border-white/10 hover:bg-white/5 transition-all text-left cursor-pointer"
                       >
-                        <Plus
+                        <Icons.Plus
                           size={14}
                           className="text-gray-600 group-hover:text-white"
                         />
@@ -666,7 +651,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
               <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-5 flex items-center gap-2.5">
-                <Hash size={13} className="text-rose-400" /> Introspection Tags
+                <Icons.Hash size={13} className="text-rose-400" /> Introspection Tags
               </label>
               <div className="flex flex-wrap gap-2.5">
                 {tags.map((tag) => (
@@ -675,13 +660,13 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-gray-400 hover:text-white transition-all"
                   >
                     #{tag}
-                    <button
+                      <button
                       onClick={() =>
                         setTags((prev) => prev.filter((t) => t !== tag))}
                       type="button"
                       className="text-gray-600 hover:text-rose-400 transition-colors cursor-pointer"
                     >
-                      <X size={12} />
+                      <Icons.X size={12} />
                     </button>
                   </span>
                 ))}

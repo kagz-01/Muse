@@ -1,23 +1,11 @@
 import { useMemo, useState } from "preact/hooks";
 import {
-  Aperture,
-  ArrowRight,
-  BarChart3,
-  BookOpen,
-  Calendar,
-  Download,
-  Flame,
-  Plus,
-  Search,
-  Star,
-  Target,
-} from "lucide-preact";
-import {
   addEntry,
   dailyWordGoalSignal,
   getJournalStreak,
   getJournalTitle,
   getTodayWordCount,
+  type JournalEntry,
   type JournalMood,
   journalSignal,
 } from "../../signals/journal.ts";
@@ -50,6 +38,13 @@ const PROMPTS: string[] = [
   "What are you waiting for, and is it worth the wait?",
 ];
 
+type MoodStat = [JournalMood, number];
+
+type HeatmapDay = {
+  date: Date;
+  count: number;
+};
+
 function timeFormat(ts: number): string {
   const diff = Date.now() - ts;
   const mins = Math.floor(diff / 60000);
@@ -71,60 +66,66 @@ function excerpt(body: string, chars = 160): string {
 }
 
 export default function JournalGallery() {
-  const entries = journalSignal.value;
+  const entries: JournalEntry[] = journalSignal.value;
   const dailyWordGoal = dailyWordGoalSignal.value;
 
   const [search, setSearch] = useState("");
   const [filterMood, setFilterMood] = useState<JournalMood | "all">("all");
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showInsights, setShowInsights] = useState(false);
+  const [showInsights, _setShowInsights] = useState(false);
 
   const streak = getJournalStreak();
   const todayWords = getTodayWordCount();
-  const totalWords = entries.reduce((acc, e) => acc + e.wordCount, 0);
-  const goalProgress = Math.min(100, (todayWords / dailyWordGoal) * 100);
-  const recentEntries = useMemo(() => entries.slice(0, 3), [entries]);
+  const _totalWords = entries.reduce((acc: number, entry: JournalEntry) => {
+    return acc + entry.wordCount;
+  }, 0);
+  const _goalProgress = Math.min(100, (todayWords / dailyWordGoal) * 100);
+  const _recentEntries = useMemo<JournalEntry[]>(() => entries.slice(0, 3), [
+    entries,
+  ]);
 
-  const filtered = useMemo(() =>
-    entries.filter((e) => {
+  const filtered = useMemo<JournalEntry[]>(() =>
+    entries.filter((entry: JournalEntry) => {
       const matchSearch = search === "" ||
-        e.body.toLowerCase().includes(search.toLowerCase()) ||
-        getJournalTitle(e).toLowerCase().includes(search.toLowerCase()) ||
-        e.tags.some((t) => t.toLowerCase().includes(search.toLowerCase()));
-      const matchMood = filterMood === "all" || e.mood === filterMood;
-      const matchFav = !showFavorites || e.isFavorited;
+        entry.body.toLowerCase().includes(search.toLowerCase()) ||
+        getJournalTitle(entry).toLowerCase().includes(search.toLowerCase()) ||
+        entry.tags.some((tag: string) =>
+          tag.toLowerCase().includes(search.toLowerCase())
+        );
+      const matchMood = filterMood === "all" || entry.mood === filterMood;
+      const matchFav = !showFavorites || entry.isFavorited;
       return matchSearch && matchMood && matchFav;
     }), [entries, search, filterMood, showFavorites]);
 
-  const moodStats = useMemo(() => {
-    const stats: Record<string, number> = {};
-    entries.forEach((e) => {
-      stats[e.mood] = (stats[e.mood] || 0) + 1;
+  const moodStats = useMemo<MoodStat[]>(() => {
+    const stats: Partial<Record<JournalMood, number>> = {};
+    entries.forEach((entry: JournalEntry) => {
+      stats[entry.mood] = (stats[entry.mood] || 0) + 1;
     });
-    return Object.entries(stats).sort((a, b) => b[1] - a[1]);
+    return Object.entries(stats).sort((a, b) => b[1] - a[1]) as MoodStat[];
   }, [entries]);
 
-  const heatmap = useMemo(() => {
-    const days = [...Array(31)].map((_, i) => {
+  const heatmap = useMemo<HeatmapDay[]>(() => {
+    const days = [...Array(31)].map((_, i): HeatmapDay => {
       const d = new Date();
       d.setDate(d.getDate() - (30 - i));
       const dateStr = d.toDateString();
-      const count = entries.filter((e) =>
-        new Date(e.createdAt).toDateString() === dateStr
-      ).reduce((sum, e) => sum + e.wordCount, 0);
+      const count = entries.filter((entry: JournalEntry) =>
+        new Date(entry.createdAt).toDateString() === dateStr
+      ).reduce((sum: number, entry: JournalEntry) => sum + entry.wordCount, 0);
       return { date: d, count };
     });
     return days;
   }, [entries]);
 
-  const handleExport = () => {
-    const content = entries.map((e) => `
-# ${getJournalTitle(e)}
-Date: ${new Date(e.createdAt).toLocaleString()}
-Mood: ${e.mood} ${e.customMood ? `(${e.customMood})` : ""}
-Tags: ${e.tags.join(", ")}
+  const _handleExport = () => {
+    const content = entries.map((entry: JournalEntry) => `
+# ${getJournalTitle(entry)}
+Date: ${new Date(entry.createdAt).toLocaleString()}
+Mood: ${entry.mood} ${entry.customMood ? `(${entry.customMood})` : ""}
+Tags: ${entry.tags.join(", ")}
 
-${e.body}
+${entry.body}
 
 ---
 `).join("\n");
@@ -145,7 +146,7 @@ ${e.body}
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center items-center px-6">
         <div className="w-24 h-24 rounded-4xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-10 shadow-[0_0_80px_rgba(139,92,246,0.1)]">
-          <BookOpen size={40} className="text-violet-400" />
+          <span className="text-violet-400 text-4xl">📖</span>
         </div>
         <h1 className="text-4xl font-bold mb-4 text-white">Your Journal</h1>
         <p className="text-gray-400 font-serif italic text-lg max-w-md text-center leading-relaxed mb-12">
@@ -157,7 +158,7 @@ ${e.body}
           type="button"
           className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-sm rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 transition-all cursor-pointer"
         >
-          Write First Entry <ArrowRight size={18} />
+          Write First Entry <span className="inline-block">➜</span>
         </button>
       </div>
     );
@@ -165,12 +166,12 @@ ${e.body}
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
-      <div className="p-6 md:p-10 w-full max-w-[1800px] mx-auto space-y-12">
+      <div className="w-full px-6 md:px-10 space-y-12">
         <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
           <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-violet-500/10 to-transparent blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-3xl">
+            <div className="w-full max-w-none">
               <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-violet-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
                 Contemplation Layer
@@ -181,7 +182,7 @@ ${e.body}
                   Mental Noise.
                 </span>
               </h1>
-              <p className="mt-8 max-w-2xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
+              <p className="mt-8 max-w-4xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
                 Your Journal is the sanctuary for raw thought. This is where
                 patterns from your collection are tested against your intuition
                 before they become creation.
@@ -219,15 +220,16 @@ ${e.body}
         </section>
 
         {showInsights && (
-          <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-300">
-            <div className="bg-[#111318] border border-white/10 rounded-4xl p-8 shadow-xl">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-6 flex items-center gap-2">
-                <Star size={14} className="text-violet-400" /> Mood Landscape
-              </h3>
+          <div className="mb-10 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+              <div className="min-w-[320px] md:min-w-[420px] rounded-4xl border border-white/10 bg-[#111318] p-8 shadow-xl snap-start">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-6 flex items-center gap-2">
+                    <span className="text-violet-400 text-[14px]">⭐</span> Mood Landscape
+                  </h3>
               <div className="space-y-4">
                 {moodStats.length === 0
                   ? <p className="text-gray-600 italic text-sm">No data yet.</p>
-                  : moodStats.slice(0, 5).map(([mood, count]) => {
+                  : moodStats.slice(0, 5).map(([mood, count]: MoodStat) => {
                     const cfg = moodConfig[mood as JournalMood];
                     const percent = Math.round((count / entries.length) * 100);
                     return (
@@ -256,12 +258,11 @@ ${e.body}
             </div>
 
             <div className="bg-[#111318] border border-white/10 rounded-4xl p-8 shadow-xl">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-6 flex items-center gap-2">
-                <Calendar size={14} className="text-violet-400" />{" "}
-                30-Day Velocity
+                <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-6 flex items-center gap-2">
+                <span className="text-violet-400 text-[14px]">📅</span> 30-Day Velocity
               </h3>
               <div className="flex justify-between items-end h-32 gap-1.5 pt-2">
-                {heatmap.map((day, i) => {
+                {heatmap.map((day: HeatmapDay, i: number) => {
                   const height = Math.min(
                     100,
                     (day.count / (dailyWordGoal * 1.5)) * 100,
@@ -290,15 +291,51 @@ ${e.body}
                 <span>30 Days Ago</span>
                 <span>Today</span>
               </div>
+              </div>
+              <div className="min-w-[320px] md:min-w-[480px] rounded-4xl border border-white/10 bg-[#111318] p-8 shadow-xl snap-start">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-6 flex items-center gap-2">
+                  <span className="text-violet-400 text-[14px]">📅</span> 30-Day Velocity
+                </h3>
+                <div className="flex justify-between items-end h-32 gap-1.5 pt-2">
+                  {heatmap.map((day: HeatmapDay, i: number) => {
+                    const height = Math.min(
+                      100,
+                      (day.count / (dailyWordGoal * 1.5)) * 100,
+                    );
+                    return (
+                      <div key={i} className="flex-1 group relative">
+                        <div
+                          className={`w-full rounded-t-sm transition-all duration-700 ${
+                            day.count > 0
+                              ? "bg-violet-500/60 group-hover:bg-violet-400"
+                              : "bg-white/5"
+                          }`}
+                          style={{ height: `${Math.max(4, height)}%` }}
+                        />
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-white text-black text-[9px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20">
+                          {day.date.toLocaleDateString([], {
+                            month: "short",
+                            day: "numeric",
+                          })}: {day.count} words
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex justify-between mt-4 text-[9px] text-gray-600 font-bold uppercase tracking-widest">
+                  <span>30 Days Ago</span>
+                  <span>Today</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
         <div className="relative group mb-8">
           <div className="absolute inset-0 rounded-4xl bg-violet-600/10 blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700 pointer-events-none" />
-          <div className="relative flex items-center border border-white/10 group-focus-within:border-violet-500/40 bg-white/[0.03] group-focus-within:bg-white/5 rounded-4xl p-2 transition-all duration-500 overflow-hidden">
+            <div className="relative flex items-center border border-white/10 group-focus-within:border-violet-500/40 bg-white/[0.03] group-focus-within:bg-white/5 rounded-4xl p-2 transition-all duration-500 overflow-hidden">
             <div className="absolute left-8 text-gray-500 group-focus-within:text-violet-400 transition-colors">
-              <Search size={24} strokeWidth={2.5} />
+              <span className="text-[20px]">🔍</span>
             </div>
             <input
               value={search}
@@ -324,7 +361,7 @@ ${e.body}
         </div>
 
         <div className="flex flex-wrap items-center gap-3 pb-4">
-          <button
+            <button
             onClick={() => setShowFavorites(!showFavorites)}
             type="button"
             className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
@@ -333,10 +370,7 @@ ${e.body}
                 : "bg-white/5 border-white/10 text-gray-500 hover:border-white/25"
             }`}
           >
-            <Star
-              size={13}
-              fill={showFavorites ? "currentColor" : "transparent"}
-            />{" "}
+            <span className="text-[13px]" style={{ opacity: showFavorites ? 1 : 0.7 }}>⭐</span>{" "}
             Favorites
           </button>
           <div className="w-px h-6 bg-white/5 mx-2 hidden sm:block" />
@@ -384,18 +418,15 @@ ${e.body}
       </div>
 
       {!search && !showFavorites && filterMood === "all" && (
-        <div className="px-6 md:px-10 pb-8 max-w-6xl mx-auto w-full">
+        <div className="px-6 md:px-10 pb-8 w-full max-w-none">
           <div
             onClick={handleNewEntry}
             className="group cursor-pointer flex items-center gap-6 bg-[#111318] border border-white/5 hover:border-violet-500/30 hover:bg-violet-500/5 rounded-4xl p-8 transition-all duration-500 relative overflow-hidden shadow-xl"
           >
             <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-            <div className="w-14 h-14 rounded-2xl bg-violet-500/10 flex items-center justify-center shrink-0 shadow-[0_0_40px_rgba(139,92,246,0.1)]">
-              <Aperture
-                size={24}
-                className="text-violet-400 group-hover:rotate-12 transition-transform"
-              />
-            </div>
+              <div className="w-14 h-14 rounded-2xl bg-violet-500/10 flex items-center justify-center shrink-0 shadow-[0_0_40px_rgba(139,92,246,0.1)]">
+                <span className="text-violet-400 text-2xl group-hover:rotate-12 transition-transform">🔆</span>
+              </div>
             <div className="flex-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400/80 mb-2">
                 Seed for contemplation
@@ -404,18 +435,18 @@ ${e.body}
                 "{PROMPTS[Math.floor(Date.now() / 86400000) % PROMPTS.length]}"
               </h4>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-600 group-hover:text-white transition-colors">
-              Begin Writing <ArrowRight size={14} />
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-600 group-hover:text-white transition-colors">
+              Begin Writing <span className="text-[14px]">➜</span>
             </div>
           </div>
         </div>
       )}
 
-      <main className="flex-1 px-6 md:px-10 pb-20 max-w-6xl mx-auto w-full">
+      <main className="flex-1 px-6 md:px-10 pb-20 w-full max-w-none">
         {filtered.length === 0
           ? (
-            <div className="flex flex-col items-center justify-center py-32 text-center opacity-40">
-              <BookOpen size={48} className="text-gray-600 mb-6" />
+              <div className="flex flex-col items-center justify-center py-32 text-center opacity-40">
+              <span className="text-gray-600 mb-6 text-6xl">📖</span>
               <p className="text-gray-400 text-lg font-serif">
                 Nothing resonates here.
               </p>
@@ -423,7 +454,7 @@ ${e.body}
           )
           : (
             <div className="flex gap-6 items-start overflow-x-auto pb-6 snap-x snap-mandatory">
-              {filtered.map((entry, i) => {
+              {filtered.map((entry: JournalEntry, i: number) => {
                 const cfg = moodConfig[entry.mood];
                 const title = getJournalTitle(entry);
                 return (
@@ -434,12 +465,8 @@ ${e.body}
                     style={{ boxShadow: `0 20px 60px ${cfg.color}33` }}
                   >
                     {entry.isFavorited && (
-                      <div className="absolute top-8 right-8 z-20">
-                        <Star
-                          size={16}
-                          fill="#f59e0b"
-                          className="text-amber-500"
-                        />
+                      <div className="absolute top-8 right-8 z-20 text-amber-400">
+                        <span className="text-[16px]">⭐</span>
                       </div>
                     )}
 

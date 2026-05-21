@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import {
-  ArrowRight,
-  Check,
-  Globe,
-  Image as ImageIcon,
-  Lock,
-  X,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import { addRoom, hashPassword, type RoomTheme, type RoomCategory, type RoomSize } from "../../signals/rooms.ts";
 
 interface Props {
@@ -42,9 +35,9 @@ export default function CreateRoomModal({ onClose }: Props) {
   const [customSaturation, setCustomSaturation] = useState(100);
   const [customLightness, setCustomLightness] = useState(60);
 
-  const nameRef = useRef<HTMLInputElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const colorCanvasRef = useRef<HTMLCanvasElement>(null);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const _colorCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Convert HSL to Hex
   const hslToHex = (h: number, s: number, l: number): string => {
@@ -88,7 +81,7 @@ export default function CreateRoomModal({ onClose }: Props) {
     }
   };
 
-  const selectedPalette = useCustomColor
+  const _selectedPalette = useCustomColor
     ? { name: "custom", hex: currentColor, label: "Custom Color" }
     : paletteColors.find((c) => c.name === themeColor)!;
 
@@ -150,12 +143,12 @@ export default function CreateRoomModal({ onClose }: Props) {
                 Define your expressive collection space.
               </p>
             </div>
-            <button
+              <button
               onClick={onClose}
               type="button"
               className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
             >
-              <X size={18} />
+              <Icons.X size={18} />
             </button>
           </div>
 
@@ -177,7 +170,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                 )
                 : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-gray-300 transition-colors">
-                    <ImageIcon size={24} />
+                    <Icons.Image size={24} />
                     <span className="text-xs font-bold uppercase tracking-widest">
                       Upload Cover Photo
                     </span>
@@ -261,21 +254,23 @@ export default function CreateRoomModal({ onClose }: Props) {
               </button>
 
               {showEmojiPicker && (
-                <div className="absolute left-0 mt-3 w-full bg-[#111] border border-white/10 rounded-2xl p-3 grid grid-cols-8 gap-2 z-50 shadow-3xl">
-                  {[
-                    "😀","😁","😂","🤣","😍","🥰","😎","🤔",
-                    "🎨","📔","🏛️","⚡","✨","🔥","🌿","🌧️",
-                    "🎯","📷","💡","🔒","🌊","🧠","📦","🔖",
-                  ].map((e) => (
-                    <button
-                      key={e}
-                      type="button"
-                      onClick={() => { setEmoji(e); setShowEmojiPicker(false); }}
-                      className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/5 transition-colors"
-                    >
-                      <span className="text-lg">{e}</span>
-                    </button>
-                  ))}
+                <div className="absolute left-0 mt-3 w-full bg-[#111] border border-white/10 rounded-2xl p-3 z-50 shadow-3xl">
+                  <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+                    {[
+                      "😀","😁","😂","🤣","😍","🥰","😎","🤔",
+                      "🎨","📔","🏛️","⚡","✨","🔥","🌿","🌧️",
+                      "🎯","📷","💡","🔒","🌊","🧠","📦","🔖",
+                    ].map((e) => (
+                      <button
+                        key={e}
+                        type="button"
+                        onClick={() => { setEmoji(e); setShowEmojiPicker(false); }}
+                        className="min-w-[44px] flex-shrink-0 snap-start w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/5 transition-colors"
+                      >
+                        <span className="text-lg">{e}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -328,7 +323,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                   className="flex items-center gap-1 px-3 py-1 rounded-full bg-canvas-primary/20 text-canvas-primary text-xs font-bold uppercase tracking-widest hover:bg-canvas-primary/30 transition-all cursor-pointer"
                   type="button"
                 >
-                  {tag} <X size={12} />
+                  {tag} <Icons.X size={12} />
                 </button>
               ))}
             </div>
@@ -420,8 +415,8 @@ export default function CreateRoomModal({ onClose }: Props) {
                     }`}
                     style={{ backgroundColor: color.hex }}
                   >
-                    {themeColor === color.name && !useCustomColor && (
-                      <Check
+                      {themeColor === color.name && !useCustomColor && (
+                      <Icons.Check
                         size={16}
                         strokeWidth={3}
                         className="text-white drop-shadow"
@@ -574,7 +569,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                 type="button"
               >
                 <div className="flex items-center gap-3">
-                  <Lock size={16} className={!isPublic ? "text-white" : "text-gray-500"} />
+                  <Icons.Lock size={16} className={!isPublic ? "text-white" : "text-gray-500"} />
                   <div>
                     <p className="text-sm font-bold text-white">Private — Solo Mode</p>
                     <p className="text-xs text-gray-400 font-serif italic">
@@ -593,7 +588,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                 type="button"
               >
                 <div className="flex items-center gap-3">
-                  <Globe size={16} className={isPublic ? "text-canvas-primary" : "text-gray-500"} />
+                  <Icons.Globe size={16} className={isPublic ? "text-canvas-primary" : "text-gray-500"} />
                   <div>
                     <p className={`text-sm font-bold ${isPublic ? "text-canvas-primary" : "text-white"}`}>
                       Community — Shared Mode
@@ -622,7 +617,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                   className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm"
                 />
                 <button type="button" className="px-4 py-3 rounded-2xl bg-white/10 text-white hover:bg-white/15 transition-all text-sm font-bold">
-                  <Lock size={16} />
+                  <Icons.Lock size={16} />
                 </button>
               </div>
               <p className="text-xs text-gray-400 mt-2 font-serif italic">You will need this password to unlock the room later.</p>
@@ -647,7 +642,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                 boxShadow: `0 0 30px ${currentColor}55`,
               }}
             >
-              Create Room <ArrowRight size={16} />
+              Create Room <Icons.ArrowRight size={16} />
             </button>
           </div>
         </div>

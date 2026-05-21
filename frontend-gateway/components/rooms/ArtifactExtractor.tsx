@@ -1,19 +1,5 @@
-import { useEffect, useState } from "preact/hooks";
-import {
-  Aperture,
-  Check,
-  Clipboard,
-  ExternalLink,
-  FileText,
-  Globe,
-  Hash,
-  Image as ImageIcon,
-  Layout,
-  Link2,
-  MessageSquare,
-  RefreshCcw,
-  Video,
-} from "lucide-preact";
+import { useState } from "preact/hooks";
+import Icons from "lucide-preact";
 import { roomsSignal } from "../../signals/rooms.ts";
 
 interface ExtractedMetadata {
@@ -93,12 +79,13 @@ export default function ArtifactExtractor(
           <div className="space-y-8 relative z-10">
             <div className="flex items-center justify-between">
               <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-                <Aperture size={14} className="text-canvas-primary" />{" "}
+                <Icons.Aperture size={14} className="text-canvas-primary" />{" "}
                 Multi-Signal Extraction Terminal
               </h3>
               <div className="flex items-center gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
                 {(["link", "text", "file"] as InputType[]).map((type) => (
                   <button
+                    type="button"
                     key={type}
                     onClick={() => setInputType(type)}
                     className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all ${
@@ -139,12 +126,13 @@ export default function ArtifactExtractor(
                 )}
               {!isExtracting && (
                 <button
+                  type="button"
                   onClick={simulateExtraction}
                   className={`absolute bottom-6 right-6 w-12 h-12 bg-white text-black rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl ${
                     inputType !== "text" ? "top-1/2 -translate-y-1/2" : ""
                   }`}
                 >
-                  <Aperture size={20} />
+                  <Icons.Aperture size={20} />
                 </button>
               )}
             </div>
@@ -172,7 +160,7 @@ export default function ArtifactExtractor(
                     }`}
                   >
                     {s.active
-                      ? <Check size={12} className="text-emerald-500" />
+                      ? <Icons.Check size={12} className="text-emerald-500" />
                       : (
                         <div className="w-3 h-3 rounded-full border border-gray-800" />
                       )}
@@ -190,11 +178,12 @@ export default function ArtifactExtractor(
                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-[9px] font-bold uppercase tracking-widest text-emerald-500">
                   Signal Extraction Complete
                 </div>
-                <div className="flex items-center gap-2 text-[9px] text-gray-500 font-bold uppercase tracking-widest">
-                  <Clipboard size={10} /> Copied to Buffer
-                </div>
+                  <div className="flex items-center gap-2 text-[9px] text-gray-500 font-bold uppercase tracking-widest">
+                    <Icons.Clipboard size={10} /> Copied to Buffer
+                  </div>
               </div>
               <button
+                type="button"
                 onClick={handleReset}
                 className="text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
               >
@@ -223,12 +212,12 @@ export default function ArtifactExtractor(
                   </span>
                   <div className="w-1 h-1 rounded-full bg-gray-700" />
                   <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                    {metadata.type === "Post" && <Hash size={12} />}
-                    {metadata.type === "Image" && <ImageIcon size={12} />}
-                    {metadata.type === "Article" && <FileText size={12} />}
-                    {metadata.type === "Video" && <Video size={12} />}
+                    {metadata.type === "Post" && <Icons.Hash size={12} />}
+                    {metadata.type === "Image" && <Icons.Image size={12} />}
+                    {metadata.type === "Article" && <Icons.FileText size={12} />}
+                    {metadata.type === "Video" && <Icons.Video size={12} />}
                     {metadata.type === "Raw Text" && (
-                      <MessageSquare
+                      <Icons.MessageSquare
                         size={12}
                       />
                     )}
@@ -246,7 +235,7 @@ export default function ArtifactExtractor(
                   <div className="mb-10 p-5 bg-canvas-primary/5 border border-canvas-primary/20 rounded-2xl flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-canvas-primary/20 flex items-center justify-center text-canvas-primary">
-                        <Aperture size={16} />
+                        <Icons.Aperture size={16} />
                       </div>
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
@@ -262,7 +251,7 @@ export default function ArtifactExtractor(
                         </p>
                       </div>
                     </div>
-                    <button className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary hover:underline">
+                    <button type="button" className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary hover:underline">
                       Change Room
                     </button>
                   </div>
@@ -270,12 +259,13 @@ export default function ArtifactExtractor(
 
                 <div className="flex gap-4">
                   <button
+                    type="button"
                     onClick={() => onExtract(metadata)}
                     className="px-10 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:-translate-y-1 transition-all shadow-xl cursor-pointer"
                   >
                     Collect to Room
                   </button>
-                  <button className="px-10 py-4 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-white/10 transition-all cursor-pointer">
+                  <button type="button" className="px-10 py-4 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-white/10 transition-all cursor-pointer">
                     Open Original
                   </button>
                 </div>

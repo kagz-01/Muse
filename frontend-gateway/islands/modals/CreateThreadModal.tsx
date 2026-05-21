@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { ArrowRight, Check, Globe, ImagePlus, Lock, X } from "lucide-preact";
+import Icons from "lucide-preact";
 import { addThread, type ThreadMood } from "../../signals/threads.ts";
 
 interface Props {
@@ -59,8 +59,8 @@ export default function CreateThreadModal({ onClose }: Props) {
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState("");
 
-  const titleRef = useRef<HTMLInputElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const titleRef = useRef<HTMLInputElement | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     titleRef.current?.focus();
@@ -101,6 +101,8 @@ export default function CreateThreadModal({ onClose }: Props) {
       mood,
       coverImage: coverPreview,
       isPublic,
+      itemIds: [],
+      sourceRoomIds: [],
     });
     onClose();
     globalThis.location.href = `/threads/${newId}`;
@@ -134,7 +136,7 @@ export default function CreateThreadModal({ onClose }: Props) {
               type="button"
               className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
             >
-              <X size={18} />
+              <Icons.X size={18} />
             </button>
           </div>
 
@@ -157,7 +159,7 @@ export default function CreateThreadModal({ onClose }: Props) {
                 )
                 : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-gray-300 transition-colors">
-                    <ImagePlus size={22} />
+                    <Icons.ImagePlus size={22} />
                     <span className="text-xs font-bold uppercase tracking-widest">
                       Upload Cover
                     </span>
@@ -238,13 +240,13 @@ export default function CreateThreadModal({ onClose }: Props) {
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
               Thread Mood
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide">
               {moods.map((m) => (
                 <button
                   key={m.name}
                   type="button"
                   onClick={() => setMood(m.name)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all cursor-pointer text-left ${
+                  className={`min-w-[220px] flex-shrink-0 snap-start flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all cursor-pointer text-left ${
                     mood === m.name
                       ? "border-white/30 bg-white/10"
                       : "border-white/5 bg-white/[0.02] hover:border-white/15"
@@ -259,7 +261,7 @@ export default function CreateThreadModal({ onClose }: Props) {
                     <p className="text-gray-500 text-[10px]">{m.description}</p>
                   </div>
                   {mood === m.name && (
-                    <Check
+                    <Icons.Check
                       size={13}
                       strokeWidth={3}
                       className="text-white ml-auto"
@@ -281,7 +283,7 @@ export default function CreateThreadModal({ onClose }: Props) {
                   : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              <Lock size={16} />
+              <Icons.Lock size={16} />
               <span className="text-[10px] font-bold uppercase tracking-widest">
                 Private Vault
               </span>
@@ -295,7 +297,7 @@ export default function CreateThreadModal({ onClose }: Props) {
                   : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              <Globe size={16} />
+              <Icons.Globe size={16} />
               <span className="text-[10px] font-bold uppercase tracking-widest">
                 Community Hub
               </span>
@@ -320,7 +322,7 @@ export default function CreateThreadModal({ onClose }: Props) {
                 boxShadow: `0 0 30px ${selectedMood.color}55`,
               }}
             >
-              Start Thread <ArrowRight size={16} />
+              Start Thread <Icons.ArrowRight size={16} />
             </button>
           </div>
         </div>

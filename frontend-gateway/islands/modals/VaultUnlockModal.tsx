@@ -19,7 +19,7 @@ export default function VaultUnlockModal({ roomId, onClose, onSuccess }: {
       } else {
         setError("Incorrect password. Try again.");
       }
-    } catch (err) {
+    } catch (_err) {
       setError("Unlock failed.");
     }
   };
@@ -33,7 +33,7 @@ export default function VaultUnlockModal({ roomId, onClose, onSuccess }: {
         <input
           type="password"
           value={password}
-          onInput={(e: any) => setPassword(e.target.value)}
+          onInput={(e: Event) => setPassword((e.target as HTMLInputElement).value)}
           placeholder="Vault password"
           className="mt-4 w-full rounded-md border px-3 py-2 bg-transparent"
         />
@@ -41,8 +41,8 @@ export default function VaultUnlockModal({ roomId, onClose, onSuccess }: {
         {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
 
         <div className="mt-4 flex justify-end gap-2">
-          <button onClick={onClose} className="rounded-md px-4 py-2 border">Cancel</button>
-          <button onClick={tryUnlock} className="rounded-md bg-[var(--muse-text)] px-4 py-2 text-[var(--muse-bg)]">Unlock</button>
+          <button type="button" onClick={onClose} className="rounded-md px-4 py-2 border">Cancel</button>
+          <button type="button" onClick={tryUnlock} className="rounded-md bg-[var(--muse-text)] px-4 py-2 text-[var(--muse-bg)]">Unlock</button>
         </div>
       </div>
     </div>

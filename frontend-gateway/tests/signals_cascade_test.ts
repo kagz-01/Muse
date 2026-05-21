@@ -24,8 +24,8 @@ function setupFreshState() {
   resetThreads();
 
   // create two rooms
-  addRoom({ name: "Room A", description: "", themeColor: "indigo", isPublic: false });
-  addRoom({ name: "Room B", description: "", themeColor: "emerald", isPublic: true });
+  addRoom({ name: "Room A", description: "", themeColor: "indigo", isPublic: false, tags: [], notificationsEnabled: true });
+  addRoom({ name: "Room B", description: "", themeColor: "emerald", isPublic: true, tags: [], notificationsEnabled: true });
 
   const r1 = roomsSignal.value[0].id;
   const r2 = roomsSignal.value[1].id;
@@ -63,7 +63,7 @@ function setupFreshState() {
 }
 
 Deno.test("deleteRoom cascades items and prunes threads", () => {
-  const { r1, r2, i1, i2 } = setupFreshState();
+  const { r1, r2: _r2, i1, i2: _i2 } = setupFreshState();
 
   // Sanity pre-conditions
   assert(roomsSignal.value.some((r) => r.id === r1));
@@ -92,7 +92,7 @@ Deno.test("deleteRoom cascades items and prunes threads", () => {
 });
 
 Deno.test("deleteItem removes references from threads", () => {
-  const { r1, r2, i1, i2 } = setupFreshState();
+  const { r1, r2: _r2, i1, i2: _i2 } = setupFreshState();
 
   // Create a dedicated thread referencing i1
   addThread({

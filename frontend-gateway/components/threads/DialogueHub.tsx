@@ -67,6 +67,7 @@ export default function DialogueHub({ threadId }: { threadId: string }) {
             {(["insight", "challenge", "signal"] as DialogueLayer["type"][])
               .map((type) => (
                 <button
+                  type="button"
                   key={type}
                   onClick={() => setActiveType(type)}
                   className={`px-6 py-2.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
@@ -96,6 +97,7 @@ export default function DialogueHub({ threadId }: { threadId: string }) {
               className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-6 min-h-[120px] text-lg text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 transition-all font-serif italic outline-none resize-none"
             />
             <button
+              type="button"
               onClick={handleSend}
               disabled={!content.trim() || isSending}
               className="absolute bottom-6 right-6 w-12 h-12 bg-white text-black rounded-xl flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-30"
@@ -108,7 +110,7 @@ export default function DialogueHub({ threadId }: { threadId: string }) {
 
       {/* DIALOGUE LIST */}
       <div className="space-y-6">
-        {thread.dialogueLayers.map((layer) => (
+        {thread.dialogueLayers.map((layer: DialogueLayer) => (
           <div
             key={layer.id}
             className="p-8 bg-white/[0.02] border border-white/5 rounded-[2.5rem] group hover:bg-white/[0.04] transition-all"
@@ -145,11 +147,11 @@ export default function DialogueHub({ threadId }: { threadId: string }) {
             </p>
 
             <div className="flex items-center gap-6 pt-6 border-t border-white/5">
-              <button className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors">
+              <button type="button" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors">
                 <GitCommit size={14} className="text-canvas-primary" />{" "}
                 Woven Pattern ({layer.resonanceScore})
               </button>
-              <button className="text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors ml-auto">
+              <button type="button" className="text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors ml-auto">
                 Acknowledge
               </button>
             </div>

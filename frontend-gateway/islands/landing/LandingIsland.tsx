@@ -98,7 +98,15 @@ export default function LandingIsland() {
   const [authMode, setAuthMode] = useState<"signup" | "login" | null>(null);
 
   // Generating noise positions on mount
-  const [noiseLayers, setNoiseLayers] = useState<any[]>([]);
+  type NoiseLayer = {
+    word: string;
+    x: number;
+    y: number;
+    size: number;
+    opacity: number;
+    delay: number;
+  };
+  const [noiseLayers, setNoiseLayers] = useState<NoiseLayer[]>([]);
 
   useEffect(() => {
     setNoiseLayers(NOISE_WORDS.map((w, i) => ({
@@ -139,12 +147,14 @@ export default function LandingIsland() {
 
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => setAuthMode("login")}
             className="text-sm font-bold text-gray-400 hover:text-white transition-colors tracking-wide cursor-pointer px-4 py-2"
           >
             Log in
           </button>
           <button
+            type="button"
             onClick={() => setAuthMode("signup")}
             className="text-sm font-bold bg-white text-black px-5 py-2.5 rounded-full hover:bg-canvas-primary hover:text-white transition-all cursor-pointer tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(99,102,241,0.3)]"
           >
@@ -204,6 +214,7 @@ export default function LandingIsland() {
 
           <div className="flex flex-col sm:flex-row items-center gap-4 animate-in slide-in-from-bottom-5 duration-700 delay-500">
             <button
+              type="button"
               onClick={() => setAuthMode("signup")}
               className="group px-10 py-5 bg-canvas-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-full flex items-center gap-3 shadow-[0_0_40px_rgba(99,102,241,0.35)] hover:-translate-y-1 hover:shadow-[0_0_60px_rgba(99,102,241,0.5)] transition-all cursor-pointer active:scale-95"
             >
@@ -214,6 +225,7 @@ export default function LandingIsland() {
               />
             </button>
             <button
+              type="button"
               onClick={() => setAuthMode("login")}
               className="px-10 py-5 bg-white/5 border border-white/10 text-gray-300 font-bold uppercase tracking-widest text-[11px] rounded-full hover:bg-white/10 hover:border-white/20 hover:text-white transition-all cursor-pointer active:scale-95"
             >
@@ -222,7 +234,7 @@ export default function LandingIsland() {
           </div>
 
           <div className="mt-16 flex items-center gap-2 flex-wrap justify-center animate-in fade-in duration-1000 delay-700">
-            {PILLARS.map((p, i) => (
+            {PILLARS.map((p) => (
               <div key={p.label} className="flex items-center gap-2">
                 <span
                   className={`text-[11px] font-bold uppercase tracking-widest ${p.color} px-3 py-1.5 rounded-full bg-white/5 border border-white/8`}
@@ -289,11 +301,11 @@ export default function LandingIsland() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {FEATURES.map((f, i) => (
+          <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+            {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="group relative p-8 rounded-4xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all overflow-hidden cursor-default"
+                className="min-w-[320px] flex-shrink-0 snap-start group relative p-8 rounded-4xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all overflow-hidden cursor-default"
               >
                 <div
                   className={`absolute -top-10 -right-10 w-32 h-32 ${f.glow} blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
@@ -346,6 +358,7 @@ export default function LandingIsland() {
                 ))}
               </div>
               <button
+                type="button"
                 onClick={() => setAuthMode("signup")}
                 className="px-10 py-4 bg-canvas-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all cursor-pointer"
               >
@@ -379,6 +392,7 @@ export default function LandingIsland() {
           </p>
 
           <button
+            type="button"
             onClick={() => setAuthMode("signup")}
             className="group px-12 py-6 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full flex items-center gap-4 shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:shadow-[0_30px_80px_rgba(99,102,241,0.3)] hover:bg-canvas-primary hover:text-white transition-all cursor-pointer mx-auto"
           >

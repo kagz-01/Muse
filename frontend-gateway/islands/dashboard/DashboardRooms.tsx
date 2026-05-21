@@ -1,9 +1,9 @@
 import { useState } from "preact/hooks";
-import { Globe, Lock, Plus } from "lucide-preact";
+import Icons from "lucide-preact";
 import { roomsSignal, type RoomTheme } from "../../signals/rooms.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 
-const themeGradients: Record<RoomTheme, string> = {
+const _themeGradients: Record<RoomTheme, string> = {
   indigo: "from-indigo-600/30",
   emerald: "from-emerald-600/30",
   amber: "from-amber-600/30",
@@ -35,12 +35,12 @@ export default function DashboardRooms() {
             >
               View All
             </a>
-            <button
+              <button
               onClick={() => setShowCreate(true)}
               type="button"
               className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer"
             >
-              <Plus size={16} />
+              <Icons.Plus size={16} />
             </button>
           </div>
         </header>
@@ -57,10 +57,10 @@ export default function DashboardRooms() {
               slate: "#64748b",
             };
             const hex = customHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo;
-            const glowStyle = {
+            const glowStyle: Record<string, string | undefined> = {
               boxShadow: `0 18px 50px ${hex}33`,
               background: customHex ? `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))` : undefined,
-            } as any;
+            };
             return (
               <a
                 key={room.id}
@@ -89,12 +89,12 @@ export default function DashboardRooms() {
                     {room.isPublic
                       ? (
                         <div className="bg-white/10 backdrop-blur-md px-2.5 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-bold text-white shadow-sm border border-white/10 flex items-center gap-1.5">
-                          <Globe size={12} /> Public
+                          <Icons.Globe size={12} /> Public
                         </div>
                       )
                       : (
                         <div className="bg-black/40 backdrop-blur-md px-2.5 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-bold text-gray-300 shadow-sm border border-white/5 flex items-center gap-1.5">
-                          <Lock size={12} /> Private
+                          <Icons.Lock size={12} /> Private
                         </div>
                       )}
                   </div>

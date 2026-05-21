@@ -62,7 +62,7 @@ export default function CollectiveProfile() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl w-full">
+        <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide max-w-full">
           {[
             {
               label: "Intelligence Lineage",
@@ -91,7 +91,7 @@ export default function CollectiveProfile() {
           ].map((stat: any) => (
             <div
               key={stat.label}
-              className="p-6 bg-white/5 border border-white/5 rounded-3xl backdrop-blur-md"
+              className="min-w-[200px] flex-shrink-0 snap-start p-6 bg-white/5 border border-white/5 rounded-3xl backdrop-blur-md"
             >
               <stat.icon size={18} className="text-gray-600 mx-auto mb-4" />
               <div className="text-2xl font-bold text-white mb-1">
@@ -168,11 +168,11 @@ export default function CollectiveProfile() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="flex gap-8 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
               {threads.map((thread: Thread) => (
                 <div
                   key={thread.id}
-                  className="group bg-[#111] border border-white/5 rounded-[3rem] overflow-hidden hover:border-white/20 transition-all duration-500 shadow-2xl"
+                  className="min-w-[360px] flex-shrink-0 snap-start group bg-[#111] border border-white/5 rounded-[3rem] overflow-hidden hover:border-white/20 transition-all duration-500 shadow-2xl"
                 >
                   <div className="h-48 relative overflow-hidden">
                     {thread.coverImage

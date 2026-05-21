@@ -194,13 +194,13 @@ export default function HomeOverview() {
               <BarChart3 size={18} className="text-canvas-primary" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
               {stats.slice(0, 2).map((stat) => {
                 const Icon = stat.icon;
                 return (
                   <div
                     key={stat.label}
-                    className="rounded-2xl border border-white/5 bg-white/[0.03] p-4"
+                    className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 min-w-[220px] flex-shrink-0 snap-start"
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">

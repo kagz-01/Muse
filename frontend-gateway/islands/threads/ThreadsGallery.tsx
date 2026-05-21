@@ -1,13 +1,5 @@
 import { useState } from "preact/hooks";
-import {
-  Clock,
-  ExternalLink,
-  GitCommit,
-  Globe,
-  Lock,
-  Plus,
-  Search,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import {
   type Thread,
   type ThreadMood,
@@ -47,7 +39,7 @@ export default function ThreadsGallery() {
 
   return (
     <div className="pb-24 md:pb-10 min-h-screen bg-[#0a0a0a]">
-      <header className="p-6 md:p-10 max-w-[1800px] mx-auto w-full">
+      <header className="w-full px-6 md:px-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
           <div>
             <div className="flex items-center gap-3 mb-4">
@@ -55,14 +47,14 @@ export default function ThreadsGallery() {
                 Synthesis Layer
               </div>
               <div className="h-px w-8 bg-white/10" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary flex items-center gap-2">
-                <Clock size={10} /> Real-time Patterns
+                <span className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary flex items-center gap-2">
+                <Icons.Clock size={10} /> Real-time Patterns
               </span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-4">
               Thread Engine
             </h1>
-            <p className="text-gray-400 font-serif italic text-lg md:text-xl max-w-2xl">
+            <p className="text-gray-400 font-serif italic text-lg md:text-xl max-w-4xl">
               "Where diverse signals from your rooms converge into living
               documents of collective intelligence."
             </p>
@@ -72,12 +64,12 @@ export default function ThreadsGallery() {
             type="button"
             className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:-translate-y-1 transition-all flex items-center gap-3"
           >
-            <Plus size={18} /> New Synthesis
+            <Icons.Plus size={18} /> New Synthesis
           </button>
         </div>
 
         <div className="relative mb-16">
-          <Search
+          <Icons.Search
             className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-700"
             size={20}
           />
@@ -97,8 +89,8 @@ export default function ThreadsGallery() {
         </section>
 
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-            <GitCommit size={24} className="text-gray-800" /> Active Patterns
+            <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+            <Icons.GitCommit size={24} className="text-gray-800" /> Active Patterns
           </h2>
           <div className="flex gap-2">
             {["all", "public", "private"].map((filter) => (
@@ -133,8 +125,8 @@ export default function ThreadsGallery() {
               >
                 <div className="absolute top-0 right-0 p-6 z-10">
                   {thread.isPublic
-                    ? <Globe size={16} className="text-white/20" />
-                    : <Lock size={16} className="text-white/20" />}
+                    ? <Icons.Globe size={16} className="text-white/20" />
+                    : <Icons.Lock size={16} className="text-white/20" />}
                 </div>
 
                 <div className="h-56 relative overflow-hidden">
@@ -193,7 +185,7 @@ export default function ThreadsGallery() {
                       href={`/threads/${thread.id}`}
                       className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 group-hover:bg-white group-hover:text-black transition-all"
                     >
-                      <ExternalLink size={14} />
+                      <Icons.ExternalLink size={14} />
                     </a>
                   </div>
                 </div>

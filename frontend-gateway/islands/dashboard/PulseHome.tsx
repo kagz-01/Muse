@@ -1,17 +1,5 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import {
-  Aperture,
-  ArrowRight,
-  BarChart2,
-  BookOpen,
-  ChevronRight,
-  FolderOpen,
-  Layers,
-  MessageSquare,
-  TrendingUp,
-  Wifi,
-  WifiOff,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import {
@@ -131,19 +119,19 @@ export default function PulseHome() {
     {
       label: "Artifacts",
       value: weekItems.length,
-      icon: Layers,
+      icon: Icons.Layers,
       color: "text-canvas-primary",
     },
     {
       label: "Reflections",
       value: weekEntries.length,
-      icon: BookOpen,
+      icon: Icons.BookOpen,
       color: "text-emerald-400",
     },
     {
       label: "Rooms Active",
       value: new Set(weekItems.map((i) => i.roomId)).size,
-      icon: BarChart2,
+      icon: Icons.BarChart2,
       color: "text-amber-400",
     },
   ];
@@ -182,14 +170,14 @@ export default function PulseHome() {
                 onClick={() => globalThis.location.href = "/journal"}
                 className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-black shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-1 hover:shadow-white/20 active:scale-95 cursor-pointer"
               >
-                Sync Journal <ArrowRight size={16} />
+                Sync Journal <Icons.ArrowRight size={16} />
               </button>
               <button
                 type="button"
                 onClick={() => globalThis.location.href = "/rooms"}
                 className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:bg-white/10 hover:border-white/20 active:scale-95 cursor-pointer"
               >
-                Enter Rooms <FolderOpen size={16} />
+                Enter Rooms <Icons.FolderOpen size={16} />
               </button>
             </div>
           </div>
@@ -198,7 +186,7 @@ export default function PulseHome() {
           <div className="bg-black/40 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 space-y-8">
             <div className="flex items-center justify-between border-b border-white/5 pb-6">
               <div className="flex items-center gap-3">
-                <Aperture size={20} className="text-canvas-primary" />
+                <Icons.Aperture size={20} className="text-canvas-primary" />
                 <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">
                   Mirror Insights
                 </span>
@@ -211,9 +199,9 @@ export default function PulseHome() {
               </a>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {mirrorStats.map((stat) => (
-                <div key={stat.label} className="text-center">
+                <div key={stat.label} className="min-w-[140px] flex-shrink-0 text-center snap-start">
                   <div className="flex flex-col items-center gap-2">
                     <stat.icon size={18} className={stat.color} />
                     <span className="text-2xl font-bold text-white font-mono">
@@ -267,7 +255,7 @@ export default function PulseHome() {
                 time: latestEntry
                   ? formatRelativeTime(latestEntry.createdAt)
                   : "",
-                icon: BookOpen,
+                icon: Icons.BookOpen,
                 href: "/journal",
               },
               {
@@ -278,7 +266,7 @@ export default function PulseHome() {
                 time: latestThread
                   ? formatRelativeTime(toMillis(latestThread.updatedAt))
                   : "",
-                icon: MessageSquare,
+                icon: Icons.MessageSquare,
                 href: "/threads",
               },
               {
@@ -287,7 +275,7 @@ export default function PulseHome() {
                 time: latestRoom
                   ? formatRelativeTime(toMillis(latestRoom.updatedAt))
                   : "",
-                icon: FolderOpen,
+                icon: Icons.FolderOpen,
                 href: "/rooms",
               },
             ].map((item) => (
@@ -309,7 +297,7 @@ export default function PulseHome() {
                     </p>
                   </div>
                 </div>
-                <ChevronRight
+                <Icons.ChevronRight
                   size={20}
                   className="text-gray-700 group-hover:text-white transition-colors"
                 />
@@ -321,8 +309,8 @@ export default function PulseHome() {
         {/* TRENDING CONSCIOUSNESS */}
         <div className="space-y-8 min-w-0">
           <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8 min-w-0">
-            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-              <TrendingUp size={20} className="text-canvas-primary" />{" "}
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+              <Icons.TrendingUp size={20} className="text-canvas-primary" />{" "}
               Active Themes
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -384,8 +372,8 @@ export default function PulseHome() {
                       {service.label}
                     </span>
                     {service.state === "up"
-                      ? <Wifi size={14} className="text-emerald-400" />
-                      : <WifiOff size={14} className="text-rose-400" />}
+                      ? <Icons.Wifi size={14} className="text-emerald-400" />
+                      : <Icons.WifiOff size={14} className="text-rose-400" />}
                   </div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
                     {service.state === "up" ? "Online" : "Offline"}

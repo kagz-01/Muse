@@ -1,17 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import {
-  Aperture,
-  ArrowLeft,
-  Check,
-  ChevronRight,
-  Globe,
-  Layout,
-  Link2,
-  Lock,
-  Plus,
-  X,
-  Zap,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import {
   addNotification,
   isCaptureOpenSignal,
@@ -72,6 +60,8 @@ export default function CaptureModal() {
       themeColor: "indigo",
       coverImage: "",
       isPublic: newRoomIsPublic,
+      tags: [],
+      notificationsEnabled: true,
     });
     setRoomId(newRoomId);
     setIsAddingRoom(false);
@@ -136,16 +126,16 @@ export default function CaptureModal() {
           onClick={toggleCapture}
           className="absolute top-8 right-8 p-3 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all rounded-2xl hover:bg-[var(--muse-surface-soft)] active:scale-95 cursor-pointer z-50"
         >
-          <X size={24} />
+          <Icons.X size={24} />
         </button>
 
         {step !== "input" && (
-          <button
+            <button
             type="button"
             onClick={handleBack}
             className="absolute top-8 left-8 p-3 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all rounded-2xl hover:bg-[var(--muse-surface-soft)] active:scale-95 flex items-center gap-2 group cursor-pointer z-50"
           >
-            <ArrowLeft
+            <Icons.ArrowLeft
               size={20}
               className="group-hover:-translate-x-1 transition-transform"
             />
@@ -199,7 +189,7 @@ export default function CaptureModal() {
                   className="w-full bg-transparent text-2xl p-6 text-center outline-none transition-colors placeholder-[var(--muse-border)] font-sans text-[var(--muse-text)] border-0"
                 />
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-4">
-                  <Link2 size={18} className="text-[var(--muse-muted)]" />
+                    <Icons.Link2 size={18} className="text-[var(--muse-muted)]" />
                 </div>
               </div>
 
@@ -212,7 +202,7 @@ export default function CaptureModal() {
                 >
                   {isScanning ? "Scanning Artifact..." : "Analyze Resonance"}
                   {!isScanning && (
-                    <Aperture
+                    <Icons.Aperture
                       size={16}
                       className="text-canvas-primary group-hover:rotate-12 transition-transform"
                     />
@@ -227,8 +217,8 @@ export default function CaptureModal() {
             <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="text-center space-y-4">
                 <div className="flex justify-center mb-6">
-                  <div className="px-5 py-2 rounded-full bg-canvas-primary/10 border border-canvas-primary/20 flex items-center gap-3">
-                    <Check size={14} className="text-canvas-primary" />
+                    <div className="px-5 py-2 rounded-full bg-canvas-primary/10 border border-canvas-primary/20 flex items-center gap-3">
+                    <Icons.Check size={14} className="text-canvas-primary" />
                     <span className="text-[10px] font-bold text-canvas-primary uppercase tracking-widest">
                       Resonance Verified
                     </span>
@@ -268,7 +258,7 @@ export default function CaptureModal() {
                             }`}
                             style={{ backgroundColor: room.customThemeHex || undefined }}
                           >
-                            <Layout size={18} />
+                            <Icons.Layout size={18} />
                           </div>
                           <span
                             className={`text-[10px] font-bold uppercase tracking-widest text-center leading-tight ${
@@ -288,7 +278,7 @@ export default function CaptureModal() {
                         className="flex-shrink-0 w-44 p-6 rounded-4xl border border-dashed border-[var(--muse-border)] hover:border-canvas-primary/40 hover:bg-canvas-primary/5 transition-all flex flex-col items-center justify-center gap-4 group cursor-pointer"
                       >
                         <div className="w-10 h-10 rounded-full border border-dashed border-[var(--muse-border)] flex items-center justify-center group-hover:border-canvas-primary transition-colors">
-                          <Plus
+                          <Icons.Plus
                             size={18}
                             className="text-[var(--muse-muted)] group-hover:text-canvas-primary"
                           />
@@ -331,7 +321,7 @@ export default function CaptureModal() {
                               : "text-[var(--muse-muted)]"
                           } cursor-pointer`}
                         >
-                          <Lock size={14} />
+                          <Icons.Lock size={14} />
                           <span className="text-[9px] font-bold uppercase tracking-widest">
                             Solo Vault
                           </span>
@@ -345,7 +335,7 @@ export default function CaptureModal() {
                               : "text-[var(--muse-muted)]"
                           } cursor-pointer`}
                         >
-                          <Globe size={14} />
+                          <Icons.Globe size={14} />
                           <span className="text-[9px] font-bold uppercase tracking-widest">
                             Public Hub
                           </span>
@@ -381,7 +371,7 @@ export default function CaptureModal() {
                   className="group px-10 py-5 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-widest text-[11px] rounded-3xl flex items-center gap-3 shadow-[0_20px_40px_rgba(0,0,0,0.15)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-30 cursor-pointer"
                 >
                   Anchor Context{" "}
-                  <ChevronRight
+                  <Icons.ChevronRight
                     size={16}
                     className="group-hover:translate-x-1 transition-transform"
                   />
@@ -420,7 +410,7 @@ export default function CaptureModal() {
                   onClick={handleCapture}
                   className="group px-12 py-6 bg-canvas-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-[2rem] flex items-center gap-4 shadow-[0_25px_50px_rgba(99,102,241,0.3)] hover:-translate-y-1 active:scale-95 transition-all cursor-pointer"
                 >
-                  <Zap size={18} className="fill-white" /> Commit to Muse
+                  <Icons.Zap size={18} className="fill-white" /> Commit to Muse
                 </button>
               </div>
             </div>

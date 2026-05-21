@@ -1,16 +1,5 @@
 import { useMemo, useState } from "preact/hooks";
-import {
-  Activity,
-  Aperture,
-  ArrowLeft,
-  GitCommit,
-  Globe,
-  Layers,
-  Lock,
-  MessageSquare,
-  Palette,
-  Trash2,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import {
   removeItemFromThread,
   type ThreadMood,
@@ -118,16 +107,16 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
 
         <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 w-full z-10">
           <div className="flex justify-between items-center">
-            <a
+              <a
               href="/threads"
               className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-lg"
             >
-              <ArrowLeft size={18} />
+              <Icons.ArrowLeft size={18} />
             </a>
 
             <div className="flex items-center gap-3">
-              <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
-                <Activity size={14} className={mood.text} />
+                <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
+                <Icons.Activity size={14} className={mood.text} />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-white">
                   Synthesizing {thread.sourceRoomIds.length} Rooms
                 </span>
@@ -144,12 +133,12 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                 {thread.isPublic
                   ? (
                     <>
-                      <Globe size={12} className={mood.text} /> Public
+                      <Icons.Globe size={12} className={mood.text} /> Public
                     </>
                   )
                   : (
                     <>
-                      <Lock size={12} /> Private
+                      <Icons.Lock size={12} /> Private
                     </>
                   )}
               </button>
@@ -161,7 +150,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-4 drop-shadow-2xl">
                 {thread.title}
               </h1>
-              <p className="text-gray-300 font-serif italic text-lg md:text-xl max-w-3xl leading-relaxed">
+              <p className="text-gray-300 font-serif italic text-lg md:text-xl max-w-none leading-relaxed">
                 {thread.description}
               </p>
             </div>
@@ -171,7 +160,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
 
       <main className="p-6 md:p-10 w-full max-w-none relative z-10 -mt-8">
         <div className="flex items-center gap-6 mb-12">
-          <button
+            <button
             onClick={() => setActiveTab("synthesis")}
             type="button"
             className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
@@ -180,9 +169,9 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                 : "bg-white/5 border border-white/10 text-gray-500 hover:text-white"
             }`}
           >
-            <GitCommit size={16} /> Synthesis Hub
+            <Icons.GitCommit size={16} /> Synthesis Hub
           </button>
-          <button
+            <button
             onClick={() => setActiveTab("artifacts")}
             type="button"
             className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
@@ -191,16 +180,16 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                 : "bg-white/5 border border-white/10 text-gray-500 hover:text-white"
             }`}
           >
-            <Layers size={16} /> Woven Artifacts ({items.length})
+            <Icons.Layers size={16} /> Woven Artifacts ({items.length})
           </button>
 
           <div className="ml-auto flex items-center gap-3">
-            <button
+              <button
               onClick={() => setIsPaletteOpen(!isPaletteOpen)}
               type="button"
               className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all cursor-pointer"
             >
-              <Palette size={20} />
+              <Icons.Palette size={20} />
             </button>
             <button type="button" className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
               Export Pattern
@@ -217,7 +206,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                 <div className="p-12 bg-white/[0.02] border border-white/5 rounded-[3.5rem] relative overflow-hidden min-w-[760px] flex-[1.6] flex-shrink-0">
                   <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-canvas-primary/40 to-transparent" />
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 mb-10 flex items-center gap-3">
-                    <MessageSquare size={14} /> Contemplation Pulse
+                    <Icons.MessageSquare size={14} /> Contemplation Pulse
                   </h4>
                   <p className="text-3xl md:text-4xl font-serif italic text-white leading-relaxed mb-12">
                     "If we accept that{" "}
@@ -243,7 +232,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                 </div>
 
                 <div className="p-10 bg-black/40 border border-white/5 rounded-[3.5rem] flex flex-col justify-center text-center min-w-[320px] flex-[0.7] flex-shrink-0">
-                  <Aperture
+                  <Icons.Aperture
                     size={40}
                     className="text-canvas-primary mx-auto mb-6"
                   />
@@ -293,7 +282,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                         type="button"
                         className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100"
                       >
-                        <Trash2 size={14} />
+                        <Icons.Trash2 size={14} />
                       </button>
                     </div>
                   </div>

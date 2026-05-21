@@ -1,17 +1,5 @@
 import { useState } from "preact/hooks";
-import {
-  Activity,
-  Aperture,
-  ArrowRight,
-  BookOpen,
-  CornerDownRight,
-  Cpu,
-  Layout,
-  MessageSquare,
-  RefreshCcw,
-  ShieldCheck,
-  Zap,
-} from "lucide-preact";
+import Icons from "lucide-preact";
 import {
   perspectivesSignal as persSig,
   submitPerspective as subPers,
@@ -40,15 +28,16 @@ export default function ThoughtStream() {
         <div className="relative z-10 space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-              <MessageSquare size={14} className="text-canvas-primary" />{" "}
+              <Icons.MessageSquare size={14} className="text-canvas-primary" />{" "}
               Contribute Perspective
             </h2>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-[9px] font-bold text-emerald-500 uppercase tracking-widest">
-                <ShieldCheck size={12} /> Ledger Active
+                <Icons.ShieldCheck size={12} /> Ledger Active
               </div>
               {replyingTo && (
                 <button
+                  type="button"
                   onClick={() => setReplyingTo(null)}
                   className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary hover:text-white transition-colors"
                 >
@@ -72,7 +61,7 @@ export default function ThoughtStream() {
               type="submit"
               className="absolute bottom-8 right-8 w-16 h-16 bg-white text-black rounded-2xl flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer group"
             >
-              <ArrowRight
+              <Icons.ArrowRight
                 size={28}
                 className="group-hover:translate-x-1 transition-transform"
               />
@@ -81,13 +70,14 @@ export default function ThoughtStream() {
 
           <div className="flex flex-wrap gap-4">
             {[
-              { label: "Intuition", icon: Aperture },
-              { label: "Logic", icon: Activity },
-              { label: "Skepticism", icon: Zap },
-              { label: "Curiosity", icon: MessageSquare },
+              { label: "Intuition", icon: Icons.Aperture },
+              { label: "Logic", icon: Icons.Activity },
+              { label: "Skepticism", icon: Icons.Zap },
+              { label: "Curiosity", icon: Icons.MessageSquare },
             ].map((tone) => (
               <button
                 key={tone.label}
+                type="button"
                 className="px-6 py-3 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-canvas-primary transition-all flex items-center gap-2"
               >
                 <tone.icon size={12} className="text-canvas-primary" />{" "}
@@ -125,14 +115,14 @@ export default function ThoughtStream() {
               {pers.isAnalyzing && (
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-[3rem] z-20 flex items-center justify-center gap-4 animate-in fade-in duration-300">
                   <div className="flex items-center gap-3 px-6 py-3 bg-white/10 border border-white/10 rounded-2xl">
-                    <Cpu
+                    <Icons.Cpu
                       size={16}
                       className="text-canvas-primary animate-pulse"
                     />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-white">
                       Parallel Analysis Node #4 Active
                     </span>
-                    <RefreshCcw
+                    <Icons.RefreshCcw
                       size={14}
                       className="text-gray-500 animate-spin"
                     />
@@ -162,8 +152,8 @@ export default function ThoughtStream() {
                       {pers.source && (
                         <span className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-canvas-primary/60">
                           {pers.source === "Journal"
-                            ? <BookOpen size={10} />
-                            : <Layout size={10} />}
+                            ? <Icons.BookOpen size={10} />
+                            : <Icons.Layout size={10} />}
                           {pers.source}
                         </span>
                       )}
@@ -193,19 +183,20 @@ export default function ThoughtStream() {
                 </div>
               </div>
 
-              <p className="text-2xl font-serif italic text-gray-200 leading-relaxed max-w-4xl">
+              <p className="text-2xl font-serif italic text-gray-200 leading-relaxed max-w-none">
                 {pers.content}
               </p>
 
               <div className="mt-8 pt-8 border-t border-white/[0.03] flex items-center gap-8">
-                <button
+                  <button
+                  type="button"
                   onClick={() => setReplyingTo(pers.id)}
                   className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
                 >
-                  <CornerDownRight size={16} /> Synthesize Perspective
+                  <Icons.CornerDownRight size={16} /> Synthesize Perspective
                 </button>
-                <button className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-                  <Activity size={16} /> 12 Resonance
+                <button type="button" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                  <Icons.Activity size={16} /> 12 Resonance
                 </button>
               </div>
             </div>

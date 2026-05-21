@@ -1,4 +1,4 @@
-import { ArrowRight, Globe, MessageSquare, Plus } from "lucide-preact";
+import Icons from "lucide-preact";
 
 export interface ActiveCircle {
   id: string;
@@ -34,7 +34,7 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
               </span>
             </div>
             <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex items-center gap-2">
-              <MessageSquare size={12} className="text-gray-500" />{" "}
+              <Icons.MessageSquare size={12} className="text-gray-500" />{" "}
               {circle.recentActivity}
             </span>
           </div>
@@ -51,7 +51,7 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
           }}
           className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-500 hover:border-indigo-500 transition-all active:scale-90 shadow-lg cursor-pointer"
         >
-          <Plus size={22} />
+          <Icons.Plus size={22} />
         </button>
       </div>
 
@@ -61,7 +61,7 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
 
       <div className="flex flex-wrap gap-2 mb-8">
         <span className="text-[10px] font-bold text-gray-500 border border-white/5 bg-white/[0.02] px-4 py-2 rounded-xl uppercase tracking-widest hover:border-white/20 hover:text-white transition-all cursor-default flex items-center gap-2">
-          <Globe size={12} /> {circle.theme}
+          <Icons.Globe size={12} /> {circle.theme}
         </span>
       </div>
 
@@ -97,7 +97,7 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
 
         <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-gray-400 group-hover:text-white transition-colors">
           Enter Dialogue{" "}
-          <ArrowRight
+          <Icons.ArrowRight
             size={14}
             className="group-hover:translate-x-1 transition-transform"
           />
