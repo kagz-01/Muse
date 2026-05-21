@@ -1,4 +1,4 @@
-import { Aperture, ArrowRight, Globe, Users } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export interface CommunityRoom {
   id: string;
@@ -27,10 +27,10 @@ export default function CommunityRoomCard({ room }: Props) {
       <div className="relative h-full z-10 p-10 flex flex-col">
         <div className="flex justify-between items-start mb-6">
           <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-xl group-hover:bg-indigo-500 group-hover:border-indigo-500 transition-all duration-500">
-            <Globe size={28} />
+            <Icons.Globe size={28} />
           </div>
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-5 py-2.5 flex items-center gap-2">
-            <Users size={16} className="text-indigo-400" />
+            <Icons.Users size={16} className="text-indigo-400" />
             <span className="text-[11px] font-bold text-white uppercase tracking-widest">
               {room.memberCount} Members
             </span>
@@ -39,7 +39,7 @@ export default function CommunityRoomCard({ room }: Props) {
 
         <div className="mt-auto">
           <div className="flex items-center gap-2 mb-4">
-            <Aperture size={14} className="text-indigo-400" />
+            <Icons.Aperture size={14} className="text-indigo-400" />
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               Public Realm
             </span>
@@ -62,7 +62,7 @@ export default function CommunityRoomCard({ room }: Props) {
               type="button"
               className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all transform group-hover:rotate-[-45deg] duration-500 shadow-xl cursor-pointer"
             >
-              <ArrowRight size={24} />
+              <Icons.ArrowRight size={24} />
             </button>
           </div>
         </div>

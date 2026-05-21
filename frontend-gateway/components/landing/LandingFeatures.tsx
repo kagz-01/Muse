@@ -1,24 +1,8 @@
-import {
-  BookOpen,
-  Brain,
-  Compass,
-  Download,
-  Eye,
-  Fingerprint,
-  Image,
-  Lock,
-  Music,
-  Network,
-  PenTool,
-  Share2,
-  Shield,
-  Star,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 const PHASES = [
   {
-    icon: Compass,
+    icon: Icons.Compass,
     color: "text-white/70",
     bg: "bg-white/80/10",
     title: "Consume",
@@ -28,7 +12,7 @@ const PHASES = [
     stat: "7+ platforms",
   },
   {
-    icon: Brain,
+    icon: Icons.Brain,
     color: "text-white/70",
     bg: "bg-white/80/10",
     title: "Contemplate",
@@ -38,7 +22,7 @@ const PHASES = [
     stat: "156K patterns discovered",
   },
   {
-    icon: PenTool,
+    icon: Icons.PenTool,
     color: "text-white/70",
     bg: "bg-white/80/10",
     title: "Create",
@@ -51,7 +35,7 @@ const PHASES = [
 
 const FEATURES = [
   {
-    icon: Compass,
+    icon: Icons.Compass,
     color: "text-white/70",
     bg: "bg-white/80/10",
     title: "Aggregate Everything",
@@ -59,7 +43,7 @@ const FEATURES = [
       "Connect Spotify, TikTok, Pinterest, YouTube, Twitter. Muse sees what you consume across all platforms.",
   },
   {
-    icon: Network,
+    icon: Icons.Network,
     color: "text-white/70",
     bg: "bg-white/80/10",
     title: "Find Your Patterns",
@@ -67,7 +51,7 @@ const FEATURES = [
       "Discover the meta-themes, aesthetics, and tensions that run through everything you save and watch.",
   },
   {
-    icon: Eye,
+    icon: Icons.Eye,
     color: "text-white/70",
     bg: "bg-white/80/10",
     title: "Know Yourself Honestly",
@@ -75,7 +59,7 @@ const FEATURES = [
       "Your consumption fingerprint doesn't lie. Muse shows you who you actually are, not who you perform.",
   },
   {
-    icon: PenTool,
+    icon: Icons.PenTool,
     color: "text-white/70",
     bg: "bg-white/80/10",
     title: "Create From Yourself",
@@ -83,7 +67,7 @@ const FEATURES = [
       "Start writing, making, or sharing with your own voice, aesthetic, and themes already primed.",
   },
   {
-    icon: Share2,
+    icon: Icons.Share2,
     color: "text-sky-400",
     bg: "bg-sky-500/10",
     title: "Share Your Portrait",
@@ -91,7 +75,7 @@ const FEATURES = [
       "Your Muse Card — one link that shows your sonic, visual, intellectual, and creative identity.",
   },
   {
-    icon: Shield,
+    icon: Icons.Shield,
     color: "text-white/70",
     bg: "bg-white/80/10",
     title: "Privacy First",
@@ -237,7 +221,7 @@ export default function LandingFeatures() {
       <section className="py-20 px-6 md:px-12 max-w-6xl mx-auto z-20 relative">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80/10 border border-white/80/20 mb-4">
-            <Brain size={12} className="text-white/70" />
+                    <Icons.Brain size={12} className="text-white/70" />
             <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">
               Real patterns from real users
             </span>
@@ -278,7 +262,7 @@ export default function LandingFeatures() {
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/80/20 blur-[100px] rounded-full opacity-20" />
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-6">
-              <Share2 size={24} className="text-white/70" />
+              <Icons.Share2 size={24} className="text-white/70" />
               <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">
                 Your Muse Card
               </span>
@@ -298,15 +282,15 @@ export default function LandingFeatures() {
                 </p>
                 <div className="flex flex-wrap gap-2 mb-6">
                   <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10">
-                    <Music size={10} className="text-white/70" />
+                    <Icons.Music size={10} className="text-white/70" />
                     <span className="text-[10px]">Ambient / Melancholy</span>
                   </div>
                   <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10">
-                    <Image size={10} className="text-white/70" />
+                    <Icons.Image size={10} className="text-white/70" />
                     <span className="text-[10px]">Brutalist / Analog</span>
                   </div>
                   <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10">
-                    <Brain size={10} className="text-white/70" />
+                    <Icons.Brain size={10} className="text-white/70" />
                     <span className="text-[10px]">Consciousness / Systems</span>
                   </div>
                 </div>
@@ -326,11 +310,11 @@ export default function LandingFeatures() {
                       </p>
                     </div>
                   </div>
-                  <Share2 size={12} className="text-gray-600" />
+                  <Icons.Share2 size={12} className="text-gray-600" />
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Music size={12} className="text-white/70" />
+                    <Icons.Music size={12} className="text-white/70" />
                     <span className="text-[10px] text-gray-400">
                       Sonic fingerprint:
                     </span>
@@ -339,7 +323,7 @@ export default function LandingFeatures() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Image size={12} className="text-white/70" />
+                    <Icons.Image size={12} className="text-white/70" />
                     <span className="text-[10px] text-gray-400">
                       Visual aesthetic:
                     </span>
@@ -348,7 +332,7 @@ export default function LandingFeatures() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <BookOpen size={12} className="text-white/70" />
+                    <Icons.BookOpen size={12} className="text-white/70" />
                     <span className="text-[10px] text-gray-400">
                       Intellectual diet:
                     </span>
@@ -382,8 +366,8 @@ export default function LandingFeatures() {
               className="min-w-[260px] md:min-w-[300px] snap-start p-6 rounded-xl bg-gradient-to-br from-white/[0.02] to-white/[0.01] border border-white/5 hover:border-white/80/30 transition-all backdrop-blur-sm hover:shadow-lg hover:translate-y-[-5px]"
             >
               <div className="flex gap-1 mb-3">
-                {[...Array(t.rating)].map((_, j) => (
-                  <Star
+                  {[...Array(t.rating)].map((_, j) => (
+                  <Icons.Star
                     key={j}
                     size={12}
                     className="text-white/70 fill-white/70"
@@ -404,7 +388,7 @@ export default function LandingFeatures() {
       <section className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6 py-20 z-20 relative">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80/10 border border-white/80/20 mb-6">
-            <Zap size={10} className="text-white/70" />
+            <Icons.Zap size={10} className="text-white/70" />
             <span className="text-[9px] font-bold text-white/70 uppercase tracking-wider">
               Limited early access
             </span>
@@ -419,20 +403,20 @@ export default function LandingFeatures() {
             Join the waitlist. Be among the first to see your honest portrait.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
-            <div className="flex items-center gap-1">
-              <Lock size={12} className="text-gray-600" />
+              <div className="flex items-center gap-1">
+              <Icons.Lock size={12} className="text-gray-600" />
               <span className="text-[10px] text-gray-600">Privacy first</span>
             </div>
             <div className="w-px h-3 bg-white/10" />
-            <div className="flex items-center gap-1">
-              <Fingerprint size={12} className="text-gray-600" />
+              <div className="flex items-center gap-1">
+              <Icons.Fingerprint size={12} className="text-gray-600" />
               <span className="text-[10px] text-gray-600">
                 Your data, your control
               </span>
             </div>
             <div className="w-px h-3 bg-white/10" />
-            <div className="flex items-center gap-1">
-              <Download size={12} className="text-gray-600" />
+              <div className="flex items-center gap-1">
+              <Icons.Download size={12} className="text-gray-600" />
               <span className="text-[10px] text-gray-600">
                 Export your portrait anytime
               </span>

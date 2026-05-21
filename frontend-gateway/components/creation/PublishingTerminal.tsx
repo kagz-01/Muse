@@ -1,13 +1,5 @@
 import { useState } from "preact/hooks";
-import {
-  Activity,
-  Cpu,
-  GitCommit,
-  Globe,
-  Lock,
-  Shield,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { threadsSignal } from "../../signals/threads.ts";
 import { publishThought } from "../../signals/publications.ts";
 import { userSignal } from "../../signals/user.ts";
@@ -53,8 +45,8 @@ export default function PublishingTerminal() {
 
       <div className="relative z-10 space-y-12">
         <div className="flex items-center justify-between">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-            <Zap size={14} className="text-canvas-primary" /> Creation Terminal
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+            <Icons.Zap size={14} className="text-canvas-primary" /> Creation Terminal
           </h3>
           <div className="flex items-center gap-3">
             <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-[9px] font-bold uppercase tracking-widest text-emerald-500">
@@ -85,7 +77,7 @@ export default function PublishingTerminal() {
                     <span className="text-[9px] font-bold uppercase tracking-widest text-white">
                       {thread.title}
                     </span>
-                    <GitCommit size={14} className="text-canvas-primary" />
+                    <Icons.GitCommit size={14} className="text-canvas-primary" />
                   </div>
                   <p className="text-[10px] text-gray-500 font-serif italic line-clamp-1">
                     {thread.thesis}
@@ -119,8 +111,8 @@ export default function PublishingTerminal() {
                   </p>
                 </div>
                 {isImmutable
-                  ? <Shield size={20} className="text-canvas-primary" />
-                  : <Lock size={20} className="text-gray-800" />}
+                  ? <Icons.Shield size={20} className="text-canvas-primary" />
+                  : <Icons.Lock size={20} className="text-gray-800" />}
               </button>
               <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 text-center">
                 <p className="text-[9px] font-bold uppercase tracking-widest text-gray-600 mb-2">
@@ -149,8 +141,8 @@ export default function PublishingTerminal() {
 
         <div className="flex items-center gap-8 pt-8 border-t border-white/5">
           <div className="flex-1">
-            <div className="flex items-center gap-4 mb-2">
-              <Cpu
+              <div className="flex items-center gap-4 mb-2">
+              <Icons.Cpu
                 size={16}
                 className="text-canvas-primary animate-spin-slow"
               />
@@ -170,8 +162,8 @@ export default function PublishingTerminal() {
             className="px-16 py-6 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.15)] hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-4 disabled:opacity-30"
           >
             {isPublishing
-              ? <Activity size={18} className="animate-pulse" />
-              : <Globe size={18} />}
+              ? <Icons.Activity size={18} className="animate-pulse" />
+              : <Icons.Globe size={18} />}
             {isPublishing ? "Publishing Thought..." : "Broadcast to Collective"}
           </button>
         </div>

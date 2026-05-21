@@ -1,13 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import {
-  Aperture,
-  ArrowRight,
-  BookOpen,
-  ChevronDown,
-  Globe,
-  Layers,
-  PenTool,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import AuthModal from "../modals/AuthModal.tsx";
 
 const NOISE_WORDS = [
@@ -61,7 +53,7 @@ const PILLARS = [
 
 const FEATURES = [
   {
-    icon: BookOpen,
+    icon: Icons.BookOpen,
     color: "text-indigo-400",
     glow: "bg-indigo-500/10",
     title: "Rooms",
@@ -69,7 +61,7 @@ const FEATURES = [
       "Thematic collection spaces. Music, architecture, philosophy — each content type finds its home.",
   },
   {
-    icon: Layers,
+    icon: Icons.Layers,
     color: "text-violet-400",
     glow: "bg-violet-500/10",
     title: "Threads",
@@ -77,7 +69,7 @@ const FEATURES = [
       "Weave artifacts into meaningful patterns. Find the hidden connections in your curiosity.",
   },
   {
-    icon: PenTool,
+    icon: Icons.PenTool,
     color: "text-emerald-400",
     glow: "bg-emerald-500/10",
     title: "Journal",
@@ -85,7 +77,7 @@ const FEATURES = [
       "Private introspection space. Slow down. Reflect. Understand what you truly think.",
   },
   {
-    icon: Aperture,
+    icon: Icons.Aperture,
     color: "text-amber-400",
     glow: "bg-amber-500/10",
     title: "Weekly Mirror",
@@ -219,7 +211,7 @@ export default function LandingIsland() {
               className="group px-10 py-5 bg-canvas-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-full flex items-center gap-3 shadow-[0_0_40px_rgba(99,102,241,0.35)] hover:-translate-y-1 hover:shadow-[0_0_60px_rgba(99,102,241,0.5)] transition-all cursor-pointer active:scale-95"
             >
               Start Your Muse
-              <ArrowRight
+              <Icons.ArrowRight
                 size={16}
                 className="group-hover:translate-x-1 transition-transform"
               />
@@ -234,7 +226,7 @@ export default function LandingIsland() {
           </div>
 
           <div className="mt-16 flex items-center gap-2 flex-wrap justify-center animate-in fade-in duration-1000 delay-700">
-            {PILLARS.map((p) => (
+            {PILLARS.map((p, i) => (
               <div key={p.label} className="flex items-center gap-2">
                 <span
                   className={`text-[11px] font-bold uppercase tracking-widest ${p.color} px-3 py-1.5 rounded-full bg-white/5 border border-white/8`}
@@ -249,11 +241,11 @@ export default function LandingIsland() {
             <span className="text-gray-700 text-xs">↩</span>
           </div>
 
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-600 animate-bounce">
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-600 animate-bounce">
             <span className="text-[10px] font-bold uppercase tracking-widest">
               Scroll to explore
             </span>
-            <ChevronDown size={18} />
+            <Icons.ChevronDown size={18} />
           </div>
         </section>
 
@@ -313,7 +305,10 @@ export default function LandingIsland() {
                 <div
                   className={`w-12 h-12 ${f.glow} rounded-2xl flex items-center justify-center mb-6`}
                 >
-                  <f.icon size={22} className={f.color} />
+                  {(() => {
+                    const IconComp = f.icon as any;
+                    return <IconComp size={22} className={f.color} />;
+                  })()}
                 </div>
                 <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
                   {f.title}
@@ -331,7 +326,7 @@ export default function LandingIsland() {
           <div className="relative overflow-hidden rounded-4xl bg-gradient-to-br from-indigo-500/20 via-violet-600/10 to-transparent border border-indigo-500/20 p-12 md:p-16 text-center">
             <div className="absolute inset-0 bg-indigo-500/5 blur-3xl" />
             <div className="relative z-10">
-              <Globe size={32} className="text-indigo-400 mx-auto mb-6" />
+              <Icons.Globe size={32} className="text-indigo-400 mx-auto mb-6" />
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-5">
                 You're not browsing alone.
               </h2>
@@ -397,7 +392,7 @@ export default function LandingIsland() {
             className="group px-12 py-6 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full flex items-center gap-4 shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:shadow-[0_30px_80px_rgba(99,102,241,0.3)] hover:bg-canvas-primary hover:text-white transition-all cursor-pointer mx-auto"
           >
             Start for Free
-            <ArrowRight
+            <Icons.ArrowRight
               size={18}
               className="group-hover:translate-x-1 transition-transform"
             />

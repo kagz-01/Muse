@@ -1,4 +1,4 @@
-import { ExternalLink, MapPin, Quote, Shield } from "lucide-preact";
+import * as Icons from "lucide-preact";
 import type { User } from "../../signals/user.ts";
 import type { Room } from "../../signals/rooms.ts";
 
@@ -34,13 +34,13 @@ export default function PortraitCard(
         <div className="h-40 bg-linear-to-br from-indigo-500/30 via-emerald-500/10 to-transparent relative border-b border-white/5 flex justify-center">
           {soloMode && (
             <div className="absolute top-5 right-5 bg-black/60 backdrop-blur-xl border border-white/10 px-3.5 py-1.5 rounded-full flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-indigo-400 shadow-2xl z-20 animate-in fade-in zoom-in-90 duration-500">
-              <Shield size={12} strokeWidth={2.5} /> Solo Mode
+              <Icons.Shield size={12} strokeWidth={2.5} /> Solo Mode
             </div>
           )}
 
           {user.location && (
             <div className="absolute top-5 left-5 bg-white/5 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-gray-400 z-20">
-              <MapPin size={10} /> {user.location}
+              <Icons.MapPin size={10} /> {user.location}
             </div>
           )}
 
@@ -74,7 +74,7 @@ export default function PortraitCard(
 
           {user.bio && (
             <div className="mb-8 relative px-4">
-              <Quote
+              <Icons.Quote
                 size={20}
                 className="absolute -top-3 -left-1 text-white/5 rotate-180"
               />
@@ -112,7 +112,7 @@ export default function PortraitCard(
               ? (
                 (user.links || []).map((link) => (
                   <a
-                    key={link.id}
+                    key={link.url}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -121,7 +121,7 @@ export default function PortraitCard(
                     <span className="text-xs font-bold text-gray-300 group-hover/link:text-white transition-colors truncate tracking-wide">
                       {link.title}
                     </span>
-                    <ExternalLink
+                    <Icons.ExternalLink
                       size={14}
                       className="text-gray-600 group-hover/link:text-indigo-400 transition-colors duration-300 shrink-0"
                     />

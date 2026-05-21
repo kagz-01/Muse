@@ -1,14 +1,5 @@
 import { useState } from "preact/hooks";
-import {
-  Activity,
-  Infinity as InfinityIcon,
-  Lock,
-  Mail,
-  Shield,
-  User,
-  X,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { login } from "../../signals/user.ts";
 
 interface AuthModalProps {
@@ -68,14 +59,14 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
             type="button"
             className="absolute top-8 right-8 w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all cursor-pointer z-50 hover:rotate-90"
           >
-            <X size={20} />
+            <Icons.X size={20} />
           </button>
 
           <div className="relative z-10">
             {/* TERMINAL HEADER */}
             <div className="flex items-center gap-4 mb-12">
               <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-black font-bold text-xl shadow-2xl">
-                <InfinityIcon size={28} strokeWidth={2.5} />
+                <Icons.Infinity size={28} strokeWidth={2.5} />
               </div>
               <div>
                 <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.5em] leading-none mb-2">
@@ -95,7 +86,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
               ? (
                 <div className="py-20 text-center space-y-6 animate-in zoom-in-95 duration-500">
                   <div className="w-20 h-20 bg-emerald-500/20 border border-emerald-500/40 rounded-full mx-auto flex items-center justify-center text-emerald-400">
-                    <Zap size={40} className="fill-emerald-400" />
+                    <Icons.Zap size={40} className="fill-emerald-400" />
                   </div>
                   <p className="text-xl font-serif italic text-gray-400">
                     Connecting to your cognitive vault...
@@ -107,7 +98,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                   {localMode === "signup" && (
                     <div className="space-y-3 group">
                       <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                        <User size={12} /> Full Name
+                        <Icons.User size={12} /> Full Name
                       </label>
                       <input
                         type="text"
@@ -123,7 +114,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
 
                   <div className="space-y-3 group">
                     <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                      <Mail size={12} /> Email Address
+                      <Icons.Mail size={12} /> Email Address
                     </label>
                     <input
                       type="email"
@@ -138,7 +129,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
 
                   <div className="space-y-3 group">
                     <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                      <Lock size={12} /> Password
+                      <Icons.Lock size={12} /> Password
                     </label>
                     <input
                       type="password"
@@ -170,7 +161,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                       onClick={handleDemoEntry}
                       className="w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px] hover:bg-white/10 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-3"
                     >
-                      <Activity size={14} /> Continue as Guest
+                      <Icons.Activity size={14} /> Continue as Guest
                     </button>
                   </div>
                 </form>
@@ -193,7 +184,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                 </p>
 
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
-                  <Shield size={12} className="text-gray-600" />
+                  <Icons.Shield size={12} className="text-gray-600" />
                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500">
                     End-to-End Encryption Active
                   </span>

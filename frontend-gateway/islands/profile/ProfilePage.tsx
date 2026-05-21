@@ -1,5 +1,5 @@
 import { useMemo, useState } from "preact/hooks";
-import { Activity, Aperture, LogOut, Settings, Trophy } from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { logout, userSignal } from "../../signals/user.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
@@ -118,14 +118,14 @@ export default function ProfilePage() {
             href="/settings"
             className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
           >
-            <Settings size={18} className="text-gray-400" />
+            <Icons.Settings size={18} className="text-gray-400" />
           </a>
-          <button
+            <button
             type="button"
             onClick={handleLogout}
             className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-rose-500/10 transition"
           >
-            <LogOut size={18} className="text-rose-400" />
+              <Icons.LogOut size={18} className="text-rose-400" />
           </button>
         </div>
       </div>
@@ -234,8 +234,7 @@ export default function ProfilePage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10">
               <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-4 flex items-center gap-2">
-                <Aperture size={14} className="text-canvas-primary" />{" "}
-                Creative Signature
+                <Icons.Aperture size={14} className="text-canvas-primary" /> Creative Signature
               </h3>
               <div className="flex flex-wrap gap-2">
                 {themes.slice(0, 8).map((theme) => (
@@ -251,8 +250,7 @@ export default function ProfilePage() {
 
             <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10">
               <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-4 flex items-center gap-2">
-                <Activity size={14} className="text-canvas-primary" />{" "}
-                Recent Activity
+                <Icons.Activity size={14} className="text-canvas-primary" /> Recent Activity
               </h3>
               <div className="space-y-3">
                 {recentActivity.slice(0, 5).map((activity) => (
@@ -285,8 +283,8 @@ export default function ProfilePage() {
                   : "bg-white/[0.03] border-white/10"
               }`}
             >
-              <p className="text-sm font-bold text-white flex items-center gap-2">
-                <Trophy
+                <p className="text-sm font-bold text-white flex items-center gap-2">
+                <Icons.Trophy
                   size={14}
                   className={achievement.unlocked
                     ? "text-emerald-400"

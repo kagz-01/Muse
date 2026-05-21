@@ -81,7 +81,7 @@ export default function ConnectionsHub() {
                     `}
                   >
                     {(() => {
-                      const Icon = tab.icon as unknown as import("preact").ComponentType<any>;
+                        const Icon = tab.icon as unknown as import("preact").ComponentType<Record<string, unknown>>;
                       return <Icon size={16} />;
                     })()}
                     {tab.label}

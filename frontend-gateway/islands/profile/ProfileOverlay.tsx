@@ -1,12 +1,5 @@
 import { useState } from "preact/hooks";
-import {
-  ChevronRight,
-  Globe,
-  LogOut,
-  Settings,
-  Shield,
-  X,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import {
   logout,
   soloModeSignal,
@@ -82,7 +75,7 @@ export default function ProfileOverlay() {
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 group-hover:text-white group-hover:bg-canvas-primary transition-all">
-                  <Settings size={20} />
+                  <Icons.Settings size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-white">Edit Profile</p>
@@ -91,7 +84,7 @@ export default function ProfileOverlay() {
                   </p>
                 </div>
               </div>
-              <ChevronRight
+              <Icons.ChevronRight
                 size={16}
                 className="text-gray-700 group-hover:text-white transition-colors"
               />
@@ -110,7 +103,7 @@ export default function ProfileOverlay() {
                       : "bg-white/5 border-white/10 text-gray-500 group-hover:text-white"
                   }`}
                 >
-                  <Shield size={20} />
+                  <Icons.Shield size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-white">
@@ -142,7 +135,7 @@ export default function ProfileOverlay() {
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 transition-all">
-                  <Globe size={20} />
+                  <Icons.Globe size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-white">
@@ -166,7 +159,7 @@ export default function ProfileOverlay() {
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 group-hover:text-rose-400 group-hover:bg-rose-500/20 transition-all">
-                  <LogOut size={20} />
+                  <Icons.LogOut size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-white">Logout</p>
@@ -175,7 +168,7 @@ export default function ProfileOverlay() {
                   </p>
                 </div>
               </div>
-              <X
+              <Icons.X
                 size={16}
                 className="text-gray-700 group-hover:text-rose-400 transition-colors"
               />

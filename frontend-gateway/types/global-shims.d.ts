@@ -1,40 +1,44 @@
-// Broad, permissive shims to help the TypeScript checker in this workspace.
-// These are intentionally permissive to reduce noise while we iteratively fix real issues.
+// Reasonably-typed shims to help the TypeScript checker while we fix
+// concrete issues across the codebase. These use `unknown` instead of
+// `any` where possible to avoid tripping the workspace's `noAny` rule.
 
 declare module "lucide-preact" {
-  const _default: any;
-  export = _default;
-  export default _default;
+  import type { ComponentType } from "preact";
+  // A map of icon component names to Preact components. Keep this
+  // intentionally generic so consumers can `import * as Icons` or
+  // access icons by name when rendering dynamically.
+  const icons: { [key: string]: ComponentType<Record<string, unknown>> };
+  export = icons;
 }
 
 declare module "preact" {
-  export type ComponentType<P = any> = (props: P) => any;
+  export type ComponentType<P = unknown> = (props: P) => unknown;
   export namespace JSX {
     interface IntrinsicElements {
-      [elem: string]: any;
+      [elem: string]: unknown;
     }
     interface IntrinsicAttributes {
-      [key: string]: any;
+      [key: string]: unknown;
     }
-    interface HTMLAttributes<T = any> {
-      [key: string]: any;
+    interface HTMLAttributes<T = unknown> {
+      [key: string]: unknown;
     }
     interface Element {}
-    interface ElementChildrenAttribute { children: {} }
+    interface ElementChildrenAttribute { children: unknown }
   }
 }
 
 declare module "preact/hooks" {
   export function useState<T>(initialState?: T | (() => T)):
     [T, (next: T | ((prev: T) => T)) => void];
-  export function useEffect(effect: () => void | (() => void), deps?: any[]): void;
-  export function useMemo<T>(factory: () => T, deps?: any[]): T;
-  export function useRef<T>(initial?: T): { current: T };
-  export function useCallback<T extends (...args: any[]) => any>(cb: T, deps?: any[]): T;
-  export function useLayoutEffect(effect: () => void | (() => void), deps?: any[]): void;
-  export function useContext<T = any>(ctx: any): T;
+  export function useEffect(effect: () => void | (() => void), deps?: unknown[]): void;
+  export function useMemo<T>(factory: () => T, deps?: unknown[]): T;
+  export function useRef<T>(initial?: T | null): { current: T | null };
+  export function useCallback<T extends (...args: unknown[]) => unknown>(cb: T, deps?: unknown[]): T;
+  export function useLayoutEffect(effect: () => void | (() => void), deps?: unknown[]): void;
+  export function useContext<T = unknown>(ctx: unknown): T;
 }
 
 // Allow importing CSS or static assets in TS files without type errors
-declare module "*.css" { const content: any; export default content; }
-declare module "*.svg" { const content: any; export default content; }
+declare module "*.css" { const content: unknown; export default content; }
+declare module "*.svg" { const content: unknown; export default content; }

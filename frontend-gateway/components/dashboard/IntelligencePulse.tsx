@@ -1,10 +1,5 @@
 import { userSignal } from "../../signals/user.ts";
-import {
-  Activity,
-  Aperture,
-  Flame,
-  TrendingUp,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function IntelligencePulse() {
   const user = userSignal.value;
@@ -16,12 +11,11 @@ export default function IntelligencePulse() {
 
       <div className="relative z-10 space-y-10">
         <div className="flex items-center justify-between">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-            <Activity size={14} className="text-canvas-primary" />{" "}
-            Intelligence Pulse
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+            <Icons.Activity size={14} className="text-canvas-primary" /> Intelligence Pulse
           </h3>
           <div className="flex items-center gap-3 px-4 py-1.5 bg-canvas-primary/10 border border-canvas-primary/30 rounded-xl">
-            <Flame size={14} className="text-canvas-primary animate-pulse" />
+            <Icons.Flame size={14} className="text-canvas-primary animate-pulse" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary">
               {user.cognitiveStreak} Day Streak
             </span>
@@ -37,7 +31,7 @@ export default function IntelligencePulse() {
               {resonanceScore}%
             </div>
             <div className="flex items-center justify-center gap-2 text-emerald-500 text-[10px] font-bold">
-              <TrendingUp size={12} /> +12% from last week
+              <Icons.TrendingUp size={12} /> +12% from last week
             </div>
           </div>
 
@@ -73,7 +67,7 @@ export default function IntelligencePulse() {
         <div className="p-8 bg-canvas-primary/5 border border-canvas-primary/20 rounded-[2.5rem] flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-canvas-primary/20 flex items-center justify-center text-canvas-primary">
-              <Aperture size={24} />
+              <Icons.Aperture size={24} />
             </div>
             <div>
               <h4 className="text-sm font-bold text-white uppercase tracking-widest">

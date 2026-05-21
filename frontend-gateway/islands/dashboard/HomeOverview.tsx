@@ -63,25 +63,25 @@ export default function HomeOverview() {
       label: "Artifacts",
       value: totalArtifacts,
       helper: `${publicRooms} public rooms`,
-      icon: FolderOpen,
+      icon: Icons.FolderOpen,
     },
     {
       label: "Journal streak",
       value: `${streak}d`,
       helper: `${todayWords} words today`,
-      icon: Flame,
+      icon: Icons.Flame,
     },
     {
       label: "Threads",
       value: threads.length,
       helper: `${publicThreads} public`,
-      icon: MessageSquare,
+      icon: Icons.MessageSquare,
     },
     {
       label: "Community circles",
       value: circles.length,
       helper: `${collaborators.length} collaborators`,
-      icon: Users,
+      icon: Icons.Users,
     },
   ];
 
@@ -95,7 +95,7 @@ export default function HomeOverview() {
           formatRelativeTime(latestEntry.createdAt)
         }`
         : "Start your first reflection",
-      icon: BookOpen,
+      icon: Icons.BookOpen,
       href: latestEntry ? `/journal/${latestEntry.id}` : "/journal",
     },
     {
@@ -105,7 +105,7 @@ export default function HomeOverview() {
           latestRoom.isPublic ? "Public" : "Solo"
         }`
         : "Create your first room",
-      icon: FolderOpen,
+      icon: Icons.FolderOpen,
       href: latestRoom ? `/rooms/${latestRoom.id}` : "/rooms",
     },
     {
@@ -115,7 +115,7 @@ export default function HomeOverview() {
           latestThread.isPublic ? "Community" : "Solo"
         }`
         : "Start a thread",
-      icon: MessageSquare,
+      icon: Icons.MessageSquare,
       href: latestThread ? `/threads/${latestThread.id}` : "/threads",
     },
   ];
@@ -182,8 +182,8 @@ export default function HomeOverview() {
             </div>
 
             <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
-              {stats.slice(0, 2).map((stat) => {
-                      const Icon = stat.icon as unknown as import("preact").ComponentType<any>;
+                    {stats.slice(0, 2).map((stat) => {
+                      const Icon = stat.icon as unknown as import("preact").ComponentType<Record<string, unknown>>;
                 return (
                   <div
                     key={stat.label}
@@ -243,8 +243,8 @@ export default function HomeOverview() {
           </div>
 
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-            {stats.map((stat) => {
-                      const Icon = stat.icon as unknown as import("preact").ComponentType<any>;
+                {stats.map((stat) => {
+                    const Icon = stat.icon as unknown as import("preact").ComponentType<Record<string, unknown>>;
               return (
                 <div
                   key={stat.label}
@@ -274,8 +274,8 @@ export default function HomeOverview() {
           </div>
 
           <div className="space-y-3">
-            {recentActivity.map((item) => {
-                      const Icon = item.icon as unknown as import("preact").ComponentType<any>;
+                {recentActivity.map((item) => {
+                    const Icon = item.icon as unknown as import("preact").ComponentType<Record<string, unknown>>;
               return (
                 <a
                   key={item.title}

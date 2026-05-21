@@ -1,72 +1,70 @@
-import { useMemo } from "react";
+import { useMemo } from "preact/hooks";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
-import {
-  Aperture,
-  ArrowLeft,
-  BarChart2,
-  BookOpen,
-  Layers,
-  Share2,
-  TrendingUp,
-} from "lucide-react";
-import { useItemsStore } from "../store/useItemsStore";
-import { useRoomsStore } from "../store/useRoomsStore";
-import { useJournalStore } from "../store/useJournalStore";
+import * as Icons from "lucide-preact";
+import { useItemsStore } from "./store/useItemsStore";
+import { useRoomsStore } from "./store/useRoomsStore";
+import { useJournalStore } from "./store/useJournalStore";
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
+// Minimal local types to avoid implicit `any` in selectors and callbacks.
+type Item = { createdAt: number; roomId: string; isPublic?: boolean };
+type Room = { id: string; name: string };
+type Entry = { createdAt: number };
+type IconComp = import("preact").ComponentType<Record<string, unknown>>;
+
 export default function Mirror() {
   const navigate = useNavigate();
-  const items = useItemsStore((s) => s.items);
-  const rooms = useRoomsStore((s) => s.rooms);
-  const entries = useJournalStore((s) => s.entries);
+  const items = useItemsStore((s: { items: Item[] }) => s.items);
+  const rooms = useRoomsStore((s: { rooms: Room[] }) => s.rooms);
+  const entries = useJournalStore((s: { entries: Entry[] }) => s.entries);
 
   const now = Date.now();
   const weekItems = useMemo(
-    () => items.filter((i) => now - i.createdAt < ONE_WEEK_MS),
+    () => items.filter((i: Item) => now - i.createdAt < ONE_WEEK_MS),
     [items],
   );
   const weekEntries = useMemo(
-    () => entries.filter((e) => now - e.createdAt < ONE_WEEK_MS),
+    () => entries.filter((e: Entry) => now - e.createdAt < ONE_WEEK_MS),
     [entries],
   );
 
   // Top room by activity this week
-  const roomCounts = weekItems.reduce<Record<string, number>>((acc, i) => {
+  const roomCounts = weekItems.reduce<Record<string, number>>((acc: Record<string, number>, i: Item) => {
     acc[i.roomId] = (acc[i.roomId] || 0) + 1;
     return acc;
-  }, {});
+  }, {} as Record<string, number>);
   const topRoomId =
     Object.keys(roomCounts).sort((a, b) => roomCounts[b] - roomCounts[a])[0];
-  const topRoom = rooms.find((r) => r.id === topRoomId);
+  const topRoom = rooms.find((r: Room) => r.id === topRoomId);
 
-  const stats = [
+  const stats: Array<{ label: string; value: number; icon: IconComp; color: string; bg: string }> = [
     {
       label: "Artifacts saved",
       value: weekItems.length,
-      icon: Layers,
+      icon: Icons.Layers,
       color: "text-canvas-primary",
       bg: "bg-canvas-primary/10",
     },
     {
       label: "Journal entries",
       value: weekEntries.length,
-      icon: BookOpen,
+      icon: Icons.BookOpen,
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
     },
     {
       label: "Rooms explored",
-      value: new Set(weekItems.map((i) => i.roomId)).size,
-      icon: BarChart2,
+      value: new Set(weekItems.map((i: any) => i.roomId)).size,
+      icon: Icons.BarChart2,
       color: "text-amber-400",
       bg: "bg-amber-500/10",
     },
     {
       label: "Public artifacts",
-      value: weekItems.filter((i) => i.isPublic).length,
-      icon: TrendingUp,
+      value: weekItems.filter((i: any) => i.isPublic).length,
+      icon: Icons.TrendingUp,
       color: "text-rose-400",
       bg: "bg-rose-500/10",
     },
@@ -98,7 +96,7 @@ export default function Mirror() {
           type="button"
           className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-10 text-sm font-bold uppercase tracking-widest cursor-pointer"
         >
-          <ArrowLeft size={16} /> Back
+          <Icons.ArrowLeft size={16} /> Back
         </button>
 
         {/* Header */}
@@ -112,7 +110,7 @@ export default function Mirror() {
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Aperture size={24} className="text-canvas-primary" />
+              <Icons.Aperture size={24} className="text-canvas-primary" />
             </motion.div>
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary">
               Weekly Mirror
@@ -135,7 +133,7 @@ export default function Mirror() {
           transition={{ delay: 0.1 }}
           className="flex gap-4 overflow-x-auto pb-2 mb-12 snap-x snap-mandatory scrollbar-hide"
         >
-          {stats.map((s, i) => (
+          {stats.map((s, i: number) => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -146,7 +144,10 @@ export default function Mirror() {
               <div
                 className={`w-10 h-10 ${s.bg} rounded-2xl flex items-center justify-center`}
               >
-                <s.icon size={18} className={s.color} />
+                {(() => {
+                  const IconComp = s.icon as IconComp;
+                  return <IconComp size={18} className={s.color} />;
+                })()}
               </div>
               <div>
                 <p className="text-3xl font-bold text-white font-mono">
@@ -170,7 +171,7 @@ export default function Mirror() {
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none" />
           <div className="relative z-10">
             <h2 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
-              <Aperture size={20} className="text-canvas-primary" />{" "}
+              <Icons.Aperture size={20} className="text-canvas-primary" />{" "}
               Curator's Insights
             </h2>
             <div className="space-y-6">
@@ -195,7 +196,7 @@ export default function Mirror() {
             className="mb-10"
           >
             <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2">
-              <BarChart2 size={14} /> Room Activity This Week
+              <Icons.BarChart2 size={14} /> Room Activity This Week
             </h2>
             <div className="space-y-3">
               {rooms.map((room) => {
@@ -236,7 +237,7 @@ export default function Mirror() {
           className="flex justify-center"
         >
           <button type="button" className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 active:scale-95 transition-all cursor-pointer">
-            <Share2 size={16} /> Share Your Week
+            <Icons.Share2 size={16} /> Share Your Week
           </button>
         </motion.div>
       </div>

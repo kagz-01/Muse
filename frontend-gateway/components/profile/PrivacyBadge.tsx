@@ -1,4 +1,4 @@
-import { Globe, Lock, ShieldCheck } from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { soloModeSignal, toggleSoloMode } from "../../signals/user.ts";
 
 export default function PrivacyBadge() {
@@ -25,7 +25,7 @@ export default function PrivacyBadge() {
         {soloMode
           ? (
             <>
-              <Lock size={14} className="animate-pulse" />
+              <Icons.Lock size={14} className="animate-pulse" />
               <span className="text-[10px] font-bold uppercase tracking-widest">
                 Solo Mode
               </span>
@@ -33,7 +33,7 @@ export default function PrivacyBadge() {
           )
           : (
             <>
-              <Globe size={14} />
+              <Icons.Globe size={14} />
               <span className="text-[10px] font-bold uppercase tracking-widest">
                 Community
               </span>
@@ -43,7 +43,7 @@ export default function PrivacyBadge() {
 
       <div className="relative z-10 w-px h-3 bg-current opacity-20 mx-0.5" />
 
-      <ShieldCheck
+      <Icons.ShieldCheck
         size={14}
         className="relative z-10 opacity-70 group-hover:opacity-100 transition-opacity"
       />

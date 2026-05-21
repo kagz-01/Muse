@@ -1,5 +1,5 @@
 import { roomsSignal } from "../../signals/rooms.ts";
-import { AlertCircle, GitBranch, Merge, X } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function SemanticConflictResolver(
   { newRoomName, onResolve }: {
@@ -24,8 +24,8 @@ export default function SemanticConflictResolver(
   return (
     <div className="bg-amber-500/10 border border-amber-500/30 rounded-[2rem] p-8 animate-in zoom-in-95 duration-500">
       <div className="flex items-start gap-6">
-        <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
-          <AlertCircle size={28} />
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
+          <Icons.AlertCircle size={28} />
         </div>
 
         <div className="space-y-4">
@@ -50,7 +50,7 @@ export default function SemanticConflictResolver(
               onClick={() => onResolve("merge")}
               className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
             >
-              <Merge
+              <Icons.Merge
                 size={20}
                 className="text-amber-500 mb-3 group-hover:scale-110 transition-transform"
               />
@@ -66,7 +66,7 @@ export default function SemanticConflictResolver(
               onClick={() => onResolve("separate")}
               className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
             >
-              <X
+              <Icons.X
                 size={20}
                 className="text-gray-500 mb-3 group-hover:scale-110 transition-transform"
               />
@@ -82,7 +82,7 @@ export default function SemanticConflictResolver(
               onClick={() => onResolve("cluster")}
               className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
             >
-              <GitBranch
+              <Icons.GitBranch
                 size={20}
                 className="text-canvas-primary mb-3 group-hover:scale-110 transition-transform"
               />

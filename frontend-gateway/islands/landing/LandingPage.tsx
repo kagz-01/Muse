@@ -12,13 +12,7 @@ import {
   initializeTheme,
   toggleTheme,
 } from "../../signals/ui.ts";
-import {
-  Circle,
-  CloudSun,
-  Infinity as InfinityIcon,
-  Moon,
-  Sun,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function LandingPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
@@ -71,7 +65,7 @@ export default function LandingPage() {
           onClick={() => globalThis.location.href = "/"}
         >
           <div className="h-10 w-10 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-all duration-300">
-            <InfinityIcon size={24} strokeWidth={2.5} />
+            <Icons.Infinity size={24} strokeWidth={2.5} />
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tighter text-[var(--muse-text)] leading-none transition-colors duration-300">
@@ -102,10 +96,10 @@ export default function LandingPage() {
             className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 flex items-center justify-center transition-all text-[var(--muse-muted)] hover:text-[var(--muse-text)] duration-300"
             title={`Switch to next theme (Current: ${currentTheme})`}
           >
-            {currentTheme === "dark" && <Moon size={16} />}
-            {currentTheme === "dim" && <Circle size={14} fill="currentColor" />}
-            {currentTheme === "tint" && <CloudSun size={16} />}
-            {currentTheme === "light" && <Sun size={16} fill="currentColor" />}
+            {currentTheme === "dark" && <Icons.Moon size={16} />}
+            {currentTheme === "dim" && <Icons.Circle size={14} fill="currentColor" />}
+            {currentTheme === "tint" && <Icons.CloudSun size={16} />}
+            {currentTheme === "light" && <Icons.Sun size={16} fill="currentColor" />}
           </button>
 
           <button

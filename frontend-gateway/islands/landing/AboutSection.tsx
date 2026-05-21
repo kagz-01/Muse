@@ -1,4 +1,4 @@
-import { Globe, Lightbulb, Target } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function AboutSection() {
   return (
@@ -11,7 +11,7 @@ export default function AboutSection() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-4 relative z-10">
         <div className="max-w-3xl">
           <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--muse-muted)] mb-6 flex items-center gap-3 transition-colors duration-300">
-            <Target size={14} /> Our Mission
+            <Icons.Target size={14} /> Our Mission
           </h2>
           <h3 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--muse-text)] leading-tight transition-colors duration-300">
             Elevating Human{" "}
@@ -28,8 +28,8 @@ export default function AboutSection() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
         <div className="bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[2.5rem] p-12 hover:bg-[var(--muse-surface-soft)] transition-all duration-300">
-          <div className="w-14 h-14 rounded-2xl bg-canvas-primary/10 flex items-center justify-center text-canvas-primary mb-8">
-            <Globe size={28} />
+            <div className="w-14 h-14 rounded-2xl bg-canvas-primary/10 flex items-center justify-center text-canvas-primary mb-8">
+            <Icons.Globe size={28} />
           </div>
           <h4 className="text-2xl font-bold text-[var(--muse-text)] mb-4 tracking-tight transition-colors duration-300">
             The Vision
@@ -43,8 +43,8 @@ export default function AboutSection() {
         </div>
 
         <div className="bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[2.5rem] p-12 hover:bg-[var(--muse-surface-soft)] transition-all duration-300">
-          <div className="w-14 h-14 rounded-2xl bg-[var(--muse-surface-soft)] flex items-center justify-center text-[var(--muse-text)] mb-8 transition-colors duration-300">
-            <Lightbulb size={28} />
+            <div className="w-14 h-14 rounded-2xl bg-[var(--muse-surface-soft)] flex items-center justify-center text-[var(--muse-text)] mb-8 transition-colors duration-300">
+            <Icons.Lightbulb size={28} />
           </div>
           <h4 className="text-2xl font-bold text-[var(--muse-text)] mb-4 tracking-tight transition-colors duration-300">
             The System

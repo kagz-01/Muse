@@ -1,13 +1,5 @@
 import { publicationsSignal } from "../../signals/publications.ts";
-import {
-  Activity,
-  ArrowUpRight,
-  GitCommit,
-  Globe,
-  Heart,
-  MessageSquare,
-  Shield,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function ThoughtStream() {
   const publications = publicationsSignal.value;
@@ -15,8 +7,8 @@ export default function ThoughtStream() {
   return (
     <div className="space-y-12">
       <div className="flex items-center justify-between">
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-          <Globe size={14} className="text-emerald-500" />{" "}
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+          <Icons.Globe size={14} className="text-emerald-500" />{" "}
           Collective Thought Stream
         </h3>
         <div className="flex gap-2">
@@ -62,7 +54,7 @@ export default function ThoughtStream() {
                       {pub.authorName}
                     </p>
                     <div className="flex items-center gap-2">
-                      <Activity size={10} className="text-gray-600" />
+                      <Icons.Activity size={10} className="text-gray-600" />
                       <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">
                         {new Date(pub.timestamp).toLocaleTimeString([], {
                           hour: "2-digit",
@@ -74,7 +66,7 @@ export default function ThoughtStream() {
                 </div>
                 {pub.isImmutable && (
                   <div className="px-3 py-1 bg-canvas-primary/10 border border-canvas-primary/30 rounded-lg flex items-center gap-2">
-                    <Shield size={10} className="text-canvas-primary" />
+                    <Icons.Shield size={10} className="text-canvas-primary" />
                     <span className="text-[8px] font-bold text-canvas-primary uppercase tracking-widest">
                       Immutable
                     </span>
@@ -111,7 +103,7 @@ export default function ThoughtStream() {
                 <div className="flex items-center gap-6">
                   <button type="button" className="flex items-center gap-2 group/btn">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-rose-500/10 group-hover/btn:border-rose-500/30 transition-all">
-                      <Heart
+                      <Icons.Heart
                         size={16}
                         className="text-gray-600 group-hover/btn:text-rose-500"
                       />
@@ -122,7 +114,7 @@ export default function ThoughtStream() {
                   </button>
                   <button type="button" className="flex items-center gap-2 group/btn">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-canvas-primary/10 group-hover/btn:border-canvas-primary/30 transition-all">
-                      <GitCommit
+                      <Icons.GitCommit
                         size={16}
                         className="text-gray-600 group-hover/btn:text-canvas-primary"
                       />
@@ -133,7 +125,7 @@ export default function ThoughtStream() {
                   </button>
                   <button type="button" className="flex items-center gap-2 group/btn">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-emerald-500/10 group-hover/btn:border-emerald-500/30 transition-all">
-                      <MessageSquare
+                      <Icons.MessageSquare
                         size={16}
                         className="text-gray-600 group-hover/btn:text-emerald-500"
                       />
@@ -152,8 +144,8 @@ export default function ThoughtStream() {
                       Ledger ID: {pub.txId}
                     </span>
                   </div>
-                  <button type="button" className="text-[9px] font-bold uppercase tracking-widest text-gray-700 hover:text-white transition-colors flex items-center gap-2">
-                    View Source Evidence <ArrowUpRight size={12} />
+                    <button type="button" className="text-[9px] font-bold uppercase tracking-widest text-gray-700 hover:text-white transition-colors flex items-center gap-2">
+                    View Source Evidence <Icons.ArrowUpRight size={12} />
                   </button>
                 </div>
               )}

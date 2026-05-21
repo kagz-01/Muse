@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { Activity, ArrowRight, Play } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function SpectralHero(
   { onOpenAuth, onWatchDemo, onGuestEntry }: {
@@ -60,7 +60,7 @@ export default function SpectralHero(
       <div className="relative z-10 max-w-5xl space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
         {/* TOP SIGNAL */}
         <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.4em] text-canvas-primary shadow-2xl">
-          <Activity size={14} className="animate-pulse" />
+          <Icons.Activity size={14} className="animate-pulse" />
           The Muse System 2.1 is Live
         </div>
 
@@ -89,8 +89,8 @@ export default function SpectralHero(
             className="group relative px-10 py-5 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-[0.2em] text-[11px] rounded-full shadow-2xl hover:-translate-y-1 hover:shadow-[var(--muse-text)]/10 active:scale-95 transition-all cursor-pointer overflow-hidden duration-300"
           >
             <div className="absolute inset-0 bg-canvas-primary/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
-            <span className="relative z-10 flex items-center gap-3">
-              Get Started <ArrowRight size={16} />
+              <span className="relative z-10 flex items-center gap-3">
+              Get Started <Icons.ArrowRight size={16} />
             </span>
           </button>
 
@@ -99,7 +99,7 @@ export default function SpectralHero(
             onClick={onGuestEntry}
             className="group px-10 py-5 rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-all flex items-center gap-3 cursor-pointer duration-300"
           >
-            <Activity
+            <Icons.Activity
               size={16}
               className="text-canvas-primary group-hover:scale-125 transition-transform"
             />
@@ -111,7 +111,7 @@ export default function SpectralHero(
             onClick={onWatchDemo}
             className="group px-10 py-5 rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all flex items-center gap-3 cursor-pointer duration-300"
           >
-            <Play
+            <Icons.Play
               size={16}
               className="text-canvas-primary group-hover:fill-canvas-primary transition-all"
             />

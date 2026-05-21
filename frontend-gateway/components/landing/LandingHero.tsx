@@ -1,4 +1,4 @@
-import { Aperture, ArrowRight, Brain, ChevronDown, Play } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 const TRUST_BADGES = [
   {
@@ -86,7 +86,7 @@ export default function LandingHero(
             className="group px-8 py-4 bg-gradient-to-r from-white/80 to-white/80 text-white font-bold text-sm rounded-full flex items-center gap-3 shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_50px_rgba(99,102,241,0.5)] transition-all cursor-pointer"
           >
             Get Started
-            <ArrowRight
+            <Icons.ArrowRight
               size={16}
               className="group-hover:translate-x-1 transition-transform"
             />
@@ -96,7 +96,7 @@ export default function LandingHero(
             onClick={onWatchDemo}
             className="px-8 py-4 bg-white/5 border border-white/10 text-gray-400 font-bold text-sm rounded-full hover:bg-white/10 hover:text-white transition-all cursor-pointer flex items-center gap-2 backdrop-blur-sm"
           >
-            <Play size={14} />
+            <Icons.Play size={14} />
             Watch Demo
           </button>
         </div>
@@ -110,7 +110,7 @@ export default function LandingHero(
                   key={i}
                   className="w-7 h-7 rounded-full bg-gradient-to-br from-white/80 to-white/80 border-2 border-[#050508] flex items-center justify-center"
                 >
-                  <Aperture size={10} className="text-white" />
+                  <Icons.Aperture size={10} className="text-white" />
                 </div>
               ))}
             </div>
@@ -122,7 +122,7 @@ export default function LandingHero(
           </div>
           <div className="w-px h-4 bg-white/10" />
           <div className="flex items-center gap-1">
-            <Brain size={14} className="text-white/70" />
+            <Icons.Brain size={14} className="text-white/70" />
             <span className="text-xs text-gray-500">
               {PATTERNS_DISCOVERED.toLocaleString()}+ patterns discovered
             </span>
@@ -151,7 +151,7 @@ export default function LandingHero(
         <span className="text-[9px] font-bold uppercase tracking-widest">
           Scroll to explore
         </span>
-        <ChevronDown size={14} />
+        <Icons.ChevronDown size={14} />
       </div>
     </section>
   );

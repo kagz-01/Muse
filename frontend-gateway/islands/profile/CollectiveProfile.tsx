@@ -1,17 +1,6 @@
 import { userSignal } from "../../signals/user.ts";
 import { threadsSignal } from "../../signals/threads.ts";
-import {
-  Activity,
-  ArrowUpRight,
-  Award,
-  Cpu,
-  Flame,
-  GitCommit,
-  Globe,
-  Layers,
-  Shield,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { type Thread } from "../../signals/threads.ts";
 
 export default function CollectiveProfile() {
@@ -48,14 +37,14 @@ export default function CollectiveProfile() {
         </h1>
         <div className="flex items-center gap-6 mb-12">
           <div className="flex items-center gap-2 text-canvas-primary">
-            <Flame size={16} className="animate-pulse" />
+            <Icons.Flame size={16} className="animate-pulse" />
             <span className="text-xs font-bold uppercase tracking-widest">
               {user.cognitiveStreak} Day Streak
             </span>
           </div>
           <div className="h-4 w-px bg-white/10" />
           <div className="flex items-center gap-2 text-emerald-500">
-            <Activity size={16} />
+            <Icons.Activity size={16} />
             <span className="text-xs font-bold uppercase tracking-widest">
               {user.resonance.resonanceScore}% Resonance
             </span>
@@ -68,32 +57,35 @@ export default function CollectiveProfile() {
               label: "Intelligence Lineage",
               value: user.synthesisLineage.totalRooms,
               sub: "Source Rooms",
-              icon: Layers,
+              icon: Icons.Layers,
             },
             {
               label: "Woven Synthesis",
               value: user.synthesisLineage.wovenThreads,
               sub: "Public Threads",
-              icon: GitCommit,
+              icon: Icons.GitCommit,
             },
             {
               label: "Cognitive Impact",
               value: user.resonance.connections,
               sub: "Resonance Conn.",
-              icon: Zap,
+              icon: Icons.Zap,
             },
             {
               label: "Signal Stream",
               value: user.synthesisLineage.totalArtifacts,
               sub: "Sovereign Nodes",
-              icon: Cpu,
+              icon: Icons.Cpu,
             },
           ].map((stat: any) => (
             <div
               key={stat.label}
               className="min-w-[200px] flex-shrink-0 snap-start p-6 bg-white/5 border border-white/5 rounded-3xl backdrop-blur-md"
             >
-              <stat.icon size={18} className="text-gray-600 mx-auto mb-4" />
+              {(() => {
+                const IconComponent = stat.icon as any;
+                return <IconComponent size={18} className="text-gray-600 mx-auto mb-4" />;
+              })()}
               <div className="text-2xl font-bold text-white mb-1">
                 {stat.value}
               </div>
@@ -111,7 +103,7 @@ export default function CollectiveProfile() {
           <div className="lg:col-span-1 space-y-8">
             <section className="bg-white/[0.03] border border-white/10 rounded-[3rem] p-10">
               <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 mb-8 flex items-center gap-3">
-                <Shield size={14} className="text-canvas-primary" />{" "}
+                <Icons.Shield size={14} className="text-canvas-primary" />{" "}
                 Collective Soul
               </h3>
               <p className="text-lg text-gray-300 font-serif italic leading-relaxed mb-10">
@@ -137,7 +129,7 @@ export default function CollectiveProfile() {
             </section>
 
             <section className="bg-white/[0.03] border border-white/10 rounded-[3rem] p-10 flex flex-col items-center text-center">
-              <Award size={40} className="text-amber-500 mb-6" />
+              <Icons.Award size={40} className="text-amber-500 mb-6" />
               <h4 className="text-lg font-bold text-white uppercase tracking-widest mb-2">
                 Architect of Pattern
               </h4>
@@ -156,8 +148,8 @@ export default function CollectiveProfile() {
           {/* WOVEN KNOWLEDGE SHOWCASE */}
           <div className="lg:col-span-2 space-y-12">
             <div className="flex items-center justify-between">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-                <Globe size={14} className="text-emerald-500" />{" "}
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+                <Icons.Globe size={14} className="text-emerald-500" />{" "}
                 Public Synthesis Stream
               </h3>
               <button
@@ -201,7 +193,7 @@ export default function CollectiveProfile() {
                           {thread.resonanceMetrics.connections} Connections
                         </span>
                       </div>
-                      <ArrowUpRight
+                      <Icons.ArrowUpRight
                         size={16}
                         className="text-gray-700 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all"
                       />
