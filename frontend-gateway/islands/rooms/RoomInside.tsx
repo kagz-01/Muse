@@ -1,6 +1,6 @@
 // Use a simple record type for inline style objects
 import { useMemo, useRef, useState } from "preact/hooks";
-import Icons from "lucide-preact";
+import * as Icons from "lucide-preact";
 import {
   roomsSignal,
   type RoomTheme,
