@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { Filter, Layers, Layout as LayoutIcon, Search } from "lucide-preact";
+import * as Icons from "lucide-preact";
 import RoomsGallery from "../rooms/RoomsGallery.tsx";
 import ThreadsGallery from "../threads/ThreadsGallery.tsx";
 
@@ -28,7 +28,7 @@ export default function UnifiedVault() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">
-              <LayoutIcon size={12} className="text-canvas-primary" />
+              <Icons.Layout size={12} className="text-canvas-primary" />
               Vault Archive
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight">
@@ -52,7 +52,7 @@ export default function UnifiedVault() {
                   : "text-gray-500 hover:text-white"
               }`}
             >
-              <LayoutIcon size={14} /> Rooms
+              <Icons.Layout size={14} /> Rooms
             </button>
             <button
               type="button"
@@ -63,7 +63,7 @@ export default function UnifiedVault() {
                   : "text-gray-500 hover:text-white"
               }`}
             >
-              <Layers size={14} /> Threads
+              <Icons.Layers size={14} /> Threads
             </button>
           </div>
         </div>
