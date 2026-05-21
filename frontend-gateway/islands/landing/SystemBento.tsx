@@ -1,12 +1,4 @@
-import {
-  Aperture,
-  BookOpen,
-  Layout,
-  Network,
-  Shield,
-  Target,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function SystemBento() {
   const features = [
@@ -14,7 +6,7 @@ export default function SystemBento() {
       title: "The Pulse",
       desc:
         "A unified mirror of your cognitive patterns. Real-time insights from your collection.",
-      icon: Aperture,
+          icon: Icons.Aperture,
       span: "md:col-span-2",
       bg: "bg-canvas-primary/5",
       border: "border-canvas-primary/20",
@@ -23,7 +15,7 @@ export default function SystemBento() {
     {
       title: "Vault Storage",
       desc: "Rooms and Threads. Raw materials meet synthesized wisdom.",
-      icon: Layout,
+          icon: Icons.Layout,
       span: "md:col-span-1",
       bg: "bg-[var(--muse-surface)]",
       border: "border-[var(--muse-border)]",
@@ -33,7 +25,7 @@ export default function SystemBento() {
       title: "Journal Flow",
       desc:
         "Deep, private introspection. A dated record of your emerging consciousness.",
-      icon: BookOpen,
+          icon: Icons.BookOpen,
       span: "md:col-span-1",
       bg: "bg-emerald-500/5",
       border: "border-emerald-500/20",
@@ -43,7 +35,7 @@ export default function SystemBento() {
       title: "Collective Intelligence",
       desc:
         "Bridge your private rooms with public networks. Sovereign data sharing.",
-      icon: Network,
+          icon: Icons.Network,
       span: "md:col-span-2",
       bg: "bg-amber-500/5",
       border: "border-amber-500/20",
@@ -56,7 +48,7 @@ export default function SystemBento() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-4">
         <div className="max-w-2xl">
           <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--muse-muted)] mb-6 flex items-center gap-3 transition-colors duration-300">
-            <Target size={14} /> The Ecosystem
+                <Icons.Target size={14} /> The Ecosystem
           </h2>
           <h3 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--muse-text)] leading-tight transition-colors duration-300">
             Engineered for{" "}
@@ -104,10 +96,10 @@ export default function SystemBento() {
       {/* SYSTEM STATS BANNER */}
       <div className="bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[3rem] p-8 md:p-16 flex gap-8 overflow-x-auto pb-2 scrollbar-hide transition-all duration-300">
         {[
-          { label: "Data Integrity", val: "100%", icon: Shield },
-          { label: "Synthesis Latency", val: "2ms", icon: Zap },
-          { label: "Open Standards", val: "W3C", icon: Layout },
-          { label: "Network Effect", val: "Global", icon: Network },
+              { label: "Data Integrity", val: "100%", icon: Icons.Shield },
+              { label: "Synthesis Latency", val: "2ms", icon: Icons.Zap },
+              { label: "Open Standards", val: "W3C", icon: Icons.Layout },
+              { label: "Network Effect", val: "Global", icon: Icons.Network },
         ].map((s) => (
           <div key={s.label} className="flex items-center gap-6 min-w-[220px] flex-shrink-0">
             <div className="w-12 h-12 rounded-full border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] transition-all duration-300">
