@@ -1,5 +1,5 @@
 import { useMemo, useState } from "preact/hooks";
-import Icons from "lucide-preact";
+import * as Icons from "lucide-preact";
 import {
   removeItemFromThread,
   type ThreadMood,
