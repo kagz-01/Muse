@@ -5,18 +5,7 @@ import {
   isMenuOpenSignal,
   setAccentColor,
 } from "../../signals/ui.ts";
-import {
-  BookOpen,
-  Download,
-  GitCommit,
-  Home as HomeIcon,
-  Layout as LayoutIcon,
-  Lock,
-  Settings as SettingsIcon,
-  Shield,
-  Users as UsersIcon,
-  X,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 
 interface AppMenuProps {
@@ -31,34 +20,34 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
 
   // Muse 2.0 Unified Lifecycle Flow
   const cycleNav = [
-    {
+      {
       label: "Home",
       path: "/dashboard",
-      icon: <HomeIcon size={24} />,
+      icon: <Icons.Home size={24} />,
       desc: "Awareness",
     },
     {
       label: "Rooms",
       path: "/rooms",
-      icon: <LayoutIcon size={24} />,
+      icon: <Icons.Layout size={24} />,
       desc: "Collection",
     },
     {
       label: "Threads",
       path: "/threads",
-      icon: <GitCommit size={24} />,
+      icon: <Icons.GitCommit size={24} />,
       desc: "Synthesize",
     },
     {
       label: "Journal",
       path: "/journal",
-      icon: <BookOpen size={24} />,
+      icon: <Icons.BookOpen size={24} />,
       desc: "Contemplate",
     },
     {
       label: "Community",
       path: "/connections",
-      icon: <UsersIcon size={24} />,
+      icon: <Icons.Users size={24} />,
       desc: "Collective",
     },
   ];
@@ -155,7 +144,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                 onClick={closeMenu}
                 className="flex items-center gap-4 p-3 rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors"
               >
-                <UsersIcon size={20} />
+                <Icons.Users size={20} />
                 <span className="text-xs font-bold uppercase tracking-widest">
                   {isDemo ? "Establish Soul Link" : "Profile"}
                 </span>
@@ -171,12 +160,12 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   : closeMenu}
                 className="flex items-center gap-4 p-3 rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors relative"
               >
-                <SettingsIcon size={20} />
+                <Icons.Settings size={20} />
                 <span className="text-xs font-bold uppercase tracking-widest">
                   Settings
                 </span>
                 {isDemo && (
-                  <Lock size={12} className="absolute right-4 opacity-50" />
+                  <Icons.Lock size={12} className="absolute right-4 opacity-50" />
                 )}
               </a>
 
@@ -187,12 +176,12 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   : undefined}
                 className="flex items-center gap-4 p-3 w-full rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors cursor-pointer relative"
               >
-                <Shield size={20} />
+                <Icons.Shield size={20} />
                 <span className="text-xs font-bold uppercase tracking-widest text-left flex-1">
                   Security & Ledger
                 </span>
                 {isDemo && (
-                  <Lock size={12} className="absolute right-4 opacity-50" />
+                  <Icons.Lock size={12} className="absolute right-4 opacity-50" />
                 )}
               </button>
 
@@ -203,12 +192,12 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   : undefined}
                 className="flex items-center gap-4 p-3 w-full rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors cursor-pointer relative"
               >
-                <Download size={20} />
+                <Icons.Download size={20} />
                 <span className="text-xs font-bold uppercase tracking-widest text-left flex-1">
                   Export Data
                 </span>
                 {isDemo && (
-                  <Lock size={12} className="absolute right-4 opacity-50" />
+                  <Icons.Lock size={12} className="absolute right-4 opacity-50" />
                 )}
               </button>
             </div>
