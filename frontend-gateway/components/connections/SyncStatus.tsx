@@ -1,5 +1,5 @@
 import { syncStatusSignal } from "../../signals/connections.ts";
-import { Activity, Cpu, ShieldCheck, Zap } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export default function SyncStatus() {
   const status = syncStatusSignal.value;
@@ -19,13 +19,13 @@ export default function SyncStatus() {
             Parallel Sync Engine
           </h3>
         </div>
-        <ShieldCheck size={14} className="text-emerald-500" />
+        <Icons.ShieldCheck size={14} className="text-emerald-500" />
       </div>
 
       <div className="flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide">
         <div className="min-w-[150px] flex-1 snap-start p-4 bg-white/5 rounded-2xl border border-white/5">
           <div className="flex items-center gap-2 mb-1">
-            <Cpu size={12} className="text-canvas-primary" />
+            <Icons.Cpu size={12} className="text-canvas-primary" />
             <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">
               Active Nodes
             </span>
@@ -36,7 +36,7 @@ export default function SyncStatus() {
         </div>
         <div className="min-w-[150px] flex-1 snap-start p-4 bg-white/5 rounded-2xl border border-white/5">
           <div className="flex items-center gap-2 mb-1">
-            <Activity size={12} className="text-emerald-500" />
+            <Icons.Activity size={12} className="text-emerald-500" />
             <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">
               Latency
             </span>
@@ -47,7 +47,7 @@ export default function SyncStatus() {
         </div>
         <div className="min-w-[220px] flex-[2] snap-start p-4 bg-white/5 rounded-2xl border border-white/5">
           <div className="flex items-center gap-2 mb-1">
-            <Zap size={12} className="text-amber-500" />
+            <Icons.Zap size={12} className="text-amber-500" />
             <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">
               Throughput
             </span>
