@@ -1,10 +1,4 @@
-import {
-  Aperture,
-  ExternalLink,
-  MessageCircle,
-  Shield,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export interface Collaborator {
   id: string;
@@ -53,13 +47,13 @@ export default function CollaboratorCard({ collaborator }: Props) {
             type="button"
             className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-500/20 hover:border-indigo-500/30 transition-all cursor-pointer"
           >
-            <MessageCircle size={18} />
+            <Icons.MessageCircle size={18} />
           </button>
           <button
             type="button"
             className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
           >
-            <ExternalLink size={18} />
+            <Icons.ExternalLink size={18} />
           </button>
         </div>
       </div>
@@ -69,7 +63,7 @@ export default function CollaboratorCard({ collaborator }: Props) {
           {collaborator.name}
         </h4>
         <div className="flex items-center gap-2 mb-4">
-          <Shield size={12} className="text-indigo-400" />
+          <Icons.Shield size={12} className="text-indigo-400" />
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">
             {collaborator.role}
           </p>
@@ -85,7 +79,7 @@ export default function CollaboratorCard({ collaborator }: Props) {
             key={theme}
             className="text-[9px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2"
           >
-            <Aperture size={8} /> {theme}
+            <Icons.Aperture size={8} /> {theme}
           </span>
         ))}
       </div>
@@ -93,7 +87,7 @@ export default function CollaboratorCard({ collaborator }: Props) {
       {collaborator.status === "Deep Focus" && (
         <div className="absolute inset-0 bg-[#0a0a0a]/40 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
           <div className="bg-[#111] border border-white/10 rounded-full px-6 py-2.5 flex items-center gap-3 shadow-2xl">
-            <Zap size={12} className="text-indigo-400 animate-pulse" />
+            <Icons.Zap size={12} className="text-indigo-400 animate-pulse" />
             <span className="text-[10px] font-bold text-white uppercase tracking-widest">
               In Deep Flow
             </span>
