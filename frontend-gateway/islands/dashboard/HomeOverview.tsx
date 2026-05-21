@@ -1,18 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import {
-  Aperture,
-  ArrowRight,
-  BarChart3,
-  BookOpen,
-  CircleDot,
-  Flame,
-  FolderOpen,
-  MessageSquare,
-  Plus,
-  Target,
-  TrendingUp,
-  Users,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import {
@@ -142,7 +129,7 @@ export default function HomeOverview() {
         <div className="relative z-10 grid gap-8 lg:grid-cols-[1.35fr_1fr] items-start">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
-              <Aperture size={12} className="text-canvas-primary" />
+              <Icons.Aperture size={12} className="text-canvas-primary" />
               Home Overview
             </div>
 
@@ -164,19 +151,19 @@ export default function HomeOverview() {
                 href="/journal"
                 className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-black shadow-[0_0_30px_rgba(255,255,255,0.18)] transition-all hover:-translate-y-0.5"
               >
-                New Journal Entry <ArrowRight size={14} />
+                New Journal Entry <Icons.ArrowRight size={14} />
               </a>
               <a
                 href="/create"
                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:border-white/20 hover:bg-white/10"
               >
-                Create Room <Plus size={14} />
+                Create Room <Icons.Plus size={14} />
               </a>
               <a
                 href="/threads"
                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:border-white/20 hover:bg-white/10"
               >
-                Start Thread <Target size={14} />
+                Start Thread <Icons.Target size={14} />
               </a>
             </div>
           </div>
@@ -191,12 +178,12 @@ export default function HomeOverview() {
                   Fast signals from your current week
                 </p>
               </div>
-              <BarChart3 size={18} className="text-canvas-primary" />
+              <Icons.BarChart3 size={18} className="text-canvas-primary" />
             </div>
 
             <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
               {stats.slice(0, 2).map((stat) => {
-                const Icon = stat.icon;
+                      const Icon = stat.icon as unknown as import("preact").ComponentType<any>;
                 return (
                   <div
                     key={stat.label}
@@ -221,7 +208,7 @@ export default function HomeOverview() {
 
             <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500">
-                <CircleDot size={14} className="text-emerald-400" />
+                      <Icons.CircleDot size={14} className="text-emerald-400" />
                 Now
               </div>
               <p className="mt-3 text-sm text-gray-300 leading-relaxed font-serif italic">
@@ -257,7 +244,7 @@ export default function HomeOverview() {
 
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
             {stats.map((stat) => {
-              const Icon = stat.icon;
+                      const Icon = stat.icon as unknown as import("preact").ComponentType<any>;
               return (
                 <div
                   key={stat.label}
@@ -265,7 +252,7 @@ export default function HomeOverview() {
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/5 text-white">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/5 text-white">
                         <Icon size={18} />
                       </div>
                       <div>
@@ -288,7 +275,7 @@ export default function HomeOverview() {
 
           <div className="space-y-3">
             {recentActivity.map((item) => {
-              const Icon = item.icon;
+                      const Icon = item.icon as unknown as import("preact").ComponentType<any>;
               return (
                 <a
                   key={item.title}
@@ -306,7 +293,7 @@ export default function HomeOverview() {
                       <p className="text-xs text-gray-500">{item.detail}</p>
                     </div>
                   </div>
-                  <ArrowRight
+                  <Icons.ArrowRight
                     size={16}
                     className="text-gray-600 transition-transform group-hover:translate-x-1 group-hover:text-white"
                   />
@@ -327,7 +314,7 @@ export default function HomeOverview() {
                   Active circles and collaborators.
                 </p>
               </div>
-              <Users size={18} className="text-canvas-primary" />
+              <Icons.Users size={18} className="text-canvas-primary" />
             </div>
 
             <div className="mt-5 flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
@@ -364,7 +351,7 @@ export default function HomeOverview() {
                   What is surfacing right now.
                 </p>
               </div>
-              <TrendingUp size={18} className="text-canvas-primary" />
+              <Icons.TrendingUp size={18} className="text-canvas-primary" />
             </div>
 
             <div className="mt-5 flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
