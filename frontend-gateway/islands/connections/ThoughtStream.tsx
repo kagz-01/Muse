@@ -4,7 +4,8 @@ import {
   perspectivesSignal as persSig,
   submitPerspective as subPers,
 } from "../../signals/connections.ts";
-import { feedFilterSignal, setFeedFilter } from "../../signals/feed-filter.ts";
+import { feedFilterSignal, setFeedFilter, filterPerspectivesByFollowing } from "../../signals/feed-filter.ts";
+import { followersSignal } from "../../signals/followers.ts";
 
 export default function ThoughtStream() {
   const [newThought, setNewThought] = useState("");
@@ -13,8 +14,16 @@ export default function ThoughtStream() {
     "public"
   );
 
-  const perspectives = persSig.value;
+  const allPerspectives = persSig.value;
   const feedFilter = feedFilterSignal.value;
+  const followers = followersSignal.value;
+
+  // Apply filter based on selection
+  const perspectives = filterPerspectivesByFollowing(
+    allPerspectives,
+    followers.following,
+    feedFilter.type
+  );
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();

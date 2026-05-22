@@ -11,6 +11,7 @@ import {
 import { addItem, deleteItem, itemsSignal } from "../../signals/items.ts";
 import EditRoomModal from "../modals/EditRoomModal.tsx";
 import ArtifactExtractor from "../../components/rooms/ArtifactExtractor.tsx";
+import AnalysisIndicator from "../../components/ai-feedback/AnalysisIndicator.tsx";
 import { setSystemStatus } from "../../signals/intelligence.ts";
 
 const themeMapping: Record<RoomTheme, {
@@ -684,6 +685,16 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                           : <Icons.Aperture size={24} />}
                       </button>
                     </div>
+
+                    {isAnalyzing && (
+                      <div className="mt-8">
+                        <AnalysisIndicator
+                          stage="analyzing"
+                          message="Analyzing your artifacts in real-time..."
+                          progress={65}
+                        />
+                      </div>
+                    )}
 
                     {aiResponse && (
                       <div className="mt-8 p-8 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl animate-in fade-in slide-in-from-top-4 duration-500">

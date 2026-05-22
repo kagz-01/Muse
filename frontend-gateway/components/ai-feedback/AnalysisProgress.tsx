@@ -1,5 +1,6 @@
 import * as Icons from "lucide-preact";
 import type { AnalysisProgress } from "../../signals/ai-feedback.ts";
+import BlueprintScoreAnimator from "./BlueprintScoreAnimator.tsx";
 
 interface AnalysisProgressProps {
   progress: AnalysisProgress;
@@ -112,9 +113,7 @@ export default function AnalysisProgress({
                       <h4 className="text-sm font-semibold text-[var(--muse-text)]">
                         {blueprint.name}
                       </h4>
-                      <span className="text-xs font-bold text-[var(--muse-accent)]">
-                        {blueprint.score}%
-                      </span>
+                      <BlueprintScoreAnimator targetScore={blueprint.score} duration={1200} />
                     </div>
                     <div className="flex items-center gap-2 text-xs text-[var(--muse-text-muted)]">
                       <Icons.Check size={14} />
