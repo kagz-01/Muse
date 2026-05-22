@@ -21,6 +21,10 @@ import * as $_app_threads_id_ from "./routes/(app)/threads/[id].tsx";
 import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
+import * as $api_circles_id_membership from "./routes/api/circles/[id]/membership.ts";
+import * as $api_circles_join from "./routes/api/circles/join.ts";
+import * as $api_circles_leave from "./routes/api/circles/leave.ts";
 import * as $api_followers_follow from "./routes/api/followers/follow.ts";
 import * as $api_followers_index from "./routes/api/followers/index.ts";
 import * as $api_followers_status from "./routes/api/followers/status.ts";
@@ -124,6 +128,10 @@ const manifest = {
     "./routes/(app)/threads/index.tsx": $_app_threads_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/api/circles/[id]/members.ts": $api_circles_id_members,
+    "./routes/api/circles/[id]/membership.ts": $api_circles_id_membership,
+    "./routes/api/circles/join.ts": $api_circles_join,
+    "./routes/api/circles/leave.ts": $api_circles_leave,
     "./routes/api/followers/follow.ts": $api_followers_follow,
     "./routes/api/followers/index.ts": $api_followers_index,
     "./routes/api/followers/status.ts": $api_followers_status,
