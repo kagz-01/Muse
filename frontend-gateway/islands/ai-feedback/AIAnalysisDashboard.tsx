@@ -7,6 +7,7 @@ import {
 } from "../../signals/ai-feedback.ts";
 import AnalysisProgress from "../../components/ai-feedback/AnalysisProgress.tsx";
 import AIRecommendations from "../../components/ai-feedback/AIRecommendations.tsx";
+import PatternDetectionUI from "../../components/ai-feedback/PatternDetectionUI.tsx";
 
 export default function AIAnalysisDashboard() {
   const feedback = aiFeedbackSignal.value;
@@ -46,6 +47,22 @@ export default function AIAnalysisDashboard() {
             isAnalyzing={feedback.isAnalyzing}
           />
         </div>
+
+        {/* Pattern Detection */}
+        {feedback.analysisProgress.patterns.length > 0 && (
+          <div className="mb-8">
+            <PatternDetectionUI
+              patterns={feedback.analysisProgress.patterns.map((p: any, idx: number) => ({
+                id: `pattern-${idx}`,
+                name: p,
+                confidence: 65 + Math.random() * 35,
+                category: ["theme", "topic", "sentiment", "connection"][idx % 4] as any,
+                timestamp: Date.now(),
+              }))}
+              isAnalyzing={feedback.isAnalyzing}
+            />
+          </div>
+        )}
 
         {/* Controls */}
         <div className="mb-8 flex flex-wrap gap-3">

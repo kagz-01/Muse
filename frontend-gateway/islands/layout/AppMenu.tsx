@@ -7,6 +7,7 @@ import {
 } from "../../signals/ui.ts";
 import * as Icons from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
+import NotificationContainer from "../../components/notifications/NotificationContainer.tsx";
 
 interface AppMenuProps {
   currentPath: string;
@@ -249,6 +250,9 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
           </div>
         </div>
       </div>
+
+      {/* Notification Container */}
+      <NotificationContainer />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import { joinCircle, leaveCircle } from "../../signals/circle-membership.ts";
+import { addNotification } from "../../signals/notifications.ts";
 
 interface JoinCircleButtonProps {
   circleId: string;
@@ -30,6 +31,11 @@ export default function JoinCircleButton({
     setIsLoading(true);
     try {
       await joinCircle(currentUserId, circleId);
+      addNotification(
+        "circle_join",
+        `Joined "${circleName}"`,
+        `You are now part of this creative circle with ${memberCount + 1} members`
+      );
       onJoin?.();
     } finally {
       setIsLoading(false);

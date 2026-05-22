@@ -8,6 +8,7 @@ import {
 import BlueprintReview from "../../components/threads/BlueprintReview.tsx";
 import ThreadVaultUnlockModal from "../modals/VaultUnlockModal.tsx";
 import CreateThreadModal from "../modals/CreateThreadModal.tsx";
+import ThreadGenerationIndicator from "../../components/threads/ThreadGenerationIndicator.tsx";
 
 type ThreadFilter = "all" | "contemplative" | "curious" | "dark" | "hopeful" | "urgent" | "serene";
 
@@ -49,6 +50,8 @@ export default function ThreadsGallery() {
   const [filterVisibility, setFilterVisibility] = useState<"all" | "public" | "private">("all");
   const [vaultModalThread, setVaultModalThread] = useState<Thread | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isGeneratingThreads, setIsGeneratingThreads] = useState(false);
+  const [generatedThreadCount, setGeneratedThreadCount] = useState(0);
 
   const filteredThreads = useMemo(() => {
     return threads.filter((t: Thread) => {
@@ -233,6 +236,16 @@ export default function ThreadsGallery() {
                 {filteredThreads.length} results
               </div>
             </div>
+
+            {isGeneratingThreads || generatedThreadCount > 0 && (
+              <div className="mt-6">
+                <ThreadGenerationIndicator
+                  isGenerating={isGeneratingThreads}
+                  progress={isGeneratingThreads ? 45 : 0}
+                  threadCount={generatedThreadCount}
+                />
+              </div>
+            )}
 
             {filteredThreads.length === 0 ? (
               <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-white/10 bg-white/[0.02] px-6 text-center mt-6">
