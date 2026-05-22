@@ -27,6 +27,7 @@ import * as $api_followers_status from "./routes/api/followers/status.ts";
 import * as $api_followers_unfollow from "./routes/api/followers/unfollow.ts";
 import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_joke from "./routes/api/joke.ts";
+import * as $api_mirror from "./routes/api/mirror.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
@@ -75,6 +76,7 @@ import * as $layout_AppMenu from "./islands/layout/AppMenu.tsx";
 import * as $layout_index from "./islands/layout/index.ts";
 import * as $library_UnifiedVault from "./islands/library/UnifiedVault.tsx";
 import * as $mirror_Mirror from "./islands/mirror/Mirror.tsx";
+import * as $mirror_MirrorDashboard from "./islands/mirror/MirrorDashboard.tsx";
 import * as $mirror_index from "./islands/mirror/index.ts";
 import * as $modals_AuthModal from "./islands/modals/AuthModal.tsx";
 import * as $modals_CaptureModal from "./islands/modals/CaptureModal.tsx";
@@ -126,6 +128,7 @@ const manifest = {
     "./routes/api/followers/unfollow.ts": $api_followers_unfollow,
     "./routes/api/health/services.ts": $api_health_services,
     "./routes/api/joke.ts": $api_joke,
+    "./routes/api/mirror.ts": $api_mirror,
     "./routes/auth.tsx": $auth,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
@@ -179,6 +182,7 @@ const manifest = {
     "./islands/layout/index.ts": $layout_index,
     "./islands/library/UnifiedVault.tsx": $library_UnifiedVault,
     "./islands/mirror/Mirror.tsx": $mirror_Mirror,
+    "./islands/mirror/MirrorDashboard.tsx": $mirror_MirrorDashboard,
     "./islands/mirror/index.ts": $mirror_index,
     "./islands/modals/AuthModal.tsx": $modals_AuthModal,
     "./islands/modals/CaptureModal.tsx": $modals_CaptureModal,

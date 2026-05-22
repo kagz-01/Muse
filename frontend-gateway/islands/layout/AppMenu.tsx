@@ -45,6 +45,12 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
       desc: "Contemplate",
     },
     {
+      label: "Mirror",
+      path: "/mirror",
+      icon: <Icons.Gauge size={24} />,
+      desc: "Analytics",
+    },
+    {
       label: "Community",
       path: "/connections",
       icon: <Icons.Users size={24} />,

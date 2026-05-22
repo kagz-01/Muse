@@ -1,9 +1,17 @@
-import { Mirror } from "../../islands/mirror/index.ts";
+import { Head } from "$fresh/runtime.ts";
+import MirrorDashboard from "../../islands/mirror/MirrorDashboard.tsx";
 
 export default function MirrorPage() {
   return (
-    <div className="w-full max-w-none min-h-full">
-      <Mirror />
-    </div>
+    <>
+      <Head>
+        <title>Mirror - Your Personal Analytics | Muse</title>
+        <meta
+          name="description"
+          content="View your engagement analytics, follower growth, and activity timeline on Muse"
+        />
+      </Head>
+      <MirrorDashboard />
+    </>
   );
 }
