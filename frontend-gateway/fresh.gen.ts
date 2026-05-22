@@ -21,6 +21,10 @@ import * as $_app_threads_id_ from "./routes/(app)/threads/[id].tsx";
 import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $api_followers_follow from "./routes/api/followers/follow.ts";
+import * as $api_followers_index from "./routes/api/followers/index.ts";
+import * as $api_followers_status from "./routes/api/followers/status.ts";
+import * as $api_followers_unfollow from "./routes/api/followers/unfollow.ts";
 import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $auth from "./routes/auth.tsx";
@@ -116,6 +120,10 @@ const manifest = {
     "./routes/(app)/threads/index.tsx": $_app_threads_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/api/followers/follow.ts": $api_followers_follow,
+    "./routes/api/followers/index.ts": $api_followers_index,
+    "./routes/api/followers/status.ts": $api_followers_status,
+    "./routes/api/followers/unfollow.ts": $api_followers_unfollow,
     "./routes/api/health/services.ts": $api_health_services,
     "./routes/api/joke.ts": $api_joke,
     "./routes/auth.tsx": $auth,

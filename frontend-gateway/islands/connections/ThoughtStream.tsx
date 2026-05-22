@@ -4,12 +4,17 @@ import {
   perspectivesSignal as persSig,
   submitPerspective as subPers,
 } from "../../signals/connections.ts";
+import { feedFilterSignal, setFeedFilter } from "../../signals/feed-filter.ts";
 
 export default function ThoughtStream() {
   const [newThought, setNewThought] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [visibility, setVisibility] = useState<"public" | "followers-only">(
+    "public"
+  );
 
   const perspectives = persSig.value;
+  const feedFilter = feedFilterSignal.value;
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
@@ -68,23 +73,85 @@ export default function ThoughtStream() {
             </button>
           </form>
 
-          <div className="flex flex-wrap gap-4">
-            {[
-              { label: "Intuition", icon: Icons.Aperture },
-              { label: "Logic", icon: Icons.Activity },
-              { label: "Skepticism", icon: Icons.Zap },
-              { label: "Curiosity", icon: Icons.MessageSquare },
-            ].map((tone) => (
+          <div className="flex flex-wrap gap-4 justify-between items-center">
+            <div className="flex flex-wrap gap-4">
+              {[
+                { label: "Intuition", icon: Icons.Aperture },
+                { label: "Logic", icon: Icons.Activity },
+                { label: "Skepticism", icon: Icons.Zap },
+                { label: "Curiosity", icon: Icons.MessageSquare },
+              ].map((tone) => (
+                <button
+                  key={tone.label}
+                  type="button"
+                  className="px-6 py-3 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-canvas-primary transition-all flex items-center gap-2"
+                >
+                  <tone.icon size={12} className="text-canvas-primary" />{" "}
+                  {tone.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Visibility Toggle */}
+            <div className="flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/5 rounded-full">
               <button
-                key={tone.label}
                 type="button"
-                className="px-6 py-3 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-canvas-primary transition-all flex items-center gap-2"
+                onClick={() => setVisibility("public")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${
+                  visibility === "public"
+                    ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
+                    : "text-gray-500 hover:text-white"
+                }`}
               >
-                <tone.icon size={12} className="text-canvas-primary" />{" "}
-                {tone.label}
+                <Icons.Globe size={12} /> Public
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setVisibility("followers-only")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${
+                  visibility === "followers-only"
+                    ? "bg-indigo-500/20 border border-indigo-500/40 text-indigo-400"
+                    : "text-gray-500 hover:text-white"
+                }`}
+              >
+                <Icons.Users size={12} /> Followers Only
+              </button>
+            </div>
           </div>
+        </div>
+      </div>
+
+      {/* FEED FILTER CONTROLS */}
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+          <Icons.GitBranch size={14} className="text-canvas-primary" />
+          Community Thought Stream
+        </h3>
+        
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setFeedFilter("all")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${
+              feedFilter.type === "all"
+                ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
+                : "bg-white/5 border border-white/10 text-gray-500 hover:text-white"
+            }`}
+          >
+            <Icons.Globe size={12} /> All Posts
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => setFeedFilter("following")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${
+              feedFilter.type === "following"
+                ? "bg-indigo-500/20 border border-indigo-500/40 text-indigo-400"
+                : "bg-white/5 border border-white/10 text-gray-500 hover:text-white"
+            }`}
+          >
+            <Icons.Users size={12} /> From Following
+          </button>
         </div>
       </div>
 
@@ -166,6 +233,12 @@ export default function ThoughtStream() {
                   </div>
 
                   <div className="flex items-center gap-3 flex-wrap justify-end">
+                    {/* Visibility Badge */}
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                      <Icons.Globe size={11} className="text-amber-400" />
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-amber-400">Public</span>
+                    </div>
+
                     {/* Immutability Badge */}
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
                       <Icons.Lock size={11} className="text-emerald-400" />
