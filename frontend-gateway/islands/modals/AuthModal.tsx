@@ -45,11 +45,11 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-xl z-10 animate-in zoom-in-95 duration-500">
+      <div className="relative w-full max-w-md z-10 animate-in zoom-in-95 duration-500">
         {/* SCANNING OVERLAY */}
         <div className="absolute inset-x-0 h-1 bg-canvas-primary blur-md z-30 pointer-events-none animate-[scan_2s_linear_infinite]" />
 
-        <div className="relative bg-[#050505] border border-white/10 rounded-[3rem] p-12 overflow-hidden shadow-[0_60px_100px_rgba(0,0,0,0.8)]">
+        <div className="relative bg-[#050505] border border-white/10 rounded-[2.5rem] p-8 md:p-10 overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
           {/* DECORATIVE SPECTRUM */}
           <div className="absolute -top-32 -right-32 w-80 h-80 bg-canvas-primary/10 blur-[100px] rounded-full animate-pulse" />
           <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-white/5 blur-[100px] rounded-full" />
@@ -64,15 +64,15 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
 
           <div className="relative z-10">
             {/* TERMINAL HEADER */}
-            <div className="flex items-center gap-4 mb-12">
-              <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-black font-bold text-xl shadow-2xl">
-                <Icons.Infinity size={28} strokeWidth={2.5} />
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center text-black font-bold text-xl shadow-2xl animate-[spin-y_4s_linear_infinite] [transform-style:preserve-3d]">
+                <Icons.Infinity size={24} strokeWidth={2.5} />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.5em] leading-none mb-2">
+                <p className="text-[9px] font-bold text-canvas-primary uppercase tracking-[0.5em] leading-none mb-1.5">
                   Welcome
                 </p>
-                <h2 className="text-3xl font-bold tracking-tight text-white leading-none uppercase">
+                <h2 className="text-2xl font-bold tracking-tight text-white leading-none uppercase">
                   {isSuccess
                     ? "Verified"
                     : localMode === "signup"
@@ -94,10 +94,10 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                 </div>
               )
               : (
-                <form onSubmit={handleSubmit} className="space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   {localMode === "signup" && (
-                    <div className="space-y-3 group">
-                      <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                    <div className="space-y-2.5 group">
+                      <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
                         <Icons.User size={12} /> Full Name
                       </label>
                       <input
@@ -107,13 +107,13 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                         onChange={(e) =>
                           setName((e.target as HTMLInputElement).value)}
                         placeholder="ENTER IDENTITY"
-                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
+                        className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-5 py-4 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
                       />
                     </div>
                   )}
 
-                  <div className="space-y-3 group">
-                    <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                  <div className="space-y-2.5 group">
+                    <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
                       <Icons.Mail size={12} /> Email Address
                     </label>
                     <input
@@ -123,27 +123,27 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                       onChange={(e) =>
                         setEmail((e.target as HTMLInputElement).value)}
                       placeholder="EMAIL@MUSE.SYSTEM"
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-5 py-4 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
                     />
                   </div>
 
-                  <div className="space-y-3 group">
-                    <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                  <div className="space-y-2.5 group">
+                    <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
                       <Icons.Lock size={12} /> Password
                     </label>
                     <input
                       type="password"
                       required
                       placeholder="••••••••"
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-5 py-4 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono"
                     />
                   </div>
 
-                  <div className="pt-4 space-y-4">
+                  <div className="pt-2 space-y-3">
                     <button
                       type="submit"
                       disabled={isSyncing}
-                      className="group relative w-full py-6 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.3em] text-[11px] shadow-[0_20px_40px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:shadow-white/20 active:scale-95 transition-all cursor-pointer overflow-hidden disabled:opacity-50"
+                      className="group relative w-full py-4 rounded-xl bg-white text-black font-bold uppercase tracking-[0.3em] text-[10px] shadow-[0_15px_30px_rgba(255,255,255,0.1)] hover:-translate-y-0.5 hover:shadow-white/20 active:scale-95 transition-all cursor-pointer overflow-hidden disabled:opacity-50"
                     >
                       <div className="absolute inset-0 bg-canvas-primary/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
                       <span className="relative z-10 flex items-center justify-center gap-3">
@@ -152,14 +152,14 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                           : localMode === "signup"
                           ? "GET STARTED"
                           : "LOGIN"}
-                        {!isSyncing && <ArrowRight size={16} />}
+                        {!isSyncing && <ArrowRight size={14} />}
                       </span>
                     </button>
 
                     <button
                       type="button"
                       onClick={handleDemoEntry}
-                      className="w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px] hover:bg-white/10 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-3"
+                      className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px] hover:bg-white/10 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-3 active:scale-95"
                     >
                       <Icons.Activity size={14} /> Continue as Guest
                     </button>
@@ -201,6 +201,10 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
           0% { transform: translateY(-100vh); opacity: 0; }
           50% { opacity: 0.5; }
           100% { transform: translateY(100vh); opacity: 0; }
+        }
+        @keyframes spin-y {
+          from { transform: rotateY(0deg); }
+          to { transform: rotateY(360deg); }
         }
       `}
       </style>

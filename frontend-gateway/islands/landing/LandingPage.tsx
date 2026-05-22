@@ -6,6 +6,7 @@ import AboutSection from "./AboutSection.tsx";
 import LedgerSection from "./LedgerSection.tsx";
 import LandingFooter from "./LandingFooter.tsx";
 import DemoVideo from "./DemoVideo.tsx";
+import BrandModal from "./BrandModal.tsx";
 import { login } from "../../signals/user.ts";
 import {
   appThemeSignal,
@@ -17,6 +18,7 @@ import * as Icons from "lucide-preact";
 export default function LandingPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const [isBrandOpen, setIsBrandOpen] = useState(false);
 
   useEffect(() => {
     initializeTheme();
@@ -49,6 +51,13 @@ export default function LandingPage() {
         />
       )}
 
+      {isBrandOpen && (
+        <BrandModal
+          onClose={() => setIsBrandOpen(false)}
+          onOpenAuth={setAuthMode}
+        />
+      )}
+
       {/* DYNAMIC BACKGROUND VIDEO (Observer Perspective) */}
       <div className="fixed inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-b from-[var(--muse-bg)] via-transparent to-[var(--muse-bg)] z-10 transition-colors duration-300" />
@@ -62,7 +71,7 @@ export default function LandingPage() {
       <header className="fixed top-0 left-0 w-full px-6 md:px-12 py-8 flex justify-between items-center z-[100] backdrop-blur-3xl bg-[var(--muse-overlay)] border-b border-[var(--muse-border)] transition-colors duration-300">
         <div
           className="flex items-center gap-3 group cursor-pointer"
-          onClick={() => globalThis.location.href = "/"}
+          onClick={() => setIsBrandOpen(true)}
         >
           <div className="h-10 w-10 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-all duration-300">
             <Icons.Infinity size={24} strokeWidth={2.5} />
@@ -78,13 +87,22 @@ export default function LandingPage() {
         </div>
 
         <nav className="hidden md:flex items-center gap-10">
-          {["About", "Ecosystem", "Ledger"].map((link) => (
+          {[
+            { label: "About", href: "#about" },
+            { label: "Ecosystem", href: "#ecosystem" },
+            { label: "Ledger", href: "#ledger" },
+          ].map((link) => (
             <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
+              key={link.label}
+              href={link.href}
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById(link.href.slice(1));
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
               className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors duration-300"
             >
-              {link}
+              {link.label}
             </a>
           ))}
         </nav>
@@ -133,39 +151,11 @@ export default function LandingPage() {
           <SystemBento />
         </div>
 
-        <LedgerSection />
+        <div id="ledger">
+          <LedgerSection onCTA={() => setAuthMode("signup")} onGuestEntry={handleGuestEntry} />
+        </div>
 
-        {/* FOOTER CTA */}
-        <section className="max-w-[1800px] mx-auto px-6 py-32 text-center">
-          <div className="bg-linear-to-b from-[var(--muse-surface)] to-transparent border border-[var(--muse-border)] rounded-[4rem] p-20 md:p-32 space-y-12 transition-all duration-300">
-            <h2 className="text-5xl md:text-8xl font-bold tracking-tight text-[var(--muse-text)] leading-[0.9] transition-colors duration-300">
-              Ready to{" "}
-              <span className="text-[var(--muse-muted)] italic font-serif transition-colors duration-300">
-                Awaken?
-              </span>
-            </h2>
-            <p className="max-w-2xl mx-auto text-[var(--muse-muted)] text-xl font-serif italic transition-colors duration-300">
-              Stop consuming. Start synthesizing. Your private creative loop is
-              one click away.
-            </p>
-            <div className="flex flex-wrap justify-center gap-6">
-              <button
-                type="button"
-                onClick={() => setAuthMode("signup")}
-                className="px-12 py-6 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-widest text-xs rounded-full shadow-3xl hover:-translate-y-1 active:scale-95 transition-all cursor-pointer duration-300"
-              >
-                Get Started
-              </button>
-              <button
-                type="button"
-                onClick={handleGuestEntry}
-                className="px-12 py-6 bg-[var(--muse-surface)] border border-[var(--muse-border)] text-[var(--muse-text)] font-bold uppercase tracking-widest text-xs rounded-full hover:bg-[var(--muse-surface-soft)] transition-all cursor-pointer duration-300"
-              >
-                Continue as Guest
-              </button>
-            </div>
-          </div>
-        </section>
+
 
         <LandingFooter />
       </main>
@@ -179,6 +169,7 @@ export default function LandingPage() {
         .animate-slow-pulse {
           animation: slow-pulse 15s infinite ease-in-out;
         }
+        html { scroll-behavior: smooth; }
       `}
       </style>
     </div>

@@ -4,56 +4,68 @@ export default function AboutSection() {
   return (
     <section
       id="about"
-      className="max-w-[1800px] mx-auto px-6 md:px-10 py-32 space-y-20 relative border-t border-[var(--muse-border)] transition-colors duration-300"
+      className="w-full max-w-[1800px] mx-auto px-6 md:px-16 py-12 space-y-4 relative z-10"
     >
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none" />
-
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-4 relative z-10 group">
-        <div className="max-w-3xl transition-transform duration-500 group-hover:translate-x-2">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--muse-muted)] mb-6 flex items-center gap-3 transition-colors duration-300">
-            <Icons.Target size={14} /> Our Mission
-          </h2>
-          <h3 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--muse-text)] leading-tight transition-colors duration-300">
-            The Cognitive{" "}
-            <span className="text-canvas-primary italic font-serif">
-              Loop.
-            </span>
-          </h3>
+      {/* THE SYSTEM — cyan theme, hover: scale + rotate */}
+      <div className="group relative bg-cyan-500/5 border border-cyan-500/15 rounded-2xl p-8 md:p-12 transition-all duration-500 hover:shadow-[0_0_35px_rgba(34,211,238,0.12)] hover:-translate-y-1 hover:border-cyan-400/30 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div className="shrink-0">
+            <h2 className="text-[9px] font-bold uppercase tracking-[0.4em] text-cyan-400 mb-2 flex items-center gap-2">
+              <Icons.Cpu size={10} className="animate-pulse" /> The System
+            </h2>
+            <h3 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--muse-text)] leading-tight">
+              High-Fidelity Architecture
+            </h3>
+          </div>
+          <p className="text-[var(--muse-muted)] font-serif italic text-sm md:text-base leading-relaxed max-w-2xl group-hover:text-[var(--muse-text)] transition-colors duration-500">
+            A sovereign sanctuary engineered to eliminate cognitive noise. By fusing Sovereign Knowledge Rooms (The Vaults), Real-time AI Feedback pipelines, and a high-performance, fluid Radial Menu interface, the system intercepts chaotic data flows and processes them into a structured, cryptographic ledger of collective intelligence.
+          </p>
         </div>
-        <p className="text-[var(--muse-muted)] font-serif italic text-lg md:text-xl max-w-sm transition-all duration-500 group-hover:-translate-x-2">
-          A sanctuary from the noise. We build tools that help you capture signals, contemplate patterns, and synthesize meaning from chaos.
-        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-        <div className="group bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[2.5rem] p-12 hover:bg-[var(--muse-surface-soft)] hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] transition-all duration-500">
-            <div className="w-14 h-14 rounded-2xl bg-canvas-primary/10 flex items-center justify-center text-canvas-primary mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-            <Icons.Globe size={28} />
+      {/* MISSION & VISION */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* THE MISSION — amber theme, hover: slide-up + tilt */}
+        <div className="group relative bg-amber-500/5 border border-amber-500/15 rounded-2xl p-8 md:p-10 transition-all duration-500 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] hover:-translate-y-2 hover:border-amber-400/30 overflow-hidden">
+          <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-10 group-hover:rotate-12 group-hover:scale-125 transition-all duration-700 text-amber-400">
+            <Icons.Target size={100} strokeWidth={0.5} />
           </div>
-          <h4 className="text-2xl font-bold text-[var(--muse-text)] mb-4 tracking-tight transition-colors duration-300">
-            The Vision
-          </h4>
-          <p className="text-[var(--muse-muted)] font-serif text-lg leading-relaxed transition-colors duration-300">
-            We envision a digital ecosystem where attention is a sovereign
-            asset, not a commodity. Muse acts as your personal cognitive
-            mirror—a place where ideas compound, evolve, and transcend ephemeral
-            social feeds into a collective intelligence.
-          </p>
+          <div className="relative z-10">
+            <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center text-amber-400 mb-5 transition-all duration-500 group-hover:-rotate-12 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+              <Icons.Rocket size={20} strokeWidth={1.5} />
+            </div>
+            <h2 className="text-[9px] font-bold uppercase tracking-[0.4em] text-amber-400 mb-1">
+              The Mission
+            </h2>
+            <h4 className="text-xl font-bold text-[var(--muse-text)] mb-3 tracking-tight">
+              Cognitive Optimization
+            </h4>
+            <p className="text-[var(--muse-muted)] font-serif italic text-sm leading-relaxed group-hover:text-[var(--muse-text)] transition-colors duration-500">
+              To upgrade human intellectual output. We engineer proactive synthesis tools that allow operators to seamlessly capture raw signals, contemplate deep patterns, and isolate profound meaning from fragmented digital feeds.
+            </p>
+          </div>
         </div>
 
-        <div className="group bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[2.5rem] p-12 hover:bg-[var(--muse-surface-soft)] hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] transition-all duration-500">
-            <div className="w-14 h-14 rounded-2xl bg-[var(--muse-surface-soft)] flex items-center justify-center text-[var(--muse-text)] mb-8 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
-            <Icons.Lightbulb size={28} />
+        {/* THE VISION — blue theme, hover: scale + glow pulse */}
+        <div className="group relative bg-blue-500/5 border border-blue-500/15 rounded-2xl p-8 md:p-10 transition-all duration-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:-translate-y-2 hover:border-blue-400/30 overflow-hidden">
+          <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-10 group-hover:-rotate-12 group-hover:scale-125 transition-all duration-700 text-blue-400">
+            <Icons.Eye size={100} strokeWidth={0.5} />
           </div>
-          <h4 className="text-2xl font-bold text-[var(--muse-text)] mb-4 tracking-tight transition-colors duration-300">
-            The System
-          </h4>
-          <p className="text-[var(--muse-muted)] font-serif text-lg leading-relaxed transition-colors duration-300">
-            A high-fidelity architecture combining Sovereign Knowledge Rooms,
-            Real-time AI Feedback pipelines, and fluid spatial interfaces. Muse
-            translates your scattered thoughts into a structured, blockchain-backed ledger of
-            intelligence.
-          </p>
+          <div className="relative z-10">
+            <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center text-blue-400 mb-5 transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+              <Icons.Globe2 size={20} strokeWidth={1.5} />
+            </div>
+            <h2 className="text-[9px] font-bold uppercase tracking-[0.4em] text-blue-400 mb-1">
+              The Vision
+            </h2>
+            <h4 className="text-xl font-bold text-[var(--muse-text)] mb-3 tracking-tight">
+              Sovereign Attention Networks
+            </h4>
+            <p className="text-[var(--muse-muted)] font-serif italic text-sm leading-relaxed group-hover:text-[var(--muse-text)] transition-colors duration-500">
+              We are building a decentralized information layer where attention is treated as an immutable, sovereign asset rather than a liquid commodity. We envision an advanced collective intelligence network where high-fidelity thoughts compound, evolve, and permanently outlast ephemeral social streams.
+            </p>
+          </div>
         </div>
       </div>
     </section>

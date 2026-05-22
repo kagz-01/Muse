@@ -12,120 +12,90 @@ export default function SpectralHero(
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({
-        x: (e.clientX / globalThis.innerWidth - 0.5) * 20,
-        y: (e.clientY / globalThis.innerHeight - 0.5) * 20,
-      });
+      const x = (e.clientX / globalThis.innerWidth) * 2 - 1;
+      const y = (e.clientY / globalThis.innerHeight) * 2 - 1;
+      setMousePos({ x: x * 50, y: y * 50 });
     };
     globalThis.addEventListener("mousemove", handleMouseMove);
     return () => globalThis.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   return (
-    <section className="relative min-h-[95vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
-      {/* CINEMATIC BACKGROUND ELEMENTS */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] bg-canvas-primary/5 blur-[120px] rounded-full animate-pulse"
-          style={{
-            transform: `translate(${mousePos.x * -1.5}px, ${
-              mousePos.y * -1.5
-            }px)`,
-          }}
-        />
-          className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-[var(--muse-text)]/5 blur-[100px] rounded-full"
-          style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}
-        />
-
-        {/* Floating Artifacts (Simulated) */}
-        {[...Array(12)].map((_, i) => (
+    <section className="relative h-[75vh] min-h-[480px] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
+      {/* INTERACTIVE BUBBLES */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(16)].map((_, i) => (
           <div
-            key={i}
-            className="absolute bg-[var(--muse-surface)]/20 border border-[var(--muse-border)] backdrop-blur-md rounded-2xl animate-[float_10s_ease-in-out_infinite]"
+            key={`bubble-${i}`}
+            className="absolute rounded-full border border-[var(--muse-text)]/10 backdrop-blur-md transition-transform duration-1000 ease-out"
             style={{
-              width: `${Math.random() * 60 + 20}px`,
-              height: `${Math.random() * 60 + 20}px`,
+              width: `${(i % 5) * 12 + 16}px`,
+              height: `${(i % 5) * 12 + 16}px`,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.8}s`,
-              transform: `translate(${mousePos.x * (i % 3 - 1)}px, ${
-                mousePos.y * (i % 2 - 1)
+              transform: `translate(${mousePos.x * (i % 3 + 1)}px, ${
+                mousePos.y * (i % 4 + 1)
               }px)`,
+              background: `radial-gradient(circle at top left, var(--muse-text) 0%, transparent 80%)`,
+              opacity: 0.04 + (i % 3) * 0.03,
             }}
           />
         ))}
       </div>
 
-      <div className="relative z-10 max-w-5xl space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        {/* MAIN HEADLINE */}
-        <h1 className="text-6xl md:text-9xl font-bold tracking-tight leading-[0.85] text-[var(--muse-text)] transition-colors duration-300">
-          Collect.{" "}
-          <span className="text-[var(--muse-muted)] italic font-serif transition-colors duration-300">
-            Synthesize.
-          </span>
-          <span className="block mt-4 bg-gradient-to-r from-[var(--muse-text)] via-[var(--muse-text)]/80 to-[var(--muse-muted)] bg-clip-text text-transparent transition-all duration-300">
-            Ascend.
-          </span>
-        </h1>
+      <div className="relative z-10 w-full max-w-3xl flex flex-col items-center gap-8">
+        {/* THE 3D ORBITAL LOGO / GYROSCOPE */}
+        <div className="relative w-40 h-40 flex items-center justify-center [perspective:1000px]">
+          {/* Inner Glow */}
+          <div className="absolute w-24 h-24 rounded-full shadow-[0_0_50px_var(--muse-text)] opacity-20 animate-[pulse_4s_ease-in-out_infinite]">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 via-[var(--muse-text)] to-pink-500 blur-xl rounded-full" />
+          </div>
 
-        {/* SUB-CAPTION */}
-        <p className="mx-auto max-w-2xl text-[var(--muse-muted)] text-xl md:text-2xl font-serif italic leading-relaxed opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 fill-mode-forwards transition-colors">
-          "Your sovereign cognitive environment. Stop consuming passively. Start building your collective intelligence."
-        </p>
+          {/* 3D Rings */}
+          <div className="absolute inset-0 [transform-style:preserve-3d] animate-[spin-slow_15s_linear_infinite]">
+            <div className="absolute inset-0 border-[1.5px] border-[var(--muse-text)]/20 rounded-full [transform:rotateX(60deg)_rotateY(0deg)] animate-[spin-reverse_10s_linear_infinite]" />
+            <div className="absolute inset-0 border border-cyan-500/30 rounded-full [transform:rotateX(60deg)_rotateY(60deg)] animate-[spin-slow_12s_linear_infinite]" />
+            <div className="absolute inset-0 border border-purple-500/30 rounded-full [transform:rotateX(60deg)_rotateY(120deg)] animate-[spin-reverse_14s_linear_infinite]" />
+          </div>
 
-        {/* CTA SEQUENCE */}
-        <div className="flex flex-wrap items-center justify-center gap-6 pt-10 opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-700 fill-mode-forwards">
-          <button
-            type="button"
-            onClick={() => onOpenAuth("signup")}
-            className="group relative px-10 py-5 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-[0.2em] text-[11px] rounded-full shadow-2xl hover:-translate-y-1 hover:shadow-[var(--muse-text)]/10 active:scale-95 transition-all cursor-pointer overflow-hidden duration-300"
-          >
-            <div className="absolute inset-0 bg-canvas-primary/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
-              <span className="relative z-10 flex items-center gap-3">
-              Get Started <Icons.ArrowRight size={16} />
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={onGuestEntry}
-            className="group px-10 py-5 rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-all flex items-center gap-3 cursor-pointer duration-300"
-          >
-            <Icons.Activity
-              size={16}
-              className="text-canvas-primary group-hover:scale-125 transition-transform"
-            />
-            Continue as Guest
-          </button>
-
-          <button
-            type="button"
-            onClick={onWatchDemo}
-            className="group px-10 py-5 rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all flex items-center gap-3 cursor-pointer duration-300"
-          >
-            <Icons.Play
-              size={16}
-              className="text-canvas-primary group-hover:fill-canvas-primary transition-all"
-            />
-            Watch System Demo
-          </button>
+          {/* Central Hub */}
+          <div className="absolute w-14 h-14 rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)]/80 backdrop-blur-xl flex items-center justify-center shadow-2xl z-20">
+            <Icons.Infinity size={24} className="text-[var(--muse-text)] drop-shadow-[0_0_10px_currentColor]" strokeWidth={2} />
+          </div>
         </div>
 
-        {/* SCROLL INDICATOR */}
-        <div className="pt-20 opacity-40 animate-bounce">
-          <div className="w-px h-12 bg-linear-to-b from-[var(--muse-text)] to-transparent mx-auto" />
+        {/* HEADLINE - Bold normal text */}
+        <div className="space-y-4 max-w-2xl">
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.15] text-[var(--muse-text)]">
+            Turn Raw Consumption{" "}
+            <span className="bg-gradient-to-r from-[var(--muse-text)] via-[var(--muse-muted)] to-canvas-primary bg-clip-text text-transparent">
+              into Immutable Insight.
+            </span>
+          </h1>
+          <p className="text-sm md:text-base text-[var(--muse-muted)] font-serif italic max-w-lg mx-auto leading-relaxed">
+            A sovereign intelligence loop — where scattered signals are captured, contemplated, and synthesized into a cryptographic ledger of collective wisdom.
+          </p>
         </div>
       </div>
-
-      <style>
-        {`
-        @keyframes float {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          33% { transform: translate(10px, -15px) rotate(5deg); }
-          66% { transform: translate(-15px, 10px) rotate(-5deg); }
-        }
-      `}
-      </style>
     </section>
   );
+}
+
+// Ensure the tailwind config handles these custom animations or inject them globally.
+// We can use a quick style tag here to guarantee the 3D spins work.
+const globalStyles = `
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes spin-reverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+`;
+
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
+  style.textContent = globalStyles;
+  document.head.appendChild(style);
 }
