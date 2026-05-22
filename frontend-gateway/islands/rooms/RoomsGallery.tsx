@@ -359,7 +359,7 @@ export default function RoomsGallery() {
         />
       )}
 
-      <div className="w-full max-w-none px-6 md:px-10 pb-24 md:pb-10 space-y-12">
+      <div className="w-full max-w-none px-6 md:px-10 pb-32 md:pb-28 space-y-12">
         <section
           className={`relative overflow-hidden rounded-[3rem] ${surfaceClass} p-10 md:p-16 shadow-2xl`}
         >
@@ -390,9 +390,15 @@ export default function RoomsGallery() {
               <button
                 type="button"
                 onClick={() => setShowCreate(true)}
-                className="w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-[var(--muse-text)] px-8 py-5 text-[12px] font-bold uppercase tracking-[0.2em] text-[var(--muse-bg)] shadow-[0_20px_50px_rgba(0,0,0,0.18)] transition-all hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(0,0,0,0.28)] active:scale-95"
+                className="group relative w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-[var(--muse-text)] px-10 py-6 text-[13px] font-bold uppercase tracking-[0.2em] text-[var(--muse-bg)] shadow-[0_20px_50px_rgba(0,0,0,0.18)] transition-all hover:-translate-y-2 hover:shadow-[0_50px_100px_rgba(0,0,0,0.4)] hover:scale-110 active:scale-95 animate-in fade-in slide-in-from-bottom-4 duration-700 overflow-hidden"
               >
-                + Create a Room
+                {/* Animated background shimmer */}
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                
+                {/* Animated glow ring */}
+                <div className="absolute inset-0 rounded-2xl ring-2 ring-offset-2 ring-offset-[var(--muse-bg)] ring-[var(--muse-text)] opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300 -z-10" />
+                
+                <span className="inline-block group-hover:animate-bounce">+</span> Create a Room
               </button>
             </div>
           </div>

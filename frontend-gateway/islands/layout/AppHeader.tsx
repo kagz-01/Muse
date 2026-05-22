@@ -19,6 +19,9 @@ import {
   toggleTheme,
 } from "../../signals/ui.ts";
 
+const { Search, Moon, Circle, CloudSun, Sun, Bell, Menu } = Icons as unknown as Record<string, import("preact").ComponentType<unknown>>;
+
+export const prerender = false;
 export default function AppHeader(
   { currentPath: _currentPath }: { currentPath?: string },
 ) {
@@ -99,7 +102,7 @@ export default function AppHeader(
           </a>
 
           <div className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-full text-[var(--muse-muted)] cursor-text hover:border-[var(--muse-text)]/20 transition-all duration-300 min-w-[320px]">
-            <Icons.Search size={14} />
+            {Search ? <Search size={14} /> : null}
             <span className="text-[10px] font-bold uppercase tracking-widest">
               Search your collective consciousness...
             </span>
@@ -143,10 +146,10 @@ export default function AppHeader(
             className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 flex items-center justify-center transition-all text-[var(--muse-muted)] hover:text-[var(--muse-text)] duration-300"
             title={`Switch to next theme (Current: ${currentTheme})`}
           >
-            {currentTheme === "dark" && <Icons.Moon size={16} />}
-            {currentTheme === "dim" && <Icons.Circle size={14} fill="currentColor" />}
-            {currentTheme === "tint" && <Icons.CloudSun size={16} />}
-            {currentTheme === "light" && <Icons.Sun size={16} fill="currentColor" />}
+            {currentTheme === "dark" && (Moon ? <Moon size={16} /> : null)}
+            {currentTheme === "dim" && (Circle ? <Circle size={14} fill="currentColor" /> : null)}
+            {currentTheme === "tint" && (CloudSun ? <CloudSun size={16} /> : null)}
+            {currentTheme === "light" && (Sun ? <Sun size={16} fill="currentColor" /> : null)}
           </button>
 
           <div className="relative" ref={notificationPanelRef}>
@@ -159,12 +162,7 @@ export default function AppHeader(
                   : "bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 duration-300"
               }`}
             >
-              <Icons.Bell
-                size={16}
-                className={unreadCount > 0
-                  ? "text-canvas-primary"
-                  : "text-[var(--muse-muted)]"}
-              />
+              {Bell ? <Bell size={16} className={unreadCount > 0 ? "text-canvas-primary" : "text-[var(--muse-muted)]"} /> : null}
               {unreadCount > 0 && (
                 <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-canvas-primary border-2 border-[var(--muse-bg)]" />
               )}
@@ -216,7 +214,7 @@ export default function AppHeader(
             type="button"
             className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:border-canvas-primary transition-all shadow-lg active:scale-95 duration-300"
           >
-            <Icons.Menu size={18} />
+            {Menu ? <Menu size={18} /> : null}
           </button>
         </div>
       </div>

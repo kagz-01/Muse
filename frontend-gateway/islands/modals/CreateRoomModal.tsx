@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import Icons from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { addRoom, hashPassword, type RoomTheme, type RoomCategory, type RoomSize } from "../../signals/rooms.ts";
 
 interface Props {
@@ -125,7 +125,7 @@ export default function CreateRoomModal({ onClose }: Props) {
       onClick={handleBackdropClick}
       className="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-lg bg-[#111318] border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-[#111318] border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
         {/* Ambient glow */}
         <div
           className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500"
@@ -254,20 +254,38 @@ export default function CreateRoomModal({ onClose }: Props) {
               </button>
 
               {showEmojiPicker && (
-                <div className="absolute left-0 mt-3 w-full bg-[#111] border border-white/10 rounded-2xl p-3 z-50 shadow-3xl">
-                  <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+                <div className="absolute left-0 mt-3 w-full max-h-80 bg-[#111] border border-white/10 rounded-2xl p-4 z-50 shadow-3xl overflow-y-auto">
+                  <div className="grid grid-cols-6 gap-2">
                     {[
-                      "😀","😁","😂","🤣","😍","🥰","😎","🤔",
-                      "🎨","📔","🏛️","⚡","✨","🔥","🌿","🌧️",
-                      "🎯","📷","💡","🔒","🌊","🧠","📦","🔖",
+                      "😀","😁","😂","🤣","😃","😄",
+                      "😅","😆","😉","😊","😋","😌",
+                      "😍","🥰","😘","😗","😚","😙",
+                      "🥲","😜","😝","😛","🤑","🤗",
+                      "🤭","🤫","🤔","🤐","🤨","😐",
+                      "😑","😶","😏","😒","🙁","☹️",
+                      "😌","😔","😪","🤤","😴","😷",
+                      "🤒","🤕","🤮","🤢","🤮","🤮",
+                      "🎨","📔","🏛️","⚡","✨","🔥",
+                      "🌿","🌧️","🎯","📷","💡","🔒",
+                      "🌊","🧠","📦","🔖","🎭","🎪",
+                      "🎬","🎤","🎧","🎸","🎹","🎺",
+                      "🎻","🥁","📚","📖","📝","✏️",
+                      "📏","📐","📌","📍","📎","🖇️",
+                      "🗂️","🗃️","🧷","🧹","🧺","🧻",
+                      "🧼","🧽","🧯","🛒","🚀","🛸",
+                      "🛰️","🚁","✈️","🛫","🛬","🚂",
+                      "⚽","🏀","🏈","⚾","🥎","🎾",
+                      "🏐","🏉","🥏","🎳","🏓","🏸",
+                      "🏒","🏑","🥍","🏏","🌟","⭐",
+                      "✨","💫","🌠","☄️","💥","🔆",
                     ].map((e) => (
                       <button
                         key={e}
                         type="button"
                         onClick={() => { setEmoji(e); setShowEmojiPicker(false); }}
-                        className="min-w-[44px] flex-shrink-0 snap-start w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/5 transition-colors"
+                        className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all text-lg hover:scale-125 hover:bg-canvas-primary/20"
                       >
-                        <span className="text-lg">{e}</span>
+                        {e}
                       </button>
                     ))}
                   </div>
@@ -427,69 +445,43 @@ export default function CreateRoomModal({ onClose }: Props) {
               </div>
             ) : (
               <div className="space-y-5 bg-white/5 rounded-2xl p-5 border border-white/10">
-                {/* Hue Circle */}
+                {/* Hue Selector Strip */}
                 <div className="flex flex-col items-center">
-                  <svg
-                    width="180"
-                    height="180"
-                    viewBox="0 0 180 180"
-                    className="cursor-pointer"
-                    onClick={(e) => {
-                      const svg = e.currentTarget;
-                      const rect = svg.getBoundingClientRect();
-                      const cx = rect.width / 2;
-                      const cy = rect.height / 2;
-                      const x = e.clientX - rect.left - cx;
-                      const y = e.clientY - rect.top - cy;
-                      const angle = Math.atan2(y, x) * (180 / Math.PI) + 90;
-                      setCustomHue((angle + 360) % 360);
-                    }}
-                  >
-                    <defs>
-                      <linearGradient
-                        id="hueGradient"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="0%"
-                      >
-                        <stop offset="0%" stopColor="hsl(0, 100%, 60%)" />
-                        <stop offset="16.67%" stopColor="hsl(60, 100%, 60%)" />
-                        <stop offset="33.33%" stopColor="hsl(120, 100%, 60%)" />
-                        <stop offset="50%" stopColor="hsl(180, 100%, 60%)" />
-                        <stop offset="66.67%" stopColor="hsl(240, 100%, 60%)" />
-                        <stop offset="83.33%" stopColor="hsl(300, 100%, 60%)" />
-                        <stop offset="100%" stopColor="hsl(360, 100%, 60%)" />
-                      </linearGradient>
-                    </defs>
-                    <circle
-                      cx="90"
-                      cy="90"
-                      r="75"
-                      fill="url(#hueGradient)"
-                      opacity="0.8"
+                  <div className="w-full h-8 rounded-lg overflow-hidden mb-3 border border-white/10 shadow-lg" style={{
+                    background: `linear-gradient(to right, 
+                      hsl(0, 100%, 60%),
+                      hsl(30, 100%, 60%),
+                      hsl(60, 100%, 60%),
+                      hsl(90, 100%, 60%),
+                      hsl(120, 100%, 60%),
+                      hsl(150, 100%, 60%),
+                      hsl(180, 100%, 60%),
+                      hsl(210, 100%, 60%),
+                      hsl(240, 100%, 60%),
+                      hsl(270, 100%, 60%),
+                      hsl(300, 100%, 60%),
+                      hsl(330, 100%, 60%),
+                      hsl(360, 100%, 60%)
+                    )`
+                  }}>
+                    <div 
+                      className="w-1 h-full bg-white border-l-2 border-r-2 border-white shadow-lg pointer-events-none"
+                      style={{
+                        left: `${(customHue / 360) * 100}%`,
+                        position: 'relative'
+                      }}
                     />
-                    <circle
-                      cx="90"
-                      cy="90"
-                      r="70"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="2"
-                      opacity="0.3"
-                    />
-                    {/* Indicator */}
-                    <circle
-                      cx={90 + 65 * Math.cos((customHue - 90) * (Math.PI / 180))}
-                      cy={90 + 65 * Math.sin((customHue - 90) * (Math.PI / 180))}
-                      r="6"
-                      fill="white"
-                      stroke="black"
-                      strokeWidth="2"
-                    />
-                  </svg>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="360"
+                    value={customHue}
+                    onChange={(e) => setCustomHue(Number((e.target as HTMLInputElement).value))}
+                    className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                  />
                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-3">
-                    Click to choose hue
+                    Slide to choose hue
                   </p>
                 </div>
 

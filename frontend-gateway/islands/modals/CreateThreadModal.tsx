@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import Icons from "lucide-preact";
-import { addThread, type ThreadMood } from "../../signals/threads.ts";
+import * as Icons from "lucide-preact";
+import { addThread, createVaultThread, type ThreadMood } from "../../signals/threads.ts";
 
 interface Props {
   onClose: () => void;
@@ -58,6 +58,8 @@ export default function CreateThreadModal({ onClose }: Props) {
   const [coverPreview, setCoverPreview] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState("");
+  const [vaultPassword, setVaultPassword] = useState("");
+  const [showVaultPassword, setShowVaultPassword] = useState(false);
 
   const titleRef = useRef<HTMLInputElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -94,16 +96,39 @@ export default function CreateThreadModal({ onClose }: Props) {
       setError("Give your thread a title.");
       return;
     }
-    const newId = addThread({
-      title: title.trim(),
-      description: description.trim(),
-      thesis: thesis.trim(),
-      mood,
-      coverImage: coverPreview,
-      isPublic,
-      itemIds: [],
-      sourceRoomIds: [],
-    });
+
+    if (!isPublic && !vaultPassword.trim()) {
+      setError("Set a password to protect your private synthesis.");
+      return;
+    }
+
+    let newId: string;
+    if (!isPublic && vaultPassword.trim()) {
+      newId = createVaultThread(
+        {
+          title: title.trim(),
+          description: description.trim(),
+          thesis: thesis.trim(),
+          mood,
+          coverImage: coverPreview,
+          isPublic: false,
+          itemIds: [],
+          sourceRoomIds: [],
+        },
+        vaultPassword.trim()
+      );
+    } else {
+      newId = addThread({
+        title: title.trim(),
+        description: description.trim(),
+        thesis: thesis.trim(),
+        mood,
+        coverImage: coverPreview,
+        isPublic,
+        itemIds: [],
+        sourceRoomIds: [],
+      });
+    }
     onClose();
     globalThis.location.href = `/threads/${newId}`;
   };
@@ -303,6 +328,41 @@ export default function CreateThreadModal({ onClose }: Props) {
               </span>
             </button>
           </div>
+
+          {/* Vault Password (shown only for private threads) */}
+          {!isPublic && (
+            <div className="mb-8">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Vault Password *
+              </label>
+              <div className="relative">
+                <input
+                  type={showVaultPassword ? "text" : "password"}
+                  value={vaultPassword}
+                  onInput={(e) => {
+                    setVaultPassword((e.target as HTMLInputElement).value);
+                    setError("");
+                  }}
+                  placeholder="Create a strong password (min. 6 characters)"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500/30 transition-all text-sm font-medium pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowVaultPassword(!showVaultPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  {showVaultPassword ? (
+                    <Icons.EyeOff size={16} />
+                  ) : (
+                    <Icons.Eye size={16} />
+                  )}
+                </button>
+              </div>
+              <p className="text-gray-500 text-xs mt-2">
+                💡 Only you can unlock this private synthesis with this password.
+              </p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex items-center gap-3">

@@ -37,7 +37,7 @@ export default function ConnectionsHub() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-24 md:pb-10 space-y-12">
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-32 md:pb-28 space-y-12">
       {/* Community Pulse Header */}
       <CommunityPulseStrip />
 
@@ -46,8 +46,8 @@ export default function ConnectionsHub() {
         <section className="relative overflow-hidden rounded-[4rem] border border-white/5 bg-[#0d0d0d] p-12 md:p-20 shadow-2xl">
           <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between">
-            <div className="w-full max-w-none">
+          <div className="relative z-10">
+            <div className="mb-12">
               <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
                 The Collective Protocol 3.1
@@ -64,8 +64,79 @@ export default function ConnectionsHub() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-wrap items-center gap-3 p-1.5 bg-white/5 border border-white/10 rounded-[2.5rem]">
+            {/* Four Action Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+              <button
+                type="button"
+                onClick={() => setActiveTab("Circles")}
+                className="group relative p-6 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-transparent border border-indigo-500/30 hover:border-indigo-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] text-left overflow-hidden cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/10 to-indigo-500/0 group-hover:translate-x-full transition-transform duration-700 -z-10" />
+                <div className="flex items-start gap-3 relative z-10">
+                  <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                    <Icons.Users size={18} className="text-indigo-400" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-sm uppercase tracking-wide">Join a Circle</p>
+                    <p className="text-xs text-gray-400 mt-1">Connect with thinkers who share your resonance</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("Stream")}
+                className="group relative p-6 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] text-left overflow-hidden cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 group-hover:translate-x-full transition-transform duration-700 -z-10" />
+                <div className="flex items-start gap-3 relative z-10">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                    <Icons.Zap size={18} className="text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-sm uppercase tracking-wide">Share a Thought</p>
+                    <p className="text-xs text-gray-400 mt-1">Contribute immutable insights to the collective</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("Wisdom")}
+                className="group relative p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 hover:border-amber-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(245,158,11,0.3)] text-left overflow-hidden cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/10 to-amber-500/0 group-hover:translate-x-full transition-transform duration-700 -z-10" />
+                <div className="flex items-start gap-3 relative z-10">
+                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                    <Icons.Compass size={18} className="text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-sm uppercase tracking-wide">Explore Wisdom Map</p>
+                    <p className="text-xs text-gray-400 mt-1">See patterns and connections forming in real-time</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("People")}
+                className="group relative p-6 rounded-2xl bg-gradient-to-br from-rose-500/10 to-transparent border border-rose-500/30 hover:border-rose-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(244,63,94,0.3)] text-left overflow-hidden cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-rose-500/0 via-rose-500/10 to-rose-500/0 group-hover:translate-x-full transition-transform duration-700 -z-10" />
+                <div className="flex items-start gap-3 relative z-10">
+                  <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center flex-shrink-0">
+                    <Icons.Heart size={18} className="text-rose-400" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-sm uppercase tracking-wide">Find Collaborators</p>
+                    <p className="text-xs text-gray-400 mt-1">Meet minds aligned with your vision</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="flex flex-wrap items-center gap-3 p-1.5 bg-white/5 border border-white/10 rounded-[2.5rem]">
                 {tabs.map((tab) => (
                   <button
                     type="button"
@@ -89,8 +160,7 @@ export default function ConnectionsHub() {
                 ))}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
         <div className="transition-all duration-700">
           {soloMode

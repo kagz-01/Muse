@@ -4,7 +4,7 @@ import {
   discardBlueprint,
   updateBlueprintThesis,
 } from "../../signals/blueprints.ts";
-import Icons from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { useState } from "preact/hooks";
 
 export default function BlueprintReview() {

@@ -1,4 +1,4 @@
-import Icons from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 export interface ActiveCircle {
   id: string;
@@ -43,25 +43,52 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
           </h3>
         </div>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onJoin?.();
-          }}
-          className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-500 hover:border-indigo-500 transition-all active:scale-90 shadow-lg cursor-pointer"
-        >
-          <Icons.Plus size={22} />
-        </button>
+        <div className="flex flex-col items-end gap-2">
+          {/* Resonance Score Badge */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/30 rounded-lg">
+            <Icons.Zap size={14} className="text-purple-400" />
+            <span className="text-[10px] font-bold text-purple-300">92 Resonance</span>
+          </div>
+          
+          {/* Join Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onJoin?.();
+            }}
+            className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-500 hover:border-indigo-500 transition-all active:scale-90 shadow-lg cursor-pointer"
+          >
+            <Icons.Plus size={22} />
+          </button>
+        </div>
       </div>
 
-      <p className="text-gray-400 font-serif italic text-lg leading-relaxed mb-8 flex-1 line-clamp-3">
+      <p className="text-gray-400 font-serif italic text-lg leading-relaxed mb-6 flex-1 line-clamp-3">
         "{circle.description}"
       </p>
+
+      {/* Emerging Topics */}
+      <div className="mb-6">
+        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2.5">Trending Topics</p>
+        <div className="flex flex-wrap gap-2">
+          {["Consciousness", "Emergence", "Synthesis"].map((topic) => (
+            <span key={topic} className="text-[9px] font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 rounded-lg uppercase tracking-widest hover:border-emerald-500/60 transition-all cursor-default">
+              {topic}
+            </span>
+          ))}
+        </div>
+      </div>
 
       <div className="flex flex-wrap gap-2 mb-8">
         <span className="text-[10px] font-bold text-gray-500 border border-white/5 bg-white/[0.02] px-4 py-2 rounded-xl uppercase tracking-widest hover:border-white/20 hover:text-white transition-all cursor-default flex items-center gap-2">
           <Icons.Globe size={12} /> {circle.theme}
+        </span>
+        
+        {/* Live Indicator */}
+        <span className="text-[10px] font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 rounded-xl uppercase tracking-widest flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          New thought 3m ago
         </span>
       </div>
 
@@ -86,11 +113,14 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
             )}
           </div>
           <div>
-            <p className="text-sm font-bold text-white leading-none mb-1">
-              {circle.memberCount} Members
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold text-white leading-none mb-1">
+                {circle.memberCount} Members
+              </p>
+              <Icons.TrendingUp size={12} className="text-emerald-400" />
+            </div>
             <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">
-              Active Pulse
+              +3 this week
             </p>
           </div>
         </div>

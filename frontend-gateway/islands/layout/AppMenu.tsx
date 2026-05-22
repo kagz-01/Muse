@@ -115,7 +115,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
               onClick={closeMenu}
               className="p-2 bg-[var(--muse-surface-soft)] rounded-xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all cursor-pointer duration-300"
             >
-              <X size={20} />
+              <Icons.X size={20} />
             </button>
           </div>
 

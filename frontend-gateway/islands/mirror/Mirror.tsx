@@ -1,8 +1,10 @@
-import { useMemo } from "preact/hooks";
-import Icons from "lucide-preact";
+import { useMemo, useState } from "preact/hooks";
+import * as Icons from "lucide-preact";
 import { journalSignal } from "../../signals/journal.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
+import { MirrorTimeline, ActivityTimeline } from "../journal/MirrorTimeline.tsx";
+import { ExportModal } from "../journal/ExportModal.tsx";
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -10,6 +12,7 @@ export default function Mirror() {
   const items = itemsSignal.value;
   const rooms = roomsSignal.value;
   const entries = journalSignal.value;
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const now: number = Date.now();
   const weekStart: number = now - ONE_WEEK_MS;
@@ -93,13 +96,22 @@ export default function Mirror() {
 
         {/* Header */}
         <div className="mb-14 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="animate-pulse">
-              <Icons.Aperture size={24} className="text-canvas-primary" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="animate-pulse">
+                <Icons.Aperture size={24} className="text-canvas-primary" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary">
+                Weekly Mirror
+              </span>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary">
-              Weekly Mirror
-            </span>
+            <button
+              onClick={() => setShowExportModal(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-300 hover:text-green-200 transition-all border border-green-500/30 hover:border-green-500/50 font-semibold text-sm"
+            >
+              <Icons.Download size={16} />
+              Export
+            </button>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-4">
             This Week{" "}
@@ -156,6 +168,25 @@ export default function Mirror() {
           </div>
         </div>
 
+        {/* Activity Timeline Visualizations */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-300">
+          {/* Journal Activity Timeline */}
+          <div className="bg-white/[0.02] border border-white/5 rounded-4xl p-8 relative overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none" />
+            <div className="relative z-10">
+              <MirrorTimeline entries={weekEntries} days={30} />
+            </div>
+          </div>
+
+          {/* Activity Chart */}
+          <div className="bg-white/[0.02] border border-white/5 rounded-4xl p-8 relative overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none" />
+            <div className="relative z-10">
+              <ActivityTimeline entries={weekEntries} days={30} />
+            </div>
+          </div>
+        </div>
+
         {/* Room Breakdown */}
         {rooms.length > 0 && (
           <div className="mb-10 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300">
@@ -204,6 +235,9 @@ export default function Mirror() {
           </button>
         </div>
       </div>
+      {showExportModal && (
+        <ExportModal entries={entries} onClose={() => setShowExportModal(false)} />
+      )}
     </div>
   );
 }

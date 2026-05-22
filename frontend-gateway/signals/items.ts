@@ -41,10 +41,9 @@ const INITIAL_ITEMS: Item[] = [
 function loadItems(): Item[] {
   if (typeof localStorage === "undefined") return INITIAL_ITEMS;
 
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) return INITIAL_ITEMS;
-
   try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return INITIAL_ITEMS;
     const parsed = JSON.parse(stored) as Item[];
     return Array.isArray(parsed) ? parsed : INITIAL_ITEMS;
   } catch {
@@ -56,7 +55,11 @@ export const itemsSignal = signal<Item[]>(loadItems());
 
 if (typeof localStorage !== "undefined") {
   itemsSignal.subscribe((items: Item[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // ignore write errors in restricted environments
+    }
   });
 }
 

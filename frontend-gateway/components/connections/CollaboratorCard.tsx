@@ -62,26 +62,61 @@ export default function CollaboratorCard({ collaborator }: Props) {
         <h4 className="text-2xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors tracking-tight">
           {collaborator.name}
         </h4>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
           <Icons.Shield size={12} className="text-indigo-400" />
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">
             {collaborator.role}
           </p>
+          
+          {/* Alignment Score */}
+          <div className="flex items-center gap-1.5 ml-auto px-2.5 py-1 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+            <Icons.Zap size={10} className="text-purple-400" />
+            <span className="text-[8px] font-bold text-purple-300 uppercase tracking-widest">89% Aligned</span>
+          </div>
         </div>
         <p className="text-gray-400 font-serif italic text-base leading-relaxed line-clamp-2">
           "{collaborator.bio}"
         </p>
       </div>
 
-      <div className="relative z-10 pt-6 border-t border-white/5 flex flex-wrap gap-2">
-        {collaborator.sharedThemes.map((theme) => (
-          <span
-            key={theme}
-            className="text-[9px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2"
-          >
-            <Icons.Aperture size={8} /> {theme}
-          </span>
-        ))}
+      {/* Connection Metrics */}
+      <div className="relative z-10 mb-6 grid grid-cols-3 gap-3 py-4 px-3 bg-white/[0.02] border border-white/5 rounded-2xl">
+        <div className="text-center">
+          <p className="text-sm font-bold text-white">3</p>
+          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">Shared Circles</p>
+        </div>
+        <div className="text-center border-x border-white/5">
+          <p className="text-sm font-bold text-emerald-400">12</p>
+          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">Collaborations</p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm font-bold text-amber-400">7</p>
+          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">Shared Insights</p>
+        </div>
+      </div>
+
+      <div className="relative z-10 pt-4 border-t border-white/5">
+        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3">Shared Wavelength</p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {collaborator.sharedThemes.map((theme, idx) => (
+            <span
+              key={theme}
+              className={`text-[9px] font-bold ${
+                idx === 0
+                  ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300"
+                  : "bg-indigo-500/10 border border-indigo-500/20 text-indigo-400"
+              } px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2`}
+            >
+              <Icons.Aperture size={8} /> {idx === 0 ? "⭐ " : ""}{theme}
+            </span>
+          ))}
+        </div>
+        
+        {/* Mutual Circles */}
+        <div className="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+          <Icons.Users size={12} className="text-indigo-400" />
+          <span>In 3 circles together</span>
+        </div>
       </div>
 
       {collaborator.status === "Deep Focus" && (

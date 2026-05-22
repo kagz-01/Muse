@@ -7,10 +7,13 @@ import * as $_app_actions from "./routes/(app)/actions.tsx";
 import * as $_app_connections from "./routes/(app)/connections.tsx";
 import * as $_app_create from "./routes/(app)/create.tsx";
 import * as $_app_dashboard from "./routes/(app)/dashboard.tsx";
+import * as $_app_discover from "./routes/(app)/discover.tsx";
+import * as $_app_journal_community from "./routes/(app)/journal-community.tsx";
 import * as $_app_journal_id_ from "./routes/(app)/journal/[id].tsx";
 import * as $_app_journal_index from "./routes/(app)/journal/index.tsx";
 import * as $_app_mirror from "./routes/(app)/mirror.tsx";
 import * as $_app_profile from "./routes/(app)/profile.tsx";
+import * as $_app_profile_userId_ from "./routes/(app)/profile/[userId].tsx";
 import * as $_app_rooms_id_ from "./routes/(app)/rooms/[id].tsx";
 import * as $_app_rooms_index from "./routes/(app)/rooms/index.tsx";
 import * as $_app_settings from "./routes/(app)/settings.tsx";
@@ -36,8 +39,22 @@ import * as $dashboard_DashboardRooms from "./islands/dashboard/DashboardRooms.t
 import * as $dashboard_HomeOverview from "./islands/dashboard/HomeOverview.tsx";
 import * as $dashboard_PulseHome from "./islands/dashboard/PulseHome.tsx";
 import * as $dashboard_index from "./islands/dashboard/index.ts";
+import * as $journal_ActivityHeatmap from "./islands/journal/ActivityHeatmap.tsx";
+import * as $journal_CommunityCard from "./islands/journal/CommunityCard.tsx";
+import * as $journal_DiscoveryFeed from "./islands/journal/DiscoveryFeed.tsx";
+import * as $journal_EntryDetail from "./islands/journal/EntryDetail.tsx";
+import * as $journal_ExportModal from "./islands/journal/ExportModal.tsx";
 import * as $journal_JournalEntryView from "./islands/journal/JournalEntryView.tsx";
 import * as $journal_JournalGallery from "./islands/journal/JournalGallery.tsx";
+import * as $journal_LinkedArtifacts from "./islands/journal/LinkedArtifacts.tsx";
+import * as $journal_MilestoneNotification from "./islands/journal/MilestoneNotification.tsx";
+import * as $journal_MirrorTimeline from "./islands/journal/MirrorTimeline.tsx";
+import * as $journal_MoodDistribution from "./islands/journal/MoodDistribution.tsx";
+import * as $journal_StreakCard from "./islands/journal/StreakCard.tsx";
+import * as $journal_SynthesisCard from "./islands/journal/SynthesisCard.tsx";
+import * as $journal_SynthesisCreationForm from "./islands/journal/SynthesisCreationForm.tsx";
+import * as $journal_UserProfile from "./islands/journal/UserProfile.tsx";
+import * as $journal_VaultModal from "./islands/journal/VaultModal.tsx";
 import * as $journal_index from "./islands/journal/index.ts";
 import * as $landing_AboutSection from "./islands/landing/AboutSection.tsx";
 import * as $landing_DemoVideo from "./islands/landing/DemoVideo.tsx";
@@ -85,10 +102,13 @@ const manifest = {
     "./routes/(app)/connections.tsx": $_app_connections,
     "./routes/(app)/create.tsx": $_app_create,
     "./routes/(app)/dashboard.tsx": $_app_dashboard,
+    "./routes/(app)/discover.tsx": $_app_discover,
+    "./routes/(app)/journal-community.tsx": $_app_journal_community,
     "./routes/(app)/journal/[id].tsx": $_app_journal_id_,
     "./routes/(app)/journal/index.tsx": $_app_journal_index,
     "./routes/(app)/mirror.tsx": $_app_mirror,
     "./routes/(app)/profile.tsx": $_app_profile,
+    "./routes/(app)/profile/[userId].tsx": $_app_profile_userId_,
     "./routes/(app)/rooms/[id].tsx": $_app_rooms_id_,
     "./routes/(app)/rooms/index.tsx": $_app_rooms_index,
     "./routes/(app)/settings.tsx": $_app_settings,
@@ -117,8 +137,24 @@ const manifest = {
     "./islands/dashboard/HomeOverview.tsx": $dashboard_HomeOverview,
     "./islands/dashboard/PulseHome.tsx": $dashboard_PulseHome,
     "./islands/dashboard/index.ts": $dashboard_index,
+    "./islands/journal/ActivityHeatmap.tsx": $journal_ActivityHeatmap,
+    "./islands/journal/CommunityCard.tsx": $journal_CommunityCard,
+    "./islands/journal/DiscoveryFeed.tsx": $journal_DiscoveryFeed,
+    "./islands/journal/EntryDetail.tsx": $journal_EntryDetail,
+    "./islands/journal/ExportModal.tsx": $journal_ExportModal,
     "./islands/journal/JournalEntryView.tsx": $journal_JournalEntryView,
     "./islands/journal/JournalGallery.tsx": $journal_JournalGallery,
+    "./islands/journal/LinkedArtifacts.tsx": $journal_LinkedArtifacts,
+    "./islands/journal/MilestoneNotification.tsx":
+      $journal_MilestoneNotification,
+    "./islands/journal/MirrorTimeline.tsx": $journal_MirrorTimeline,
+    "./islands/journal/MoodDistribution.tsx": $journal_MoodDistribution,
+    "./islands/journal/StreakCard.tsx": $journal_StreakCard,
+    "./islands/journal/SynthesisCard.tsx": $journal_SynthesisCard,
+    "./islands/journal/SynthesisCreationForm.tsx":
+      $journal_SynthesisCreationForm,
+    "./islands/journal/UserProfile.tsx": $journal_UserProfile,
+    "./islands/journal/VaultModal.tsx": $journal_VaultModal,
     "./islands/journal/index.ts": $journal_index,
     "./islands/landing/AboutSection.tsx": $landing_AboutSection,
     "./islands/landing/DemoVideo.tsx": $landing_DemoVideo,

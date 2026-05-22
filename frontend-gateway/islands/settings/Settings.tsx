@@ -1,5 +1,15 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
+const SafeIcons = Icons as unknown as Record<string, import("preact").ComponentType<Record<string, unknown>>>;
+const LucideIcon = (props: {
+  icon: import("preact").ComponentType<Record<string, unknown>>;
+  className?: string;
+  size?: number;
+  [key: string]: unknown;
+}) => {
+  const { icon: IconComponent, ...rest } = props;
+  return <IconComponent {...rest} />;
+};
 import {
   addLink,
   logout,
@@ -95,37 +105,37 @@ const NOTIFICATION_OPTIONS: Array<{
   {
     key: "notifyOnReply",
     label: "New replies to my threads",
-    icon: Icons.MessageCircle,
+    icon: SafeIcons.MessageCircle,
     description: "Get notified when someone responds to your threads.",
   },
   {
     key: "notifyOnLike",
     label: "Likes on my content",
-    icon: Icons.Heart,
+    icon: SafeIcons.Heart,
     description: "See when people appreciate your work.",
   },
   {
     key: "notifyOnFollow",
     label: "New followers",
-    icon: Icons.UserPlus,
+    icon: SafeIcons.UserPlus,
     description: "Stay informed when someone starts following you.",
   },
   {
     key: "notifyOnAchievement",
     label: "Achievement unlocks",
-    icon: Icons.Award,
+    icon: SafeIcons.Award,
     description: "Celebrate progress when you hit milestones.",
   },
   {
     key: "weeklyDigest",
     label: "Weekly digest",
-    icon: Icons.Newspaper,
+    icon: SafeIcons.Newspaper,
     description: "Receive a weekly summary of activity.",
   },
   {
     key: "productUpdates",
     label: "Product updates",
-    icon: Icons.Zap,
+    icon: SafeIcons.Zap,
     description: "Hear about new features and releases.",
   },
 ];
@@ -151,9 +161,9 @@ const ACCENT_OPTIONS: Array<
 const THEME_OPTIONS: Array<
   { value: AppearanceSettings["theme"]; label: string; icon: import("preact").ComponentType<Record<string, unknown>> }
 > = [
-  { value: "light", label: "Light", icon: Icons.Sun },
-  { value: "dark", label: "Dark", icon: Icons.Moon },
-  { value: "system", label: "System", icon: Icons.Monitor },
+  { value: "light", label: "Light", icon: SafeIcons.Sun },
+  { value: "dark", label: "Dark", icon: SafeIcons.Moon },
+  { value: "system", label: "System", icon: SafeIcons.Monitor },
 ];
 
 const FONT_SIZE_OPTIONS: Array<
@@ -860,7 +870,7 @@ function getDetectedTimezone(): string {
   }
 }
 
-async function detectLocation(): Promise<string | null> {
+function detectLocation(): Promise<string | null> {
   return new Promise((resolve) => {
     if (!globalThis.navigator?.geolocation) {
       resolve(null);
@@ -939,8 +949,8 @@ export default function Settings() {
   const [customGender, setCustomGender] = useState("");
   const [customPronouns, setCustomPronouns] = useState("");
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
-  const [showTimezoneDropdown, setShowTimezoneDropdown] = useState(false);
-  const [timezoneSearch, setTimezoneSearch] = useState("");
+  const [_showTimezoneDropdown, setShowTimezoneDropdown] = useState(false);
+  const [_timezoneSearch, setTimezoneSearch] = useState("");
 
   const hasInitialized = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1059,19 +1069,19 @@ export default function Settings() {
   }
 
   const tabs: Array<{ id: SettingsTab; label: string; icon: import("preact").ComponentType<Record<string, unknown>> }> = [
-    { id: "profile", label: "Profile", icon: Icons.User },
-    { id: "appearance", label: "Appearance", icon: Icons.Palette },
-    { id: "notifications", label: "Notifications", icon: Icons.Bell },
-    { id: "privacy", label: "Privacy", icon: Icons.Shield },
-    { id: "data", label: "Data", icon: Icons.Database },
+    { id: "profile", label: "Profile", icon: SafeIcons.User },
+    { id: "appearance", label: "Appearance", icon: SafeIcons.Palette },
+    { id: "notifications", label: "Notifications", icon: SafeIcons.Bell },
+    { id: "privacy", label: "Privacy", icon: SafeIcons.Shield },
+    { id: "data", label: "Data", icon: SafeIcons.Database },
   ];
 
   const handleProfileUpdate = (updates: Partial<UserModel>) => {
     updateProfile(updates);
   };
 
-  const handleAvatarUpload = (event: Event) => {
-    const target = event.target as HTMLInputElement;
+  const handleAvatarUpload = (event: unknown) => {
+    const target = (event as { target: HTMLInputElement | null })?.target as HTMLInputElement;
     const file = target.files?.[0];
     if (!file) return;
 
@@ -1199,8 +1209,8 @@ export default function Settings() {
     });
   };
 
-  const handleAddSocialLink = (event: Event) => {
-    event.preventDefault();
+  const handleAddSocialLink = (event: unknown) => {
+    (event as { preventDefault: () => void }).preventDefault();
     const title = newLinkTitle.trim();
     const urlInput = newLinkUrl.trim();
     if (!title || !urlInput) return;
@@ -1233,7 +1243,7 @@ export default function Settings() {
         )}
         {saveStatus === "saved" && (
           <div className="flex items-center gap-2 text-emerald-400">
-            <CheckCircle size={16} />
+            <LucideIcon icon={SafeIcons.CheckCircle} size={16} />
             <span className="text-sm">Saved</span>
           </div>
         )}
@@ -1253,7 +1263,7 @@ export default function Settings() {
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              <Icon size={14} />
+              <LucideIcon icon={Icon} size={14} />
               {tab.label}
             </button>
           );
@@ -1292,13 +1302,13 @@ export default function Settings() {
                     onClick={() => fileInputRef.current?.click()}
                     className="absolute bottom-0 right-0 p-1 bg-white rounded-full text-black opacity-0 group-hover:opacity-100 transition"
                   >
-                    <Camera size={10} />
+                    <LucideIcon icon={SafeIcons.Camera} size={10} />
                   </button>
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    onChange={handleAvatarUpload}
+                    onChange={(event) => handleAvatarUpload(event)}
                     className="hidden"
                   />
                 </div>
@@ -1341,7 +1351,7 @@ export default function Settings() {
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-                    <Mail size={12} /> Email
+                    <LucideIcon icon={SafeIcons.Mail} size={12} /> Email
                   </label>
                   <input
                     type="email"
@@ -1355,7 +1365,7 @@ export default function Settings() {
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-                    <MapPin size={12} /> Location
+                    <LucideIcon icon={SafeIcons.MapPin} size={12} /> Location
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -1386,7 +1396,7 @@ export default function Settings() {
                       className="px-3 py-2 bg-canvas-primary/20 border border-canvas-primary/45 hover:bg-canvas-primary/30 rounded-xl text-canvas-primary text-[11px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-1 whitespace-nowrap"
                       title="Auto-detect location using device location (requires permission)"
                     >
-                      <Compass size={14} />
+                      <LucideIcon icon={SafeIcons.Compass} size={14} />
                       {isDetectingLocation ? "Detecting..." : "Detect"}
                     </button>
                   </div>
@@ -1638,7 +1648,7 @@ export default function Settings() {
 
                 <div>
                   <label className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-                    <Calendar size={12} /> Birth Date
+                    <LucideIcon icon={SafeIcons.Calendar} size={12} /> Birth Date
                   </label>
                   <input
                     type="date"
@@ -1669,8 +1679,8 @@ export default function Settings() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1 flex items-center gap-1">
-                    <Clock size={12} /> Timezone
+                  <label className="text-xs text-gray-400 mb-1 flex items-center gap-1">
+                    <LucideIcon icon={SafeIcons.Clock} size={12} /> Timezone
                   </label>
                   <div className="flex gap-2">
                     <div className="flex-1 relative">
@@ -1710,7 +1720,7 @@ export default function Settings() {
                       className="px-3 py-2 bg-canvas-primary/20 border border-canvas-primary/45 hover:bg-canvas-primary/30 rounded-xl text-canvas-primary text-[11px] font-bold uppercase tracking-widest transition-all flex items-center gap-1 whitespace-nowrap"
                       title="Auto-detect timezone from your device"
                     >
-                      <Zap size={14} />
+                      <LucideIcon icon={SafeIcons.Zap} size={14} />
                       Auto-detect
                     </button>
                   </div>
@@ -1718,7 +1728,7 @@ export default function Settings() {
 
                 <div>
                   <label className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-                    <Globe size={12} /> Website
+                    <LucideIcon icon={SafeIcons.Globe} size={12} /> Website
                   </label>
                   <input
                     type="url"
@@ -1746,9 +1756,9 @@ export default function Settings() {
 
                 {user.links.length > 0 && (
                   <div className="space-y-2">
-                    {user.links.map((link) => (
+                    {user.links.map((link: UserModel["links"][number], index: number) => (
                       <div
-                        key={link.id}
+                        key={index}
                         className="flex items-center justify-between gap-2 p-3 rounded-xl bg-black/30 border border-white/10"
                       >
                         <a
@@ -1766,10 +1776,10 @@ export default function Settings() {
                         </a>
                         <button
                           type="button"
-                          onClick={() => removeLink(link.id)}
+                          onClick={() => removeLink(index)}
                           className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-rose-300 hover:border-rose-300/40 transition"
                         >
-                          <Trash2 size={12} />
+                          <LucideIcon icon={SafeIcons.Trash2} size={12} />
                         </button>
                       </div>
                     ))}
@@ -1777,7 +1787,7 @@ export default function Settings() {
                 )}
 
                 <form
-                  onSubmit={handleAddSocialLink}
+                  onSubmit={(event) => handleAddSocialLink(event)}
                   className="grid md:grid-cols-[1fr_1.4fr_auto] gap-2"
                 >
                   <input
@@ -1789,7 +1799,7 @@ export default function Settings() {
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
                   />
                   <div className="relative">
-                    <Link2
+                    <LucideIcon icon={SafeIcons.Link2}
                       size={12}
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
                     />
@@ -1807,7 +1817,7 @@ export default function Settings() {
                     disabled={!newLinkTitle.trim() || !newLinkUrl.trim()}
                     className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Plus size={12} /> Add
+                    <LucideIcon icon={SafeIcons.Plus} size={12} /> Add
                   </button>
                 </form>
               </div>
@@ -1842,7 +1852,7 @@ export default function Settings() {
                       }`}
                     >
                       <span className="inline-flex items-center gap-1.5">
-                        <Icon size={12} /> {theme.label}
+                        <LucideIcon icon={Icon} size={12} /> {theme.label}
                       </span>
                     </button>
                   );
@@ -1897,7 +1907,7 @@ export default function Settings() {
                         : "bg-white/10 text-white"
                     }`}
                   >
-                    <Type size={fontOption.size} /> {fontOption.label}
+                    <LucideIcon icon={SafeIcons.Type} size={fontOption.size} /> {fontOption.label}
                   </button>
                 ))}
               </div>
@@ -1957,17 +1967,17 @@ export default function Settings() {
                   {
                     key: "emailNotifications",
                     label: "Email Notifications",
-                    icon: Mail,
+                    icon: SafeIcons.Mail,
                   },
                   {
                     key: "pushNotifications",
                     label: "Push Notifications",
-                    icon: Smartphone,
+                    icon: SafeIcons.Smartphone,
                   },
                   {
                     key: "inAppNotifications",
                     label: "In-App Notifications",
-                    icon: Bell,
+                    icon: SafeIcons.Bell,
                   },
                 ].map((toggle) => {
                   const key = toggle.key as keyof Pick<
@@ -1984,7 +1994,7 @@ export default function Settings() {
                       className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
                     >
                       <div className="flex items-center gap-2">
-                        <Icon size={14} className="text-gray-400" />
+                        <LucideIcon icon={Icon} size={14} className="text-gray-400" />
                         <span className="text-sm text-gray-300">
                           {toggle.label}
                         </span>
@@ -2025,7 +2035,7 @@ export default function Settings() {
                     >
                       <div className="pr-4">
                         <div className="flex items-center gap-2">
-                          <Icon size={14} className="text-gray-400" />
+                          <LucideIcon icon={Icon} size={14} className="text-gray-400" />
                           <span className="text-sm text-gray-300">
                             {option.label}
                           </span>
@@ -2068,7 +2078,7 @@ export default function Settings() {
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
               <div>
                 <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <Globe size={14} className="text-gray-400" />{" "}
+                  <LucideIcon icon={SafeIcons.Globe} size={14} className="text-gray-400" />{" "}
                   Account Visibility
                 </p>
                 <p className="text-[10px] text-gray-500 mt-1">
@@ -2100,7 +2110,7 @@ export default function Settings() {
 
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
               <span className="text-sm text-gray-300 flex items-center gap-2">
-                <Mail size={14} className="text-gray-400" />{" "}
+                <LucideIcon icon={SafeIcons.Mail} size={14} className="text-gray-400" />{" "}
                 Show email on profile
               </span>
               <button
@@ -2128,7 +2138,7 @@ export default function Settings() {
 
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
               <span className="text-sm text-gray-300 flex items-center gap-2">
-                <Eye size={14} className="text-gray-400" />{" "}
+                <LucideIcon icon={SafeIcons.Eye} size={14} className="text-gray-400" />{" "}
                 Allow search indexing
               </span>
               <button
@@ -2157,7 +2167,7 @@ export default function Settings() {
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
               <div>
                 <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <Key size={14} className="text-gray-400" />{" "}
+                  <LucideIcon icon={SafeIcons.Key} size={14} className="text-gray-400" />{" "}
                   Two-Factor Authentication
                 </p>
                 <p className="text-[10px] text-gray-500">
@@ -2279,7 +2289,7 @@ export default function Settings() {
                 onClick={exportData}
                 className="flex items-center justify-center gap-2 py-3 text-sm bg-white/10 border border-white/10 rounded-xl text-white hover:bg-white/20 transition"
               >
-                <Download size={14} /> Export Data
+                <LucideIcon icon={SafeIcons.Download} size={14} /> Export Data
               </button>
 
               <button
@@ -2287,13 +2297,13 @@ export default function Settings() {
                 onClick={resetLocalPreferences}
                 className="flex items-center justify-center gap-2 py-3 text-sm bg-white/10 border border-white/10 rounded-xl text-white hover:bg-white/20 transition"
               >
-                <RotateCcw size={14} /> Reset Preferences
+                <LucideIcon icon={SafeIcons.RotateCcw} size={14} /> Reset Preferences
               </button>
             </div>
 
             <div className="border-t border-red-500/20 pt-4 space-y-3">
               <div className="flex items-center gap-2">
-                <Trash2 size={14} className="text-red-400" />
+                <LucideIcon icon={SafeIcons.Trash2} size={14} className="text-red-400" />
                 <span className="text-xs text-red-400 font-medium uppercase tracking-widest">
                   Danger Zone
                 </span>

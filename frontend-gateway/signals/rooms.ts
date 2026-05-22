@@ -88,10 +88,9 @@ const INITIAL_ROOMS: Room[] = [
 function loadRooms(): Room[] {
   if (typeof localStorage === "undefined") return INITIAL_ROOMS;
 
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) return INITIAL_ROOMS;
-
   try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return INITIAL_ROOMS;
     const parsed = JSON.parse(stored) as Room[];
     const base = Array.isArray(parsed) ? parsed : INITIAL_ROOMS;
 
@@ -117,7 +116,11 @@ export const roomsSignal = signal<Room[]>(loadRooms());
 
 if (typeof localStorage !== "undefined") {
   roomsSignal.subscribe((rooms: Room[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
+    } catch {
+      // ignore write errors in restricted environments
+    }
   });
 }
 

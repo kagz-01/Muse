@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import Icons from "lucide-preact";
+import * as Icons from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import {
@@ -137,7 +137,7 @@ export default function PulseHome() {
   ];
 
   return (
-    <div className="w-full max-w-none px-6 md:px-10 pt-8 pb-20 space-y-10 animate-in fade-in duration-1000">
+    <div className="w-full max-w-none px-6 md:px-10 pt-8 pb-32 space-y-10 animate-in fade-in duration-1000">
       {/* HERO SECTION: THE MONOLITH GREETER */}
       <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-linear-to-br from-white/[0.04] via-transparent to-transparent p-10 md:p-16 shadow-3xl">
         <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-canvas-primary/10 blur-[120px] animate-pulse" />

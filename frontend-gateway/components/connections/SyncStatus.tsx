@@ -56,14 +56,61 @@ export default function SyncStatus() {
             {status.throughput}
           </p>
         </div>
+        
+        {/* Pattern Discovery Rate */}
+        <div className="min-w-[160px] flex-1 snap-start p-4 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-2xl border border-indigo-500/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Icons.Sparkles size={12} className="text-indigo-400 animate-pulse" />
+            <span className="text-[8px] font-bold text-indigo-400 uppercase tracking-widest">
+              Pattern Discovery
+            </span>
+          </div>
+          <p className="text-sm font-bold text-indigo-300 font-mono">
+            +8/min
+          </p>
+        </div>
+
+        {/* Cluster Formation */}
+        <div className="min-w-[160px] flex-1 snap-start p-4 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-2xl border border-emerald-500/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Icons.GitBranch size={12} className="text-emerald-400" />
+            <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-widest">
+              Clusters Formed
+            </span>
+          </div>
+          <p className="text-sm font-bold text-emerald-300 font-mono">
+            47
+          </p>
+        </div>
+
+        {/* Void Detection */}
+        <div className="min-w-[160px] flex-1 snap-start p-4 bg-gradient-to-br from-red-500/10 to-transparent rounded-2xl border border-red-500/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Icons.AlertCircle size={12} className="text-red-400" />
+            <span className="text-[8px] font-bold text-red-400 uppercase tracking-widest">
+              Voids Detected
+            </span>
+          </div>
+          <p className="text-sm font-bold text-red-300 font-mono">
+            3
+          </p>
+        </div>
       </div>
 
       <div className="pt-2">
-        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-          <div className="h-full bg-canvas-primary w-2/3 animate-[progress_5s_infinite]" />
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+              Sync Progress
+            </span>
+            <span className="text-[9px] font-bold text-white">67%</span>
+          </div>
+          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-canvas-primary via-emerald-500 to-transparent w-2/3 animate-[progress_5s_infinite] shadow-lg" />
+          </div>
         </div>
         <p className="mt-3 text-[9px] text-gray-600 font-serif italic text-center">
-          Broadcasting ledger-backed state across 12 distributed nodes.
+          Broadcasting ledger-backed state across 12 distributed nodes. Filling digital voids...
         </p>
       </div>
 

@@ -12,8 +12,10 @@ declare module "lucide-preact" {
 }
 
 declare module "preact" {
-  export type ComponentType<P = unknown> = (props: P) => unknown;
+  export type VNode<P = unknown> = any;
+  export type ComponentType<P = unknown> = (props: P) => VNode<P> | null;
   export namespace JSX {
+    type Element = any;
     interface IntrinsicElements {
       [elem: string]: unknown;
     }
@@ -21,10 +23,12 @@ declare module "preact" {
       [key: string]: unknown;
     }
     interface HTMLAttributes<T = unknown> {
-      [key: string]: unknown;
+      [elem: string]: unknown;
     }
-    interface Element {}
     interface ElementChildrenAttribute { children: unknown }
+    interface ElementClass {}
+    interface ElementAttributesProperty { props: unknown }
+    interface LibraryManagedAttributes<C, P> { [key: string]: unknown }
   }
 }
 

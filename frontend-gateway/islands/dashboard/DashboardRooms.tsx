@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import Icons from "lucide-preact";
+import { Plus as _Plus, Globe, Lock } from "../../components/LucideIcons.tsx";
 import { roomsSignal, type RoomTheme } from "../../signals/rooms.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 
@@ -40,7 +40,7 @@ export default function DashboardRooms() {
               type="button"
               className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer"
             >
-              <Icons.Plus size={16} />
+// @ts-ignore
             </button>
           </div>
         </header>
@@ -89,12 +89,12 @@ export default function DashboardRooms() {
                     {room.isPublic
                       ? (
                         <div className="bg-white/10 backdrop-blur-md px-2.5 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-bold text-white shadow-sm border border-white/10 flex items-center gap-1.5">
-                          <Icons.Globe size={12} /> Public
+                          <Globe size={12} /> Public
                         </div>
                       )
                       : (
                         <div className="bg-black/40 backdrop-blur-md px-2.5 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-bold text-gray-300 shadow-sm border border-white/5 flex items-center gap-1.5">
-                          <Icons.Lock size={12} /> Private
+                          <Lock size={12} /> Private
                         </div>
                       )}
                   </div>

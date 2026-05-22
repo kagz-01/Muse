@@ -40,6 +40,17 @@ export interface Thread {
     wallpaper?: string;
     fontFamily?: string;
   };
+  // Vault functionality
+  isVault?: boolean; // Private thread with password protection
+  vaultPassword?: string; // Hashed password for vault threads
+  isVaultUnlocked?: boolean; // Runtime flag for unlocked status
+  // Synthesis analysis
+  synthesis?: {
+    patterns: string[];
+    tensions: string[];
+    coherenceScore: number;
+    recommendations: string[];
+  };
 }
 
 const STORAGE_KEY = "muse_threads_v1";
@@ -76,16 +87,25 @@ const INITIAL_THREADS: Thread[] = [
     customStyling: {
       auraGradients: ["#6366f1", "#10b981"],
     },
+    synthesis: {
+      patterns: ["authenticity", "sovereignty", "structure"],
+      tensions: ["minimal vs complex - balancing opposite forces"],
+      coherenceScore: 85,
+      recommendations: [
+        'Explore the theme of "authenticity" more deeply across your rooms',
+        "Address the tension: minimal vs complex - balancing opposite forces",
+        "Consider how these patterns interconnect: authenticity, sovereignty, structure",
+      ],
+    },
   },
 ];
 
 function loadThreads(): Thread[] {
   if (typeof localStorage === "undefined") return INITIAL_THREADS;
 
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) return INITIAL_THREADS;
-
   try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return INITIAL_THREADS;
     const parsed = JSON.parse(stored) as Thread[];
     return Array.isArray(parsed) ? parsed : INITIAL_THREADS;
   } catch {
@@ -97,7 +117,11 @@ export const threadsSignal = signal<Thread[]>(loadThreads());
 
 if (typeof localStorage !== "undefined") {
   threadsSignal.subscribe((threads: Thread[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+    } catch {
+      // Ignore storage write errors (readonly or restricted environments)
+    }
   });
 }
 
@@ -168,4 +192,65 @@ export function removeItemFromThread(threadId: string, itemId: string) {
 
 export function resetThreads() {
   threadsSignal.value = [];
+}
+
+// Vault functionality
+export function unlockVaultThread(threadId: string, password: string): boolean {
+  const thread = threadsSignal.value.find((t) => t.id === threadId);
+  if (!thread || !thread.isVault) return false;
+
+  // Simple hash comparison (in production, use proper bcrypt)
+  const inputHash = hashPassword(password);
+  if (inputHash === thread.vaultPassword) {
+    threadsSignal.value = threadsSignal.value.map((t) =>
+      t.id === threadId ? { ...t, isVaultUnlocked: true } : t
+    );
+    return true;
+  }
+  return false;
+}
+
+export function lockVaultThread(threadId: string) {
+  threadsSignal.value = threadsSignal.value.map((t) =>
+    t.id === threadId ? { ...t, isVaultUnlocked: false } : t
+  );
+}
+
+export function createVaultThread(
+  thread: Omit<
+    Thread,
+    | "id"
+    | "updatedAt"
+    | "synthesisScore"
+    | "resonanceMetrics"
+    | "dialogueLayers"
+  >,
+  password: string,
+) {
+  const newId = "t" + (threadsSignal.value.length + 1);
+  const hashedPassword = hashPassword(password);
+  const newThread: Thread = {
+    ...thread,
+    id: newId,
+    updatedAt: new Date().toISOString(),
+    synthesisScore: Math.floor(Math.random() * 40) + 60,
+    resonanceMetrics: { views: 0, connections: 0 },
+    dialogueLayers: [],
+    isVault: true,
+    vaultPassword: hashedPassword,
+    isVaultUnlocked: false,
+  };
+  threadsSignal.value = [...threadsSignal.value, newThread];
+  return newId;
+}
+
+// Simple hash function (for demo - use proper bcrypt in production)
+function hashPassword(password: string): string {
+  let hash = 0;
+  for (let i = 0; i < password.length; i++) {
+    const char = password.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return "hash_" + Math.abs(hash).toString(16);
 }

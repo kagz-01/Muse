@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import Icons from "lucide-preact";
+import * as Icons from "lucide-preact";
 import {
   perspectivesSignal as persSig,
   submitPerspective as subPers,
@@ -130,37 +130,64 @@ export default function ThoughtStream() {
                 </div>
               )}
 
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`w-10 h-10 rounded-2xl flex items-center justify-center text-[12px] font-bold border border-white/10`}
-                    style={{
-                      backgroundColor: `${pers.author.aura}15`,
-                      color: pers.author.aura,
-                    }}
-                  >
-                    {pers.author.name.charAt(0)}
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-white">
-                      {pers.author.name}
-                    </span>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
-                        {pers.timestamp}
-                      </span>
-                      {pers.source && (
-                        <span className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-canvas-primary/60">
-                          {pers.source === "Journal"
-                            ? <Icons.BookOpen size={10} />
-                            : <Icons.Layout size={10} />}
-                          {pers.source}
+              <div className="flex flex-col gap-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`w-10 h-10 rounded-2xl flex items-center justify-center text-[12px] font-bold border border-white/10`}
+                      style={{
+                        backgroundColor: `${pers.author.aura}15`,
+                        color: pers.author.aura,
+                      }}
+                    >
+                      {pers.author.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-white">
+                          {pers.author.name}
                         </span>
-                      )}
+                        <Icons.CheckCircle size={12} className="text-emerald-400" />
+                      </div>
+                      <div className="flex items-center gap-3 mt-1 flex-wrap">
+                        <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
+                          {pers.timestamp}
+                        </span>
+                        {pers.source && (
+                          <span className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-canvas-primary/60">
+                            {pers.source === "Journal"
+                              ? <Icons.BookOpen size={10} />
+                              : <Icons.Layout size={10} />}
+                            {pers.source}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 flex-wrap justify-end">
+                    {/* Immutability Badge */}
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                      <Icons.Lock size={11} className="text-emerald-400" />
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400">Immutable</span>
+                    </div>
+                    
+                    {/* Real-time Analysis Badge */}
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-lg">
+                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-indigo-400">Analyzing</span>
                     </div>
                   </div>
                 </div>
 
+                {/* Circle Placements - "You're in X circles" */}
+                <div className="flex items-center gap-2 text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                  <Icons.Circle size={12} className="text-purple-400/60" />
+                  <span>You're in 3 circles with this thinker</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   {pers.txId && (
                     <div className="px-3 py-1 bg-white/5 border border-white/5 rounded-lg text-[8px] font-mono text-gray-600 group-hover:text-emerald-500/60 transition-colors">
@@ -181,22 +208,37 @@ export default function ThoughtStream() {
                     </div>
                   )}
                 </div>
+
+                {/* Resonance Score */}
+                <div className="flex items-center gap-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                  <Icons.Zap size={12} className="text-amber-400" />
+                  <span className="text-[9px] font-bold text-amber-300">87 Resonance</span>
+                </div>
               </div>
 
               <p className="text-2xl font-serif italic text-gray-200 leading-relaxed max-w-none">
                 {pers.content}
               </p>
 
-              <div className="mt-8 pt-8 border-t border-white/[0.03] flex items-center gap-8">
-                  <button
+              <div className="mt-8 pt-8 border-t border-white/[0.03] flex flex-wrap items-center gap-6">
+                <button
                   type="button"
                   onClick={() => setReplyingTo(pers.id)}
-                  className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                  className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors group/btn"
                 >
-                  <Icons.CornerDownRight size={16} /> Synthesize Perspective
+                  <Icons.CornerDownRight size={16} className="group-hover/btn:translate-x-1 transition-transform" /> Synthesize Perspective
                 </button>
-                <button type="button" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-                  <Icons.Activity size={16} /> 12 Resonance
+                
+                <button type="button" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-emerald-400 transition-colors">
+                  <Icons.Heart size={16} /> 24 Collaborators
+                </button>
+
+                <button type="button" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-indigo-400 transition-colors">
+                  <Icons.MessageCircle size={16} /> 18 Comments
+                </button>
+
+                <button type="button" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-amber-400 transition-colors">
+                  <Icons.TrendingUp size={16} /> 342 Views
                 </button>
               </div>
             </div>
