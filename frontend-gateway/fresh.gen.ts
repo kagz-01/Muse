@@ -28,6 +28,8 @@ import * as $api_followers_unfollow from "./routes/api/followers/unfollow.ts";
 import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $api_mirror from "./routes/api/mirror.ts";
+import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
+import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
@@ -129,6 +131,8 @@ const manifest = {
     "./routes/api/health/services.ts": $api_health_services,
     "./routes/api/joke.ts": $api_joke,
     "./routes/api/mirror.ts": $api_mirror,
+    "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
+    "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
     "./routes/auth.tsx": $auth,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
