@@ -12,39 +12,38 @@ export default function LedgerSection() {
             <Icons.Database size={14} /> The Ledger
           </h2>
           <h3 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--muse-text)] leading-tight transition-colors duration-300">
-            Cryptographically{" "}
-            <span className="text-emerald-400 italic font-serif">Secure.</span>
+            Immutable{" "}
+            <span className="text-emerald-400 italic font-serif">Provenance.</span>
           </h3>
         </div>
         <p className="text-[var(--muse-muted)] font-serif italic text-lg md:text-xl max-w-sm transition-colors duration-300">
-          Your data is sovereign. Encrypted at rest, decentralized in spirit,
-          and owned exclusively by you.
+          Your thoughts belong to you. Mathematically proven, cryptographically secured, and immortalized on the collective stream.
         </p>
       </div>
 
       <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
         {[
           {
-            title: "Encrypted Vault",
+            title: "Thought Stream",
             desc:
-              "Military-grade encryption ensures only you hold the keys to your cognitive data.",
-            icon: Icons.Lock,
+              "Publish your internal synthesis to the global collective. Every thought carries a unique cryptographic signature.",
+            icon: Icons.Activity,
             color: "text-[var(--muse-text)]",
             bg: "bg-[var(--muse-surface)]",
           },
           {
             title: "Proof of Resonance",
             desc:
-              "A verifiable trail of your intellectual growth, completely untampered.",
+              "A verifiable blockchain ledger of your intellectual growth. Watch your ideas compound and influence the network.",
             icon: Icons.Shield,
             color: "text-emerald-400",
             bg: "bg-emerald-500/5",
           },
           {
-            title: "Node Status",
+            title: "The Intelligence Loop",
             desc:
-              "Global distribution with 99.99% uptime. The network never sleeps.",
-            icon: Icons.Activity,
+              "Real-time AI pipeline working in tandem with your journal to detect patterns and generate blueprints.",
+            icon: Icons.BrainCircuit,
             color: "text-canvas-primary",
             bg: "bg-canvas-primary/5",
           },

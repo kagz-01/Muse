@@ -33,8 +33,7 @@ export default function SpectralHero(
             }px)`,
           }}
         />
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-white/5 blur-[100px] rounded-full"
+          className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-[var(--muse-text)]/5 blur-[100px] rounded-full"
           style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}
         />
 
@@ -58,27 +57,20 @@ export default function SpectralHero(
       </div>
 
       <div className="relative z-10 max-w-5xl space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        {/* TOP SIGNAL */}
-        <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.4em] text-canvas-primary shadow-2xl">
-          <Icons.Activity size={14} className="animate-pulse" />
-          The Muse System 2.1 is Live
-        </div>
-
         {/* MAIN HEADLINE */}
         <h1 className="text-6xl md:text-9xl font-bold tracking-tight leading-[0.85] text-[var(--muse-text)] transition-colors duration-300">
-          Capture.{" "}
-          <span className="text-[var(--muse-muted)] italic font-serif lowercase transition-colors duration-300">
-            contemplate.
+          Collect.{" "}
+          <span className="text-[var(--muse-muted)] italic font-serif transition-colors duration-300">
+            Synthesize.
           </span>
           <span className="block mt-4 bg-gradient-to-r from-[var(--muse-text)] via-[var(--muse-text)]/80 to-[var(--muse-muted)] bg-clip-text text-transparent transition-all duration-300">
-            Synthesize.
+            Ascend.
           </span>
         </h1>
 
         {/* SUB-CAPTION */}
         <p className="mx-auto max-w-2xl text-[var(--muse-muted)] text-xl md:text-2xl font-serif italic leading-relaxed opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 fill-mode-forwards transition-colors">
-          "The unexamined collection is just digital noise. Muse is the bridge
-          between consumption and consciousness."
+          "Your sovereign cognitive environment. Stop consuming passively. Start building your collective intelligence."
         </p>
 
         {/* CTA SEQUENCE */}

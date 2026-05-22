@@ -63,59 +63,55 @@ export default function SystemBento() {
         </p>
       </div>
 
-      <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-        {features.map((f) => (
-          <div
-            key={f.title}
-            className={`${f.span} group relative overflow-hidden rounded-[2.5rem] border ${f.border} ${f.bg} p-10 transition-all hover:scale-[1.01] hover:shadow-2xl duration-300 min-w-[360px] flex-shrink-0`}
-          >
-            <div className="absolute top-0 right-0 p-8 text-[var(--muse-surface-soft)] group-hover:text-[var(--muse-border)] transition-colors duration-300">
-              <f.icon size={120} strokeWidth={0.5} />
-            </div>
-
-            <div className="relative z-10 flex flex-col h-full justify-between gap-12">
-              <div
-                className={`w-14 h-14 rounded-2xl bg-[var(--muse-surface-soft)] flex items-center justify-center ${f.color} transition-all duration-300`}
-              >
-                <f.icon size={28} />
+      <div className="relative overflow-hidden w-full pb-10 pt-4 group">
+        {/* Gradient fades for the edges to make the scroll smooth */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--muse-bg)] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--muse-bg)] to-transparent z-10 pointer-events-none" />
+        
+        <div className="flex gap-6 w-max animate-marquee group-hover:[animation-play-state:paused]">
+          {[...features, ...features].map((f, i) => (
+            <div
+              key={`${f.title}-${i}`}
+              className={`${f.span} group/card relative overflow-hidden rounded-[2.5rem] border ${f.border} ${f.bg} p-10 transition-all hover:-translate-y-2 hover:shadow-2xl duration-300 w-[380px] flex-shrink-0 cursor-pointer`}
+            >
+              <div className="absolute top-0 right-0 p-8 text-[var(--muse-surface-soft)] group-hover/card:text-[var(--muse-border)] transition-colors duration-300">
+                <f.icon size={120} strokeWidth={0.5} />
               </div>
 
-              <div>
-                <h4 className="text-2xl font-bold text-[var(--muse-text)] mb-4 tracking-tight transition-colors duration-300">
-                  {f.title}
-                </h4>
-                <p className="text-[var(--muse-muted)] font-serif italic text-lg leading-relaxed max-w-md transition-colors duration-300">
-                  {f.desc}
-                </p>
+              <div className="relative z-10 flex flex-col h-full justify-between gap-12">
+                <div
+                  className={`w-14 h-14 rounded-2xl bg-[var(--muse-surface-soft)] flex items-center justify-center ${f.color} group-hover/card:scale-110 transition-all duration-300`}
+                >
+                  <f.icon size={28} />
+                </div>
+
+                <div>
+                  <h4 className="text-2xl font-bold text-[var(--muse-text)] mb-4 tracking-tight transition-colors duration-300">
+                    {f.title}
+                  </h4>
+                  <p className="text-[var(--muse-muted)] font-serif italic text-lg leading-relaxed max-w-md transition-colors duration-300">
+                    {f.desc}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      {/* SYSTEM STATS BANNER */}
-      <div className="bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-[3rem] p-8 md:p-16 flex gap-8 overflow-x-auto pb-2 scrollbar-hide transition-all duration-300">
-        {[
-              { label: "Data Integrity", val: "100%", icon: Icons.Shield },
-              { label: "Synthesis Latency", val: "2ms", icon: Icons.Zap },
-              { label: "Open Standards", val: "W3C", icon: Icons.Layout },
-              { label: "Network Effect", val: "Global", icon: Icons.Network },
-        ].map((s) => (
-          <div key={s.label} className="flex items-center gap-6 min-w-[220px] flex-shrink-0">
-            <div className="w-12 h-12 rounded-full border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] transition-all duration-300">
-              <s.icon size={20} />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-[var(--muse-text)] font-mono transition-colors duration-300">
-                {s.val}
-              </p>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mt-1 transition-colors duration-300">
-                {s.label}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <style>
+        {`
+          @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(calc(-50% - 12px)); }
+          }
+          .animate-marquee {
+            animation: marquee 35s linear infinite;
+          }
+        `}
+      </style>
+
+
     </section>
   );
 }
