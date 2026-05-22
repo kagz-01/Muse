@@ -4,6 +4,7 @@
 
 import * as $_app_layout from "./routes/(app)/_layout.tsx";
 import * as $_app_actions from "./routes/(app)/actions.tsx";
+import * as $_app_ai_analysis from "./routes/(app)/ai-analysis.tsx";
 import * as $_app_connections from "./routes/(app)/connections.tsx";
 import * as $_app_create from "./routes/(app)/create.tsx";
 import * as $_app_dashboard from "./routes/(app)/dashboard.tsx";
@@ -39,6 +40,7 @@ import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
 import * as $Error404 from "./islands/Error404.tsx";
 import * as $WalletConnectButton from "./islands/WalletConnectButton.tsx";
+import * as $ai_feedback_AIAnalysisDashboard from "./islands/ai-feedback/AIAnalysisDashboard.tsx";
 import * as $connections_CommunityPulseStripIsland from "./islands/connections/CommunityPulseStripIsland.tsx";
 import * as $connections_ConnectionsHub from "./islands/connections/ConnectionsHub.tsx";
 import * as $connections_ThoughtStream from "./islands/connections/ThoughtStream.tsx";
@@ -111,6 +113,7 @@ const manifest = {
   routes: {
     "./routes/(app)/_layout.tsx": $_app_layout,
     "./routes/(app)/actions.tsx": $_app_actions,
+    "./routes/(app)/ai-analysis.tsx": $_app_ai_analysis,
     "./routes/(app)/connections.tsx": $_app_connections,
     "./routes/(app)/create.tsx": $_app_create,
     "./routes/(app)/dashboard.tsx": $_app_dashboard,
@@ -148,6 +151,8 @@ const manifest = {
   islands: {
     "./islands/Error404.tsx": $Error404,
     "./islands/WalletConnectButton.tsx": $WalletConnectButton,
+    "./islands/ai-feedback/AIAnalysisDashboard.tsx":
+      $ai_feedback_AIAnalysisDashboard,
     "./islands/connections/CommunityPulseStripIsland.tsx":
       $connections_CommunityPulseStripIsland,
     "./islands/connections/ConnectionsHub.tsx": $connections_ConnectionsHub,
