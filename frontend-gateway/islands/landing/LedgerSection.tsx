@@ -1,4 +1,5 @@
 import * as Icons from "lucide-preact";
+import { useEffect, useState } from "preact/hooks";
 
 export default function LedgerSection(
   { onCTA, onGuestEntry }: { onCTA: () => void; onGuestEntry: () => void },
@@ -48,11 +49,20 @@ export default function LedgerSection(
     },
   ];
 
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % items.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [items.length]);
+
   return (
-    <section className="w-full max-w-[1800px] mx-auto px-6 md:px-16 py-16 space-y-16">
+    <section className="w-full max-w-[1800px] mx-auto px-6 md:px-16 py-16 space-y-16 overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-12">
         {/* LEFT COLUMN: Header */}
-        <div className="w-full md:w-1/4 sticky top-32 shrink-0">
+        <div className="w-full md:w-1/4 sticky top-32 shrink-0 z-20">
           <h2 className="text-[9px] font-bold uppercase tracking-[0.4em] text-emerald-400 mb-2 flex items-center gap-2">
             <Icons.Database size={10} /> The Ledger
           </h2>
@@ -69,43 +79,75 @@ export default function LedgerSection(
           </p>
         </div>
 
-        {/* RIGHT COLUMN: Zigzag crisscross layout */}
-        <div className="w-full md:w-3/4 space-y-4">
-          {items.map((item, i) => (
-            <div
-              key={item.title}
-              className={`group ${item.bg} border ${item.border} rounded-2xl p-6 md:p-8 ${item.glow} ${item.hoverAnim} ${item.slideAnim} transition-all duration-500 w-full md:w-[85%] relative ${
-                i === 0
-                  ? "md:mr-auto"
-                  : i === 1
-                  ? "md:ml-auto"
-                  : "md:mr-auto md:ml-[8%]"
-              }`}
-            >
-              <div className="flex items-start gap-4">
+        {/* RIGHT COLUMN: Zigzag crisscross layout with auto-focus */}
+        <div className="w-full md:w-3/4 relative h-[450px] md:h-[500px]">
+          {items.map((item, i) => {
+            const isActive = i === activeIndex;
+            const isPrev = i === (activeIndex - 1 + items.length) % items.length;
+            const isNext = i === (activeIndex + 1) % items.length;
+
+            let translateY = "translate-y-0";
+            let translateX = "translate-x-0";
+            let scale = "scale-100";
+            let opacity = "opacity-100";
+            let zIndex = "z-10";
+
+            if (isActive) {
+              translateY = "top-[120px] md:top-[150px]";
+              translateX = i % 2 === 0 ? "left-0 md:left-[10%]" : "right-0 md:right-[10%]";
+              scale = "scale-105";
+              opacity = "opacity-100";
+              zIndex = "z-30 shadow-[0_30px_60px_rgba(0,0,0,0.3)]";
+            } else if (isPrev) {
+              translateY = "top-0 md:top-[20px]";
+              translateX = i % 2 === 0 ? "left-0 md:-left-[5%]" : "right-0 md:-right-[5%]";
+              scale = "scale-95";
+              opacity = "opacity-40";
+              zIndex = "z-10";
+            } else if (isNext) {
+              translateY = "top-[240px] md:top-[300px]";
+              translateX = i % 2 === 0 ? "left-0 md:-left-[5%]" : "right-0 md:-right-[5%]";
+              scale = "scale-95";
+              opacity = "opacity-40";
+              zIndex = "z-20";
+            }
+
+            return (
+              <div
+                key={item.title}
+                className={`absolute w-full md:w-[75%] transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] ${translateY} ${translateX} ${scale} ${opacity} ${zIndex}`}
+              >
                 <div
-                  className={`p-3 rounded-xl ${item.bg} border ${
-                    item.border.split(" ")[0]
-                  } ${item.color} shrink-0 transition-all duration-500 ${item.iconAnim} group-hover:shadow-[0_0_12px_currentColor]/[0.15]`}
+                  className={`group ${item.bg} border ${item.border} rounded-3xl p-6 md:p-8 ${
+                    isActive ? item.glow : ""
+                  } backdrop-blur-xl h-full flex items-start gap-5`}
                 >
-                  <item.icon size={20} strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h4
-                    className={`text-base font-bold ${item.color} tracking-tight`}
+                  <div
+                    className={`p-4 rounded-2xl ${item.bg} border ${
+                      item.border.split(" ")[0]
+                    } ${item.color} shrink-0 transition-transform duration-700 ${
+                      isActive ? "scale-110 shadow-lg" : "scale-100"
+                    }`}
                   >
-                    {item.title}
-                  </h4>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)] block mb-1.5">
-                    {item.subtitle}
-                  </span>
-                  <p className="text-[var(--muse-muted)] font-serif italic text-sm leading-relaxed group-hover:text-[var(--muse-text)] transition-colors">
-                    {item.desc}
-                  </p>
+                    <item.icon size={24} strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1">
+                    <h4
+                      className={`text-lg font-bold ${item.color} tracking-tight mb-1 transition-colors`}
+                    >
+                      {item.title}
+                    </h4>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] block mb-3">
+                      {item.subtitle}
+                    </span>
+                    <p className={`font-serif italic text-sm leading-relaxed transition-colors duration-500 ${isActive ? "text-[var(--muse-text)]" : "text-[var(--muse-muted)]"}`}>
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

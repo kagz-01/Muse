@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 
 export default function SpectralHero(
-  { onOpenAuth, onWatchDemo, onGuestEntry }: {
+  { onOpenAuth: _onOpenAuth, onWatchDemo: _onWatchDemo, onGuestEntry: _onGuestEntry }: {
     onOpenAuth: (mode: "login" | "signup") => void;
     onWatchDemo: () => void;
     onGuestEntry: () => void;
@@ -46,26 +46,40 @@ export default function SpectralHero(
 
       <div className="relative z-10 w-full max-w-3xl flex flex-col items-center gap-8">
         {/* THE 3D ORBITAL LOGO / GYROSCOPE */}
-        <div className="relative w-40 h-40 flex items-center justify-center [perspective:1000px]">
-          {/* Inner Glow */}
-          <div className="absolute w-24 h-24 rounded-full shadow-[0_0_50px_var(--muse-text)] opacity-20 animate-[pulse_4s_ease-in-out_infinite]">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 via-[var(--muse-text)] to-pink-500 blur-xl rounded-full" />
-          </div>
+        <div className="relative w-48 h-48 flex items-center justify-center [perspective:1200px]">
+          <div
+            className="absolute inset-0 flex items-center justify-center [transform-style:preserve-3d] transition-transform duration-200 ease-out"
+            style={{
+              transform: `rotateX(${-mousePos.y * 0.6}deg) rotateY(${
+                mousePos.x * 0.6
+              }deg)`,
+            }}
+          >
+            {/* Inner Glow */}
+            <div className="absolute w-32 h-32 rounded-full shadow-[0_0_60px_var(--muse-text)] opacity-20 animate-[pulse_4s_ease-in-out_infinite]">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 via-[var(--muse-text)] to-pink-500 blur-2xl rounded-full" />
+            </div>
 
-          {/* 3D Rings */}
-          <div className="absolute inset-0 [transform-style:preserve-3d] animate-[spin-slow_15s_linear_infinite]">
-            <div className="absolute inset-0 border-[1.5px] border-[var(--muse-text)]/20 rounded-full [transform:rotateX(60deg)_rotateY(0deg)] animate-[spin-reverse_10s_linear_infinite]" />
-            <div className="absolute inset-0 border border-cyan-500/30 rounded-full [transform:rotateX(60deg)_rotateY(60deg)] animate-[spin-slow_12s_linear_infinite]" />
-            <div className="absolute inset-0 border border-purple-500/30 rounded-full [transform:rotateX(60deg)_rotateY(120deg)] animate-[spin-reverse_14s_linear_infinite]" />
-          </div>
+            {/* 3D Rings */}
+            <div className="absolute inset-0 [transform-style:preserve-3d] animate-[spin-slow_20s_linear_infinite]">
+              {/* Outer Dashed Ring */}
+              <div className="absolute inset-0 border-2 border-dashed border-[var(--muse-text)]/10 rounded-full [transform:rotateX(75deg)_rotateY(10deg)_scale(1.2)] animate-[spin-reverse_15s_linear_infinite]" />
+              {/* Middle Cyan Ring */}
+              <div className="absolute inset-2 border-[1.5px] border-cyan-500/40 rounded-full [transform:rotateX(65deg)_rotateY(45deg)] animate-[spin-slow_12s_linear_infinite]" />
+              {/* Inner Purple Ring */}
+              <div className="absolute inset-4 border border-purple-500/50 rounded-full [transform:rotateX(55deg)_rotateY(135deg)] animate-[spin-reverse_18s_linear_infinite]" />
+              {/* Core Text Ring */}
+              <div className="absolute inset-6 border border-[var(--muse-text)]/20 rounded-full [transform:rotateX(80deg)_rotateY(90deg)] animate-[spin-slow_25s_linear_infinite]" />
+            </div>
 
-          {/* Central Hub */}
-          <div className="absolute w-14 h-14 rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)]/80 backdrop-blur-xl flex items-center justify-center shadow-2xl z-20">
-            <Icons.Infinity
-              size={24}
-              className="text-[var(--muse-text)] drop-shadow-[0_0_10px_currentColor]"
-              strokeWidth={2}
-            />
+            {/* Central Hub */}
+            <div className="absolute w-16 h-16 rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)]/90 backdrop-blur-2xl flex items-center justify-center shadow-2xl z-20 [transform:translateZ(20px)]">
+              <Icons.Infinity
+                size={28}
+                className="text-[var(--muse-text)] drop-shadow-[0_0_15px_currentColor]"
+                strokeWidth={2}
+              />
+            </div>
           </div>
         </div>
 

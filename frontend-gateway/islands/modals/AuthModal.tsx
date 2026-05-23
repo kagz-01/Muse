@@ -45,11 +45,11 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-md z-10 animate-in zoom-in-95 duration-500">
+      <div className="relative w-full max-w-sm z-10 animate-in zoom-in-95 duration-500">
         {/* SCANNING OVERLAY */}
         <div className="absolute inset-x-0 h-1 bg-canvas-primary blur-md z-30 pointer-events-none animate-[scan_2s_linear_infinite]" />
 
-        <div className="relative bg-[#050505] border border-white/10 rounded-[2.5rem] p-8 md:p-10 overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
+        <div className="relative bg-[#050505] border border-white/10 rounded-[2rem] p-6 md:p-8 overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
           {/* DECORATIVE SPECTRUM */}
           <div className="absolute -top-32 -right-32 w-80 h-80 bg-canvas-primary/10 blur-[100px] rounded-full animate-pulse" />
           <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-white/5 blur-[100px] rounded-full" />
@@ -96,7 +96,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
               : (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {localMode === "signup" && (
-                    <div className="space-y-2.5 group">
+                    <div className="space-y-2.5 group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-100">
                       <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
                         <Icons.User size={12} /> Full Name
                       </label>
@@ -112,7 +112,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                     </div>
                   )}
 
-                  <div className="space-y-2.5 group">
+                  <div className="space-y-2.5 group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-200">
                     <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
                       <Icons.Mail size={12} /> Email Address
                     </label>
@@ -127,7 +127,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                     />
                   </div>
 
-                  <div className="space-y-2.5 group">
+                  <div className="space-y-2.5 group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-300">
                     <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
                       <Icons.Lock size={12} /> Password
                     </label>
@@ -139,7 +139,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                     />
                   </div>
 
-                  <div className="pt-2 space-y-3">
+                  <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-500">
                     <button
                       type="submit"
                       disabled={isSyncing}
@@ -168,21 +168,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
               )}
 
             {!isSuccess && (
-              <div className="mt-12 pt-8 border-t border-white/5 flex flex-col items-center gap-6">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
-                  {localMode === "signup"
-                    ? "Already have an account?"
-                    : "New to Muse?"}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setLocalMode(localMode === "signup" ? "login" : "signup")}
-                    className="ml-3 text-white hover:text-canvas-primary transition-colors"
-                  >
-                    {localMode === "signup" ? "LOGIN" : "GET STARTED"}
-                  </button>
-                </p>
-
+              <div className="mt-8 pt-6 border-t border-white/5 flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-[600ms]">
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
                   <Icons.Shield size={12} className="text-gray-600" />
                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500">
