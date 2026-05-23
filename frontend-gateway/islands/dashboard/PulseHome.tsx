@@ -141,9 +141,9 @@ export default function PulseHome() {
   return (
     <div className="w-full max-w-none px-6 md:px-10 pt-8 pb-32 space-y-10 animate-in fade-in duration-1000">
       {/* HERO SECTION: THE MONOLITH GREETER */}
-      <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-linear-to-br from-white/[0.04] via-transparent to-transparent p-10 md:p-16 shadow-3xl">
+      <section className="relative overflow-hidden rounded-[3rem] border border-[var(--muse-text)]/5 bg-linear-to-br from-white/[0.04] via-transparent to-transparent p-10 md:p-16 shadow-3xl">
         <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-canvas-primary/10 blur-[120px] animate-pulse" />
-        <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-white/5 blur-[120px]" />
+        <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-[var(--muse-text)]/5 blur-[120px]" />
 
         <div className="relative z-10 grid gap-12 xl:grid-cols-[1.15fr_0.85fr] items-center">
           <div>
@@ -170,14 +170,14 @@ export default function PulseHome() {
               <button
                 type="button"
                 onClick={() => globalThis.location.href = "/journal"}
-                className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-black shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-1 hover:shadow-white/20 active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-3 rounded-full bg-[var(--muse-text)] px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-[var(--muse-bg)] shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-1 hover:shadow-white/20 active:scale-95 cursor-pointer"
               >
                 Sync Journal <Icons.ArrowRight size={16} />
               </button>
               <button
                 type="button"
                 onClick={() => globalThis.location.href = "/rooms"}
-                className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:bg-white/10 hover:border-white/20 active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-3 rounded-full border border-[var(--muse-text)]/10 bg-[var(--muse-text)]/5 px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-[var(--muse-text)] transition-all hover:bg-[var(--muse-text)]/10 hover:border-[var(--muse-text)]/20 active:scale-95 cursor-pointer"
               >
                 Enter Rooms <Icons.FolderOpen size={16} />
               </button>
@@ -185,17 +185,17 @@ export default function PulseHome() {
           </div>
 
           {/* QUICK MIRROR WIDGET */}
-          <div className="bg-black/40 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 space-y-8">
-            <div className="flex items-center justify-between border-b border-white/5 pb-6">
+          <div className="bg-[var(--muse-bg)]/40 backdrop-blur-2xl rounded-[2.5rem] border border-[var(--muse-text)]/10 p-8 space-y-8">
+            <div className="flex items-center justify-between border-b border-[var(--muse-text)]/5 pb-6">
               <div className="flex items-center gap-3">
                 <Icons.Aperture size={20} className="text-canvas-primary" />
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--muse-text)]">
                   Mirror Insights
                 </span>
               </div>
               <a
                 href="/mirror"
-                className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors"
               >
                 History
               </a>
@@ -209,22 +209,22 @@ export default function PulseHome() {
                 >
                   <div className="flex flex-col items-center gap-2">
                     <stat.icon size={18} className={stat.color} />
-                    <span className="text-2xl font-bold text-white font-mono">
+                    <span className="text-2xl font-bold text-[var(--muse-text)] font-mono">
                       {stat.value}
                     </span>
                   </div>
-                  <p className="mt-2 text-[8px] font-bold uppercase tracking-widest text-gray-500">
+                  <p className="mt-2 text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                     {stat.label}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/5">
+            <div className="p-6 rounded-3xl bg-[var(--muse-text)]/[0.03] border border-[var(--muse-text)]/5">
               <p className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary mb-3">
                 Pattern Detected
               </p>
-              <p className="text-sm text-gray-300 leading-relaxed font-serif italic">
+              <p className="text-sm text-[var(--muse-muted)] leading-relaxed font-serif italic">
                 {topRoom
                   ? `Your focus on "${topRoom.name}" has intensified this week with ${
                     roomCounts[topRoomId]
@@ -241,11 +241,11 @@ export default function PulseHome() {
         {/* RECENT RESONANCE */}
         <div className="space-y-6 min-w-0">
           <div className="flex items-center justify-between px-2">
-            <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+            <h2 className="text-2xl font-bold tracking-tight text-[var(--muse-text)] flex items-center gap-3">
               Recent Resonance{" "}
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             </h2>
-            <p className="text-xs text-gray-500 uppercase tracking-widest">
+            <p className="text-xs text-[var(--muse-muted)] uppercase tracking-widest">
               Latest Actions
             </p>
           </div>
@@ -287,24 +287,24 @@ export default function PulseHome() {
               <a
                 key={item.title}
                 href={item.href}
-                className="group flex items-center justify-between p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all"
+                className="group flex items-center justify-between p-6 rounded-[2rem] bg-[var(--muse-text)]/[0.02] border border-[var(--muse-text)]/5 hover:bg-[var(--muse-text)]/[0.05] hover:border-[var(--muse-text)]/10 transition-all"
               >
                 <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-canvas-primary group-hover:scale-110 transition-transform">
+                  <div className="w-14 h-14 rounded-2xl bg-[var(--muse-text)]/5 flex items-center justify-center text-canvas-primary group-hover:scale-110 transition-transform">
                     <item.icon size={24} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white tracking-tight">
+                    <h3 className="text-lg font-bold text-[var(--muse-text)] tracking-tight">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--muse-muted)] mt-1">
                       {item.detail} • {item.time}
                     </p>
                   </div>
                 </div>
                 <Icons.ChevronRight
                   size={20}
-                  className="text-gray-700 group-hover:text-white transition-colors"
+                  className="text-[var(--muse-muted)] group-hover:text-[var(--muse-text)] transition-colors"
                 />
               </a>
             ))}
@@ -313,8 +313,8 @@ export default function PulseHome() {
 
         {/* TRENDING CONSCIOUSNESS */}
         <div className="space-y-8 min-w-0">
-          <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8 min-w-0">
-            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+          <div className="bg-[var(--muse-text)]/[0.02] rounded-[2.5rem] border border-[var(--muse-text)]/5 p-8 min-w-0">
+            <h3 className="text-xl font-bold text-[var(--muse-text)] mb-6 flex items-center gap-3">
               <Icons.TrendingUp size={20} className="text-canvas-primary" />
               {" "}
               Active Themes
@@ -323,17 +323,17 @@ export default function PulseHome() {
               {topThemes.map((theme) => (
                 <span
                   key={theme}
-                  className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-gray-300 hover:border-canvas-primary/50 transition-colors"
+                  className="px-4 py-2 rounded-full bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:border-canvas-primary/50 transition-colors"
                 >
                   {theme}
                 </span>
               ))}
             </div>
-            <div className="mt-8 p-6 rounded-3xl bg-black/20 border border-white/5">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">
+            <div className="mt-8 p-6 rounded-3xl bg-[var(--muse-bg)]/20 border border-[var(--muse-text)]/5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-2">
                 Soul Signal
               </p>
-              <p className="text-sm text-gray-400 font-serif italic leading-relaxed">
+              <p className="text-sm text-[var(--muse-muted)] font-serif italic leading-relaxed">
                 Your current focus suggests a high degree of pattern density in
                 {" "}
                 {topThemes[0] || "emergent topics"}.
@@ -342,12 +342,12 @@ export default function PulseHome() {
           </div>
 
           {/* STATS STRIP */}
-          <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8 min-w-0">
+          <div className="bg-[var(--muse-text)]/[0.02] rounded-[2.5rem] border border-[var(--muse-text)]/5 p-8 min-w-0">
             <div className="flex items-center justify-between mb-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)]">
                 Service Health
               </p>
-              <div className="text-[9px] uppercase tracking-widest text-gray-600">
+              <div className="text-[9px] uppercase tracking-widest text-[var(--muse-muted)]">
                 {serviceHealth?.checkedAt
                   ? formatRelativeTime(toMillis(serviceHealth.checkedAt))
                   : "No signal"}
@@ -371,20 +371,20 @@ export default function PulseHome() {
               ].map((service) => (
                 <div
                   key={service.key}
-                  className="rounded-2xl border border-white/10 bg-black/20 p-4 min-w-[180px] flex-shrink-0"
+                  className="rounded-2xl border border-[var(--muse-text)]/10 bg-[var(--muse-bg)]/20 p-4 min-w-[180px] flex-shrink-0"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                    <span className="text-[9px] uppercase tracking-widest text-[var(--muse-muted)] font-bold">
                       {service.label}
                     </span>
                     {service.state === "up"
                       ? <Icons.Wifi size={14} className="text-emerald-400" />
                       : <Icons.WifiOff size={14} className="text-rose-400" />}
                   </div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muse-text)]">
                     {service.state === "up" ? "Online" : "Offline"}
                   </p>
-                  <p className="text-[9px] text-gray-500 mt-1">
+                  <p className="text-[9px] text-[var(--muse-muted)] mt-1">
                     HTTP {service.code ?? "-"}
                   </p>
                 </div>
@@ -396,10 +396,10 @@ export default function PulseHome() {
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary mb-2">
               Total Intelligence
             </p>
-            <p className="text-4xl font-bold text-white mb-2">
+            <p className="text-4xl font-bold text-[var(--muse-text)] mb-2">
               {rooms.reduce((s, r) => s + r.count, 0)}
             </p>
-            <p className="text-xs text-gray-500 uppercase tracking-widest">
+            <p className="text-xs text-[var(--muse-muted)] uppercase tracking-widest">
               Anchored Artifacts
             </p>
           </div>

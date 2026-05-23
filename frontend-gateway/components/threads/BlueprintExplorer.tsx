@@ -69,7 +69,7 @@ export default function BlueprintExplorer() {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
+        <h3 className="text-xl md:text-2xl font-bold text-[var(--muse-text)] flex items-center gap-3">
           <Icons.Aperture size={28} className="text-canvas-primary" />
           Blueprint Gallery
         </h3>
@@ -94,8 +94,8 @@ export default function BlueprintExplorer() {
               onClick={() => setStatusFilter(status)}
               className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
                 statusFilter === status
-                  ? "bg-white/15 text-white border-white/30"
-                  : "bg-white/5 text-gray-400 border-white/10 hover:text-white"
+                  ? "bg-[var(--muse-text)]/15 text-[var(--muse-text)] border-[var(--muse-text)]/30"
+                  : "bg-[var(--muse-text)]/5 text-[var(--muse-muted)] border-[var(--muse-text)]/10 hover:text-[var(--muse-text)]"
               } border`}
             >
               {status === "all"
@@ -110,8 +110,8 @@ export default function BlueprintExplorer() {
       {filteredBlueprints.length === 0
         ? (
           <div className="text-center py-12">
-            <Icons.Lightbulb size={48} className="text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400 font-serif italic">
+            <Icons.Lightbulb size={48} className="text-[var(--muse-muted)] mx-auto mb-4" />
+            <p className="text-[var(--muse-muted)] font-serif italic">
               No blueprints found in this category
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function BlueprintExplorer() {
                   className={`group relative overflow-hidden rounded-[2.5rem] border transition-all cursor-pointer ${
                     isSelected
                       ? `${colors.border} ${colors.bg} shadow-2xl`
-                      : "border-white/10 hover:border-white/20"
+                      : "border-[var(--muse-text)]/10 hover:border-[var(--muse-text)]/20"
                   }`}
                 >
                   {/* Background gradient */}
@@ -142,10 +142,10 @@ export default function BlueprintExplorer() {
                     {/* Header */}
                     <div className="flex items-start justify-between gap-3 mb-4">
                       <div className="flex-1">
-                        <h4 className="text-lg md:text-xl font-bold text-white group-hover:text-canvas-primary transition-colors line-clamp-2">
+                        <h4 className="text-lg md:text-xl font-bold text-[var(--muse-text)] group-hover:text-canvas-primary transition-colors line-clamp-2">
                           {bp.suggestedTitle}
                         </h4>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-[var(--muse-muted)] mt-1">
                           {bp.sourceRoomIds.length}{" "}
                           room{bp.sourceRoomIds.length !== 1 ? "s" : ""} •{" "}
                           {bp.itemIds.length}{" "}
@@ -160,21 +160,21 @@ export default function BlueprintExplorer() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-sm text-gray-400 line-clamp-2 mb-4 flex-1">
+                    <p className="text-sm text-[var(--muse-muted)] line-clamp-2 mb-4 flex-1">
                       {bp.suggestedDescription}
                     </p>
 
                     {/* Confidence Score */}
-                    <div className="mb-6 pb-6 border-t border-white/10">
+                    <div className="mb-6 pb-6 border-t border-[var(--muse-text)]/10">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                        <span className="text-xs font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           AI Confidence
                         </span>
                         <span className={`text-lg font-bold ${colors.text}`}>
                           {bp.confidenceScore}%
                         </span>
                       </div>
-                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-[var(--muse-text)]/10 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${colors.text}`}
                           style={{ width: `${bp.confidenceScore}%` }}
@@ -184,11 +184,11 @@ export default function BlueprintExplorer() {
 
                     {/* Thesis Preview */}
                     {isSelected && (
-                      <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-2xl">
-                        <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
+                      <div className="mb-6 p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl">
+                        <p className="text-xs font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-3">
                           Synthesized Thesis
                         </p>
-                        <p className="text-sm text-white font-serif italic leading-relaxed">
+                        <p className="text-sm text-[var(--muse-text)] font-serif italic leading-relaxed">
                           "{bp.thesis}"
                         </p>
                       </div>
@@ -202,7 +202,7 @@ export default function BlueprintExplorer() {
                             e.stopPropagation();
                             handleAccept(bp.id);
                           }}
-                          className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2"
+                          className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-[var(--muse-text)] font-bold text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2"
                         >
                           <Icons.Check size={14} />
                           Accept
@@ -213,7 +213,7 @@ export default function BlueprintExplorer() {
                             discardBlueprint(bp.id);
                             setSelectedBlueprint(null);
                           }}
-                          className="flex-1 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all"
+                          className="flex-1 py-3 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 hover:bg-[var(--muse-text)]/10 text-[var(--muse-muted)] hover:text-[var(--muse-text)] font-bold text-xs uppercase tracking-widest rounded-xl transition-all"
                         >
                           <Icons.X size={14} />
                         </button>

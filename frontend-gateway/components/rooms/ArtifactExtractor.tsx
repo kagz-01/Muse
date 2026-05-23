@@ -71,19 +71,19 @@ export default function ArtifactExtractor(
   };
 
   return (
-    <div className="bg-[#111318] border border-white/10 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl">
+    <div className="bg-[#111318] border border-[var(--muse-text)]/10 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl">
       <div className="absolute top-0 right-0 h-full w-1/3 bg-canvas-primary/5 blur-[100px] pointer-events-none" />
 
       {!metadata
         ? (
           <div className="space-y-8 relative z-10">
             <div className="flex items-center justify-between">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--muse-muted)] flex items-center gap-3">
                 <Icons.Aperture size={14} className="text-canvas-primary" />
                 {" "}
                 Multi-Signal Extraction Terminal
               </h3>
-              <div className="flex items-center gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
+              <div className="flex items-center gap-2 p-1 bg-[var(--muse-text)]/5 rounded-xl border border-[var(--muse-text)]/5">
                 {(["link", "text", "file"] as InputType[]).map((type) => (
                   <button
                     type="button"
@@ -91,8 +91,8 @@ export default function ArtifactExtractor(
                     onClick={() => setInputType(type)}
                     className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all ${
                       inputType === type
-                        ? "bg-white text-black"
-                        : "text-gray-500 hover:text-white"
+                        ? "bg-[var(--muse-text)] text-[var(--muse-bg)]"
+                        : "text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
                     }`}
                   >
                     {type}
@@ -110,7 +110,7 @@ export default function ArtifactExtractor(
                       setInput((e.target as HTMLTextAreaElement).value)}
                     placeholder="Paste raw data fragments, thoughts, or copy-pasted signals..."
                     disabled={isExtracting}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 min-h-[160px] text-lg text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.08] transition-all font-serif italic outline-none resize-none"
+                    className="w-full bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl px-8 py-6 min-h-[160px] text-lg text-[var(--muse-text)] placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-[var(--muse-text)]/[0.08] transition-all font-serif italic outline-none resize-none"
                   />
                 )
                 : (
@@ -122,14 +122,14 @@ export default function ArtifactExtractor(
                       ? "Paste social signal (X, Reddit, Notion, etc.)..."
                       : "Drop file signal..."}
                     disabled={isExtracting}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-xl text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.08] transition-all font-serif italic outline-none"
+                    className="w-full bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl px-8 py-6 text-xl text-[var(--muse-text)] placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-[var(--muse-text)]/[0.08] transition-all font-serif italic outline-none"
                   />
                 )}
               {!isExtracting && (
                 <button
                   type="button"
                   onClick={simulateExtraction}
-                  className={`absolute bottom-6 right-6 w-12 h-12 bg-white text-black rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl ${
+                  className={`absolute bottom-6 right-6 w-12 h-12 bg-[var(--muse-text)] text-[var(--muse-bg)] rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl ${
                     inputType !== "text" ? "top-1/2 -translate-y-1/2" : ""
                   }`}
                 >
@@ -157,7 +157,7 @@ export default function ArtifactExtractor(
                   <div
                     key={i}
                     className={`flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest transition-all duration-500 ${
-                      s.active ? "text-white" : "text-gray-700"
+                      s.active ? "text-[var(--muse-text)]" : "text-[var(--muse-muted)]"
                     }`}
                   >
                     {s.active
@@ -179,14 +179,14 @@ export default function ArtifactExtractor(
                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-[9px] font-bold uppercase tracking-widest text-emerald-500">
                   Signal Extraction Complete
                 </div>
-                <div className="flex items-center gap-2 text-[9px] text-gray-500 font-bold uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-[9px] text-[var(--muse-muted)] font-bold uppercase tracking-widest">
                   <Icons.Clipboard size={10} /> Copied to Buffer
                 </div>
               </div>
               <button
                 type="button"
                 onClick={handleReset}
-                className="text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors"
               >
                 Discard Signal
               </button>
@@ -194,7 +194,7 @@ export default function ArtifactExtractor(
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
               {metadata.image && (
-                <div className="md:col-span-4 aspect-square rounded-3xl overflow-hidden border border-white/5">
+                <div className="md:col-span-4 aspect-square rounded-3xl overflow-hidden border border-[var(--muse-text)]/5">
                   <img
                     src={metadata.image}
                     className="w-full h-full object-cover"
@@ -212,7 +212,7 @@ export default function ArtifactExtractor(
                     {metadata.source}
                   </span>
                   <div className="w-1 h-1 rounded-full bg-gray-700" />
-                  <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                  <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                     {metadata.type === "Post" && <Icons.Hash size={12} />}
                     {metadata.type === "Image" && <Icons.Image size={12} />}
                     {metadata.type === "Article" && (
@@ -229,10 +229,10 @@ export default function ArtifactExtractor(
                     {metadata.type}
                   </span>
                 </div>
-                <h4 className="text-3xl font-bold text-white mb-6 tracking-tight leading-tight">
+                <h4 className="text-3xl font-bold text-[var(--muse-text)] mb-6 tracking-tight leading-tight">
                   {metadata.title}
                 </h4>
-                <p className="text-lg text-gray-400 font-serif italic leading-relaxed border-l-4 border-white/10 pl-8 mb-8">
+                <p className="text-lg text-[var(--muse-muted)] font-serif italic leading-relaxed border-l-4 border-[var(--muse-text)]/10 pl-8 mb-8">
                   {metadata.summary}
                 </p>
 
@@ -243,10 +243,10 @@ export default function ArtifactExtractor(
                         <Icons.Aperture size={16} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           AI Recommendation
                         </p>
-                        <p className="text-xs font-bold text-white">
+                        <p className="text-xs font-bold text-[var(--muse-text)]">
                           Suggested Room:{" "}
                           <span className="text-canvas-primary">
                             {rooms.find((r) =>
@@ -269,13 +269,13 @@ export default function ArtifactExtractor(
                   <button
                     type="button"
                     onClick={() => onExtract(metadata)}
-                    className="px-10 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:-translate-y-1 transition-all shadow-xl cursor-pointer"
+                    className="px-10 py-4 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:-translate-y-1 transition-all shadow-xl cursor-pointer"
                   >
                     Collect to Room
                   </button>
                   <button
                     type="button"
-                    className="px-10 py-4 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-white/10 transition-all cursor-pointer"
+                    className="px-10 py-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 text-[var(--muse-text)] font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-[var(--muse-text)]/10 transition-all cursor-pointer"
                   >
                     Open Original
                   </button>

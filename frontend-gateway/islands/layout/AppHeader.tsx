@@ -149,7 +149,7 @@ export default function AppHeader(
           >
             {currentTheme === "dark" && (Moon ? <Moon size={16} /> : null)}
             {currentTheme === "dim" &&
-              (Circle ? <Circle size={14} fill="currentColor" /> : null)}
+              (Circle ? <Circle size={16} fill="currentColor" /> : null)}
             {currentTheme === "tint" &&
               (CloudSun ? <CloudSun size={16} /> : null)}
             {currentTheme === "light" &&

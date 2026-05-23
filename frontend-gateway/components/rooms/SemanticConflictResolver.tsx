@@ -30,10 +30,10 @@ export default function SemanticConflictResolver(
 
         <div className="space-y-4">
           <div>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-xl font-bold text-[var(--muse-text)] tracking-tight">
               Semantic Conflict Detected
             </h3>
-            <p className="text-sm text-gray-400 font-serif italic mt-1 leading-relaxed">
+            <p className="text-sm text-[var(--muse-muted)] font-serif italic mt-1 leading-relaxed">
               The room name{" "}
               <span className="text-amber-500 font-bold">"{newRoomName}"</span>
               {" "}
@@ -48,48 +48,48 @@ export default function SemanticConflictResolver(
             <button
               type="button"
               onClick={() => onResolve("merge")}
-              className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
+              className="min-w-[180px] snap-start p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl hover:bg-[var(--muse-text)]/10 transition-all text-left group"
             >
               <Icons.Merge
                 size={20}
                 className="text-amber-500 mb-3 group-hover:scale-110 transition-transform"
               />
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-text)]">
                 Merge Streams
               </p>
-              <p className="text-[9px] text-gray-600 mt-1 uppercase tracking-widest">
+              <p className="text-[9px] text-[var(--muse-muted)] mt-1 uppercase tracking-widest">
                 Combine all artifacts
               </p>
             </button>
             <button
               type="button"
               onClick={() => onResolve("separate")}
-              className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
+              className="min-w-[180px] snap-start p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl hover:bg-[var(--muse-text)]/10 transition-all text-left group"
             >
               <Icons.X
                 size={20}
-                className="text-gray-500 mb-3 group-hover:scale-110 transition-transform"
+                className="text-[var(--muse-muted)] mb-3 group-hover:scale-110 transition-transform"
               />
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-text)]">
                 Keep Separate
               </p>
-              <p className="text-[9px] text-gray-600 mt-1 uppercase tracking-widest">
+              <p className="text-[9px] text-[var(--muse-muted)] mt-1 uppercase tracking-widest">
                 Maintain distinction
               </p>
             </button>
             <button
               type="button"
               onClick={() => onResolve("cluster")}
-              className="min-w-[180px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-left group"
+              className="min-w-[180px] snap-start p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl hover:bg-[var(--muse-text)]/10 transition-all text-left group"
             >
               <Icons.GitBranch
                 size={20}
                 className="text-canvas-primary mb-3 group-hover:scale-110 transition-transform"
               />
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-text)]">
                 Cluster Nodes
               </p>
-              <p className="text-[9px] text-gray-600 mt-1 uppercase tracking-widest">
+              <p className="text-[9px] text-[var(--muse-muted)] mt-1 uppercase tracking-widest">
                 Link via Thread
               </p>
             </button>

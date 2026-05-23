@@ -68,13 +68,13 @@ export default function JournalTerminal() {
   };
 
   return (
-    <div className="bg-[#111318] border border-white/10 rounded-[3rem] p-10 md:p-16 relative overflow-hidden shadow-3xl">
+    <div className="bg-[#111318] border border-[var(--muse-text)]/10 rounded-[3rem] p-10 md:p-16 relative overflow-hidden shadow-3xl">
       {/* REFLECTION AURA */}
       <div className="absolute inset-0 bg-linear-to-br from-canvas-primary/5 via-transparent to-transparent pointer-events-none" />
 
       <div className="relative z-10 space-y-10">
         <div className="flex items-center justify-between">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--muse-muted)] flex items-center gap-3">
             <BookOpen size={14} className="text-canvas-primary" />{" "}
             Contemplation Terminal
           </h3>
@@ -82,7 +82,7 @@ export default function JournalTerminal() {
             <button
               type="button"
               onClick={() => setIsStylistOpen(!isStylistOpen)}
-              className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all"
+              className="w-10 h-10 rounded-xl bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all"
             >
               <Palette size={18} />
             </button>
@@ -101,56 +101,56 @@ export default function JournalTerminal() {
         </div>
 
         {isStylistOpen && (
-          <div className="p-6 bg-white/2 border border-white/5 rounded-[2rem] animate-in slide-in-from-top-4 duration-500">
-            <h4 className="text-[9px] font-bold uppercase tracking-widest text-gray-600 mb-6">
+          <div className="p-6 bg-[var(--muse-text)]/2 border border-[var(--muse-text)]/5 rounded-[2rem] animate-in slide-in-from-top-4 duration-500">
+            <h4 className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-6">
               Journal Stylist
             </h4>
             <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
               <button
                 type="button"
-                className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group"
+                className="min-w-[140px] snap-start p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl flex flex-col items-center gap-2 group"
               >
                 <Type
                   size={18}
-                  className="text-gray-500 group-hover:text-white transition-colors"
+                  className="text-[var(--muse-muted)] group-hover:text-[var(--muse-text)] transition-colors"
                 />
-                <span className="text-[8px] font-bold uppercase tracking-widest text-gray-600">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                   Typography
                 </span>
               </button>
               <button
                 type="button"
-                className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group"
+                className="min-w-[140px] snap-start p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl flex flex-col items-center gap-2 group"
               >
                 <ImageIcon
                   size={18}
-                  className="text-gray-500 group-hover:text-white transition-colors"
+                  className="text-[var(--muse-muted)] group-hover:text-[var(--muse-text)] transition-colors"
                 />
-                <span className="text-[8px] font-bold uppercase tracking-widest text-gray-600">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                   Wallpaper
                 </span>
               </button>
               <button
                 type="button"
-                className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group"
+                className="min-w-[140px] snap-start p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl flex flex-col items-center gap-2 group"
               >
                 <Palette
                   size={18}
-                  className="text-gray-500 group-hover:text-white transition-colors"
+                  className="text-[var(--muse-muted)] group-hover:text-[var(--muse-text)] transition-colors"
                 />
-                <span className="text-[8px] font-bold uppercase tracking-widest text-gray-600">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                   Spectrum
                 </span>
               </button>
               <button
                 type="button"
-                className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group"
+                className="min-w-[140px] snap-start p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl flex flex-col items-center gap-2 group"
               >
                 <Aperture
                   size={18}
-                  className="text-gray-500 group-hover:text-white transition-colors"
+                  className="text-[var(--muse-muted)] group-hover:text-[var(--muse-text)] transition-colors"
                 />
-                <span className="text-[8px] font-bold uppercase tracking-widest text-gray-600">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                   Aura Glow
                 </span>
               </button>
@@ -163,18 +163,18 @@ export default function JournalTerminal() {
             value={title}
             onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
             placeholder="Thesis Title (Optional)"
-            className="w-full bg-transparent border-b border-white/10 py-4 text-3xl font-bold text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 transition-all outline-none"
+            className="w-full bg-transparent border-b border-[var(--muse-text)]/10 py-4 text-3xl font-bold text-[var(--muse-text)] placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 transition-all outline-none"
           />
           <textarea
             value={content}
             onInput={(e) => setContent((e.target as HTMLTextAreaElement).value)}
             placeholder="Contemplate the patterns. What is emerging from your collection?"
-            className="w-full bg-white/[0.03] border border-white/10 rounded-3xl p-10 text-xl text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all min-h-[300px] font-serif italic outline-none resize-none"
+            className="w-full bg-[var(--muse-text)]/[0.03] border border-[var(--muse-text)]/10 rounded-3xl p-10 text-xl text-[var(--muse-text)] placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-[var(--muse-text)]/[0.05] transition-all min-h-[300px] font-serif italic outline-none resize-none"
           />
         </div>
 
         <div className="space-y-6">
-          <h4 className="text-[9px] font-bold uppercase tracking-widest text-gray-600">
+          <h4 className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
             Contextual Anchors
           </h4>
           <div className="flex flex-wrap gap-3">
@@ -185,8 +185,8 @@ export default function JournalTerminal() {
                 onClick={() => toggleSource(room.id)}
                 className={`px-6 py-2.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${
                   activeSources.includes(room.id)
-                    ? "bg-canvas-primary text-white border-canvas-primary shadow-xl scale-105"
-                    : "bg-white/5 border-white/5 text-gray-500 hover:text-white"
+                    ? "bg-canvas-primary text-[var(--muse-text)] border-canvas-primary shadow-xl scale-105"
+                    : "bg-[var(--muse-text)]/5 border-[var(--muse-text)]/5 text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
                 }`}
               >
                 <Hash size={12} className="inline mr-2" /> {room.name}
@@ -199,8 +199,8 @@ export default function JournalTerminal() {
                 onClick={() => toggleSource(thread.id)}
                 className={`px-6 py-2.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${
                   activeSources.includes(thread.id)
-                    ? "bg-emerald-500 text-white border-emerald-500 shadow-xl scale-105"
-                    : "bg-white/5 border-white/5 text-gray-500 hover:text-white"
+                    ? "bg-emerald-500 text-[var(--muse-text)] border-emerald-500 shadow-xl scale-105"
+                    : "bg-[var(--muse-text)]/5 border-[var(--muse-text)]/5 text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
                 }`}
               >
                 <GitCommit size={12} className="inline mr-2" /> {thread.title}
@@ -209,9 +209,9 @@ export default function JournalTerminal() {
           </div>
         </div>
 
-        <div className="flex items-center gap-6 pt-6 border-t border-white/5">
+        <div className="flex items-center gap-6 pt-6 border-t border-[var(--muse-text)]/5">
           <div className="flex-1">
-            <p className="text-xs text-gray-500 font-serif italic leading-relaxed">
+            <p className="text-xs text-[var(--muse-muted)] font-serif italic leading-relaxed">
               "Your reflection will be stored as a sovereign artifact, ready to
               be woven into the collective synthesis."
             </p>
@@ -220,7 +220,7 @@ export default function JournalTerminal() {
             type="button"
             onClick={handleCapture}
             disabled={!content.trim() || isCapturing}
-            className="px-12 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-30"
+            className="px-12 py-5 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-30"
           >
             <Send size={16} /> Capture Contemplation
           </button>

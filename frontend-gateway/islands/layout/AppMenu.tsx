@@ -63,28 +63,38 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
           <a
             key={item.label}
             href={item.path}
-            className={`group flex flex-col items-center gap-1.5 py-1 px-4 rounded-2xl transition-all duration-300 ${
-              isActive(item.path)
-                ? "text-[var(--muse-text)] scale-110"
-                : "text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
-            }`}
+            className="relative group flex flex-col items-center justify-center w-16 h-full transition-all duration-300"
           >
+            {/* Active Glow Indicator */}
+            {isActive(item.path) && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-12 h-12 bg-canvas-primary/20 blur-md rounded-full animate-pulse" />
+                <div className="absolute w-8 h-8 bg-canvas-primary/40 blur-sm rounded-full" />
+              </div>
+            )}
+
             <div
-              className={isActive(item.path)
-                ? "drop-shadow-[0_0_12px_rgba(var(--muse-accent-rgb),0.8)] text-canvas-primary transition-all duration-300"
-                : "group-hover:drop-shadow-[0_0_8px_rgba(var(--muse-accent-rgb),0.4)] transition-all duration-300"}
-            >
-              {item.icon}
-            </div>
-            <span
-              className={`text-[9px] font-bold uppercase tracking-widest transition-all duration-300 ${
+              className={`relative z-10 flex flex-col items-center gap-1 transition-all duration-300 ${
                 isActive(item.path)
-                  ? "opacity-100 text-[var(--muse-text)] drop-shadow-[0_0_8px_rgba(var(--muse-accent-rgb),0.5)]"
-                  : "opacity-60 group-hover:opacity-100"
+                  ? "text-canvas-primary scale-110 -translate-y-1"
+                  : "text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
               }`}
             >
-              {item.label}
-            </span>
+              <div
+                className={isActive(item.path)
+                  ? "drop-shadow-[0_0_8px_rgba(var(--muse-accent-rgb),0.8)]"
+                  : "group-hover:drop-shadow-[0_0_8px_rgba(var(--muse-accent-rgb),0.4)]"}
+              >
+                {item.icon}
+              </div>
+              <span
+                className={`text-[9px] font-bold uppercase tracking-widest transition-all duration-300 ${
+                  isActive(item.path) ? "opacity-100" : "opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 absolute -bottom-4"
+                }`}
+              >
+                {item.label}
+              </span>
+            </div>
           </a>
         ))}
       </nav>

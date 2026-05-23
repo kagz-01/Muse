@@ -38,6 +38,17 @@ const ACCENT_RGB_MAP: Record<AppAccentColor, string> = {
   white: "241 245 249",
 };
 
+const LIGHT_THEME_ACCENT_MAP: Record<AppAccentColor, string> = {
+  cyan: "8 145 178",
+  blue: "37 99 235",
+  purple: "147 51 234",
+  pink: "219 39 119",
+  green: "22 163 74",
+  yellow: "202 138 4",
+  red: "220 38 38",
+  white: "15 23 42", // slate-900 (black equivalent for white accent on light theme)
+};
+
 const FONT_SIZE_MAP: Record<AppFontSize, string> = {
   small: "15px",
   medium: "16px",
@@ -123,10 +134,12 @@ function applyThemeToDocument(theme: AppTheme) {
   docEl.setAttribute("data-theme", theme);
 }
 
-function applyAccentToDocument(accentColor: AppAccentColor) {
+function applyAccentToDocument(accentColor: AppAccentColor, theme: AppTheme) {
   const docEl = globalThis.document?.documentElement;
   if (!docEl) return;
-  docEl.style.setProperty("--muse-accent-rgb", ACCENT_RGB_MAP[accentColor]);
+  const isLight = theme === "light" || theme === "tint";
+  const rgb = isLight ? LIGHT_THEME_ACCENT_MAP[accentColor] : ACCENT_RGB_MAP[accentColor];
+  docEl.style.setProperty("--muse-accent-rgb", rgb);
 }
 
 function applyFontSizeToDocument(fontSize: AppFontSize) {
@@ -139,11 +152,25 @@ export function initializeTheme() {
   const theme = resolveSavedTheme();
   appThemeSignal.value = theme;
   applyThemeToDocument(theme);
+  // Try to load saved accent color too
+  try {
+    const settingsRaw = globalThis.localStorage?.getItem("muse-fresh-settings");
+    if (settingsRaw) {
+      const parsed = JSON.parse(settingsRaw) as { appearance?: { accentColor?: AppAccentColor } };
+      if (parsed.appearance?.accentColor) {
+        appAccentSignal.value = parsed.appearance.accentColor;
+      }
+    }
+  } catch {
+    // Ignore
+  }
+  applyAccentToDocument(appAccentSignal.value, theme);
 }
 
 export function setTheme(theme: AppTheme) {
   appThemeSignal.value = theme;
   applyThemeToDocument(theme);
+  applyAccentToDocument(appAccentSignal.value, theme);
 
   try {
     globalThis.localStorage?.setItem(THEME_STORAGE_KEY, theme);
@@ -163,7 +190,7 @@ export function toggleTheme() {
 
 export function setAccentColor(accentColor: AppAccentColor) {
   appAccentSignal.value = accentColor;
-  applyAccentToDocument(accentColor);
+  applyAccentToDocument(accentColor, appThemeSignal.value);
   updateStoredAppearance({ accentColor });
 }
 
