@@ -77,13 +77,16 @@ function RoomActionButton({
         e.stopPropagation();
         onClick();
       }}
-      className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all ${
+      className={`group relative flex h-8 w-8 items-center justify-center rounded-full border transition-all ${
         active
           ? "border-white/20 bg-white/15 text-white"
-          : "border-white/10 bg-black/30 text-gray-400 hover:border-white/20 hover:text-white"
+          : "border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-muted)] hover:border-white/20 hover:text-white hover:bg-white/5"
       }`}
     >
       <Icon size={12} className={active ? "text-white" : "text-current"} />
+      <span className="absolute right-full mr-2 px-2 py-1 rounded bg-black/80 text-white text-[10px] font-bold uppercase tracking-widest whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity border border-white/10 z-20">
+        {label}
+      </span>
     </button>
   );
 }
@@ -181,7 +184,7 @@ function RoomCard({
               {room.name}
             </h3>
           </div>
-          <div className="flex flex-col gap-2 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+          <div className="flex flex-col gap-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
             <RoomActionButton
               variant="star"
               label="Star room"

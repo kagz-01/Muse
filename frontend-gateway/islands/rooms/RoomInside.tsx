@@ -6,7 +6,6 @@ import {
   type RoomTheme,
   toggleRoomPrivacy,
   updateRoomCover,
-  updateRoomTheme,
 } from "../../signals/rooms.ts";
 import { addItem, deleteItem, itemsSignal } from "../../signals/items.ts";
 import EditRoomModal from "../modals/EditRoomModal.tsx";
@@ -87,7 +86,6 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   const [activeTab, setActiveTab] = useState<"collection" | "dialogue">(
     "collection",
   );
-  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [showExtractor, setShowExtractor] = useState(false);
   const [mismatchAlert, setMismatchAlert] = useState<
@@ -319,14 +317,6 @@ export default function RoomInside({ roomId }: { roomId: string }) {
             className="hidden"
           />
 
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            type="button"
-            className="absolute top-5 right-5 z-20 w-11 h-11 rounded-full bg-[var(--muse-bg)]/50 backdrop-blur-md border border-[var(--muse-text)]/10 flex items-center justify-center text-[var(--muse-text)] hover:bg-[var(--muse-text)]/20 transition-all shadow-xl cursor-pointer opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300"
-          >
-            <Icons.Camera size={18} />
-          </button>
-
           <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 w-full z-10">
             <div className="flex justify-between items-center">
               <a
@@ -361,14 +351,14 @@ export default function RoomInside({ roomId }: { roomId: string }) {
               </div>
             </div>
 
-            <div className="bg-[var(--muse-bg)]/40 backdrop-blur-xl border border-[var(--muse-text)]/10 rounded-3xl p-6 md:p-8 relative overflow-hidden">
+            <div className="relative z-10 bg-[var(--muse-bg)]/50 backdrop-blur-2xl border border-[var(--muse-text)]/10 rounded-3xl p-6 md:p-8 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
               <div
                 className={`absolute inset-0 ${theme.bg} blur-2xl opacity-30 mix-blend-overlay pointer-events-none`}
               />
 
               <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-[var(--muse-text)] mb-3 drop-shadow-xl">
+                  <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-[var(--muse-text)] mb-3 [text-shadow:0_2px_20px_rgba(0,0,0,0.8),0_0_40px_rgba(0,0,0,0.6)]">
                     {room.name}
                   </h1>
                   {room.description && (
@@ -379,85 +369,6 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
-                  {/* ADVANCED COLOR PICKER */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setIsPaletteOpen(!isPaletteOpen)}
-                      type="button"
-                      className={`w-11 h-11 rounded-full backdrop-blur-lg border border-[var(--muse-text)]/10 flex items-center justify-center transition-all shadow-xl cursor-pointer ${
-                        isPaletteOpen
-                          ? "bg-[var(--muse-text)]/20"
-                          : "bg-[var(--muse-bg)]/50 hover:bg-[var(--muse-text)]/10"
-                      }`}
-                    >
-                      <Icons.Palette
-                        size={18}
-                        style={{ color: customHex || undefined }}
-                      />
-                    </button>
-                    {isPaletteOpen && (
-                      <div className="absolute bottom-full right-0 mb-3 bg-[#151515] border border-[var(--muse-text)]/10 rounded-3xl p-6 shadow-3xl min-w-[280px] z-[20] animate-in slide-in-from-bottom-4">
-                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-6">
-                          Full Spectrum Stylist
-                        </h4>
-
-                        <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide mb-8">
-                          {paletteColors.map((c) => (
-                            <button
-                              key={c.name}
-                              type="button"
-                              onClick={() => {
-                                updateRoomTheme(room.id, c.name);
-                              }}
-                              style={{ backgroundColor: c.hex }}
-                              className={`w-8 h-8 flex-shrink-0 snap-start rounded-full flex items-center justify-center text-[var(--muse-text)] transition-transform hover:scale-110 cursor-pointer ${
-                                room.themeColor === c.name
-                                  ? "ring-2 ring-white ring-offset-2 ring-offset-[#151515]"
-                                  : ""
-                              }`}
-                            >
-                              {room.themeColor === c.name && (
-                                <Icons.Check size={13} strokeWidth={3} />
-                              )}
-                            </button>
-                          ))}
-                        </div>
-
-                        <div className="space-y-6">
-                          <div>
-                            <div className="flex justify-between items-center mb-3">
-                              <span className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                                Aura Intensity
-                              </span>
-                              <span className="text-[9px] font-mono text-[var(--muse-text)]">
-                                85%
-                              </span>
-                            </div>
-                            <div className="h-1 w-full bg-[var(--muse-text)]/5 rounded-full overflow-hidden">
-                              <div
-                                className={`h-full ${
-                                  theme.bg.replace("/10", "/60")
-                                } w-[85%]`}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="p-4 bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/5 rounded-2xl">
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-2">
-                              Custom Hex Signal
-                            </p>
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-canvas-primary" />
-                              <span className="text-xs font-mono text-[var(--muse-text)]">
-                                #6366F1
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
                   <button
                     onClick={() => setIsEditOpen(true)}
                     type="button"

@@ -101,11 +101,13 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const hslToHex = (h: number, s: number, l: number): string => {
-    const a = (s * Math.min(l, 100 - l)) / 100;
+    const sNorm = s / 100;
+    const lNorm = l / 100;
+    const a = sNorm * Math.min(lNorm, 1 - lNorm);
     const f = (n: number) => {
       const k = (n + h / 30) % 12;
-      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color).toString(16).padStart(2, "0");
+      const color = lNorm - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * Math.max(0, Math.min(1, color))).toString(16).padStart(2, "0");
     };
     return `#${f(0)}${f(8)}${f(4)}`;
   };
@@ -514,21 +516,20 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                 <div className="space-y-5 bg-white/5 rounded-2xl p-5 border border-white/10">
                   <div className="flex flex-col items-center">
                     <div
-                      className="w-full h-8 rounded-lg overflow-hidden mb-3 border border-white/10 shadow-lg"
+                      className="w-full h-8 rounded-lg overflow-hidden mb-3 border border-white/10 shadow-lg relative cursor-pointer"
                       style={{
                         background: `linear-gradient(to right, 
-                      hsl(0, 100%, 60%), hsl(30, 100%, 60%), hsl(60, 100%, 60%),
-                      hsl(90, 100%, 60%), hsl(120, 100%, 60%), hsl(150, 100%, 60%),
-                      hsl(180, 100%, 60%), hsl(210, 100%, 60%), hsl(240, 100%, 60%),
-                      hsl(270, 100%, 60%), hsl(300, 100%, 60%), hsl(330, 100%, 60%), hsl(360, 100%, 60%)
+                      hsl(0, ${customSaturation}%, ${customLightness}%), hsl(30, ${customSaturation}%, ${customLightness}%), hsl(60, ${customSaturation}%, ${customLightness}%),
+                      hsl(90, ${customSaturation}%, ${customLightness}%), hsl(120, ${customSaturation}%, ${customLightness}%), hsl(150, ${customSaturation}%, ${customLightness}%),
+                      hsl(180, ${customSaturation}%, ${customLightness}%), hsl(210, ${customSaturation}%, ${customLightness}%), hsl(240, ${customSaturation}%, ${customLightness}%),
+                      hsl(270, ${customSaturation}%, ${customLightness}%), hsl(300, ${customSaturation}%, ${customLightness}%), hsl(330, ${customSaturation}%, ${customLightness}%), hsl(360, ${customSaturation}%, ${customLightness}%)
                     )`,
                       }}
                     >
                       <div
-                        className="w-1 h-full bg-white border-l-2 border-r-2 border-white shadow-lg pointer-events-none"
+                        className="absolute top-0 w-1.5 h-full bg-white rounded-full shadow-lg pointer-events-none border border-black/30"
                         style={{
-                          left: `${(customHue / 360) * 100}%`,
-                          position: "relative",
+                          left: `calc(${(customHue / 360) * 100}% - 3px)`,
                         }}
                       />
                     </div>
@@ -537,7 +538,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                       min="0"
                       max="360"
                       value={customHue}
-                      onChange={(e) =>
+                      onInput={(e) =>
                         setCustomHue(
                           Number((e.target as HTMLInputElement).value),
                         )}
@@ -556,16 +557,22 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                         {customSaturation}%
                       </span>
                     </div>
+                    <div
+                      className="w-full h-3 rounded-lg mb-1 border border-white/10"
+                      style={{
+                        background: `linear-gradient(to right, hsl(${customHue}, 0%, ${customLightness}%), hsl(${customHue}, 100%, ${customLightness}%))`,
+                      }}
+                    />
                     <input
                       type="range"
                       min="0"
                       max="100"
                       value={customSaturation}
-                      onChange={(e) =>
+                      onInput={(e) =>
                         setCustomSaturation(
                           Number((e.target as HTMLInputElement).value),
                         )}
-                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                      className="w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer accent-canvas-primary"
                     />
                   </div>
                   <div>
@@ -577,16 +584,22 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                         {customLightness}%
                       </span>
                     </div>
+                    <div
+                      className="w-full h-3 rounded-lg mb-1 border border-white/10"
+                      style={{
+                        background: `linear-gradient(to right, hsl(${customHue}, ${customSaturation}%, 0%), hsl(${customHue}, ${customSaturation}%, 50%), hsl(${customHue}, ${customSaturation}%, 100%))`,
+                      }}
+                    />
                     <input
                       type="range"
                       min="0"
                       max="100"
                       value={customLightness}
-                      onChange={(e) =>
+                      onInput={(e) =>
                         setCustomLightness(
                           Number((e.target as HTMLInputElement).value),
                         )}
-                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                      className="w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer accent-canvas-primary"
                     />
                   </div>
                   <div className="flex items-center gap-3">
