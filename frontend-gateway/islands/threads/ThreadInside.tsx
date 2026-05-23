@@ -2,55 +2,90 @@ import { useMemo, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   removeItemFromThread,
-  type ThreadMood,
   threadsSignal,
   toggleThreadPrivacy,
 } from "../../signals/threads.ts";
-import { roomsSignal } from "../../signals/rooms.ts";
+import { roomsSignal, MOOD_OPTIONS } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
 import SynthesisWeb from "../../components/threads/SynthesisWeb.tsx";
 
-const moodMapping: Record<ThreadMood, {
+const moodMapping: Record<string, {
   color: string;
   bg: string;
   text: string;
   aura: string;
 }> = {
-  contemplative: {
+  focus: {
     color: "indigo",
     bg: "bg-indigo-500/10",
     text: "text-indigo-400",
     aura: "from-indigo-500/40 to-emerald-500/40",
   },
-  curious: {
-    color: "cyan",
-    bg: "bg-cyan-500/10",
-    text: "text-cyan-400",
-    aura: "from-cyan-500/40 to-indigo-500/40",
-  },
-  dark: {
-    color: "slate",
-    bg: "bg-slate-500/10",
-    text: "text-slate-400",
-    aura: "from-slate-800 to-black",
-  },
-  hopeful: {
+  zen: {
     color: "emerald",
     bg: "bg-emerald-500/10",
     text: "text-emerald-400",
     aura: "from-emerald-400 to-cyan-400",
   },
-  urgent: {
+  chaos: {
     color: "rose",
     bg: "bg-rose-500/10",
     text: "text-rose-400",
     aura: "from-rose-500 to-amber-500",
   },
-  serene: {
+  energetic: {
     color: "amber",
     bg: "bg-amber-500/10",
     text: "text-amber-400",
     aura: "from-amber-400 to-rose-400",
+  },
+  melancholy: {
+    color: "violet",
+    bg: "bg-violet-500/10",
+    text: "text-violet-400",
+    aura: "from-violet-500/40 to-indigo-500/40",
+  },
+  dreamy: {
+    color: "sky",
+    bg: "bg-sky-500/10",
+    text: "text-sky-400",
+    aura: "from-sky-400/40 to-indigo-400/40",
+  },
+  noir: {
+    color: "slate",
+    bg: "bg-slate-500/10",
+    text: "text-slate-400",
+    aura: "from-slate-800 to-black",
+  },
+  warm: {
+    color: "orange",
+    bg: "bg-orange-500/10",
+    text: "text-orange-400",
+    aura: "from-orange-500/40 to-amber-500/40",
+  },
+  electric: {
+    color: "fuchsia",
+    bg: "bg-fuchsia-500/10",
+    text: "text-fuchsia-400",
+    aura: "from-fuchsia-500/40 to-rose-500/40",
+  },
+  minimal: {
+    color: "gray",
+    bg: "bg-gray-500/10",
+    text: "text-gray-400",
+    aura: "from-gray-500/20 to-transparent",
+  },
+  cosmic: {
+    color: "purple",
+    bg: "bg-purple-500/10",
+    text: "text-purple-400",
+    aura: "from-purple-900 to-indigo-900",
+  },
+  storm: {
+    color: "slate",
+    bg: "bg-slate-600/10",
+    text: "text-slate-500",
+    aura: "from-slate-600 to-slate-800",
   },
 };
 
@@ -116,9 +151,33 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
 
             <div className="flex items-center gap-3">
               <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
+                <span className="text-sm">
+                  {MOOD_OPTIONS.find(m => m.id === thread.mood)?.emoji || "🎯"}
+                </span>
+                <span className={`text-[10px] font-bold uppercase tracking-widest ${mood.text}`}>
+                  {thread.mood}
+                </span>
+              </div>
+              {thread.format && (
+                <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-2">
+                  <Icons.FileText size={12} className="text-gray-400" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white">
+                    {thread.format}
+                  </span>
+                </div>
+              )}
+              {thread.depth && (
+                <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-2">
+                  <Icons.Layers size={12} className="text-gray-400" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white">
+                    {thread.depth}
+                  </span>
+                </div>
+              )}
+              <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md hidden md:flex items-center gap-3">
                 <Icons.Activity size={14} className={mood.text} />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-white">
-                  Synthesizing {thread.sourceRoomIds.length} Rooms
+                  {thread.sourceRoomIds.length} Rooms
                 </span>
               </div>
               <button

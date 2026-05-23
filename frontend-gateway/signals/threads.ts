@@ -1,12 +1,10 @@
 import { signal } from "@preact/signals";
+import { type RoomMood } from "./rooms.ts";
 
-export type ThreadMood =
-  | "contemplative"
-  | "curious"
-  | "dark"
-  | "hopeful"
-  | "urgent"
-  | "serene";
+export type ThreadMood = RoomMood;
+
+export type ThreadFormat = "essay" | "manifesto" | "blueprint" | "debate";
+export type ThreadDepth = "surface" | "deep" | "comprehensive";
 
 export interface DialogueLayer {
   id: string;
@@ -23,6 +21,8 @@ export interface Thread {
   title: string;
   description: string;
   mood: ThreadMood;
+  format?: ThreadFormat;
+  depth?: ThreadDepth;
   itemIds: string[];
   sourceRoomIds: string[];
   isPublic: boolean;
@@ -40,10 +40,8 @@ export interface Thread {
     wallpaper?: string;
     fontFamily?: string;
   };
-  // Vault functionality
-  isVault?: boolean; // Private thread with password protection
-  vaultPassword?: string; // Hashed password for vault threads
-  isVaultUnlocked?: boolean; // Runtime flag for unlocked status
+  // Vault functionality (now ties into the global vault)
+  isVault?: boolean; // Private thread protected by the Master Vault Password
   // Synthesis analysis
   synthesis?: {
     patterns: string[];
@@ -61,7 +59,9 @@ const INITIAL_THREADS: Thread[] = [
     title: "The Honesty of Raw Materials",
     description:
       "Synthesizing brutalist architecture with digital sovereignty.",
-    mood: "contemplative",
+    mood: "focus",
+    format: "manifesto",
+    depth: "deep",
     itemIds: ["i1", "i2"],
     sourceRoomIds: ["r1", "r2"],
     isPublic: true,
@@ -192,65 +192,4 @@ export function removeItemFromThread(threadId: string, itemId: string) {
 
 export function resetThreads() {
   threadsSignal.value = [];
-}
-
-// Vault functionality
-export function unlockVaultThread(threadId: string, password: string): boolean {
-  const thread = threadsSignal.value.find((t) => t.id === threadId);
-  if (!thread || !thread.isVault) return false;
-
-  // Simple hash comparison (in production, use proper bcrypt)
-  const inputHash = hashPassword(password);
-  if (inputHash === thread.vaultPassword) {
-    threadsSignal.value = threadsSignal.value.map((t) =>
-      t.id === threadId ? { ...t, isVaultUnlocked: true } : t
-    );
-    return true;
-  }
-  return false;
-}
-
-export function lockVaultThread(threadId: string) {
-  threadsSignal.value = threadsSignal.value.map((t) =>
-    t.id === threadId ? { ...t, isVaultUnlocked: false } : t
-  );
-}
-
-export function createVaultThread(
-  thread: Omit<
-    Thread,
-    | "id"
-    | "updatedAt"
-    | "synthesisScore"
-    | "resonanceMetrics"
-    | "dialogueLayers"
-  >,
-  password: string,
-) {
-  const newId = "t" + (threadsSignal.value.length + 1);
-  const hashedPassword = hashPassword(password);
-  const newThread: Thread = {
-    ...thread,
-    id: newId,
-    updatedAt: new Date().toISOString(),
-    synthesisScore: Math.floor(Math.random() * 40) + 60,
-    resonanceMetrics: { views: 0, connections: 0 },
-    dialogueLayers: [],
-    isVault: true,
-    vaultPassword: hashedPassword,
-    isVaultUnlocked: false,
-  };
-  threadsSignal.value = [...threadsSignal.value, newThread];
-  return newId;
-}
-
-// Simple hash function (for demo - use proper bcrypt in production)
-function hashPassword(password: string): string {
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return "hash_" + Math.abs(hash).toString(16);
 }

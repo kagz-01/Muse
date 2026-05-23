@@ -5,40 +5,14 @@ import {
   type ThreadMood,
   threadsSignal,
 } from "../../signals/threads.ts";
+import { MOOD_OPTIONS } from "../../signals/rooms.ts";
 import BlueprintReview from "../../components/threads/BlueprintReview.tsx";
-import ThreadVaultUnlockModal from "../modals/VaultUnlockModal.tsx";
+import VaultGateModal from "../modals/VaultGateModal.tsx";
 import CreateThreadModal from "../modals/CreateThreadModal.tsx";
 import ThreadGenerationIndicator from "../../components/threads/ThreadGenerationIndicator.tsx";
+import { isVaultUnlockedSignal } from "../../signals/vault.ts";
 
-type ThreadFilter =
-  | "all"
-  | "contemplative"
-  | "curious"
-  | "dark"
-  | "hopeful"
-  | "urgent"
-  | "serene";
-
-const moodMapping: Record<ThreadMood, {
-  color: string;
-  bg: string;
-  text: string;
-}> = {
-  contemplative: {
-    color: "indigo",
-    bg: "bg-indigo-500/10",
-    text: "text-indigo-400",
-  },
-  curious: { color: "cyan", bg: "bg-cyan-500/10", text: "text-cyan-400" },
-  dark: { color: "slate", bg: "bg-slate-500/10", text: "text-slate-400" },
-  hopeful: {
-    color: "emerald",
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-400",
-  },
-  urgent: { color: "rose", bg: "bg-rose-500/10", text: "text-rose-400" },
-  serene: { color: "amber", bg: "bg-amber-500/10", text: "text-amber-400" },
-};
+type ThreadFilter = "all" | ThreadMood;
 
 const moodFilterOptions: {
   id: ThreadFilter;
@@ -46,13 +20,23 @@ const moodFilterOptions: {
   mood?: ThreadMood;
 }[] = [
   { id: "all", label: "All Moods" },
-  { id: "contemplative", label: "Contemplative", mood: "contemplative" },
-  { id: "curious", label: "Curious", mood: "curious" },
-  { id: "dark", label: "Dark", mood: "dark" },
-  { id: "hopeful", label: "Hopeful", mood: "hopeful" },
-  { id: "urgent", label: "Urgent", mood: "urgent" },
-  { id: "serene", label: "Serene", mood: "serene" },
+  ...MOOD_OPTIONS.map(m => ({ id: m.id as ThreadFilter, label: m.label, mood: m.id as ThreadMood }))
 ];
+
+const moodColors: Record<string, string> = {
+  focus: "#6366f1", // indigo
+  zen: "#10b981", // emerald
+  chaos: "#f43f5e", // rose
+  energetic: "#f59e0b", // amber
+  melancholy: "#8b5cf6", // violet
+  dreamy: "#0ea5e9", // sky
+  noir: "#475569", // slate
+  warm: "#fb923c", // orange
+  electric: "#d946ef", // fuchsia
+  minimal: "#9ca3af", // gray
+  cosmic: "#8b5cf6", // violet
+  storm: "#64748b", // slate
+};
 
 export default function ThreadsGallery() {
   const threads = threadsSignal.value;
@@ -63,8 +47,8 @@ export default function ThreadsGallery() {
   >("all");
   const [vaultModalThread, setVaultModalThread] = useState<Thread | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [isGeneratingThreads, setIsGeneratingThreads] = useState(false);
-  const [generatedThreadCount, setGeneratedThreadCount] = useState(0);
+  const [isGeneratingThreads, _setIsGeneratingThreads] = useState(false);
+  const [generatedThreadCount, _setGeneratedThreadCount] = useState(0);
 
   const filteredThreads = useMemo(() => {
     return threads.filter((t: Thread) => {
@@ -286,23 +270,17 @@ export default function ThreadsGallery() {
               : (
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6">
                   {filteredThreads.map((thread: Thread) => {
-                    const mood = moodMapping[thread.mood as ThreadMood];
-                    const baseHexMap: Record<string, string> = {
-                      indigo: "#6366f1",
-                      cyan: "#06b6d4",
-                      slate: "#64748b",
-                      emerald: "#10b981",
-                      rose: "#fb7185",
-                      amber: "#f59e0b",
-                    };
-                    const hex = baseHexMap[mood.color] || baseHexMap.indigo;
+                    const moodOption = MOOD_OPTIONS.find(m => m.id === thread.mood) || MOOD_OPTIONS[0];
+                    const hex = moodColors[thread.mood] || moodColors.focus;
 
                     return (
                       <div
                         key={thread.id}
                         onClick={() => {
-                          if (thread.isVault && !thread.isVaultUnlocked) {
+                          if (thread.isVault && !isVaultUnlockedSignal.value) {
                             setVaultModalThread(thread);
+                          } else {
+                            globalThis.location.href = `/threads/${thread.id}`;
                           }
                         }}
                         className="group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-white/5 text-white transition-all duration-500 cursor-pointer hover:border-white/20 h-full"
@@ -330,7 +308,7 @@ export default function ThreadsGallery() {
                           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/80" />
 
                           {/* Vault Lock Overlay */}
-                          {thread.isVault && !thread.isVaultUnlocked && (
+                          {thread.isVault && !isVaultUnlockedSignal.value && (
                             <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80 flex items-center justify-center z-20 group-hover:from-black/40 group-hover:to-black/90 transition-colors">
                               <div className="flex flex-col items-center gap-3">
                                 <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center border-2 border-indigo-400/40 group-hover:border-indigo-400/60 transition-colors">
@@ -353,7 +331,7 @@ export default function ThreadsGallery() {
                         {/* Content */}
                         <div
                           className={`relative z-10 flex flex-col h-full justify-between p-6 md:p-7 ${
-                            thread.isVault && !thread.isVaultUnlocked
+                            thread.isVault && !isVaultUnlockedSignal.value
                               ? "opacity-40 blur-sm"
                               : ""
                           }`}
@@ -398,15 +376,21 @@ export default function ThreadsGallery() {
                           <div className="flex items-center justify-between mb-6 pb-6 border-t border-white/10 gap-3">
                             <div className="flex items-center gap-2 flex-wrap">
                               <div
-                                className="px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-[0.15em]"
+                                className="px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-[0.15em] flex items-center gap-1.5"
                                 style={{
                                   backgroundColor: hex + "22",
                                   border: `1px solid ${hex}44`,
                                   color: hex,
                                 }}
                               >
-                                {thread.mood}
+                                <span>{moodOption.emoji}</span>
+                                {moodOption.label}
                               </div>
+                              {thread.format && (
+                                <div className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[8px] font-bold uppercase tracking-[0.15em] text-gray-400">
+                                  {thread.format}
+                                </div>
+                              )}
                               <div className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-lg text-[8px] font-bold uppercase tracking-[0.15em] text-white">
                                 {thread.itemIds.length} Signals
                               </div>
@@ -455,12 +439,12 @@ export default function ThreadsGallery() {
         </section>
       </div>
 
-      {/* Vault Unlock Modal */}
+      {/* Vault Gate Modal */}
       {vaultModalThread && (
-        <ThreadVaultUnlockModal
-          threadId={vaultModalThread.id}
-          threadTitle={vaultModalThread.title}
-          onUnlock={() => setVaultModalThread(null)}
+        <VaultGateModal
+          onUnlock={() => {
+            setVaultModalThread(null);
+          }}
           onClose={() => setVaultModalThread(null)}
         />
       )}

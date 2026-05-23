@@ -2,6 +2,7 @@
 import { useMemo, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
+  MOOD_OPTIONS,
   roomsSignal,
   type RoomTheme,
   toggleRoomPrivacy,
@@ -94,6 +95,8 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [dialogueInput, setDialogueInput] = useState("");
+  const [shareCopied, setShareCopied] = useState(false);
+  const [threadShared, setThreadShared] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -142,6 +145,35 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   const glowStyle: Record<string, string> = {
     boxShadow: `0 20px 60px ${hex}33`,
     background: `linear-gradient(135deg, ${hex}22, transparent)`,
+  };
+
+  const getMoodStyle = (mood?: string) => {
+    switch (mood) {
+      case "zen": return "opacity-10 blur-[150px] animate-pulse";
+      case "chaos": return "opacity-30 blur-[80px] mix-blend-color-dodge animate-pulse duration-700";
+      case "energetic": return "opacity-40 blur-[100px] animate-bounce";
+      case "melancholy": return "opacity-15 blur-[140px] animate-pulse duration-[3s]";
+      case "dreamy": return "opacity-15 blur-[180px] animate-pulse duration-[4s]";
+      case "noir": return "opacity-5 blur-[100px]";
+      case "warm": return "opacity-25 blur-[160px] animate-pulse duration-[5s]";
+      case "electric": return "opacity-35 blur-[90px] mix-blend-screen animate-pulse duration-[1.5s]";
+      case "minimal": return "opacity-5 blur-[200px]";
+      case "cosmic": return "opacity-20 blur-[100px] mix-blend-screen animate-pulse duration-[6s]";
+      case "storm": return "opacity-40 blur-[70px] mix-blend-hard-light animate-pulse duration-500";
+      case "focus": 
+      default:
+        return "opacity-20 blur-[120px]";
+    }
+  };
+
+  const getGridClass = (size?: string) => {
+    switch(size) {
+      case "small": return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+      case "large": return "grid grid-cols-1 md:grid-cols-2 gap-8";
+      case "medium":
+      default:
+        return "flex gap-6 overflow-x-auto pb-4 scrollbar-hide";
+    }
   };
 
   const handleImageUpload = (e: Event) => {
@@ -204,7 +236,16 @@ export default function RoomInside({ roomId }: { roomId: string }) {
           break;
         case "Synthesize to Thread":
           response =
-            "Sovereign synthesis ready. The patterns are stable enough to be woven into a formal intelligence document.";
+            "Sovereign synthesis ready. The patterns are stable enough to be woven into a formal intelligence document. This thread has been added to your collection and shared with the community.";
+          addItem({
+            roomId: room.id,
+            title: "AI Pattern Synthesis",
+            sourceUrl: "Muse Intelligence",
+            note: "Dialogue is the bridge between consumption and synthesis. Talk to your room to discover the hidden lineage of your collected signals.",
+            isPublic: true,
+          });
+          setThreadShared(true);
+          setTimeout(() => setThreadShared(false), 4000);
           break;
         default:
           response =
@@ -274,7 +315,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
       <div className="pb-24 md:pb-10 min-h-screen bg-[#0a0a0a] relative overflow-hidden">
         <div
-          className={`fixed inset-0 pointer-events-none blur-[120px] opacity-20 transition-colors duration-1000 ${
+          className={`fixed inset-0 pointer-events-none transition-all duration-1000 ${getMoodStyle(room.mood)} ${
             !customHex ? theme.bg : ""
           }`}
           style={customHex
@@ -379,9 +420,14 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
                   <button
                     type="button"
-                    className="px-6 py-3 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(globalThis.location.href);
+                      setShareCopied(true);
+                      setTimeout(() => setShareCopied(false), 2000);
+                    }}
+                    className="px-6 py-3 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer w-28 justify-center"
                   >
-                    <Icons.Share2 size={15} /> Share
+                    <Icons.Share2 size={15} /> {shareCopied ? "Copied" : "Share"}
                   </button>
                 </div>
               </div>
@@ -482,6 +528,45 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                           {customHex ? "Custom" : room.themeColor}
                         </span>
                       </div>
+                      <div className="w-px h-4 bg-[var(--muse-text)]/10" />
+                      <div className="flex items-center gap-2">
+                        <Icons.Activity size={13} className="text-[var(--muse-muted)]" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                          Mood
+                        </span>
+                        <span className="text-sm font-bold text-[var(--muse-text)] ml-1">
+                          {MOOD_OPTIONS.find(m => m.id === room.mood)?.emoji || "🎯"}{" "}
+                          <span className="capitalize">{room.mood || "Focus"}</span>
+                        </span>
+                      </div>
+                      {room.category && (
+                        <>
+                          <div className="w-px h-4 bg-[var(--muse-text)]/10" />
+                          <div className="flex items-center gap-2">
+                            <Icons.FolderOpen size={13} className="text-[var(--muse-muted)]" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                              Category
+                            </span>
+                            <span className="text-sm font-bold text-[var(--muse-text)] ml-1 capitalize">
+                              {room.category}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      {room.size && (
+                        <>
+                          <div className="w-px h-4 bg-[var(--muse-text)]/10" />
+                          <div className="flex items-center gap-2">
+                            <Icons.LayoutGrid size={13} className="text-[var(--muse-muted)]" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                              Size
+                            </span>
+                            <span className="text-sm font-bold text-[var(--muse-text)] ml-1 capitalize">
+                              {room.size}
+                            </span>
+                          </div>
+                        </>
+                      )}
                       {room.tags && room.tags.length > 0 && (
                         <>
                           <div className="w-px h-4 bg-[var(--muse-text)]/10" />
@@ -509,15 +594,17 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-bold text-[var(--muse-text)] tracking-tight flex items-center gap-4">
                     <Icons.Layers size={32} className="text-[var(--muse-muted)]" />{" "}
-                    Curated Clusters
+                    Curated Artifacts
                   </h3>
-                  <button
-                    onClick={() => setShowExtractor(true)}
-                    type="button"
-                    className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-[var(--muse-text)] text-[var(--muse-bg)] text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer active:scale-95 shadow-xl hover:-translate-y-1"
-                  >
-                    <Icons.Plus size={18} /> Collect Artifact
-                  </button>
+                  {items.length > 0 && (
+                    <button
+                      onClick={() => setShowExtractor(true)}
+                      type="button"
+                      className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-[var(--muse-text)] text-[var(--muse-bg)] text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer active:scale-95 shadow-xl hover:-translate-y-1"
+                    >
+                      <Icons.Plus size={18} /> Collect Artifact
+                    </button>
+                  )}
                 </div>
 
                 {showExtractor && (
@@ -557,11 +644,11 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     </div>
                   )
                   : (
-                    <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                    <div className={getGridClass(room.size)}>
                       {items.map((item) => (
                         <div
                           key={item.id}
-                          className="bg-[#111] rounded-[2.5rem] border border-[var(--muse-text)]/5 overflow-hidden group transition-all duration-500 min-w-[320px] flex-shrink-0"
+                          className={`bg-[#111] rounded-[2.5rem] border border-[var(--muse-text)]/5 overflow-hidden group transition-all duration-500 ${room.size === "small" || room.size === "large" ? "w-full" : "min-w-[320px] flex-shrink-0"}`}
                           style={glowStyle}
                         >
                           <div
@@ -759,9 +846,10 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       type="button"
                       onClick={() =>
                         handleDialogueAction("Synthesize to Thread")}
-                      className="w-full py-5 bg-canvas-primary text-[var(--muse-text)] font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer"
+                      disabled={threadShared}
+                      className={`w-full py-5 ${theme.bg.replace("/10", "/80")} ${theme.border} border text-[var(--muse-text)] font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer ${threadShared ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      Initialize Pattern Thread
+                      {threadShared ? "Thread Initialized & Shared" : "Initialize Pattern Thread"}
                     </button>
                   </div>
                 </div>

@@ -2,68 +2,41 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   addThread,
-  createVaultThread,
   type ThreadMood,
+  type ThreadFormat,
+  type ThreadDepth,
 } from "../../signals/threads.ts";
+import { MOOD_OPTIONS } from "../../signals/rooms.ts";
 
 interface Props {
   onClose: () => void;
 }
 
-const moods: {
-  name: ThreadMood;
-  label: string;
-  description: string;
-  color: string;
-}[] = [
-  {
-    name: "contemplative",
-    label: "Contemplative",
-    description: "Deep, slow, introspective",
-    color: "#8b5cf6",
-  },
-  {
-    name: "curious",
-    label: "Curious",
-    description: "Questions, exploration, wonder",
-    color: "#06b6d4",
-  },
-  {
-    name: "dark",
-    label: "Dark",
-    description: "Heavy, raw, unresolved",
-    color: "#475569",
-  },
-  {
-    name: "hopeful",
-    label: "Hopeful",
-    description: "Optimistic, forward-looking",
-    color: "#10b981",
-  },
-  {
-    name: "urgent",
-    label: "Urgent",
-    description: "Critical, immediate, pressing",
-    color: "#f43f5e",
-  },
-  {
-    name: "serene",
-    label: "Serene",
-    description: "Calm, minimal, restful",
-    color: "#f59e0b",
-  },
-];
+const moodColors: Record<string, string> = {
+  focus: "#6366f1", // indigo
+  zen: "#10b981", // emerald
+  chaos: "#f43f5e", // rose
+  energetic: "#f59e0b", // amber
+  melancholy: "#8b5cf6", // violet
+  dreamy: "#0ea5e9", // sky
+  noir: "#475569", // slate
+  warm: "#fb923c", // orange
+  electric: "#d946ef", // fuchsia
+  minimal: "#9ca3af", // gray
+  cosmic: "#8b5cf6", // violet
+  storm: "#64748b", // slate
+};
 
 export default function CreateThreadModal({ onClose }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [thesis, setThesis] = useState("");
-  const [mood, setMood] = useState<ThreadMood>("contemplative");
+  const [mood, setMood] = useState<ThreadMood>("focus");
+  const [format, setFormat] = useState<ThreadFormat>("essay");
+  const [depth, setDepth] = useState<ThreadDepth>("deep");
   const [coverPreview, setCoverPreview] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState("");
-  const [vaultPassword, setVaultPassword] = useState("");
-  const [showVaultPassword, setShowVaultPassword] = useState(false);
 
   const titleRef = useRef<HTMLInputElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -93,7 +66,8 @@ export default function CreateThreadModal({ onClose }: Props) {
     }
   };
 
-  const selectedMood = moods.find((m) => m.name === mood)!;
+  const selectedMoodOption = MOOD_OPTIONS.find((m) => m.id === mood) || MOOD_OPTIONS[0];
+  const moodColor = moodColors[selectedMoodOption.id] || "#6366f1";
 
   const handleCreate = () => {
     if (!title.trim()) {
@@ -101,38 +75,20 @@ export default function CreateThreadModal({ onClose }: Props) {
       return;
     }
 
-    if (!isPublic && !vaultPassword.trim()) {
-      setError("Set a password to protect your private synthesis.");
-      return;
-    }
-
-    let newId: string;
-    if (!isPublic && vaultPassword.trim()) {
-      newId = createVaultThread(
-        {
-          title: title.trim(),
-          description: description.trim(),
-          thesis: thesis.trim(),
-          mood,
-          coverImage: coverPreview,
-          isPublic: false,
-          itemIds: [],
-          sourceRoomIds: [],
-        },
-        vaultPassword.trim(),
-      );
-    } else {
-      newId = addThread({
-        title: title.trim(),
-        description: description.trim(),
-        thesis: thesis.trim(),
-        mood,
-        coverImage: coverPreview,
-        isPublic,
-        itemIds: [],
-        sourceRoomIds: [],
-      });
-    }
+    const newId = addThread({
+      title: title.trim(),
+      description: description.trim(),
+      thesis: thesis.trim(),
+      mood,
+      format,
+      depth,
+      coverImage: coverPreview,
+      isPublic,
+      itemIds: [],
+      sourceRoomIds: [],
+      isVault: !isPublic, // Links to global vault
+    });
+    
     onClose();
     globalThis.location.href = `/threads/${newId}`;
   };
@@ -142,11 +98,11 @@ export default function CreateThreadModal({ onClose }: Props) {
       onClick={handleBackdropClick}
       className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-lg bg-[#111318] border border-white/10 rounded-4xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-[#111318] border border-white/10 rounded-4xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
         {/* Ambient glow */}
         <div
           className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500"
-          style={{ backgroundColor: selectedMood.color }}
+          style={{ backgroundColor: moodColor }}
         />
 
         <div className="relative z-10 p-8">
@@ -264,40 +220,85 @@ export default function CreateThreadModal({ onClose }: Props) {
             />
           </div>
 
-          {/* Mood Selector */}
-          <div className="mb-8">
-            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-              Thread Mood
-            </label>
-            <div className="flex gap-2 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide">
-              {moods.map((m) => (
-                <button
-                  key={m.name}
-                  type="button"
-                  onClick={() => setMood(m.name)}
-                  className={`min-w-[220px] flex-shrink-0 snap-start flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all cursor-pointer text-left ${
-                    mood === m.name
-                      ? "border-white/30 bg-white/10"
-                      : "border-white/5 bg-white/[0.02] hover:border-white/15"
-                  }`}
+          {/* Format and Depth Grid */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Thread Format
+              </label>
+              <div className="relative">
+                <select
+                  value={format}
+                  onChange={(e) => setFormat((e.target as HTMLSelectElement).value as ThreadFormat)}
+                  className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none focus:border-white/30 transition-all cursor-pointer"
                 >
-                  <div
-                    className="w-3 h-3 rounded-full shrink-0"
-                    style={{ backgroundColor: m.color }}
-                  />
-                  <div>
-                    <p className="text-white text-xs font-bold">{m.label}</p>
-                    <p className="text-gray-500 text-[10px]">{m.description}</p>
-                  </div>
-                  {mood === m.name && (
-                    <Icons.Check
-                      size={13}
-                      strokeWidth={3}
-                      className="text-white ml-auto"
-                    />
-                  )}
-                </button>
-              ))}
+                  <option value="essay">Essay</option>
+                  <option value="manifesto">Manifesto</option>
+                  <option value="blueprint">Blueprint</option>
+                  <option value="debate">Debate</option>
+                </select>
+                <Icons.ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
+              <p className="text-gray-500 text-[10px] mt-1">Dictates the structure of synthesis.</p>
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Synthesis Depth
+              </label>
+              <div className="relative">
+                <select
+                  value={depth}
+                  onChange={(e) => setDepth((e.target as HTMLSelectElement).value as ThreadDepth)}
+                  className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none focus:border-white/30 transition-all cursor-pointer"
+                >
+                  <option value="surface">Surface</option>
+                  <option value="deep">Deep</option>
+                  <option value="comprehensive">Comprehensive</option>
+                </select>
+                <Icons.ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
+              <p className="text-gray-500 text-[10px] mt-1">Defines AI contemplation intensity.</p>
+            </div>
+          </div>
+
+          {/* Mood Visual Grid */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
+                Synthesis Mood
+              </label>
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                {selectedMoodOption.label}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {MOOD_OPTIONS.map((m) => {
+                const isSelected = mood === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setMood(m.id as ThreadMood)}
+                    className={`relative p-3 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all cursor-pointer ${
+                      isSelected
+                        ? "border-white/40 bg-white/10 shadow-lg scale-105 z-10"
+                        : "border-white/5 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    {isSelected && (
+                      <div className="absolute inset-0 rounded-2xl bg-white/5 pointer-events-none" />
+                    )}
+                    <span className="text-2xl filter drop-shadow-md">
+                      {m.emoji}
+                    </span>
+                    <div className="text-center w-full">
+                      <p className="text-white text-[10px] font-bold capitalize truncate">
+                        {m.label}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -313,9 +314,10 @@ export default function CreateThreadModal({ onClose }: Props) {
               }`}
             >
               <Icons.Lock size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                Private Vault
-              </span>
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">Private Vault</span>
+                <span className="block text-[9px] text-gray-400 font-normal">Uses Master Password</span>
+              </div>
             </button>
             <button
               type="button"
@@ -327,48 +329,15 @@ export default function CreateThreadModal({ onClose }: Props) {
               }`}
             >
               <Icons.Globe size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                Community Hub
-              </span>
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">Community Hub</span>
+                <span className="block text-[9px] text-indigo-400/60 font-normal">Visible to others</span>
+              </div>
             </button>
           </div>
 
-          {/* Vault Password (shown only for private threads) */}
-          {!isPublic && (
-            <div className="mb-8">
-              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-                Vault Password *
-              </label>
-              <div className="relative">
-                <input
-                  type={showVaultPassword ? "text" : "password"}
-                  value={vaultPassword}
-                  onInput={(e) => {
-                    setVaultPassword((e.target as HTMLInputElement).value);
-                    setError("");
-                  }}
-                  placeholder="Create a strong password (min. 6 characters)"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500/30 transition-all text-sm font-medium pr-12"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowVaultPassword(!showVaultPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-                >
-                  {showVaultPassword
-                    ? <Icons.EyeOff size={16} />
-                    : <Icons.Eye size={16} />}
-                </button>
-              </div>
-              <p className="text-gray-500 text-xs mt-2">
-                💡 Only you can unlock this private synthesis with this
-                password.
-              </p>
-            </div>
-          )}
-
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mt-4">
             <button
               onClick={onClose}
               type="button"
@@ -381,8 +350,8 @@ export default function CreateThreadModal({ onClose }: Props) {
               type="button"
               className="flex-[2] py-4 rounded-2xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer hover:-translate-y-0.5 active:scale-95 text-white"
               style={{
-                backgroundColor: selectedMood.color,
-                boxShadow: `0 0 30px ${selectedMood.color}55`,
+                backgroundColor: moodColor,
+                boxShadow: `0 0 30px ${moodColor}55`,
               }}
             >
               Start Thread <Icons.ArrowRight size={16} />

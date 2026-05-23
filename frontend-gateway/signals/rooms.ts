@@ -17,6 +17,34 @@ export type RoomCategory =
   | "brainstorm"
   | "inspiration";
 export type RoomSize = "small" | "medium" | "large";
+export type RoomMood =
+  | "focus"
+  | "zen"
+  | "chaos"
+  | "energetic"
+  | "melancholy"
+  | "dreamy"
+  | "noir"
+  | "warm"
+  | "electric"
+  | "minimal"
+  | "cosmic"
+  | "storm";
+
+export const MOOD_OPTIONS: { id: RoomMood; emoji: string; label: string; description: string }[] = [
+  { id: "focus", emoji: "🎯", label: "Focus", description: "Deep work, no distractions" },
+  { id: "zen", emoji: "🧘", label: "Zen", description: "Calm, meditative breathing" },
+  { id: "chaos", emoji: "🌀", label: "Chaos", description: "Glitchy, raw creative energy" },
+  { id: "energetic", emoji: "⚡", label: "Energetic", description: "Fast-paced, vibrant pulse" },
+  { id: "melancholy", emoji: "🌧️", label: "Melancholy", description: "Thoughtful, introspective depth" },
+  { id: "dreamy", emoji: "☁️", label: "Dreamy", description: "Soft, floating, ethereal" },
+  { id: "noir", emoji: "🖤", label: "Noir", description: "Dark cinematic mystery" },
+  { id: "warm", emoji: "🕯️", label: "Warm", description: "Cozy, candlelit comfort" },
+  { id: "electric", emoji: "💜", label: "Electric", description: "Neon-lit cyberpunk haze" },
+  { id: "minimal", emoji: "◻️", label: "Minimal", description: "Clean, stripped-back clarity" },
+  { id: "cosmic", emoji: "🌌", label: "Cosmic", description: "Deep space, infinite scale" },
+  { id: "storm", emoji: "🌩️", label: "Storm", description: "Intense, volatile urgency" },
+];
 
 export interface Room {
   id: string;
@@ -25,6 +53,7 @@ export interface Room {
   emoji?: string; // Room icon/emoji (e.g., 🎨, 📖, 🏗️)
   category?: RoomCategory; // Room type/template (workspace, journal, archive, brainstorm, inspiration)
   size?: RoomSize; // Room capacity (small, medium, large)
+  mood?: RoomMood; // Ambient mode (focus, zen, chaos, energetic)
   themeColor: RoomTheme;
   customThemeHex?: string; // Custom hex color chosen by user (overrides themeColor if present)
   coverImage?: string;

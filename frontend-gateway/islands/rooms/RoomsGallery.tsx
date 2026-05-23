@@ -55,11 +55,13 @@ function RoomActionButton({
   label,
   active,
   onClick,
+  tooltipSide = "left",
 }: {
   variant: "pin" | "star" | "archive" | "sparkles";
   label: string;
   active?: boolean;
   onClick: () => void;
+  tooltipSide?: "left" | "right";
 }) {
   const Icon = variant === "pin"
     ? Icons.Pin
@@ -69,6 +71,10 @@ function RoomActionButton({
     ? Icons.Archive
     : Icons.Aperture;
 
+  const tooltipClass = tooltipSide === "right"
+    ? "absolute left-full ml-2"
+    : "absolute right-full mr-2";
+
   return (
     <button
       type="button"
@@ -77,14 +83,14 @@ function RoomActionButton({
         e.stopPropagation();
         onClick();
       }}
-      className={`group relative flex h-8 w-8 items-center justify-center rounded-full border transition-all ${
+      className={`group/action relative flex h-8 w-8 items-center justify-center rounded-full border transition-all ${
         active
           ? "border-white/20 bg-white/15 text-white"
           : "border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-muted)] hover:border-white/20 hover:text-white hover:bg-white/5"
       }`}
     >
       <Icon size={12} className={active ? "text-white" : "text-current"} />
-      <span className="absolute right-full mr-2 px-2 py-1 rounded bg-black/80 text-white text-[10px] font-bold uppercase tracking-widest whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity border border-white/10 z-20">
+      <span className={`${tooltipClass} px-2 py-1 rounded bg-black/90 text-white text-[10px] font-bold uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/action:opacity-100 pointer-events-none transition-opacity duration-200 border border-white/10 z-20 shadow-lg`}>
         {label}
       </span>
     </button>
@@ -128,7 +134,7 @@ function RoomCard({
   return (
     <div
       onClick={onOpen}
-      className={`group relative flex h-full min-h-[320px] flex-col overflow-hidden rounded-[2.5rem] border border-[var(--muse-border)] text-[var(--muse-text)] transition-all duration-500 cursor-pointer`}
+      className={`group relative flex h-full min-h-[320px] flex-col rounded-[2.5rem] border border-[var(--muse-border)] text-[var(--muse-text)] transition-all duration-500 cursor-pointer`}
       style={glowStyle}
     >
       {room.isVault && !isVaultUnlockedSignal.value && (
@@ -137,7 +143,7 @@ function RoomCard({
         </div>
       )}
       {/* Background Image - Always Visible but Subtle */}
-      <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+      <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden transition-transform duration-700 group-hover:scale-110">
         {room.coverImage
           ? (
             <img
@@ -187,27 +193,30 @@ function RoomCard({
           <div className="flex flex-col gap-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
             <RoomActionButton
               variant="star"
-              label="Star room"
+              label="Star"
               active={starred}
               onClick={onStar}
+              tooltipSide="left"
             />
             <RoomActionButton
               variant="archive"
-              label="Archive room"
+              label="Archive"
               active={archived}
               onClick={onArchive}
+              tooltipSide="right"
             />
             <RoomActionButton
               variant="pin"
-              label={pinned ? "Unpin room" : "Pin room"}
+              label={pinned ? "Unpin" : "Pin"}
               active={pinned}
               onClick={onPin}
+              tooltipSide="left"
             />
           </div>
         </div>
 
         <div className="translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-          <p className="mt-4 line-clamp-2 text-sm text-[var(--muse-muted)] font-serif italic leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+          <p className="mt-4 line-clamp-2 text-sm text-white/90 font-serif italic leading-relaxed bg-black/40 backdrop-blur-sm rounded-xl px-3 py-2 group-hover:bg-black/50 transition-all">
             {room.description ||
               "A curated space for your digital consciousness."}
           </p>
@@ -233,6 +242,32 @@ function RoomCard({
                   {room.customThemeHex ? "Custom" : room.themeColor}
                 </span>
               </div>
+              {room.mood && (
+                <>
+                  <div className="w-px h-6 bg-[var(--muse-border)]" />
+                  <div className="flex flex-col">
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-0.5">
+                      Mood
+                    </span>
+                    <span className="text-xs font-bold capitalize text-[var(--muse-text)]">
+                      {room.mood}
+                    </span>
+                  </div>
+                </>
+              )}
+              {room.size && (
+                <>
+                  <div className="w-px h-6 bg-[var(--muse-border)]" />
+                  <div className="flex flex-col">
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-0.5">
+                      Size
+                    </span>
+                    <span className="text-xs font-bold capitalize text-[var(--muse-text)]">
+                      {room.size}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
             <div className="w-10 h-10 rounded-full bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-text)] group-hover:bg-[var(--muse-text)] group-hover:text-[var(--muse-bg)] transition-all duration-500">
               <Icons.ArrowRight size={16} />
@@ -286,7 +321,7 @@ export default function RoomsGallery() {
       case "pinned":
         return activeRooms.filter((room) => pinnedIds.includes(room.id));
       case "vault":
-        return vaultRooms;
+        return isVaultUnlockedSignal.value ? vaultRooms : [];
       case "archived":
         return archivedRooms;
       case "starred":
@@ -378,9 +413,13 @@ export default function RoomsGallery() {
   const [vaultToUnlock, setVaultToUnlock] = useState<string | null>(null);
 
   const onVaultUnlocked = (id?: string) => {
-    // After unlocking, navigate into the room
-    if (id) globalThis.location.href = `/rooms/${id}`;
-    else if (vaultToUnlock) {
+    // After unlocking, navigate into the room or open tab
+    if (id === "TAB" || vaultToUnlock === "TAB") {
+      setActiveTab("vault");
+      setVaultToUnlock(null);
+    } else if (id) {
+      globalThis.location.href = `/rooms/${id}`;
+    } else if (vaultToUnlock) {
       globalThis.location.href = `/rooms/${vaultToUnlock}`;
     }
   };
@@ -455,7 +494,13 @@ export default function RoomsGallery() {
                   <button
                     key={tab.id}
                     type="button"
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      if (tab.id === "vault" && !isVaultUnlockedSignal.value) {
+                        setVaultToUnlock("TAB");
+                      } else {
+                        setActiveTab(tab.id);
+                      }
+                    }}
                     className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
                       activeTab === tab.id
                         ? "border-canvas-primary/40 bg-canvas-primary/15 text-canvas-primary"

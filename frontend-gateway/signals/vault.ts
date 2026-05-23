@@ -32,9 +32,10 @@ export async function hashPassword(
   return `${s}$${hex}`;
 }
 
-export async function setupMasterVault(password: string) {
-  const hashed = await hashPassword(password);
-  localStorage.setItem(VAULT_KEY, hashed);
+export async function setupMasterVault(password: string, securityAnswer: string) {
+  const hashedPass = await hashPassword(password);
+  const hashedAnswer = await hashPassword(securityAnswer.toLowerCase().trim());
+  localStorage.setItem(VAULT_KEY, `${hashedPass}|${hashedAnswer}`);
   hasMasterPasswordSignal.value = true;
   unlockVaultSession();
 }
@@ -43,14 +44,42 @@ export async function attemptUnlockVault(password: string): Promise<boolean> {
   const stored = localStorage.getItem(VAULT_KEY);
   if (!stored) return false;
 
-  const [salt] = stored.split("$");
+  const [passSection] = stored.split("|");
+  const [salt] = passSection.split("$");
   const candidate = await hashPassword(password, salt);
 
-  if (candidate === stored) {
+  if (candidate === passSection) {
     unlockVaultSession();
     return true;
   }
   return false;
+}
+
+export async function recoverMasterVault(securityAnswer: string, newPassword: string): Promise<boolean> {
+  const stored = localStorage.getItem(VAULT_KEY);
+  if (!stored) return false;
+
+  const parts = stored.split("|");
+  if (parts.length < 2) return false; // Old vault without security answer
+
+  const answerSection = parts[1];
+  const [answerSalt] = answerSection.split("$");
+  const candidateAnswer = await hashPassword(securityAnswer.toLowerCase().trim(), answerSalt);
+
+  if (candidateAnswer === answerSection) {
+    // Answer is correct, setup new password
+    const newHashedPass = await hashPassword(newPassword);
+    localStorage.setItem(VAULT_KEY, `${newHashedPass}|${answerSection}`);
+    unlockVaultSession();
+    return true;
+  }
+  return false;
+}
+
+export function nukeVault() {
+  localStorage.removeItem(VAULT_KEY);
+  hasMasterPasswordSignal.value = false;
+  lockVaultSession();
 }
 
 function unlockVaultSession() {

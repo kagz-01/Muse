@@ -93,7 +93,6 @@ import * as $modals_CreateRoomModal from "./islands/modals/CreateRoomModal.tsx";
 import * as $modals_CreateThreadModal from "./islands/modals/CreateThreadModal.tsx";
 import * as $modals_EditRoomModal from "./islands/modals/EditRoomModal.tsx";
 import * as $modals_VaultGateModal from "./islands/modals/VaultGateModal.tsx";
-import * as $modals_VaultUnlockModal from "./islands/modals/VaultUnlockModal.tsx";
 import * as $modals_index from "./islands/modals/index.ts";
 import * as $navigation_SynthesisEngine from "./islands/navigation/SynthesisEngine.tsx";
 import * as $profile_CollectiveProfile from "./islands/profile/CollectiveProfile.tsx";
@@ -210,7 +209,6 @@ const manifest = {
     "./islands/modals/CreateThreadModal.tsx": $modals_CreateThreadModal,
     "./islands/modals/EditRoomModal.tsx": $modals_EditRoomModal,
     "./islands/modals/VaultGateModal.tsx": $modals_VaultGateModal,
-    "./islands/modals/VaultUnlockModal.tsx": $modals_VaultUnlockModal,
     "./islands/modals/index.ts": $modals_index,
     "./islands/navigation/SynthesisEngine.tsx": $navigation_SynthesisEngine,
     "./islands/profile/CollectiveProfile.tsx": $profile_CollectiveProfile,

@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   addRoom,
+  MOOD_OPTIONS,
   type RoomCategory,
   type RoomSize,
   type RoomTheme,
+  type RoomMood,
 } from "../../signals/rooms.ts";
 
 interface Props {
@@ -27,6 +29,7 @@ export default function CreateRoomModal({ onClose }: Props) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [category, setCategory] = useState<RoomCategory>("workspace");
   const [size, setSize] = useState<RoomSize>("medium");
+  const [mood, setMood] = useState<RoomMood>("focus");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -102,6 +105,7 @@ export default function CreateRoomModal({ onClose }: Props) {
         emoji: emoji || "🏛️",
         category,
         size,
+        mood,
         tags,
         notificationsEnabled,
         themeColor,
@@ -411,7 +415,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                   setCategory(
                     (e.target as HTMLSelectElement).value as RoomCategory,
                   )}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm cursor-pointer"
               >
                 <option value="workspace">🏢 Workspace</option>
                 <option value="journal">📔 Journal</option>
@@ -419,6 +423,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                 <option value="brainstorm">⚡ Brainstorm</option>
                 <option value="inspiration">✨ Inspiration</option>
               </select>
+              <p className="text-[10px] text-gray-500 mt-1.5">Classifies the room's purpose and default behavior.</p>
             </div>
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
@@ -428,12 +433,44 @@ export default function CreateRoomModal({ onClose }: Props) {
                 value={size}
                 onChange={(e) =>
                   setSize((e.target as HTMLSelectElement).value as RoomSize)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm cursor-pointer"
               >
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
+                <option value="small">Small — Dense Grid</option>
+                <option value="medium">Medium — Carousel</option>
+                <option value="large">Large — Gallery</option>
               </select>
+              <p className="text-[10px] text-gray-500 mt-1.5">Controls how artifacts are displayed inside the room.</p>
+            </div>
+          </div>
+
+          {/* Mood Grid */}
+          <div className="mb-5">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+              Room Mood
+            </label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              {MOOD_OPTIONS.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => setMood(m.id)}
+                  className={`group/mood relative p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer hover:scale-[1.03] ${
+                    mood === m.id
+                      ? "border-white/30 bg-white/10 shadow-lg shadow-white/5"
+                      : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
+                  }`}
+                >
+                  <span className="text-lg block mb-1">{m.emoji}</span>
+                  <span className={`text-[11px] font-bold block ${
+                    mood === m.id ? "text-white" : "text-gray-300"
+                  }`}>
+                    {m.label}
+                  </span>
+                  <span className="text-[9px] text-gray-500 leading-tight block mt-0.5">
+                    {m.description}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
@@ -686,10 +723,10 @@ export default function CreateRoomModal({ onClose }: Props) {
             <div className="space-y-2">
               <button
                 onClick={() => setIsPublic(false)}
-                className={`w-full p-4 rounded-xl border transition-all text-left cursor-pointer ${
+                className={`w-full p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group hover:scale-[1.01] ${
                   !isPublic
-                    ? "border-white/30 bg-white/10 shadow-xl"
-                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                    ? "border-white/40 bg-white/10 shadow-xl shadow-white/5"
+                    : "border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10"
                 }`}
                 type="button"
               >
@@ -710,10 +747,10 @@ export default function CreateRoomModal({ onClose }: Props) {
               </button>
               <button
                 onClick={() => setIsPublic(true)}
-                className={`w-full p-4 rounded-xl border transition-all text-left cursor-pointer ${
+                className={`w-full p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group hover:scale-[1.01] ${
                   isPublic
-                    ? "border-canvas-primary/40 bg-canvas-primary/15 shadow-xl"
-                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                    ? "border-canvas-primary/50 bg-canvas-primary/15 shadow-xl shadow-canvas-primary/10"
+                    : "border-white/10 bg-white/5 hover:border-canvas-primary/30 hover:bg-white/10"
                 }`}
                 type="button"
               >

@@ -37,23 +37,25 @@ export default function ArtifactExtractor(
 
       if (inputType === "link") {
         meta = {
-          title: input.includes("x.com")
-            ? "The Future of Digital Sovereignty"
-            : "Aesthetic Brutalism in Modern Web",
-          source: input.includes("x.com") ? "X (Twitter)" : "Instagram",
-          type: input.includes("x.com") ? "Post" : "Image",
-          summary:
-            "An exploration into how decentralized protocols are reshaping user agency in the 2026 landscape.",
-          image:
-            "https://images.unsplash.com/photo-1518005020250-58003994bf3b?auto=format&fit=crop&w=1200&q=80",
+          title: input.includes("x.com") || input.includes("twitter.com")
+            ? "Decentralized Social Signal"
+            : input.includes("github.com") 
+            ? "Repository Reference"
+            : "External Artifact Link",
+          source: input.includes("x.com") ? "X (Twitter)" : input.includes("github") ? "GitHub" : "Web Protocol",
+          type: input.includes("x.com") ? "Post" : "Article",
+          summary: `Extracted metadata for: ${input}`,
+          image: "https://images.unsplash.com/photo-1518005020250-58003994bf3b?auto=format&fit=crop&w=1200&q=80",
           suggestedRoomId: rooms[0]?.id,
         };
       } else {
+        const textPreview = input.slice(0, 150) + (input.length > 150 ? "..." : "");
+        const titleSnippet = input.slice(0, 40).split('\n')[0] + (input.length > 40 ? "..." : "");
         meta = {
-          title: "Raw Intellectual Fragment",
+          title: titleSnippet || "Raw Intellectual Fragment",
           source: "Manual Entry",
           type: "Raw Text",
-          summary: input.slice(0, 100) + "...",
+          summary: textPreview || "Empty transmission",
           suggestedRoomId: rooms[1]?.id,
         };
       }
