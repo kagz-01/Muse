@@ -241,7 +241,7 @@ export default function LandingIsland() {
             <span className="text-gray-700 text-xs">↩</span>
           </div>
 
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-600 animate-bounce">
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-600 animate-bounce">
             <span className="text-[10px] font-bold uppercase tracking-widest">
               Scroll to explore
             </span>

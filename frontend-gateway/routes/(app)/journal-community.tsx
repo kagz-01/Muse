@@ -2,7 +2,7 @@ import { PageProps } from "$fresh/server.ts";
 import { CommunityFeed } from "../../islands/journal/CommunityCard.tsx";
 import { getPublicEntries } from "../../signals/journal.ts";
 import { getTrendingEntries } from "../../components/journal/TrendingAlgorithm.ts";
-import { Zap, TrendingUp, Sparkles, Flame } from "lucide-preact";
+import { Flame, Sparkles, TrendingUp, Zap } from "lucide-preact";
 
 export default function CommunityPage(props: PageProps) {
   const entries = getPublicEntries();
@@ -21,10 +21,14 @@ export default function CommunityPage(props: PageProps) {
 
         {/* Dot Pattern Overlay */}
         <div class="absolute inset-0 opacity-20">
-          <div class="absolute inset-0" style={{
-            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "50px 50px",
-          }} />
+          <div
+            class="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, white 1px, transparent 1px)",
+              backgroundSize: "50px 50px",
+            }}
+          />
         </div>
 
         {/* Content */}
@@ -32,7 +36,9 @@ export default function CommunityPage(props: PageProps) {
           {/* Badge */}
           <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
             <Sparkles size={16} class="text-canvas-primary" />
-            <span class="text-sm font-medium text-canvas-primary">Community Feed</span>
+            <span class="text-sm font-medium text-canvas-primary">
+              Community Feed
+            </span>
           </div>
 
           {/* Title */}
@@ -40,7 +46,8 @@ export default function CommunityPage(props: PageProps) {
             Discover Insights
           </h1>
           <p class="text-lg text-white/60 max-w-2xl leading-relaxed italic font-serif">
-            Explore trending reflections, emerging patterns, and shared wisdom from the Muse community
+            Explore trending reflections, emerging patterns, and shared wisdom
+            from the Muse community
           </p>
 
           {/* Stats Grid */}
@@ -58,7 +65,8 @@ export default function CommunityPage(props: PageProps) {
             <div class="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
               <p class="text-sm text-white/60 mb-2">This Week</p>
               <p class="text-3xl font-bold text-white">
-                {entries.filter(e => Date.now() - e.createdAt < 604800000).length}
+                {entries.filter((e) => Date.now() - e.createdAt < 604800000)
+                  .length}
               </p>
             </div>
             <div class="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">

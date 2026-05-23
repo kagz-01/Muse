@@ -30,7 +30,7 @@ export const addNotification = (
   options?: {
     avatar?: string;
     actionUrl?: string;
-  }
+  },
 ) => {
   const notification: Notification = {
     id: `notif-${Date.now()}`,
@@ -55,12 +55,14 @@ export const addNotification = (
 };
 
 export const removeNotification = (id: string) => {
-  const currentNotif = notificationSignal.value.notifications.find((n) => n.id === id);
+  const currentNotif = notificationSignal.value.notifications.find((n) =>
+    n.id === id
+  );
   const wasUnread = currentNotif && !currentNotif.read;
 
   notificationSignal.value = {
     notifications: notificationSignal.value.notifications.filter(
-      (n) => n.id !== id
+      (n) => n.id !== id,
     ),
     unreadCount: wasUnread
       ? Math.max(0, notificationSignal.value.unreadCount - 1)
@@ -79,7 +81,7 @@ export const markAsRead = (id: string) => {
       notificationSignal.value.unreadCount -
         (notificationSignal.value.notifications.find((n) => n.id === id)?.read
           ? 0
-          : 1)
+          : 1),
     ),
   };
 };

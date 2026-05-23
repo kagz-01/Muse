@@ -59,7 +59,10 @@ export default function CircleActivityFeed({
     return (
       <div className="space-y-3">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="p-4 bg-[var(--muse-surface-soft)] rounded-lg animate-pulse" />
+          <div
+            key={i}
+            className="p-4 bg-[var(--muse-surface-soft)] rounded-lg animate-pulse"
+          />
         ))}
       </div>
     );
@@ -68,7 +71,10 @@ export default function CircleActivityFeed({
   if (activities.length === 0) {
     return (
       <div className="text-center py-8">
-        <Icons.History size={40} className="mx-auto mb-3 text-[var(--muse-text-muted)] opacity-30" />
+        <Icons.History
+          size={40}
+          className="mx-auto mb-3 text-[var(--muse-text-muted)] opacity-30"
+        />
         <p className="text-[var(--muse-text-muted)]">No activity yet</p>
       </div>
     );
@@ -82,7 +88,11 @@ export default function CircleActivityFeed({
           className="p-4 bg-[var(--muse-surface-soft)] hover:bg-[var(--muse-surface-bright)] rounded-lg transition-colors flex gap-4"
         >
           {/* Icon */}
-          <div className={`flex-shrink-0 w-10 h-10 rounded-lg bg-[var(--muse-surface-bright)] flex items-center justify-center ${getActivityColor(activity.type)}`}>
+          <div
+            className={`flex-shrink-0 w-10 h-10 rounded-lg bg-[var(--muse-surface-bright)] flex items-center justify-center ${
+              getActivityColor(activity.type)
+            }`}
+          >
             {getActivityIcon(activity.type)}
           </div>
 

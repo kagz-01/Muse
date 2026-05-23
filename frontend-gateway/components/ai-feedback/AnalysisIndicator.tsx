@@ -46,7 +46,9 @@ export default function AnalysisIndicator({
 
   return (
     <div
-      className={`${config.bg} border border-${config.color.split("-")[1]}-400/20 rounded-xl px-4 py-3 flex items-center gap-3 animate-in fade-in duration-300`}
+      className={`${config.bg} border border-${
+        config.color.split("-")[1]
+      }-400/20 rounded-xl px-4 py-3 flex items-center gap-3 animate-in fade-in duration-300`}
     >
       <IconComponent
         size={16}

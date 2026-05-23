@@ -65,8 +65,8 @@ export default function PatternDetectionUI({
 
       <div className="grid grid-cols-2 gap-3">
         {visiblePatterns.map((pattern, idx) => {
-          const config =
-            categoryColors[pattern.category] || categoryColors.theme;
+          const config = categoryColors[pattern.category] ||
+            categoryColors.theme;
           const IconComponent = config.icon;
 
           return (
@@ -85,7 +85,9 @@ export default function PatternDetectionUI({
               </div>
               <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                 <div
-                  className={`h-full bg-gradient-to-r ${config.text.replace("text-", "from-")} to-transparent`}
+                  className={`h-full bg-gradient-to-r ${
+                    config.text.replace("text-", "from-")
+                  } to-transparent`}
                   style={{
                     width: `${pattern.confidence}%`,
                     transition: "width 0.6s ease-out",

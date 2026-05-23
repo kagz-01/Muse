@@ -59,7 +59,10 @@ export function getUserInterests(userEntries: JournalEntry[]): UserInterests {
   // Calculate exploreNess (higher if user engages with diverse content)
   const uniqueMoods = new Set(userEntries.map((e) => e.mood)).size;
   const uniqueTags = new Set(userEntries.flatMap((e) => e.tags || [])).size;
-  const exploreNess = Math.min(1, (uniqueMoods / 12) * 0.5 + (uniqueTags / 50) * 0.5);
+  const exploreNess = Math.min(
+    1,
+    (uniqueMoods / 12) * 0.5 + (uniqueTags / 50) * 0.5,
+  );
 
   return {
     favoredMoods,
@@ -71,14 +74,19 @@ export function getUserInterests(userEntries: JournalEntry[]): UserInterests {
 
 export function calculateDiscoveryMetrics(
   entry: JournalEntry,
-  userInterests: UserInterests
+  userInterests: UserInterests,
 ): DiscoveryMetrics {
   // Relevance: match with user's moods and tags
-  const moodRelevance = userInterests.favoredMoods.includes(entry.mood) ? 30 : 0;
+  const moodRelevance = userInterests.favoredMoods.includes(entry.mood)
+    ? 30
+    : 0;
   const tagRelevance = entry.tags
     ?.filter((tag) => userInterests.commonTags.includes(tag))
     .length || 0;
-  const relevance = Math.min(100, moodRelevance + Math.min(tagRelevance * 10, 70));
+  const relevance = Math.min(
+    100,
+    moodRelevance + Math.min(tagRelevance * 10, 70),
+  );
 
   // Novelty: opposite moods/tags are more novel
   const novelMood = userInterests.favoredMoods.includes(entry.mood) ? 20 : 60;
@@ -105,7 +113,7 @@ export function getDiscoveryScore(
     novelty: 0.25,
     engagement: 0.2,
     freshness: 0.2,
-  }
+  },
 ): number {
   const metrics = calculateDiscoveryMetrics(entry, userInterests);
   return (
@@ -119,13 +127,13 @@ export function getDiscoveryScore(
 export function getDiscoveryEntries(
   allEntries: JournalEntry[],
   userEntries: JournalEntry[],
-  limit = 20
+  limit = 20,
 ): RecommendationEntry[] {
   const userInterests = getUserInterests(userEntries);
 
   // Filter: public, non-vaulted, not from user
   const publicEntries = allEntries.filter(
-    (e) => e.isPublic && !e.vault && !userEntries.some((ue) => ue.id === e.id)
+    (e) => e.isPublic && !e.vault && !userEntries.some((ue) => ue.id === e.id),
   );
 
   // Score and sort
@@ -145,9 +153,11 @@ export function getDiscoveryEntries(
 export function getDiscoveryByMood(
   allEntries: JournalEntry[],
   targetMood: string,
-  limit = 10
+  limit = 10,
 ): RecommendationEntry[] {
-  const publicEntries = allEntries.filter((e) => e.isPublic && !e.vault && e.mood === targetMood);
+  const publicEntries = allEntries.filter((e) =>
+    e.isPublic && !e.vault && e.mood === targetMood
+  );
 
   return publicEntries
     .sort((a, b) => {
@@ -168,10 +178,10 @@ export function getDiscoveryByMood(
 export function getDiscoveryByTag(
   allEntries: JournalEntry[],
   targetTag: string,
-  limit = 10
+  limit = 10,
 ): RecommendationEntry[] {
   const publicEntries = allEntries.filter(
-    (e) => e.isPublic && !e.vault && e.tags?.includes(targetTag)
+    (e) => e.isPublic && !e.vault && e.tags?.includes(targetTag),
   );
 
   return publicEntries
@@ -191,12 +201,12 @@ export function getDiscoveryByTag(
 export function getTrendingDiscovery(
   allEntries: JournalEntry[],
   timeWindowDays = 7,
-  limit = 15
+  limit = 15,
 ): RecommendationEntry[] {
   const cutoffTime = Date.now() - timeWindowDays * 24 * 60 * 60 * 1000;
 
   const recentPublic = allEntries.filter(
-    (e) => e.isPublic && !e.vault && e.createdAt > cutoffTime
+    (e) => e.isPublic && !e.vault && e.createdAt > cutoffTime,
   );
 
   return recentPublic
@@ -216,7 +226,7 @@ export function getTrendingDiscovery(
 export function getSimilarEntries(
   targetEntry: JournalEntry,
   allEntries: JournalEntry[],
-  limit = 5
+  limit = 5,
 ): RecommendationEntry[] {
   const targetTags = new Set(targetEntry.tags || []);
   const targetMood = targetEntry.mood;
@@ -226,12 +236,14 @@ export function getSimilarEntries(
       e.isPublic &&
       !e.vault &&
       e.id !== targetEntry.id &&
-      (e.mood === targetMood || (e.tags || []).some((tag) => targetTags.has(tag)))
+      (e.mood === targetMood ||
+        (e.tags || []).some((tag) => targetTags.has(tag))),
   );
 
   return candidates
     .map((e) => {
-      const tagMatches = e.tags?.filter((tag) => targetTags.has(tag)).length || 0;
+      const tagMatches = e.tags?.filter((tag) => targetTags.has(tag)).length ||
+        0;
       const moodMatch = e.mood === targetMood ? 30 : 0;
       const score = moodMatch + tagMatches * 15;
       return {

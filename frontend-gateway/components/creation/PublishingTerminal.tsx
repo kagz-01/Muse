@@ -45,8 +45,9 @@ export default function PublishingTerminal() {
 
       <div className="relative z-10 space-y-12">
         <div className="flex items-center justify-between">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-            <Icons.Zap size={14} className="text-canvas-primary" /> Creation Terminal
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+            <Icons.Zap size={14} className="text-canvas-primary" />{" "}
+            Creation Terminal
           </h3>
           <div className="flex items-center gap-3">
             <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-[9px] font-bold uppercase tracking-widest text-emerald-500">
@@ -77,7 +78,10 @@ export default function PublishingTerminal() {
                     <span className="text-[9px] font-bold uppercase tracking-widest text-white">
                       {thread.title}
                     </span>
-                    <Icons.GitCommit size={14} className="text-canvas-primary" />
+                    <Icons.GitCommit
+                      size={14}
+                      className="text-canvas-primary"
+                    />
                   </div>
                   <p className="text-[10px] text-gray-500 font-serif italic line-clamp-1">
                     {thread.thesis}
@@ -141,7 +145,7 @@ export default function PublishingTerminal() {
 
         <div className="flex items-center gap-8 pt-8 border-t border-white/5">
           <div className="flex-1">
-              <div className="flex items-center gap-4 mb-2">
+            <div className="flex items-center gap-4 mb-2">
               <Icons.Cpu
                 size={16}
                 className="text-canvas-primary animate-spin-slow"

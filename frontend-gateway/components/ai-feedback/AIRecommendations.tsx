@@ -1,5 +1,8 @@
 import * as Icons from "lucide-preact";
-import { AIRecommendation, dismissRecommendation } from "../../signals/ai-feedback.ts";
+import {
+  AIRecommendation,
+  dismissRecommendation,
+} from "../../signals/ai-feedback.ts";
 
 interface AIRecommendationsProps {
   recommendations: AIRecommendation[];

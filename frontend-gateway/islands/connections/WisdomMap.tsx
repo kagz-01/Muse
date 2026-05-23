@@ -57,7 +57,7 @@ export default function WisdomMap() {
               stop-opacity="0.1"
             />
           </linearGradient>
-          
+
           {/* Emerging Connections Gradient */}
           <linearGradient id="emergingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop
@@ -69,17 +69,17 @@ export default function WisdomMap() {
               stop-color="rgba(34, 197, 94, 0.1)"
             />
           </linearGradient>
-          
+
           {/* Sync Strength Gradient */}
           <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
             <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
         </defs>
-        
+
         {/* Emerging Connections (stronger lines) */}
         {connections.slice(0, Math.ceil(connections.length / 2)).map((line) => (
           <line
@@ -95,7 +95,7 @@ export default function WisdomMap() {
             filter="url(#glow)"
           />
         ))}
-        
+
         {/* Standard Connections */}
         {connections.map((line) => (
           <line
@@ -127,10 +127,10 @@ export default function WisdomMap() {
                 animationDelay: `${idx * 200}ms`,
               }}
             />
-            
+
             {/* Cluster Indicator (concentric circles) */}
             <div className="absolute -inset-1 rounded-full border border-indigo-500/10" />
-            
+
             <div
               className="relative flex items-center justify-center rounded-full bg-black border border-white/10 shadow-2xl transition-all duration-500 hover:scale-110 hover:border-canvas-primary/40 group-hover/node:shadow-[0_0_40px_rgba(99,102,241,0.2)]"
               style={{ width: node.radius * 2, height: node.radius * 2 }}
@@ -147,14 +147,19 @@ export default function WisdomMap() {
             </div>
           </div>
         ))}
-        
+
         {/* Digital Voids (empty space indicators) */}
         {nodes.length > 0 && (
           <>
             <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full border border-dashed border-red-500/20 flex items-center justify-center">
               <div className="text-center">
-                <Icons.AlertCircle size={16} className="text-red-500/40 mx-auto mb-1" />
-                <p className="text-[8px] text-red-500/40 font-bold">Digital Void</p>
+                <Icons.AlertCircle
+                  size={16}
+                  className="text-red-500/40 mx-auto mb-1"
+                />
+                <p className="text-[8px] text-red-500/40 font-bold">
+                  Digital Void
+                </p>
               </div>
             </div>
             <div className="absolute bottom-1/3 right-1/4 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border border-dashed border-amber-500/20 flex items-center justify-center">
@@ -173,9 +178,10 @@ export default function WisdomMap() {
           </h3>
         </div>
         <p className="text-[11px] text-gray-500 font-serif italic max-w-[220px]">
-          Real-time visualization of cognitive resonance across 1,204 active thinkers.
+          Real-time visualization of cognitive resonance across 1,204 active
+          thinkers.
         </p>
-        
+
         {/* Enhanced Legend */}
         <div className="flex flex-col gap-3 pt-4 border-t border-white/5">
           <div className="flex items-center gap-2">

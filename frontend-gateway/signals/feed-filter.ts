@@ -20,7 +20,7 @@ export const setFeedFilter = (type: "all" | "following") => {
 export const filterPerspectivesByFollowing = (
   perspectives: any[],
   followingIds: string[],
-  filterType: "all" | "following"
+  filterType: "all" | "following",
 ) => {
   if (filterType === "all") {
     return perspectives;

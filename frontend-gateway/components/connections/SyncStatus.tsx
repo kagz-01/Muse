@@ -56,11 +56,14 @@ export default function SyncStatus() {
             {status.throughput}
           </p>
         </div>
-        
+
         {/* Pattern Discovery Rate */}
         <div className="min-w-[160px] flex-1 snap-start p-4 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-2xl border border-indigo-500/20">
           <div className="flex items-center gap-2 mb-1">
-            <Icons.Sparkles size={12} className="text-indigo-400 animate-pulse" />
+            <Icons.Sparkles
+              size={12}
+              className="text-indigo-400 animate-pulse"
+            />
             <span className="text-[8px] font-bold text-indigo-400 uppercase tracking-widest">
               Pattern Discovery
             </span>
@@ -110,7 +113,8 @@ export default function SyncStatus() {
           </div>
         </div>
         <p className="mt-3 text-[9px] text-gray-600 font-serif italic text-center">
-          Broadcasting ledger-backed state across 12 distributed nodes. Filling digital voids...
+          Broadcasting ledger-backed state across 12 distributed nodes. Filling
+          digital voids...
         </p>
       </div>
 

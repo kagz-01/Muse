@@ -40,7 +40,7 @@ const initialState: CircleMembershipState = {
 };
 
 export const circleMembershipSignal = signal<CircleMembershipState>(
-  initialState
+  initialState,
 );
 
 export const joinCircle = async (userId: string, circleId: string) => {
@@ -123,11 +123,11 @@ export const leaveCircle = async (userId: string, circleId: string) => {
 
 export const checkCircleMembership = async (
   userId: string,
-  circleId: string
+  circleId: string,
 ) => {
   try {
     const response = await fetch(
-      `/api/circles/${circleId}/membership?userId=${userId}`
+      `/api/circles/${circleId}/membership?userId=${userId}`,
     );
     if (!response.ok) throw new Error("Failed to check membership");
 

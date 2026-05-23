@@ -46,8 +46,8 @@ export default function BlueprintScoreAnimator({
           displayScore > 75
             ? "text-emerald-400"
             : displayScore > 50
-              ? "text-amber-400"
-              : "text-gray-400"
+            ? "text-amber-400"
+            : "text-gray-400"
         }`}
       >
         {displayScore}

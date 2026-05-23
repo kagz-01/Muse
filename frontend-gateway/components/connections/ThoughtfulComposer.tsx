@@ -89,7 +89,9 @@ export default function ThoughtfulComposer(
         </div>
 
         <div className="flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-2xl h-fit">
-          {mode === "Reflect" && <Icons.Leaf size={14} className="text-indigo-400" />}
+          {mode === "Reflect" && (
+            <Icons.Leaf size={14} className="text-indigo-400" />
+          )}
           {mode === "Build" && (
             <Icons.Aperture size={14} className="text-emerald-400" />
           )}
@@ -107,8 +109,7 @@ export default function ThoughtfulComposer(
 
       <textarea
         value={text}
-        onInput={(e) =>
-          setText((e.target as HTMLTextAreaElement).value)}
+        onInput={(e) => setText((e.target as HTMLTextAreaElement).value)}
         onKeyDown={(e) => {
           if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
             handleSubmit();

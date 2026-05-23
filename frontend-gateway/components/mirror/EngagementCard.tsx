@@ -42,11 +42,9 @@ export default function EngagementCard({
               : "text-[var(--muse-warning)]"
           }`}
         >
-          {trend.direction === "up" ? (
-            <Icons.TrendingUp size={14} />
-          ) : (
-            <Icons.TrendingDown size={14} />
-          )}
+          {trend.direction === "up"
+            ? <Icons.TrendingUp size={14} />
+            : <Icons.TrendingDown size={14} />}
           <span>{trend.percentage}% this week</span>
         </div>
       )}

@@ -107,7 +107,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
 
         <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 w-full z-10">
           <div className="flex justify-between items-center">
-              <a
+            <a
               href="/threads"
               className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-lg"
             >
@@ -115,7 +115,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
             </a>
 
             <div className="flex items-center gap-3">
-                <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
+              <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
                 <Icons.Activity size={14} className={mood.text} />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-white">
                   Synthesizing {thread.sourceRoomIds.length} Rooms
@@ -160,7 +160,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
 
       <main className="p-6 md:p-10 w-full max-w-none relative z-10 -mt-8">
         <div className="flex items-center gap-6 mb-12">
-            <button
+          <button
             onClick={() => setActiveTab("synthesis")}
             type="button"
             className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
@@ -171,7 +171,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
           >
             <Icons.GitCommit size={16} /> Synthesis Hub
           </button>
-            <button
+          <button
             onClick={() => setActiveTab("artifacts")}
             type="button"
             className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
@@ -184,14 +184,17 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
           </button>
 
           <div className="ml-auto flex items-center gap-3">
-              <button
+            <button
               onClick={() => setIsPaletteOpen(!isPaletteOpen)}
               type="button"
               className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all cursor-pointer"
             >
               <Icons.Palette size={20} />
             </button>
-            <button type="button" className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
+            <button
+              type="button"
+              className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer"
+            >
               Export Pattern
             </button>
           </div>

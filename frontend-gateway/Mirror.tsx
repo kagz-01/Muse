@@ -31,15 +31,20 @@ export default function Mirror() {
   );
 
   // Top room by activity this week
-  const roomCounts = weekItems.reduce<Record<string, number>>((acc: Record<string, number>, i: Item) => {
-    acc[i.roomId] = (acc[i.roomId] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const roomCounts = weekItems.reduce<Record<string, number>>(
+    (acc: Record<string, number>, i: Item) => {
+      acc[i.roomId] = (acc[i.roomId] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
   const topRoomId =
     Object.keys(roomCounts).sort((a, b) => roomCounts[b] - roomCounts[a])[0];
   const topRoom = rooms.find((r: Room) => r.id === topRoomId);
 
-  const stats: Array<{ label: string; value: number; icon: IconComp; color: string; bg: string }> = [
+  const stats: Array<
+    { label: string; value: number; icon: IconComp; color: string; bg: string }
+  > = [
     {
       label: "Artifacts saved",
       value: weekItems.length,
@@ -236,7 +241,10 @@ export default function Mirror() {
           transition={{ delay: 0.4 }}
           className="flex justify-center"
         >
-          <button type="button" className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 active:scale-95 transition-all cursor-pointer">
+          <button
+            type="button"
+            className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 active:scale-95 transition-all cursor-pointer"
+          >
             <Icons.Share2 size={16} /> Share Your Week
           </button>
         </motion.div>

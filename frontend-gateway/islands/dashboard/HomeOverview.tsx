@@ -182,8 +182,11 @@ export default function HomeOverview() {
             </div>
 
             <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
-                    {stats.slice(0, 2).map((stat) => {
-                      const Icon = stat.icon as unknown as import("preact").ComponentType<Record<string, unknown>>;
+              {stats.slice(0, 2).map((stat) => {
+                const Icon = stat
+                  .icon as unknown as import("preact").ComponentType<
+                    Record<string, unknown>
+                  >;
                 return (
                   <div
                     key={stat.label}
@@ -208,7 +211,7 @@ export default function HomeOverview() {
 
             <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500">
-                      <Icons.CircleDot size={14} className="text-emerald-400" />
+                <Icons.CircleDot size={14} className="text-emerald-400" />
                 Now
               </div>
               <p className="mt-3 text-sm text-gray-300 leading-relaxed font-serif italic">
@@ -243,8 +246,11 @@ export default function HomeOverview() {
           </div>
 
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                {stats.map((stat) => {
-                    const Icon = stat.icon as unknown as import("preact").ComponentType<Record<string, unknown>>;
+            {stats.map((stat) => {
+              const Icon = stat
+                .icon as unknown as import("preact").ComponentType<
+                  Record<string, unknown>
+                >;
               return (
                 <div
                   key={stat.label}
@@ -252,7 +258,7 @@ export default function HomeOverview() {
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/5 text-white">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/5 text-white">
                         <Icon size={18} />
                       </div>
                       <div>
@@ -274,8 +280,11 @@ export default function HomeOverview() {
           </div>
 
           <div className="space-y-3">
-                {recentActivity.map((item) => {
-                    const Icon = item.icon as unknown as import("preact").ComponentType<Record<string, unknown>>;
+            {recentActivity.map((item) => {
+              const Icon = item
+                .icon as unknown as import("preact").ComponentType<
+                  Record<string, unknown>
+                >;
               return (
                 <a
                   key={item.title}

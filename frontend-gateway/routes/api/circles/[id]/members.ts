@@ -1,13 +1,16 @@
 // Mock database
-const mockMembers: Record<string, Array<{
-  userId: string;
-  name: string;
-  username: string;
-  avatar: string;
-  joinedAt: string;
-  role: "founder" | "moderator" | "member";
-  resonanceScore: number;
-}>> = {
+const mockMembers: Record<
+  string,
+  Array<{
+    userId: string;
+    name: string;
+    username: string;
+    avatar: string;
+    joinedAt: string;
+    role: "founder" | "moderator" | "member";
+    resonanceScore: number;
+  }>
+> = {
   "circle-1": [
     {
       userId: "user-456",

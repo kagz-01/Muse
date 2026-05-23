@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { Zap, Users, TrendingUp, Award, Calendar } from "lucide-preact";
+import { Award, Calendar, TrendingUp, Users, Zap } from "lucide-preact";
 
 interface UserStats {
   userId: string;
@@ -203,17 +203,25 @@ export function UserProfile({ userId, onClose }: UserProfileProps) {
             <div class="space-y-3">
               {stats.topMoods.map(([mood, count]) => (
                 <div key={mood} class="flex items-center justify-between">
-                  <span class={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${moodColors[mood]}`}>
+                  <span
+                    class={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${
+                      moodColors[mood]
+                    }`}
+                  >
                     {mood}
                   </span>
                   <div class="flex items-center gap-2">
                     <div class="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
                       <div
                         class="h-full bg-gradient-to-r from-canvas-primary to-purple-600 rounded-full transition-all"
-                        style={{ width: `${(count / stats.topMoods[0][1]) * 100}%` }}
+                        style={{
+                          width: `${(count / stats.topMoods[0][1]) * 100}%`,
+                        }}
                       />
                     </div>
-                    <span class="text-xs text-white/60 w-6 text-right">{count}</span>
+                    <span class="text-xs text-white/60 w-6 text-right">
+                      {count}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -236,10 +244,14 @@ export function UserProfile({ userId, onClose }: UserProfileProps) {
                     <div class="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
                       <div
                         class="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full transition-all"
-                        style={{ width: `${(count / stats.topTags[0][1]) * 100}%` }}
+                        style={{
+                          width: `${(count / stats.topTags[0][1]) * 100}%`,
+                        }}
                       />
                     </div>
-                    <span class="text-xs text-white/60 w-6 text-right">{count}</span>
+                    <span class="text-xs text-white/60 w-6 text-right">
+                      {count}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -270,7 +282,9 @@ export function UserProfile({ userId, onClose }: UserProfileProps) {
                   </p>
                 </div>
                 <div class="text-right">
-                  <p class="text-xs font-semibold text-white/80">{synthesis.views}</p>
+                  <p class="text-xs font-semibold text-white/80">
+                    {synthesis.views}
+                  </p>
                   <p class="text-xs text-white/50">views</p>
                 </div>
               </button>
@@ -306,5 +320,9 @@ function StatBox({ icon, label, value, unit }: StatBoxProps) {
 
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp);
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }

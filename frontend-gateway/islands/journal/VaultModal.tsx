@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { Lock, X, Eye, EyeOff } from "lucide-preact";
+import { Eye, EyeOff, Lock, X } from "lucide-preact";
 
 interface VaultModalProps {
   isOpen: boolean;
@@ -71,7 +71,8 @@ export function VaultModal({
             <input
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
+              onChange={(e) =>
+                setPassword((e.target as HTMLInputElement).value)}
               placeholder="Enter password"
               class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/30 transition-all"
               disabled={loading}
@@ -82,11 +83,9 @@ export function VaultModal({
               class="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-lg transition-all"
               tabIndex={-1}
             >
-              {showPassword ? (
-                <EyeOff size={18} class="text-white/60" />
-              ) : (
-                <Eye size={18} class="text-white/60" />
-              )}
+              {showPassword
+                ? <EyeOff size={18} class="text-white/60" />
+                : <Eye size={18} class="text-white/60" />}
             </button>
           </div>
 
@@ -101,7 +100,8 @@ export function VaultModal({
           {mode === "create" && (
             <div class="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
               <p class="text-xs text-blue-300">
-                💡 Use a strong, memorable password. This is stored locally only.
+                💡 Use a strong, memorable password. This is stored locally
+                only.
               </p>
             </div>
           )}
@@ -121,7 +121,11 @@ export function VaultModal({
               class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-semibold transition-all disabled:opacity-50"
               disabled={loading || !password.trim()}
             >
-              {loading ? "Processing..." : mode === "create" ? "Create Vault" : "Unlock"}
+              {loading
+                ? "Processing..."
+                : mode === "create"
+                ? "Create Vault"
+                : "Unlock"}
             </button>
           </div>
         </form>

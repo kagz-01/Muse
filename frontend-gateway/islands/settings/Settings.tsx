@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
-const SafeIcons = Icons as unknown as Record<string, import("preact").ComponentType<Record<string, unknown>>>;
+const SafeIcons = Icons as unknown as Record<
+  string,
+  import("preact").ComponentType<Record<string, unknown>>
+>;
 const LucideIcon = (props: {
   icon: import("preact").ComponentType<Record<string, unknown>>;
   className?: string;
@@ -159,7 +162,11 @@ const ACCENT_OPTIONS: Array<
 ];
 
 const THEME_OPTIONS: Array<
-  { value: AppearanceSettings["theme"]; label: string; icon: import("preact").ComponentType<Record<string, unknown>> }
+  {
+    value: AppearanceSettings["theme"];
+    label: string;
+    icon: import("preact").ComponentType<Record<string, unknown>>;
+  }
 > = [
   { value: "light", label: "Light", icon: SafeIcons.Sun },
   { value: "dark", label: "Dark", icon: SafeIcons.Moon },
@@ -1068,7 +1075,13 @@ export default function Settings() {
     );
   }
 
-  const tabs: Array<{ id: SettingsTab; label: string; icon: import("preact").ComponentType<Record<string, unknown>> }> = [
+  const tabs: Array<
+    {
+      id: SettingsTab;
+      label: string;
+      icon: import("preact").ComponentType<Record<string, unknown>>;
+    }
+  > = [
     { id: "profile", label: "Profile", icon: SafeIcons.User },
     { id: "appearance", label: "Appearance", icon: SafeIcons.Palette },
     { id: "notifications", label: "Notifications", icon: SafeIcons.Bell },
@@ -1081,7 +1094,8 @@ export default function Settings() {
   };
 
   const handleAvatarUpload = (event: unknown) => {
-    const target = (event as { target: HTMLInputElement | null })?.target as HTMLInputElement;
+    const target = (event as { target: HTMLInputElement | null })
+      ?.target as HTMLInputElement;
     const file = target.files?.[0];
     if (!file) return;
 
@@ -1648,7 +1662,8 @@ export default function Settings() {
 
                 <div>
                   <label className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-                    <LucideIcon icon={SafeIcons.Calendar} size={12} /> Birth Date
+                    <LucideIcon icon={SafeIcons.Calendar} size={12} />{" "}
+                    Birth Date
                   </label>
                   <input
                     type="date"
@@ -1756,7 +1771,10 @@ export default function Settings() {
 
                 {user.links.length > 0 && (
                   <div className="space-y-2">
-                    {user.links.map((link: UserModel["links"][number], index: number) => (
+                    {user.links.map((
+                      link: UserModel["links"][number],
+                      index: number,
+                    ) => (
                       <div
                         key={index}
                         className="flex items-center justify-between gap-2 p-3 rounded-xl bg-black/30 border border-white/10"
@@ -1799,7 +1817,8 @@ export default function Settings() {
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
                   />
                   <div className="relative">
-                    <LucideIcon icon={SafeIcons.Link2}
+                    <LucideIcon
+                      icon={SafeIcons.Link2}
                       size={12}
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
                     />
@@ -1907,7 +1926,9 @@ export default function Settings() {
                         : "bg-white/10 text-white"
                     }`}
                   >
-                    <LucideIcon icon={SafeIcons.Type} size={fontOption.size} /> {fontOption.label}
+                    <LucideIcon icon={SafeIcons.Type} size={fontOption.size} />
+                    {" "}
+                    {fontOption.label}
                   </button>
                 ))}
               </div>
@@ -1994,7 +2015,11 @@ export default function Settings() {
                       className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
                     >
                       <div className="flex items-center gap-2">
-                        <LucideIcon icon={Icon} size={14} className="text-gray-400" />
+                        <LucideIcon
+                          icon={Icon}
+                          size={14}
+                          className="text-gray-400"
+                        />
                         <span className="text-sm text-gray-300">
                           {toggle.label}
                         </span>
@@ -2035,7 +2060,11 @@ export default function Settings() {
                     >
                       <div className="pr-4">
                         <div className="flex items-center gap-2">
-                          <LucideIcon icon={Icon} size={14} className="text-gray-400" />
+                          <LucideIcon
+                            icon={Icon}
+                            size={14}
+                            className="text-gray-400"
+                          />
                           <span className="text-sm text-gray-300">
                             {option.label}
                           </span>
@@ -2078,7 +2107,11 @@ export default function Settings() {
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
               <div>
                 <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <LucideIcon icon={SafeIcons.Globe} size={14} className="text-gray-400" />{" "}
+                  <LucideIcon
+                    icon={SafeIcons.Globe}
+                    size={14}
+                    className="text-gray-400"
+                  />{" "}
                   Account Visibility
                 </p>
                 <p className="text-[10px] text-gray-500 mt-1">
@@ -2110,7 +2143,11 @@ export default function Settings() {
 
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
               <span className="text-sm text-gray-300 flex items-center gap-2">
-                <LucideIcon icon={SafeIcons.Mail} size={14} className="text-gray-400" />{" "}
+                <LucideIcon
+                  icon={SafeIcons.Mail}
+                  size={14}
+                  className="text-gray-400"
+                />{" "}
                 Show email on profile
               </span>
               <button
@@ -2138,7 +2175,11 @@ export default function Settings() {
 
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
               <span className="text-sm text-gray-300 flex items-center gap-2">
-                <LucideIcon icon={SafeIcons.Eye} size={14} className="text-gray-400" />{" "}
+                <LucideIcon
+                  icon={SafeIcons.Eye}
+                  size={14}
+                  className="text-gray-400"
+                />{" "}
                 Allow search indexing
               </span>
               <button
@@ -2167,7 +2208,11 @@ export default function Settings() {
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
               <div>
                 <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <LucideIcon icon={SafeIcons.Key} size={14} className="text-gray-400" />{" "}
+                  <LucideIcon
+                    icon={SafeIcons.Key}
+                    size={14}
+                    className="text-gray-400"
+                  />{" "}
                   Two-Factor Authentication
                 </p>
                 <p className="text-[10px] text-gray-500">
@@ -2297,13 +2342,18 @@ export default function Settings() {
                 onClick={resetLocalPreferences}
                 className="flex items-center justify-center gap-2 py-3 text-sm bg-white/10 border border-white/10 rounded-xl text-white hover:bg-white/20 transition"
               >
-                <LucideIcon icon={SafeIcons.RotateCcw} size={14} /> Reset Preferences
+                <LucideIcon icon={SafeIcons.RotateCcw} size={14} />{" "}
+                Reset Preferences
               </button>
             </div>
 
             <div className="border-t border-red-500/20 pt-4 space-y-3">
               <div className="flex items-center gap-2">
-                <LucideIcon icon={SafeIcons.Trash2} size={14} className="text-red-400" />
+                <LucideIcon
+                  icon={SafeIcons.Trash2}
+                  size={14}
+                  className="text-red-400"
+                />
                 <span className="text-xs text-red-400 font-medium uppercase tracking-widest">
                   Danger Zone
                 </span>

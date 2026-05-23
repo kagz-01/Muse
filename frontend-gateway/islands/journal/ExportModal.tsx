@@ -1,7 +1,11 @@
 import { useState } from "preact/hooks";
-import { Download, X, FileJson, FileText, FileCode } from "lucide-preact";
+import { Download, FileCode, FileJson, FileText, X } from "lucide-preact";
 import { JournalEntry } from "../../signals/journal.ts";
-import { triggerExport, getExportStats, type ExportOptions } from "../../components/journal/ExportUtils.ts";
+import {
+  type ExportOptions,
+  getExportStats,
+  triggerExport,
+} from "../../components/journal/ExportUtils.ts";
 
 interface ExportModalProps {
   entries: JournalEntry[];
@@ -44,7 +48,9 @@ export function ExportModal({ entries, onClose }: ExportModalProps) {
             </div>
             <div>
               <h2 class="text-xl font-bold text-white">Export Journal</h2>
-              <p class="text-sm text-white/60">Save your entries to your device</p>
+              <p class="text-sm text-white/60">
+                Save your entries to your device
+              </p>
             </div>
           </div>
           <button
@@ -62,9 +68,24 @@ export function ExportModal({ entries, onClose }: ExportModalProps) {
           </label>
           <div class="space-y-2">
             {[
-              { value: "json" as const, label: "JSON", desc: "Structured data format", icon: FileJson },
-              { value: "csv" as const, label: "CSV", desc: "Spreadsheet compatible", icon: FileText },
-              { value: "markdown" as const, label: "Markdown", desc: "Human-readable text", icon: FileCode },
+              {
+                value: "json" as const,
+                label: "JSON",
+                desc: "Structured data format",
+                icon: FileJson,
+              },
+              {
+                value: "csv" as const,
+                label: "CSV",
+                desc: "Spreadsheet compatible",
+                icon: FileText,
+              },
+              {
+                value: "markdown" as const,
+                label: "Markdown",
+                desc: "Human-readable text",
+                icon: FileCode,
+              },
             ].map(({ value, label, desc, icon: Icon }) => (
               <button
                 key={value}
@@ -75,9 +96,16 @@ export function ExportModal({ entries, onClose }: ExportModalProps) {
                     : "bg-white/5 border-white/10 hover:border-white/20"
                 }`}
               >
-                <Icon size={20} class={format === value ? "text-green-400" : "text-white/60"} />
+                <Icon
+                  size={20}
+                  class={format === value ? "text-green-400" : "text-white/60"}
+                />
                 <div class="text-left">
-                  <p class={`font-semibold ${format === value ? "text-green-300" : "text-white"}`}>
+                  <p
+                    class={`font-semibold ${
+                      format === value ? "text-green-300" : "text-white"
+                    }`}
+                  >
                     {label}
                   </p>
                   <p class="text-xs text-white/50">{desc}</p>
@@ -93,7 +121,8 @@ export function ExportModal({ entries, onClose }: ExportModalProps) {
             <input
               type="checkbox"
               checked={includeVaulted}
-              onChange={(e) => setIncludeVaulted((e.target as HTMLInputElement).checked)}
+              onChange={(e) =>
+                setIncludeVaulted((e.target as HTMLInputElement).checked)}
               class="w-4 h-4 rounded"
             />
             <span class="text-sm text-white">Include vaulted entries</span>
@@ -110,7 +139,9 @@ export function ExportModal({ entries, onClose }: ExportModalProps) {
             </div>
             <div>
               <p class="text-white/80">Words</p>
-              <p class="text-xl font-bold text-white">{stats.wordCount.toLocaleString()}</p>
+              <p class="text-xl font-bold text-white">
+                {stats.wordCount.toLocaleString()}
+              </p>
             </div>
             <div>
               <p class="text-white/80">Synthesis</p>

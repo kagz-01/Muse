@@ -41,7 +41,9 @@ export default function AnalysisProgress({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className={`p-3 bg-gradient-to-br ${getStageColor()} rounded-lg text-white`}>
+          <div
+            className={`p-3 bg-gradient-to-br ${getStageColor()} rounded-lg text-white`}
+          >
             {getStageIcon()}
           </div>
           <div>
@@ -113,7 +115,10 @@ export default function AnalysisProgress({
                       <h4 className="text-sm font-semibold text-[var(--muse-text)]">
                         {blueprint.name}
                       </h4>
-                      <BlueprintScoreAnimator targetScore={blueprint.score} duration={1200} />
+                      <BlueprintScoreAnimator
+                        targetScore={blueprint.score}
+                        duration={1200}
+                      />
                     </div>
                     <div className="flex items-center gap-2 text-xs text-[var(--muse-text-muted)]">
                       <Icons.Check size={14} />
@@ -133,11 +138,12 @@ export default function AnalysisProgress({
         </>
       )}
 
-      {progress.stage === "idle" && !isAnalyzing && progress.percentage === 0 && (
-        <p className="text-sm text-[var(--muse-text-muted)] text-center py-4">
-          Start analyzing your content to discover patterns and blueprints
-        </p>
-      )}
+      {progress.stage === "idle" && !isAnalyzing && progress.percentage === 0 &&
+        (
+          <p className="text-sm text-[var(--muse-text-muted)] text-center py-4">
+            Start analyzing your content to discover patterns and blueprints
+          </p>
+        )}
     </div>
   );
 }

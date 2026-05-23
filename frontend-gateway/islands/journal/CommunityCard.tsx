@@ -1,13 +1,13 @@
 import { JournalEntry } from "../../signals/journal.ts";
 import {
+  ArrowRight,
+  Eye,
   Heart,
+  Lock,
   MessageCircle,
   Share2,
-  Eye,
-  Zap,
-  Lock,
   User,
-  ArrowRight,
+  Zap,
 } from "lucide-preact";
 
 interface CommunityCardProps {
@@ -66,11 +66,15 @@ export function CommunityCard({
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-canvas-primary to-purple-600 flex items-center justify-center flex-shrink-0">
-            {authorAvatar ? (
-              <img src={authorAvatar} alt={authorName} class="w-full h-full rounded-full" />
-            ) : (
-              <User size={18} class="text-white" />
-            )}
+            {authorAvatar
+              ? (
+                <img
+                  src={authorAvatar}
+                  alt={authorName}
+                  class="w-full h-full rounded-full"
+                />
+              )
+              : <User size={18} class="text-white" />}
           </div>
           <div>
             <p class="font-medium text-white">{authorName}</p>
@@ -88,7 +92,9 @@ export function CommunityCard({
 
       {/* Mood Badge */}
       <div class="mb-3">
-        <span class={`px-3 py-1 rounded-full text-xs font-semibold ${moodStyle.text} bg-white/10`}>
+        <span
+          class={`px-3 py-1 rounded-full text-xs font-semibold ${moodStyle.text} bg-white/10`}
+        >
           {entry.customMood || entry.mood}
         </span>
       </div>
@@ -107,12 +113,17 @@ export function CommunityCard({
       {entry.tags.length > 0 && (
         <div class="flex flex-wrap gap-1 mb-4">
           {entry.tags.slice(0, 3).map((tag) => (
-            <span key={tag} class="px-2 py-1 rounded-full bg-white/5 text-xs text-white/60">
+            <span
+              key={tag}
+              class="px-2 py-1 rounded-full bg-white/5 text-xs text-white/60"
+            >
               #{tag}
             </span>
           ))}
           {entry.tags.length > 3 && (
-            <span class="px-2 py-1 text-xs text-white/60">+{entry.tags.length - 3}</span>
+            <span class="px-2 py-1 text-xs text-white/60">
+              +{entry.tags.length - 3}
+            </span>
           )}
         </div>
       )}

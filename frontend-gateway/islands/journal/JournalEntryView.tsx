@@ -353,7 +353,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             ))}
           </div>
 
-            <button
+          <button
             onClick={() => toggleFavoriteJournal(entry.id)}
             type="button"
             className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
@@ -399,7 +399,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
 
       {showDelete && (
         <div className="bg-rose-500/5 border-b border-rose-500/10 px-6 md:px-10 py-6 flex items-center justify-between relative z-20 animate-in slide-in-from-top-2 duration-300 backdrop-blur-md">
-            <div className="flex items-center gap-4 text-[11px] font-bold text-rose-300 uppercase tracking-[0.25em]">
+          <div className="flex items-center gap-4 text-[11px] font-bold text-rose-300 uppercase tracking-[0.25em]">
             <Icons.AlertTriangle size={20} className="text-rose-500" />{" "}
             Confirm permanent deletion.
           </div>
@@ -475,7 +475,8 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
         {(aiInsights || blockchainResult) && (
           <div className="mb-16 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
             {aiInsights && (
-              <div className="bg-[#111] border border-indigo-500/20 rounded-[2.5rem] p-8 relative overflow-hidden"
+              <div
+                className="bg-[#111] border border-indigo-500/20 rounded-[2.5rem] p-8 relative overflow-hidden"
                 style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
               >
                 <div className="absolute top-0 right-0 p-8 opacity-10">
@@ -495,7 +496,8 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
               </div>
             )}
             {blockchainResult && (
-              <div className="bg-[#111] border border-violet-500/20 rounded-[2.5rem] p-8 relative overflow-hidden"
+              <div
+                className="bg-[#111] border border-violet-500/20 rounded-[2.5rem] p-8 relative overflow-hidden"
                 style={{ boxShadow: `0 20px 60px rgba(139,92,246,0.12)` }}
               >
                 <div className="absolute top-0 right-0 p-8 opacity-10">
@@ -651,7 +653,8 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
               <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-5 flex items-center gap-2.5">
-                <Icons.Hash size={13} className="text-rose-400" /> Introspection Tags
+                <Icons.Hash size={13} className="text-rose-400" />{" "}
+                Introspection Tags
               </label>
               <div className="flex flex-wrap gap-2.5">
                 {tags.map((tag) => (
@@ -660,7 +663,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-gray-400 hover:text-white transition-all"
                   >
                     #{tag}
-                      <button
+                    <button
                       onClick={() =>
                         setTags((prev) => prev.filter((t) => t !== tag))}
                       type="button"

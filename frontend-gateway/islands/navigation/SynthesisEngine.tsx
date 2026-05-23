@@ -8,9 +8,9 @@ export default function SynthesisEngine() {
       <a
         href="/mirror"
         title="Mirror Insights"
-        className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-tr from-white/10 via-white/5 to-white/20 border border-white/20 text-[var(--muse-text)] hover:bg-white/20 transition-all duration-300 shadow-[inset_0_4px_10px_rgba(255,255,255,0.3),0_0_15px_rgba(var(--muse-accent-rgb),0.2)] hover:shadow-[inset_0_4px_15px_rgba(255,255,255,0.5),0_0_20px_rgba(var(--muse-accent-rgb),0.4)] opacity-80 hover:opacity-100 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-500"
+        className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-tr from-[var(--muse-surface)] via-[var(--muse-overlay)] to-canvas-primary/20 border border-[var(--muse-border)] text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-all duration-300 shadow-[inset_0_4px_10px_rgba(255,255,255,0.1),0_0_15px_rgba(var(--muse-accent-rgb),0.2)] hover:shadow-[inset_0_4px_15px_rgba(255,255,255,0.2),0_0_20px_rgba(var(--muse-accent-rgb),0.4)] opacity-90 hover:opacity-100 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-500"
       >
-        <Icons.Aperture size={20} className="opacity-80" />
+        <Icons.Gauge size={20} />
       </a>
 
       {/* REMEMBER / SYNTHESIZE TRIGGER */}

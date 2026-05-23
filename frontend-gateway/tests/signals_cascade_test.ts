@@ -1,21 +1,17 @@
-import { assertEquals, assert } from "$std/testing/asserts.ts";
+import { assert, assertEquals } from "$std/testing/asserts.ts";
 import {
-  roomsSignal,
   addRoom,
   deleteRoom,
   resetRooms,
+  roomsSignal,
 } from "../signals/rooms.ts";
 import {
-  itemsSignal,
   addItem,
   deleteItem,
+  itemsSignal,
   resetItems,
 } from "../signals/items.ts";
-import {
-  threadsSignal,
-  addThread,
-  resetThreads,
-} from "../signals/threads.ts";
+import { addThread, resetThreads, threadsSignal } from "../signals/threads.ts";
 
 // Ensure a clean baseline before each test by resetting signals
 function setupFreshState() {
@@ -24,15 +20,39 @@ function setupFreshState() {
   resetThreads();
 
   // create two rooms
-  addRoom({ name: "Room A", description: "", themeColor: "indigo", isPublic: false, tags: [], notificationsEnabled: true });
-  addRoom({ name: "Room B", description: "", themeColor: "emerald", isPublic: true, tags: [], notificationsEnabled: true });
+  addRoom({
+    name: "Room A",
+    description: "",
+    themeColor: "indigo",
+    isPublic: false,
+    tags: [],
+    notificationsEnabled: true,
+  });
+  addRoom({
+    name: "Room B",
+    description: "",
+    themeColor: "emerald",
+    isPublic: true,
+    tags: [],
+    notificationsEnabled: true,
+  });
 
   const r1 = roomsSignal.value[0].id;
   const r2 = roomsSignal.value[1].id;
 
   // add two items, one for each room
-  addItem({ roomId: r1, title: "Item A1", sourceUrl: "https://example.com/a1", isPublic: false });
-  addItem({ roomId: r2, title: "Item B1", sourceUrl: "https://example.com/b1", isPublic: false });
+  addItem({
+    roomId: r1,
+    title: "Item A1",
+    sourceUrl: "https://example.com/a1",
+    isPublic: false,
+  });
+  addItem({
+    roomId: r2,
+    title: "Item B1",
+    sourceUrl: "https://example.com/b1",
+    isPublic: false,
+  });
 
   const i1 = itemsSignal.value.find((i) => i.roomId === r1)!.id;
   const i2 = itemsSignal.value.find((i) => i.roomId === r2)!.id;

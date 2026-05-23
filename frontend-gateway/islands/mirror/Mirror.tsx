@@ -3,7 +3,10 @@ import * as Icons from "lucide-preact";
 import { journalSignal } from "../../signals/journal.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
-import { MirrorTimeline, ActivityTimeline } from "../journal/MirrorTimeline.tsx";
+import {
+  ActivityTimeline,
+  MirrorTimeline,
+} from "../journal/MirrorTimeline.tsx";
 import { ExportModal } from "../journal/ExportModal.tsx";
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -86,7 +89,7 @@ export default function Mirror() {
       <div className="fixed inset-0 pointer-events-none bg-canvas-primary/5 blur-3xl opacity-30" />
 
       <div className="w-full max-w-none px-6 md:px-10 py-10 relative z-10">
-          <button
+        <button
           type="button"
           onClick={() => globalThis.history.back()}
           className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-10 text-sm font-bold uppercase tracking-widest cursor-pointer"
@@ -149,7 +152,7 @@ export default function Mirror() {
 
         {/* Reflections */}
         <div className="bg-white/[0.02] border border-white/5 rounded-4xl p-8 md:p-12 mb-10 relative overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200">
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none" />
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-canvas-primary/10 blur-3xl rounded-full pointer-events-none" />
           <div className="relative z-10">
             <h2 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
               <Icons.Aperture size={20} className="text-canvas-primary" />{" "}
@@ -227,7 +230,7 @@ export default function Mirror() {
 
         {/* Share CTA */}
         <div className="flex justify-center animate-in fade-in slide-in-from-bottom-20 duration-700 delay-400">
-            <button
+          <button
             type="button"
             className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 active:scale-95 transition-all cursor-pointer"
           >
@@ -236,7 +239,10 @@ export default function Mirror() {
         </div>
       </div>
       {showExportModal && (
-        <ExportModal entries={entries} onClose={() => setShowExportModal(false)} />
+        <ExportModal
+          entries={entries}
+          onClose={() => setShowExportModal(false)}
+        />
       )}
     </div>
   );

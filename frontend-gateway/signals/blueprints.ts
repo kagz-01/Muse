@@ -1,5 +1,5 @@
 import { signal } from "@preact/signals";
-import { type ThreadMood, addThread } from "./threads.ts";
+import { addThread, type ThreadMood } from "./threads.ts";
 
 export interface ThreadBlueprint {
   id: string;

@@ -14,29 +14,28 @@ export default function SynthesisStatsCard({
   tensionCount,
   signalCount,
 }: SynthesisStatsCardProps) {
-  const coherenceColor =
-    coherenceScore > 80
-      ? "text-emerald-400"
-      : coherenceScore > 60
-        ? "text-amber-400"
-        : "text-rose-400";
+  const coherenceColor = coherenceScore > 80
+    ? "text-emerald-400"
+    : coherenceScore > 60
+    ? "text-amber-400"
+    : "text-rose-400";
 
-  const coherenceBg =
-    coherenceScore > 80
-      ? "bg-emerald-500/10"
-      : coherenceScore > 60
-        ? "bg-amber-500/10"
-        : "bg-rose-500/10";
+  const coherenceBg = coherenceScore > 80
+    ? "bg-emerald-500/10"
+    : coherenceScore > 60
+    ? "bg-amber-500/10"
+    : "bg-rose-500/10";
 
-  const coherenceBorder =
-    coherenceScore > 80
-      ? "border-emerald-500/20"
-      : coherenceScore > 60
-        ? "border-amber-500/20"
-        : "border-rose-500/20";
+  const coherenceBorder = coherenceScore > 80
+    ? "border-emerald-500/20"
+    : coherenceScore > 60
+    ? "border-amber-500/20"
+    : "border-rose-500/20";
 
   return (
-    <div className={`rounded-2xl border ${coherenceBorder} ${coherenceBg} p-5 space-y-4`}>
+    <div
+      className={`rounded-2xl border ${coherenceBorder} ${coherenceBg} p-5 space-y-4`}
+    >
       {/* Coherence Score */}
       <div>
         <div className="flex items-center justify-between mb-2">
@@ -85,13 +84,15 @@ export default function SynthesisStatsCard({
 
       {/* Status Badge */}
       <div className="flex items-center gap-2 pt-2">
-        <div className={`w-2 h-2 rounded-full ${coherenceColor} animate-pulse`} />
+        <div
+          className={`w-2 h-2 rounded-full ${coherenceColor} animate-pulse`}
+        />
         <span className="text-xs text-gray-400">
           {coherenceScore > 80
             ? "Strong synthesis"
             : coherenceScore > 60
-              ? "Good alignment"
-              : "Emerging patterns"}
+            ? "Good alignment"
+            : "Emerging patterns"}
         </span>
       </div>
     </div>

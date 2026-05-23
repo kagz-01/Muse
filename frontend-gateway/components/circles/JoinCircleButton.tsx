@@ -34,7 +34,9 @@ export default function JoinCircleButton({
       addNotification(
         "circle_join",
         `Joined "${circleName}"`,
-        `You are now part of this creative circle with ${memberCount + 1} members`
+        `You are now part of this creative circle with ${
+          memberCount + 1
+        } members`,
       );
       onJoin?.();
     } finally {
@@ -70,14 +72,20 @@ export default function JoinCircleButton({
         <button
           onClick={handleLeave}
           disabled={isLoading}
-          className={`${baseClasses} ${sizeClasses[size]} p-2 bg-[var(--muse-accent)]/20 text-[var(--muse-accent)] hover:bg-[var(--muse-accent)]/10 hover:text-red-500 group`}
+          className={`${baseClasses} ${
+            sizeClasses[size]
+          } p-2 bg-[var(--muse-accent)]/20 text-[var(--muse-accent)] hover:bg-[var(--muse-accent)]/10 hover:text-red-500 group`}
           title={`Leave ${circleName}`}
         >
-          {isLoading ? (
-            <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
-          ) : (
-            <Icons.UserCheck size={size === "sm" ? 14 : size === "md" ? 16 : 18} />
-          )}
+          {isLoading
+            ? (
+              <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+            )
+            : (
+              <Icons.UserCheck
+                size={size === "sm" ? 14 : size === "md" ? 16 : 18}
+              />
+            )}
         </button>
       );
     }
@@ -104,13 +112,15 @@ export default function JoinCircleButton({
       <button
         onClick={handleLeave}
         disabled={isLoading}
-        className={`${baseClasses} ${sizeClasses[size]} bg-[var(--muse-accent)]/20 text-[var(--muse-accent)] hover:bg-red-500/20 hover:text-red-500`}
+        className={`${baseClasses} ${
+          sizeClasses[size]
+        } bg-[var(--muse-accent)]/20 text-[var(--muse-accent)] hover:bg-red-500/20 hover:text-red-500`}
       >
-        {isLoading ? (
-          <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
-        ) : (
-          <Icons.UserCheck size={14} />
-        )}
+        {isLoading
+          ? (
+            <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+          )
+          : <Icons.UserCheck size={14} />}
         <span>Leave Circle</span>
       </button>
     );
@@ -122,14 +132,20 @@ export default function JoinCircleButton({
       <button
         onClick={handleJoin}
         disabled={isLoading}
-        className={`${baseClasses} ${sizeClasses[size]} p-2 bg-[var(--muse-surface-soft)] text-[var(--muse-text-muted)] hover:bg-[var(--muse-accent)]/20 hover:text-[var(--muse-accent)]`}
+        className={`${baseClasses} ${
+          sizeClasses[size]
+        } p-2 bg-[var(--muse-surface-soft)] text-[var(--muse-text-muted)] hover:bg-[var(--muse-accent)]/20 hover:text-[var(--muse-accent)]`}
         title={`Join ${circleName}`}
       >
-        {isLoading ? (
-          <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
-        ) : (
-          <Icons.UserPlus size={size === "sm" ? 14 : size === "md" ? 16 : 18} />
-        )}
+        {isLoading
+          ? (
+            <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+          )
+          : (
+            <Icons.UserPlus
+              size={size === "sm" ? 14 : size === "md" ? 16 : 18}
+            />
+          )}
       </button>
     );
   }
@@ -151,13 +167,15 @@ export default function JoinCircleButton({
     <button
       onClick={handleJoin}
       disabled={isLoading}
-      className={`${baseClasses} ${sizeClasses[size]} bg-[var(--muse-accent)] text-white hover:bg-[var(--muse-accent-bright)]`}
+      className={`${baseClasses} ${
+        sizeClasses[size]
+      } bg-[var(--muse-accent)] text-white hover:bg-[var(--muse-accent-bright)]`}
     >
-      {isLoading ? (
-        <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-      ) : (
-        <Icons.UserPlus size={14} />
-      )}
+      {isLoading
+        ? (
+          <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+        )
+        : <Icons.UserPlus size={14} />}
       <span>Join Circle</span>
     </button>
   );

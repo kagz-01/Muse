@@ -130,7 +130,7 @@ export default function CaptureModal() {
         </button>
 
         {step !== "input" && (
-            <button
+          <button
             type="button"
             onClick={handleBack}
             className="absolute top-8 left-8 p-3 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all rounded-2xl hover:bg-[var(--muse-surface-soft)] active:scale-95 flex items-center gap-2 group cursor-pointer z-50"
@@ -189,7 +189,7 @@ export default function CaptureModal() {
                   className="w-full bg-transparent text-2xl p-6 text-center outline-none transition-colors placeholder-[var(--muse-border)] font-sans text-[var(--muse-text)] border-0"
                 />
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-4">
-                    <Icons.Link2 size={18} className="text-[var(--muse-muted)]" />
+                  <Icons.Link2 size={18} className="text-[var(--muse-muted)]" />
                 </div>
               </div>
 
@@ -217,7 +217,7 @@ export default function CaptureModal() {
             <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="text-center space-y-4">
                 <div className="flex justify-center mb-6">
-                    <div className="px-5 py-2 rounded-full bg-canvas-primary/10 border border-canvas-primary/20 flex items-center gap-3">
+                  <div className="px-5 py-2 rounded-full bg-canvas-primary/10 border border-canvas-primary/20 flex items-center gap-3">
                     <Icons.Check size={14} className="text-canvas-primary" />
                     <span className="text-[10px] font-bold text-canvas-primary uppercase tracking-widest">
                       Resonance Verified
@@ -237,7 +237,7 @@ export default function CaptureModal() {
 
               <div className="min-h-[220px]">
                 {!isAddingRoom
-                    ? (
+                  ? (
                     <div className="flex gap-4 max-w-lg mx-auto h-[220px] overflow-x-auto px-4 scrollbar-hide py-2">
                       {rooms.map((room) => (
                         <button
@@ -256,7 +256,9 @@ export default function CaptureModal() {
                                 ? "text-white"
                                 : "text-[var(--muse-muted)] group-hover:text-[var(--muse-text)]"
                             }`}
-                            style={{ backgroundColor: room.customThemeHex || undefined }}
+                            style={{
+                              backgroundColor: room.customThemeHex || undefined,
+                            }}
                           >
                             <Icons.Layout size={18} />
                           </div>

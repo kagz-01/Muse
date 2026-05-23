@@ -17,7 +17,8 @@ export function calculateTrendScore(entry: JournalEntry): number {
   const viewScore = Math.min(30, (entry.viewCount || 0) * 2);
 
   // Engagement score: 0-40 points
-  const engagementScore = (entry.isFavorited ? 20 : 0) + (entry.tags.length * 5);
+  const engagementScore = (entry.isFavorited ? 20 : 0) +
+    (entry.tags.length * 5);
 
   // Recency score: 100 points fresh, decays over 72 hours
   const recencyScore = Math.max(0, 100 * Math.exp(-ageHours / 24));
@@ -30,7 +31,7 @@ export function calculateTrendScore(entry: JournalEntry): number {
 
 export function getTrendingEntries(
   entries: JournalEntry[],
-  limit = 10
+  limit = 10,
 ): Array<JournalEntry & { trendScore: number }> {
   return entries
     .filter((e) => e.isPublic && (!e.vault || !e.vault.isVaulted))
@@ -65,14 +66,16 @@ export function getUpcomingEntries(entries: JournalEntry[]): JournalEntry[] {
   const weekAgo = Date.now() - 604800000;
   return entries
     .filter(
-      (e) => e.isPublic && !e.vault?.isVaulted && e.createdAt > weekAgo && (e.viewCount || 0) > 0
+      (e) =>
+        e.isPublic && !e.vault?.isVaulted && e.createdAt > weekAgo &&
+        (e.viewCount || 0) > 0,
     )
     .sort((a, b) => calculateTrendScore(b) - calculateTrendScore(a))
     .slice(0, 5);
 }
 
 export function getMoodTrends(
-  entries: JournalEntry[]
+  entries: JournalEntry[],
 ): Array<{ mood: string; count: number; trendScore: number }> {
   const moodMap = new Map<
     string,
@@ -100,7 +103,7 @@ export function getMoodTrends(
 }
 
 export function getTagTrends(
-  entries: JournalEntry[]
+  entries: JournalEntry[],
 ): Array<{ tag: string; count: number; trendScore: number }> {
   const tagMap = new Map<string, { count: number; totalScore: number }>();
 
@@ -127,7 +130,7 @@ export function getTagTrends(
 }
 
 export function getAuthorTrends(
-  entries: JournalEntry[]
+  entries: JournalEntry[],
 ): Array<{
   authorId: string;
   entryCount: number;
@@ -170,7 +173,7 @@ export function getAuthorTrends(
 export function getSearchResults(
   entries: JournalEntry[],
   query: string,
-  limit = 20
+  limit = 20,
 ): JournalEntry[] {
   if (!query.trim()) return [];
 

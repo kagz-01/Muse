@@ -77,7 +77,8 @@ export default function BlueprintReview() {
                       "{bp.thesis}"
                     </p>
                   )}
-                <button type="button"
+                <button
+                  type="button"
                   onClick={() => {
                     if (editingId === bp.id) {
                       updateBlueprintThesis(bp.id, editedThesis);
@@ -113,10 +114,16 @@ export default function BlueprintReview() {
               </div>
 
               <div className="flex gap-4">
-                  <button type="button"
+                <button
+                  type="button"
                   onClick={() => {
                     const newId = acceptBlueprint(bp.id);
-                    if (newId) setAcceptedMap((m) => ({ ...m, [bp.id]: newId }));
+                    if (newId) {
+                      setAcceptedMap((m) => ({
+                        ...m,
+                        [bp.id]: newId,
+                      }));
+                    }
                   }}
                   className="flex-1 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:scale-[1.02] transition-all shadow-xl flex items-center justify-center gap-3"
                 >
@@ -133,7 +140,7 @@ export default function BlueprintReview() {
               {acceptedMap[bp.id]
                 ? (
                   <div className="mt-4 text-sm text-green-400">
-                    Blueprint accepted —{' '}
+                    Blueprint accepted —{" "}
                     <a
                       href={`/threads/${acceptedMap[bp.id]}`}
                       className="underline"

@@ -1,8 +1,12 @@
 import { useState } from "preact/hooks";
-import { createSynthesisEntry, type JournalEntry, type SynthesisData } from "../../signals/journal.ts";
+import {
+  createSynthesisEntry,
+  type JournalEntry,
+  type SynthesisData,
+} from "../../signals/journal.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { threadsSignal } from "../../signals/threads.ts";
-import { Zap, Plus, X } from "lucide-preact";
+import { Plus, X, Zap } from "lucide-preact";
 import type { Room } from "../../signals/rooms.ts";
 import type { Thread } from "../../signals/threads.ts";
 
@@ -11,7 +15,9 @@ interface SynthesisCreationFormProps {
   onSuccess?: (entry: JournalEntry) => void;
 }
 
-export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationFormProps) {
+export function SynthesisCreationForm(
+  { onClose, onSuccess }: SynthesisCreationFormProps,
+) {
   const [body, setBody] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [selectedRooms, setSelectedRooms] = useState<string[]>([]);
@@ -62,8 +68,8 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
     const synthesis: SynthesisData = {
       sourceRoomIds: selectedRooms,
       sourceThreadIds: selectedThreads,
-      keyInsights: insights.filter(i => i.trim()),
-      patterns: patterns.filter(p => p.trim()),
+      keyInsights: insights.filter((i) => i.trim()),
+      patterns: patterns.filter((p) => p.trim()),
       nextActions: [],
       synthesizedAt: Date.now(),
     };
@@ -85,7 +91,9 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
             </div>
             <div>
               <h2 class="text-xl font-bold text-white">Create Synthesis</h2>
-              <p class="text-sm text-white/60">Connect insights across rooms and threads</p>
+              <p class="text-sm text-white/60">
+                Connect insights across rooms and threads
+              </p>
             </div>
           </div>
           <button
@@ -123,7 +131,9 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
                     key={room.id}
                     onClick={() => {
                       if (selectedRooms.includes(room.id)) {
-                        setSelectedRooms(selectedRooms.filter(id => id !== room.id));
+                        setSelectedRooms(
+                          selectedRooms.filter((id) => id !== room.id),
+                        );
                       } else {
                         setSelectedRooms([...selectedRooms, room.id]);
                       }
@@ -150,7 +160,9 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
                     key={thread.id}
                     onClick={() => {
                       if (selectedThreads.includes(thread.id)) {
-                        setSelectedThreads(selectedThreads.filter(id => id !== thread.id));
+                        setSelectedThreads(
+                          selectedThreads.filter((id) => id !== thread.id),
+                        );
                       } else {
                         setSelectedThreads([...selectedThreads, thread.id]);
                       }
@@ -171,7 +183,9 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
           {/* Key Insights */}
           <div>
             <div class="flex items-center justify-between mb-2">
-              <label class="block text-sm font-semibold text-white">Key Insights</label>
+              <label class="block text-sm font-semibold text-white">
+                Key Insights
+              </label>
               <button
                 onClick={handleAddInsight}
                 class="text-xs px-2 py-1 rounded bg-canvas-primary/20 hover:bg-canvas-primary/30 text-canvas-primary transition-all flex items-center gap-1"
@@ -185,7 +199,11 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
                   <input
                     type="text"
                     value={insight}
-                    onChange={(e) => handleInsightChange(i, (e.target as HTMLInputElement).value)}
+                    onChange={(e) =>
+                      handleInsightChange(
+                        i,
+                        (e.target as HTMLInputElement).value,
+                      )}
                     placeholder={`Insight ${i + 1}...`}
                     class="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:border-canvas-primary/50 focus:outline-none focus:ring-1 focus:ring-canvas-primary/30 text-sm"
                   />
@@ -205,7 +223,9 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
           {/* Patterns */}
           <div>
             <div class="flex items-center justify-between mb-2">
-              <label class="block text-sm font-semibold text-white">Patterns Detected</label>
+              <label class="block text-sm font-semibold text-white">
+                Patterns Detected
+              </label>
               <button
                 onClick={handleAddPattern}
                 class="text-xs px-2 py-1 rounded bg-canvas-primary/20 hover:bg-canvas-primary/30 text-canvas-primary transition-all flex items-center gap-1"
@@ -219,7 +239,11 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
                   <input
                     type="text"
                     value={pattern}
-                    onChange={(e) => handlePatternChange(i, (e.target as HTMLInputElement).value)}
+                    onChange={(e) =>
+                      handlePatternChange(
+                        i,
+                        (e.target as HTMLInputElement).value,
+                      )}
                     placeholder={`Pattern ${i + 1}...`}
                     class="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:border-canvas-primary/50 focus:outline-none focus:ring-1 focus:ring-canvas-primary/30 text-sm"
                   />
@@ -242,13 +266,16 @@ export function SynthesisCreationForm({ onClose, onSuccess }: SynthesisCreationF
               <input
                 type="checkbox"
                 checked={isPublic}
-                onChange={(e) => setIsPublic((e.target as HTMLInputElement).checked)}
+                onChange={(e) =>
+                  setIsPublic((e.target as HTMLInputElement).checked)}
                 class="w-4 h-4 rounded"
               />
               <span class="text-sm text-white">Make public</span>
             </label>
             <span class="text-xs text-white/50">
-              {isPublic ? "Anyone can see this synthesis" : "Only you can see this"}
+              {isPublic
+                ? "Anyone can see this synthesis"
+                : "Only you can see this"}
             </span>
           </div>
         </div>

@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
-import { addRoom, hashPassword, type RoomTheme, type RoomCategory, type RoomSize } from "../../signals/rooms.ts";
+import {
+  addRoom,
+  type RoomCategory,
+  type RoomSize,
+  type RoomTheme,
+} from "../../signals/rooms.ts";
 
 interface Props {
   onClose: () => void;
@@ -28,7 +33,6 @@ export default function CreateRoomModal({ onClose }: Props) {
   const [themeColor, setThemeColor] = useState<RoomTheme>("indigo");
   const [coverImage, setCoverImage] = useState("");
   const [isPublic, setIsPublic] = useState(false);
-  const [vaultPassword, setVaultPassword] = useState("");
   const [error, setError] = useState("");
   const [useCustomColor, setUseCustomColor] = useState(false);
   const [customHue, setCustomHue] = useState(270); // indigo hue
@@ -91,13 +95,7 @@ export default function CreateRoomModal({ onClose }: Props) {
       return;
     }
 
-    if (!isPublic && !vaultPassword.trim()) {
-      setError("Private rooms require a password.");
-      return;
-    }
     try {
-      const hashed = !isPublic ? await hashPassword(vaultPassword) : undefined;
-
       const newRoomId = addRoom({
         name: name.trim(),
         description: description.trim(),
@@ -111,7 +109,6 @@ export default function CreateRoomModal({ onClose }: Props) {
         coverImage,
         isPublic,
         isVault: !isPublic,
-        vaultPassword: !isPublic ? hashed : undefined,
       });
       onClose();
       globalThis.location.href = `/rooms/${newRoomId}`;
@@ -143,7 +140,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                 Define your expressive collection space.
               </p>
             </div>
-              <button
+            <button
               onClick={onClose}
               type="button"
               className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
@@ -257,32 +254,140 @@ export default function CreateRoomModal({ onClose }: Props) {
                 <div className="absolute left-0 mt-3 w-full max-h-80 bg-[#111] border border-white/10 rounded-2xl p-4 z-50 shadow-3xl overflow-y-auto">
                   <div className="grid grid-cols-6 gap-2">
                     {[
-                      "😀","😁","😂","🤣","😃","😄",
-                      "😅","😆","😉","😊","😋","😌",
-                      "😍","🥰","😘","😗","😚","😙",
-                      "🥲","😜","😝","😛","🤑","🤗",
-                      "🤭","🤫","🤔","🤐","🤨","😐",
-                      "😑","😶","😏","😒","🙁","☹️",
-                      "😌","😔","😪","🤤","😴","😷",
-                      "🤒","🤕","🤮","🤢","🤮","🤮",
-                      "🎨","📔","🏛️","⚡","✨","🔥",
-                      "🌿","🌧️","🎯","📷","💡","🔒",
-                      "🌊","🧠","📦","🔖","🎭","🎪",
-                      "🎬","🎤","🎧","🎸","🎹","🎺",
-                      "🎻","🥁","📚","📖","📝","✏️",
-                      "📏","📐","📌","📍","📎","🖇️",
-                      "🗂️","🗃️","🧷","🧹","🧺","🧻",
-                      "🧼","🧽","🧯","🛒","🚀","🛸",
-                      "🛰️","🚁","✈️","🛫","🛬","🚂",
-                      "⚽","🏀","🏈","⚾","🥎","🎾",
-                      "🏐","🏉","🥏","🎳","🏓","🏸",
-                      "🏒","🏑","🥍","🏏","🌟","⭐",
-                      "✨","💫","🌠","☄️","💥","🔆",
+                      "😀",
+                      "😁",
+                      "😂",
+                      "🤣",
+                      "😃",
+                      "😄",
+                      "😅",
+                      "😆",
+                      "😉",
+                      "😊",
+                      "😋",
+                      "😌",
+                      "😍",
+                      "🥰",
+                      "😘",
+                      "😗",
+                      "😚",
+                      "😙",
+                      "🥲",
+                      "😜",
+                      "😝",
+                      "😛",
+                      "🤑",
+                      "🤗",
+                      "🤭",
+                      "🤫",
+                      "🤔",
+                      "🤐",
+                      "🤨",
+                      "😐",
+                      "😑",
+                      "😶",
+                      "😏",
+                      "😒",
+                      "🙁",
+                      "☹️",
+                      "😌",
+                      "😔",
+                      "😪",
+                      "🤤",
+                      "😴",
+                      "😷",
+                      "🤒",
+                      "🤕",
+                      "🤮",
+                      "🤢",
+                      "🤮",
+                      "🤮",
+                      "🎨",
+                      "📔",
+                      "🏛️",
+                      "⚡",
+                      "✨",
+                      "🔥",
+                      "🌿",
+                      "🌧️",
+                      "🎯",
+                      "📷",
+                      "💡",
+                      "🔒",
+                      "🌊",
+                      "🧠",
+                      "📦",
+                      "🔖",
+                      "🎭",
+                      "🎪",
+                      "🎬",
+                      "🎤",
+                      "🎧",
+                      "🎸",
+                      "🎹",
+                      "🎺",
+                      "🎻",
+                      "🥁",
+                      "📚",
+                      "📖",
+                      "📝",
+                      "✏️",
+                      "📏",
+                      "📐",
+                      "📌",
+                      "📍",
+                      "📎",
+                      "🖇️",
+                      "🗂️",
+                      "🗃️",
+                      "🧷",
+                      "🧹",
+                      "🧺",
+                      "🧻",
+                      "🧼",
+                      "🧽",
+                      "🧯",
+                      "🛒",
+                      "🚀",
+                      "🛸",
+                      "🛰️",
+                      "🚁",
+                      "✈️",
+                      "🛫",
+                      "🛬",
+                      "🚂",
+                      "⚽",
+                      "🏀",
+                      "🏈",
+                      "⚾",
+                      "🥎",
+                      "🎾",
+                      "🏐",
+                      "🏉",
+                      "🥏",
+                      "🎳",
+                      "🏓",
+                      "🏸",
+                      "🏒",
+                      "🏑",
+                      "🥍",
+                      "🏏",
+                      "🌟",
+                      "⭐",
+                      "✨",
+                      "💫",
+                      "🌠",
+                      "☄️",
+                      "💥",
+                      "🔆",
                     ].map((e) => (
                       <button
                         key={e}
                         type="button"
-                        onClick={() => { setEmoji(e); setShowEmojiPicker(false); }}
+                        onClick={() => {
+                          setEmoji(e);
+                          setShowEmojiPicker(false);
+                        }}
                         className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all text-lg hover:scale-125 hover:bg-canvas-primary/20"
                       >
                         {e}
@@ -302,7 +407,10 @@ export default function CreateRoomModal({ onClose }: Props) {
               </label>
               <select
                 value={category}
-                onChange={(e) => setCategory((e.target as HTMLSelectElement).value as RoomCategory)}
+                onChange={(e) =>
+                  setCategory(
+                    (e.target as HTMLSelectElement).value as RoomCategory,
+                  )}
                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
               >
                 <option value="workspace">🏢 Workspace</option>
@@ -318,7 +426,8 @@ export default function CreateRoomModal({ onClose }: Props) {
               </label>
               <select
                 value={size}
-                onChange={(e) => setSize((e.target as HTMLSelectElement).value as RoomSize)}
+                onChange={(e) =>
+                  setSize((e.target as HTMLSelectElement).value as RoomSize)}
                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
               >
                 <option value="small">Small</option>
@@ -348,7 +457,8 @@ export default function CreateRoomModal({ onClose }: Props) {
             <div className="flex gap-2">
               <input
                 value={tagInput}
-                onInput={(e) => setTagInput((e.target as HTMLInputElement).value)}
+                onInput={(e) =>
+                  setTagInput((e.target as HTMLInputElement).value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && tagInput.trim()) {
                     setTags([...tags, tagInput.trim()]);
@@ -379,7 +489,10 @@ export default function CreateRoomModal({ onClose }: Props) {
               <input
                 type="checkbox"
                 checked={notificationsEnabled}
-                onChange={(e) => setNotificationsEnabled((e.target as HTMLInputElement).checked)}
+                onChange={(e) =>
+                  setNotificationsEnabled(
+                    (e.target as HTMLInputElement).checked,
+                  )}
                 className="w-5 h-5 rounded-lg accent-canvas-primary"
               />
               <div>
@@ -401,54 +514,66 @@ export default function CreateRoomModal({ onClose }: Props) {
                 <button
                   type="button"
                   onClick={() => setUseCustomColor(false)}
-                  className={`px-3 py-1 text-xs font-bold rounded-full transition-colors ${!useCustomColor ? "bg-white/10 text-white" : "text-gray-400 hover:text-white"}`}
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-colors ${
+                    !useCustomColor
+                      ? "bg-white/10 text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
                 >
                   Default
                 </button>
                 <button
                   type="button"
                   onClick={() => setUseCustomColor(true)}
-                  className={`px-3 py-1 text-xs font-bold rounded-full transition-colors ${useCustomColor ? "bg-white/10 text-white" : "text-gray-400 hover:text-white"}`}
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-colors ${
+                    useCustomColor
+                      ? "bg-white/10 text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
                 >
                   Customize
                 </button>
               </div>
             </div>
 
-            {!useCustomColor ? (
-              <div className="flex gap-3 flex-wrap">
-                {paletteColors.map((color) => (
-                  <button
-                    key={color.name}
-                    type="button"
-                    onClick={() => {
-                      setThemeColor(color.name);
-                      setUseCustomColor(false);
-                    }}
-                    title={color.label}
-                    className={`relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer ${
-                      themeColor === color.name && !useCustomColor
-                        ? "ring-2 ring-white ring-offset-2 ring-offset-[#111318] scale-110"
-                        : ""
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                  >
+            {!useCustomColor
+              ? (
+                <div className="flex gap-3 flex-wrap">
+                  {paletteColors.map((color) => (
+                    <button
+                      key={color.name}
+                      type="button"
+                      onClick={() => {
+                        setThemeColor(color.name);
+                        setUseCustomColor(false);
+                      }}
+                      title={color.label}
+                      className={`relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer ${
+                        themeColor === color.name && !useCustomColor
+                          ? "ring-2 ring-white ring-offset-2 ring-offset-[#111318] scale-110"
+                          : ""
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                    >
                       {themeColor === color.name && !useCustomColor && (
-                      <Icons.Check
-                        size={16}
-                        strokeWidth={3}
-                        className="text-white drop-shadow"
-                      />
-                    )}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-5 bg-white/5 rounded-2xl p-5 border border-white/10">
-                {/* Hue Selector Strip */}
-                <div className="flex flex-col items-center">
-                  <div className="w-full h-8 rounded-lg overflow-hidden mb-3 border border-white/10 shadow-lg" style={{
-                    background: `linear-gradient(to right, 
+                        <Icons.Check
+                          size={16}
+                          strokeWidth={3}
+                          className="text-white drop-shadow"
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )
+              : (
+                <div className="space-y-5 bg-white/5 rounded-2xl p-5 border border-white/10">
+                  {/* Hue Selector Strip */}
+                  <div className="flex flex-col items-center">
+                    <div
+                      className="w-full h-8 rounded-lg overflow-hidden mb-3 border border-white/10 shadow-lg"
+                      style={{
+                        background: `linear-gradient(to right, 
                       hsl(0, 100%, 60%),
                       hsl(30, 100%, 60%),
                       hsl(60, 100%, 60%),
@@ -462,88 +587,96 @@ export default function CreateRoomModal({ onClose }: Props) {
                       hsl(300, 100%, 60%),
                       hsl(330, 100%, 60%),
                       hsl(360, 100%, 60%)
-                    )`
-                  }}>
-                    <div 
-                      className="w-1 h-full bg-white border-l-2 border-r-2 border-white shadow-lg pointer-events-none"
-                      style={{
-                        left: `${(customHue / 360) * 100}%`,
-                        position: 'relative'
+                    )`,
                       }}
+                    >
+                      <div
+                        className="w-1 h-full bg-white border-l-2 border-r-2 border-white shadow-lg pointer-events-none"
+                        style={{
+                          left: `${(customHue / 360) * 100}%`,
+                          position: "relative",
+                        }}
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      value={customHue}
+                      onChange={(e) =>
+                        setCustomHue(
+                          Number((e.target as HTMLInputElement).value),
+                        )}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-3">
+                      Slide to choose hue
+                    </p>
+                  </div>
+
+                  {/* Saturation Slider */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Saturation
+                      </label>
+                      <span className="text-[10px] font-bold text-canvas-primary">
+                        {customSaturation}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={customSaturation}
+                      onChange={(e) =>
+                        setCustomSaturation(
+                          Number((e.target as HTMLInputElement).value),
+                        )}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
                     />
                   </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="360"
-                    value={customHue}
-                    onChange={(e) => setCustomHue(Number((e.target as HTMLInputElement).value))}
-                    className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
-                  />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-3">
-                    Slide to choose hue
-                  </p>
-                </div>
 
-                {/* Saturation Slider */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      Saturation
-                    </label>
-                    <span className="text-[10px] font-bold text-canvas-primary">
-                      {customSaturation}%
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={customSaturation}
-                    onChange={(e) =>
-                      setCustomSaturation(Number((e.target as HTMLInputElement).value))}
-                    className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
-                  />
-                </div>
-
-                {/* Lightness Slider */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      Lightness
-                    </label>
-                    <span className="text-[10px] font-bold text-canvas-primary">
-                      {customLightness}%
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={customLightness}
-                    onChange={(e) =>
-                      setCustomLightness(Number((e.target as HTMLInputElement).value))}
-                    className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
-                  />
-                </div>
-
-                {/* Color Preview */}
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-16 h-16 rounded-xl border border-white/20 shadow-lg"
-                    style={{ backgroundColor: currentColor }}
-                  />
+                  {/* Lightness Slider */}
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      Preview
-                    </p>
-                    <p className="text-sm font-mono text-gray-300 mt-1">
-                      {currentColor}
-                    </p>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Lightness
+                      </label>
+                      <span className="text-[10px] font-bold text-canvas-primary">
+                        {customLightness}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={customLightness}
+                      onChange={(e) =>
+                        setCustomLightness(
+                          Number((e.target as HTMLInputElement).value),
+                        )}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                  </div>
+
+                  {/* Color Preview */}
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-16 h-16 rounded-xl border border-white/20 shadow-lg"
+                      style={{ backgroundColor: currentColor }}
+                    />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Preview
+                      </p>
+                      <p className="text-sm font-mono text-gray-300 mt-1">
+                        {currentColor}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
           {/* Visibility Toggle */}
           <div className="mb-8">
@@ -561,9 +694,14 @@ export default function CreateRoomModal({ onClose }: Props) {
                 type="button"
               >
                 <div className="flex items-center gap-3">
-                  <Icons.Lock size={16} className={!isPublic ? "text-white" : "text-gray-500"} />
+                  <Icons.Lock
+                    size={16}
+                    className={!isPublic ? "text-white" : "text-gray-500"}
+                  />
                   <div>
-                    <p className="text-sm font-bold text-white">Private — Solo Mode</p>
+                    <p className="text-sm font-bold text-white">
+                      Private — Solo Mode
+                    </p>
                     <p className="text-xs text-gray-400 font-serif italic">
                       Only you can access this room
                     </p>
@@ -580,9 +718,18 @@ export default function CreateRoomModal({ onClose }: Props) {
                 type="button"
               >
                 <div className="flex items-center gap-3">
-                  <Icons.Globe size={16} className={isPublic ? "text-canvas-primary" : "text-gray-500"} />
+                  <Icons.Globe
+                    size={16}
+                    className={isPublic
+                      ? "text-canvas-primary"
+                      : "text-gray-500"}
+                  />
                   <div>
-                    <p className={`text-sm font-bold ${isPublic ? "text-canvas-primary" : "text-white"}`}>
+                    <p
+                      className={`text-sm font-bold ${
+                        isPublic ? "text-canvas-primary" : "text-white"
+                      }`}
+                    >
                       Community — Shared Mode
                     </p>
                     <p className="text-xs text-gray-400 font-serif italic">
@@ -593,28 +740,6 @@ export default function CreateRoomModal({ onClose }: Props) {
               </button>
             </div>
           </div>
-
-          {/* Vault Password (when Private selected) */}
-          {!isPublic && (
-            <div className="mb-6">
-              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-                Vault Password
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="password"
-                  value={vaultPassword}
-                  onInput={(e) => setVaultPassword((e.target as HTMLInputElement).value)}
-                  placeholder="Choose a password to protect this vault"
-                  className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm"
-                />
-                <button type="button" className="px-4 py-3 rounded-2xl bg-white/10 text-white hover:bg-white/15 transition-all text-sm font-bold">
-                  <Icons.Lock size={16} />
-                </button>
-              </div>
-              <p className="text-xs text-gray-400 mt-2 font-serif italic">You will need this password to unlock the room later.</p>
-            </div>
-          )}
 
           {/* Actions */}
           <div className="flex items-center gap-3">

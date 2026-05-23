@@ -1,6 +1,6 @@
 import { useEffect } from "preact/hooks";
 import * as Icons from "lucide-preact";
-import { mirrorSignal, loadMirrorStats } from "../../signals/mirror.ts";
+import { loadMirrorStats, mirrorSignal } from "../../signals/mirror.ts";
 import EngagementCard from "../../components/mirror/EngagementCard.tsx";
 import ActivityTimeline from "../../components/mirror/ActivityTimeline.tsx";
 import FollowerGrowthChart from "../../components/mirror/FollowerGrowthChart.tsx";
@@ -28,7 +28,8 @@ export default function MirrorDashboard() {
                 Your Mirror
               </h1>
               <p className="text-[var(--muse-text-muted)] mt-2">
-                See how the community resonates with your thoughts and contributions
+                See how the community resonates with your thoughts and
+                contributions
               </p>
             </div>
           </div>
@@ -128,7 +129,7 @@ export default function MirrorDashboard() {
                   {Math.round(
                     ((stats.stats.likes + stats.stats.comments) /
                       stats.stats.views) *
-                      100
+                      100,
                   )}%
                 </p>
                 <p className="text-xs text-[var(--muse-success)] mt-2">

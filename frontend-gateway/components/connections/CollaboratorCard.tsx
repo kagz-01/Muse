@@ -23,7 +23,8 @@ export default function CollaboratorCard({ collaborator }: Props) {
   };
 
   return (
-    <div className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:bg-white/[0.04] hover:border-indigo-500/30 shadow-2xl overflow-hidden"
+    <div
+      className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:bg-white/[0.04] hover:border-indigo-500/30 shadow-2xl overflow-hidden"
       style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
     >
       <div className="relative z-10 flex items-start justify-between mb-8">
@@ -67,11 +68,13 @@ export default function CollaboratorCard({ collaborator }: Props) {
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">
             {collaborator.role}
           </p>
-          
+
           {/* Alignment Score */}
           <div className="flex items-center gap-1.5 ml-auto px-2.5 py-1 bg-purple-500/10 border border-purple-500/30 rounded-lg">
             <Icons.Zap size={10} className="text-purple-400" />
-            <span className="text-[8px] font-bold text-purple-300 uppercase tracking-widest">89% Aligned</span>
+            <span className="text-[8px] font-bold text-purple-300 uppercase tracking-widest">
+              89% Aligned
+            </span>
           </div>
         </div>
         <p className="text-gray-400 font-serif italic text-base leading-relaxed line-clamp-2">
@@ -83,20 +86,28 @@ export default function CollaboratorCard({ collaborator }: Props) {
       <div className="relative z-10 mb-6 grid grid-cols-3 gap-3 py-4 px-3 bg-white/[0.02] border border-white/5 rounded-2xl">
         <div className="text-center">
           <p className="text-sm font-bold text-white">3</p>
-          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">Shared Circles</p>
+          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">
+            Shared Circles
+          </p>
         </div>
         <div className="text-center border-x border-white/5">
           <p className="text-sm font-bold text-emerald-400">12</p>
-          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">Collaborations</p>
+          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">
+            Collaborations
+          </p>
         </div>
         <div className="text-center">
           <p className="text-sm font-bold text-amber-400">7</p>
-          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">Shared Insights</p>
+          <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">
+            Shared Insights
+          </p>
         </div>
       </div>
 
       <div className="relative z-10 pt-4 border-t border-white/5">
-        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3">Shared Wavelength</p>
+        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3">
+          Shared Wavelength
+        </p>
         <div className="flex flex-wrap gap-2 mb-4">
           {collaborator.sharedThemes.map((theme, idx) => (
             <span
@@ -107,11 +118,12 @@ export default function CollaboratorCard({ collaborator }: Props) {
                   : "bg-indigo-500/10 border border-indigo-500/20 text-indigo-400"
               } px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2`}
             >
-              <Icons.Aperture size={8} /> {idx === 0 ? "⭐ " : ""}{theme}
+              <Icons.Aperture size={8} /> {idx === 0 ? "⭐ " : ""}
+              {theme}
             </span>
           ))}
         </div>
-        
+
         {/* Mutual Circles */}
         <div className="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
           <Icons.Users size={12} className="text-indigo-400" />

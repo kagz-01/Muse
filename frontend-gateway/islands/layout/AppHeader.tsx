@@ -19,7 +19,8 @@ import {
   toggleTheme,
 } from "../../signals/ui.ts";
 
-const { Search, Moon, Circle, CloudSun, Sun, Bell, Menu } = Icons as unknown as Record<string, import("preact").ComponentType<unknown>>;
+const { Search, Moon, Circle, CloudSun, Sun, Bell, Menu } =
+  Icons as unknown as Record<string, import("preact").ComponentType<unknown>>;
 
 export const prerender = false;
 export default function AppHeader(
@@ -117,7 +118,7 @@ export default function AppHeader(
             className={`hidden md:flex items-center gap-2 px-3 py-1.5 border rounded-full transition-all duration-300 cursor-pointer ${
               isSoloMode
                 ? "bg-[var(--muse-surface-soft)] border-[var(--muse-border)] text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
-                : "bg-canvas-primary/5 border-canvas-primary/20 text-canvas-primary hover:bg-canvas-primary/10"
+                : "bg-canvas-primary/10 border-canvas-primary/30 text-[var(--muse-text)] drop-shadow-[0_0_8px_rgba(var(--muse-accent-rgb),0.5)] hover:bg-canvas-primary/20"
             }`}
           >
             {isSoloMode
@@ -132,7 +133,7 @@ export default function AppHeader(
               : (
                 <>
                   <div className="w-1.5 h-1.5 rounded-full bg-canvas-primary animate-pulse" />
-                  <span className="text-[9px] font-bold uppercase tracking-widest">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-canvas-primary">
                     Community
                   </span>
                 </>
@@ -147,9 +148,12 @@ export default function AppHeader(
             title={`Switch to next theme (Current: ${currentTheme})`}
           >
             {currentTheme === "dark" && (Moon ? <Moon size={16} /> : null)}
-            {currentTheme === "dim" && (Circle ? <Circle size={14} fill="currentColor" /> : null)}
-            {currentTheme === "tint" && (CloudSun ? <CloudSun size={16} /> : null)}
-            {currentTheme === "light" && (Sun ? <Sun size={16} fill="currentColor" /> : null)}
+            {currentTheme === "dim" &&
+              (Circle ? <Circle size={14} fill="currentColor" /> : null)}
+            {currentTheme === "tint" &&
+              (CloudSun ? <CloudSun size={16} /> : null)}
+            {currentTheme === "light" &&
+              (Sun ? <Sun size={16} fill="currentColor" /> : null)}
           </button>
 
           <div className="relative" ref={notificationPanelRef}>
@@ -162,7 +166,16 @@ export default function AppHeader(
                   : "bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 duration-300"
               }`}
             >
-              {Bell ? <Bell size={16} className={unreadCount > 0 ? "text-canvas-primary" : "text-[var(--muse-muted)]"} /> : null}
+              {Bell
+                ? (
+                  <Bell
+                    size={16}
+                    className={unreadCount > 0
+                      ? "text-canvas-primary"
+                      : "text-[var(--muse-muted)]"}
+                  />
+                )
+                : null}
               {unreadCount > 0 && (
                 <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-canvas-primary border-2 border-[var(--muse-bg)]" />
               )}

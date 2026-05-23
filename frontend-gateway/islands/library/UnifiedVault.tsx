@@ -87,7 +87,7 @@ export default function UnifiedVault() {
       {/* GLOBAL SEARCH / FILTER FLOATING BAR (Optional Suggestion) */}
       <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-xl px-6">
         <div className="bg-[#1a1a1a]/80 backdrop-blur-3xl border border-white/10 rounded-full p-2 flex items-center gap-2 shadow-2xl">
-            <div className="flex-1 flex items-center gap-3 px-4 py-2 text-gray-500">
+          <div className="flex-1 flex items-center gap-3 px-4 py-2 text-gray-500">
             <Icons.Search size={16} />
             <input
               type="text"

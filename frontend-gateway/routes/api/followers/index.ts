@@ -30,14 +30,17 @@ export const handler = async (req: Request, ctx: FreshContext) => {
 
     if (url.pathname.includes("follow") && !url.pathname.includes("unfollow")) {
       userFollowing.add(targetUserId);
-      return new Response(JSON.stringify({ success: true, action: "followed" }), {
-        status: 200,
-      });
+      return new Response(
+        JSON.stringify({ success: true, action: "followed" }),
+        {
+          status: 200,
+        },
+      );
     } else if (url.pathname.includes("unfollow")) {
       userFollowing.delete(targetUserId);
       return new Response(
         JSON.stringify({ success: true, action: "unfollowed" }),
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -48,11 +51,14 @@ export const handler = async (req: Request, ctx: FreshContext) => {
 
   if (req.method === "GET") {
     // Check follow status
-    if (url.searchParams.has("userId") && url.searchParams.has("targetUserId")) {
+    if (
+      url.searchParams.has("userId") && url.searchParams.has("targetUserId")
+    ) {
       const userId = url.searchParams.get("userId");
       const targetUserId = url.searchParams.get("targetUserId");
 
-      const isFollowing = followsDatabase.get(userId)?.has(targetUserId) ?? false;
+      const isFollowing = followsDatabase.get(userId)?.has(targetUserId) ??
+        false;
 
       return new Response(JSON.stringify({ isFollowing }), {
         status: 200,
@@ -88,7 +94,7 @@ export const handler = async (req: Request, ctx: FreshContext) => {
         followerCount: followers.length,
         followingCount: userFollowing.size,
       }),
-      { status: 200 }
+      { status: 200 },
     );
   }
 

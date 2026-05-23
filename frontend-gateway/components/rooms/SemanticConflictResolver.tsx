@@ -24,7 +24,7 @@ export default function SemanticConflictResolver(
   return (
     <div className="bg-amber-500/10 border border-amber-500/30 rounded-[2rem] p-8 animate-in zoom-in-95 duration-500">
       <div className="flex items-start gap-6">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
+        <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
           <Icons.AlertCircle size={28} />
         </div>
 

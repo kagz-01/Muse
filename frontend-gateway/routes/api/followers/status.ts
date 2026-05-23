@@ -15,9 +15,12 @@ export const handler = async (req: Request) => {
     const targetUserId = url.searchParams.get("targetUserId");
 
     if (!userId || !targetUserId) {
-      return new Response(JSON.stringify({ error: "userId and targetUserId required" }), {
-        status: 400,
-      });
+      return new Response(
+        JSON.stringify({ error: "userId and targetUserId required" }),
+        {
+          status: 400,
+        },
+      );
     }
 
     const isFollowing = followsDatabase.get(userId)?.has(targetUserId) ?? false;

@@ -11,11 +11,15 @@ export default function IntelligencePulse() {
 
       <div className="relative z-10 space-y-10">
         <div className="flex items-center justify-between">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-            <Icons.Activity size={14} className="text-canvas-primary" /> Intelligence Pulse
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+            <Icons.Activity size={14} className="text-canvas-primary" />{" "}
+            Intelligence Pulse
           </h3>
           <div className="flex items-center gap-3 px-4 py-1.5 bg-canvas-primary/10 border border-canvas-primary/30 rounded-xl">
-            <Icons.Flame size={14} className="text-canvas-primary animate-pulse" />
+            <Icons.Flame
+              size={14}
+              className="text-canvas-primary animate-pulse"
+            />
             <span className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary">
               {user.cognitiveStreak} Day Streak
             </span>
@@ -79,7 +83,10 @@ export default function IntelligencePulse() {
               </p>
             </div>
           </div>
-          <button type="button" className="px-6 py-3 bg-white text-black font-bold uppercase tracking-widest text-[9px] rounded-xl hover:-translate-y-1 transition-all">
+          <button
+            type="button"
+            className="px-6 py-3 bg-white text-black font-bold uppercase tracking-widest text-[9px] rounded-xl hover:-translate-y-1 transition-all"
+          >
             Review Blueprint
           </button>
         </div>

@@ -1,8 +1,5 @@
 import { FreshContext } from "$fresh/server.ts";
-import {
-  AI_ENGINE_URL,
-  BLOCKCHAIN_URL,
-} from "../../../utils/api.ts";
+import { AI_ENGINE_URL, BLOCKCHAIN_URL } from "../../../utils/api.ts";
 
 type ServiceName = "ai" | "blockchain";
 

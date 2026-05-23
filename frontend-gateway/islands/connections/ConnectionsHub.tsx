@@ -77,8 +77,12 @@ export default function ConnectionsHub() {
                     <Icons.Users size={18} className="text-indigo-400" />
                   </div>
                   <div>
-                    <p className="font-bold text-white text-sm uppercase tracking-wide">Join a Circle</p>
-                    <p className="text-xs text-gray-400 mt-1">Connect with thinkers who share your resonance</p>
+                    <p className="font-bold text-white text-sm uppercase tracking-wide">
+                      Join a Circle
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Connect with thinkers who share your resonance
+                    </p>
                   </div>
                 </div>
               </button>
@@ -94,8 +98,12 @@ export default function ConnectionsHub() {
                     <Icons.Zap size={18} className="text-emerald-400" />
                   </div>
                   <div>
-                    <p className="font-bold text-white text-sm uppercase tracking-wide">Share a Thought</p>
-                    <p className="text-xs text-gray-400 mt-1">Contribute immutable insights to the collective</p>
+                    <p className="font-bold text-white text-sm uppercase tracking-wide">
+                      Share a Thought
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Contribute immutable insights to the collective
+                    </p>
                   </div>
                 </div>
               </button>
@@ -111,8 +119,12 @@ export default function ConnectionsHub() {
                     <Icons.Compass size={18} className="text-amber-400" />
                   </div>
                   <div>
-                    <p className="font-bold text-white text-sm uppercase tracking-wide">Explore Wisdom Map</p>
-                    <p className="text-xs text-gray-400 mt-1">See patterns and connections forming in real-time</p>
+                    <p className="font-bold text-white text-sm uppercase tracking-wide">
+                      Explore Wisdom Map
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      See patterns and connections forming in real-time
+                    </p>
                   </div>
                 </div>
               </button>
@@ -128,8 +140,12 @@ export default function ConnectionsHub() {
                     <Icons.Heart size={18} className="text-rose-400" />
                   </div>
                   <div>
-                    <p className="font-bold text-white text-sm uppercase tracking-wide">Find Collaborators</p>
-                    <p className="text-xs text-gray-400 mt-1">Meet minds aligned with your vision</p>
+                    <p className="font-bold text-white text-sm uppercase tracking-wide">
+                      Find Collaborators
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Meet minds aligned with your vision
+                    </p>
                   </div>
                 </div>
               </button>
@@ -137,30 +153,33 @@ export default function ConnectionsHub() {
 
             {/* Tab Navigation */}
             <div className="flex flex-wrap items-center gap-3 p-1.5 bg-white/5 border border-white/10 rounded-[2.5rem]">
-                {tabs.map((tab) => (
-                  <button
-                    type="button"
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`
+              {tabs.map((tab) => (
+                <button
+                  type="button"
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
                       flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 cursor-pointer
                       ${
-                      activeTab === tab.id
-                        ? "bg-white text-black shadow-2xl scale-105"
-                        : "text-gray-500 hover:text-white hover:bg-white/5"
-                    }
+                    activeTab === tab.id
+                      ? "bg-white text-black shadow-2xl scale-105"
+                      : "text-gray-500 hover:text-white hover:bg-white/5"
+                  }
                     `}
-                  >
-                    {(() => {
-                        const Icon = tab.icon as unknown as import("preact").ComponentType<Record<string, unknown>>;
-                      return <Icon size={16} />;
-                    })()}
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
+                >
+                  {(() => {
+                    const Icon = tab
+                      .icon as unknown as import("preact").ComponentType<
+                        Record<string, unknown>
+                      >;
+                    return <Icon size={16} />;
+                  })()}
+                  {tab.label}
+                </button>
+              ))}
             </div>
-          </section>
+          </div>
+        </section>
 
         <div className="transition-all duration-700">
           {soloMode
@@ -214,7 +233,10 @@ export default function ConnectionsHub() {
                     <div className="space-y-16">
                       <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                         {circles.map((circle) => (
-                          <div key={circle.id} className="w-[360px] flex-shrink-0">
+                          <div
+                            key={circle.id}
+                            className="w-[360px] flex-shrink-0"
+                          >
                             <ActiveCircleCard
                               circle={circle}
                               onJoin={() => joinCircle(circle.id)}
@@ -223,10 +245,11 @@ export default function ConnectionsHub() {
                         ))}
                       </div>
 
-                        <div>
+                      <div>
                         <div className="flex items-center justify-between mb-10">
                           <h2 className="text-3xl font-bold text-white flex items-center gap-4">
-                            <Icons.Globe size={32} className="text-gray-800" />{" "}
+                            <Icons.Globe size={32} className="text-gray-800" />
+                            {" "}
                             Public Domains
                           </h2>
                           <button
@@ -276,7 +299,10 @@ export default function ConnectionsHub() {
                             )
                           )
                           .map((collaborator) => (
-                            <div key={collaborator.id} className="w-[320px] flex-shrink-0">
+                            <div
+                              key={collaborator.id}
+                              className="w-[320px] flex-shrink-0"
+                            >
                               <AuraCard
                                 collaborator={collaborator}
                               />
@@ -296,7 +322,10 @@ export default function ConnectionsHub() {
                       <h3 className="text-2xl font-bold text-white tracking-tight">
                         Pattern Clusters
                       </h3>
-                      <Icons.Aperture size={24} className="text-canvas-primary" />
+                      <Icons.Aperture
+                        size={24}
+                        className="text-canvas-primary"
+                      />
                     </div>
 
                     <SharedThemeCluster />
@@ -305,9 +334,9 @@ export default function ConnectionsHub() {
                       <div className="p-8 bg-canvas-primary/5 border border-canvas-primary/20 rounded-[2.5rem]">
                         <div className="flex items-start gap-4 mb-4">
                           <Icons.Zap
-                                size={24}
-                                className="text-canvas-primary shrink-0 mt-1"
-                              />
+                            size={24}
+                            className="text-canvas-primary shrink-0 mt-1"
+                          />
                           <div>
                             <p className="text-lg font-bold text-white leading-tight">
                               Emerging: 'Digital Voids'

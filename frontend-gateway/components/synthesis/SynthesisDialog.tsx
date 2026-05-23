@@ -1,6 +1,9 @@
 import { useEffect, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
-import { LinkMetadata, createArtifactFromLink } from "../../signals/synthesis.ts";
+import {
+  createArtifactFromLink,
+  LinkMetadata,
+} from "../../signals/synthesis.ts";
 import LinkPreview from "./LinkPreview.tsx";
 
 interface SynthesisDialogProps {
@@ -33,7 +36,7 @@ export default function SynthesisDialog({
     try {
       const artifact = await createArtifactFromLink(
         linkMetadata,
-        createNewRoom ? undefined : selectedRoom || undefined
+        createNewRoom ? undefined : selectedRoom || undefined,
       );
 
       onSuccess?.(artifact.id);
@@ -42,7 +45,9 @@ export default function SynthesisDialog({
       setCreateNewRoom(false);
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create artifact");
+      setError(
+        err instanceof Error ? err.message : "Failed to create artifact",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -159,8 +164,7 @@ export default function SynthesisDialog({
                   placeholder="Room name..."
                   value={newRoomName}
                   onInput={(e) =>
-                    setNewRoomName((e.target as HTMLInputElement).value)
-                  }
+                    setNewRoomName((e.target as HTMLInputElement).value)}
                   onClick={(e) => {
                     e.stopPropagation();
                     setCreateNewRoom(true);
@@ -174,7 +178,10 @@ export default function SynthesisDialog({
           {/* Error */}
           {error && (
             <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
-              <Icons.AlertCircle size={18} className="text-red-500 flex-shrink-0" />
+              <Icons.AlertCircle
+                size={18}
+                className="text-red-500 flex-shrink-0"
+              />
               <p className="text-sm text-red-600">{error}</p>
             </div>
           )}
@@ -194,17 +201,19 @@ export default function SynthesisDialog({
             disabled={isLoading || !isValid}
             className="px-4 py-2 rounded-lg bg-[var(--muse-accent)] text-white font-medium hover:bg-[var(--muse-accent-bright)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                Creating...
-              </>
-            ) : (
-              <>
-                <Icons.CheckCircle2 size={18} />
-                Create Artifact
-              </>
-            )}
+            {isLoading
+              ? (
+                <>
+                  <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  Creating...
+                </>
+              )
+              : (
+                <>
+                  <Icons.CheckCircle2 size={18} />
+                  Create Artifact
+                </>
+              )}
           </button>
         </div>
       </div>

@@ -88,7 +88,7 @@ export const unfollowUser = async (userId: string) => {
       followingCount: Math.max(0, followersSignal.value.followingCount - 1),
       isFollowing: new Map(followersSignal.value.isFollowing).set(
         userId,
-        false
+        false,
       ),
       isLoading: false,
     };
@@ -101,10 +101,13 @@ export const unfollowUser = async (userId: string) => {
   }
 };
 
-export const checkFollowStatus = async (userId: string, targetUserId: string) => {
+export const checkFollowStatus = async (
+  userId: string,
+  targetUserId: string,
+) => {
   try {
     const response = await fetch(
-      `/api/followers/status?userId=${userId}&targetUserId=${targetUserId}`
+      `/api/followers/status?userId=${userId}&targetUserId=${targetUserId}`,
     );
     if (!response.ok) throw new Error("Failed to check follow status");
 
@@ -113,7 +116,7 @@ export const checkFollowStatus = async (userId: string, targetUserId: string) =>
       ...followersSignal.value,
       isFollowing: new Map(followersSignal.value.isFollowing).set(
         targetUserId,
-        data.isFollowing
+        data.isFollowing,
       ),
     };
   } catch (err) {

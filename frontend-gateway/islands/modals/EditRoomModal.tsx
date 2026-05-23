@@ -3,6 +3,8 @@ import * as Icons from "lucide-preact";
 import {
   deleteRoom,
   type Room,
+  type RoomCategory,
+  type RoomSize,
   type RoomTheme,
   updateRoom,
 } from "../../signals/rooms.ts";
@@ -22,16 +24,95 @@ const paletteColors: { name: RoomTheme; hex: string; label: string }[] = [
   { name: "slate", hex: "#64748b", label: "Slate" },
 ];
 
+// Helper to convert hex back to approx HSL for the UI
+const hexToHSL = (hex: string) => {
+  let r = 0, g = 0, b = 0;
+  if (hex.length === 4) {
+    r = parseInt("0x" + hex[1] + hex[1]);
+    g = parseInt("0x" + hex[2] + hex[2]);
+    b = parseInt("0x" + hex[3] + hex[3]);
+  } else if (hex.length === 7) {
+    r = parseInt("0x" + hex[1] + hex[2]);
+    g = parseInt("0x" + hex[3] + hex[4]);
+    b = parseInt("0x" + hex[5] + hex[6]);
+  }
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0, l = (max + min) / 2;
+  if (max === min) {
+    h = s = 0; // achromatic
+  } else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+  return {
+    h: Math.round(h * 360),
+    s: Math.round(s * 100),
+    l: Math.round(l * 100),
+  };
+};
+
 export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
   const [name, setName] = useState(room.name);
-  const [description, setDescription] = useState(room.description ?? "");
-  const [themeColor, setThemeColor] = useState<RoomTheme>(room.themeColor);
-  const [coverPreview, setCoverPreview] = useState(room.coverImage);
+  const [description, setDescription] = useState(room.description || "");
+  const [emoji, setEmoji] = useState(room.emoji || "🏛️");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [category, setCategory] = useState<RoomCategory>(
+    room.category || "workspace",
+  );
+  const [size, setSize] = useState<RoomSize>(room.size || "medium");
+  const [tags, setTags] = useState<string[]>(room.tags || []);
+  const [tagInput, setTagInput] = useState("");
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    room.notificationsEnabled ?? true,
+  );
+  const [themeColor, setThemeColor] = useState<RoomTheme>(
+    room.themeColor || "indigo",
+  );
+  const [coverImage, setCoverImage] = useState(room.coverImage || "");
   const [isPublic, setIsPublic] = useState(room.isPublic);
   const [error, setError] = useState("");
+
+  const [useCustomColor, setUseCustomColor] = useState(!!room.customThemeHex);
+  const initialHSL = room.customThemeHex
+    ? hexToHSL(room.customThemeHex)
+    : { h: 270, s: 100, l: 60 };
+  const [customHue, setCustomHue] = useState(initialHSL.h);
+  const [customSaturation, setCustomSaturation] = useState(initialHSL.s);
+  const [customLightness, setCustomLightness] = useState(initialHSL.l);
+
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  const nameRef = useRef<HTMLInputElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
+
+  const hslToHex = (h: number, s: number, l: number): string => {
+    const a = (s * Math.min(l, 100 - l)) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, "0");
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
+
+  const currentColor = useCustomColor
+    ? hslToHex(customHue, customSaturation, customLightness)
+    : paletteColors.find((c) => c.name === themeColor)?.hex || "#6366f1";
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -50,13 +131,10 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
     const file = target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setCoverPreview(reader.result as string);
+      reader.onloadend = () => setCoverImage(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
-
-  const selectedPalette = paletteColors.find((c) => c.name === themeColor)!;
-  const selectedHex = room.customThemeHex || selectedPalette.hex;
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -65,10 +143,17 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
     }
     updateRoom(room.id, {
       name: name.trim(),
-      description: (description ?? "").trim(),
+      description: description.trim(),
+      emoji: emoji || "🏛️",
+      category,
+      size,
+      tags,
+      notificationsEnabled,
       themeColor,
-      coverImage: coverPreview,
+      customThemeHex: useCustomColor ? currentColor : undefined,
+      coverImage,
       isPublic,
+      isVault: !isPublic,
     });
     onClose();
   };
@@ -83,22 +168,20 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
       onClick={handleBackdropClick}
       className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-lg bg-[#111318] border border-white/10 rounded-4xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
-        {/* Ambient glow */}
+      <div className="relative w-full max-w-2xl bg-[#111318] border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
         <div
           className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500"
-          style={{ backgroundColor: selectedHex }}
+          style={{ backgroundColor: currentColor }}
         />
 
         <div className="relative z-10 p-8">
-          {/* Header */}
           <div className="flex items-center justify-between mb-7">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-white">
                 Edit Room
               </h2>
-              <p className="text-sm text-gray-400 mt-1 font-serif italic truncate max-w-[260px]">
-                {room.name}
+              <p className="text-sm text-gray-400 mt-1 font-serif italic">
+                Refine your expressive collection space.
               </p>
             </div>
             <button
@@ -110,7 +193,6 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             </button>
           </div>
 
-          {/* Cover Image Picker */}
           <div className="mb-6">
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Cover Image
@@ -119,10 +201,10 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
               onClick={() => fileRef.current?.click()}
               className="relative w-full h-36 rounded-2xl border-2 border-dashed border-white/10 hover:border-white/25 transition-all cursor-pointer overflow-hidden group"
             >
-              {coverPreview
+              {coverImage
                 ? (
                   <img
-                    src={coverPreview}
+                    src={coverImage}
                     className="absolute inset-0 w-full h-full object-cover"
                     alt=""
                   />
@@ -135,7 +217,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                     </span>
                   </div>
                 )}
-              {coverPreview && (
+              {coverImage && (
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span className="text-white text-xs font-bold uppercase tracking-widest">
                     Change Image
@@ -152,16 +234,19 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             />
           </div>
 
-          {/* Name */}
           <div className="mb-5">
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Room Name *
             </label>
             <input
+              ref={nameRef}
               value={name}
               onInput={(e) => {
                 setName((e.target as HTMLInputElement).value);
                 setError("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSave();
               }}
               className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium tracking-tight"
             />
@@ -170,7 +255,6 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             )}
           </div>
 
-          {/* Description */}
           <div className="mb-6">
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Description
@@ -184,83 +268,428 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             />
           </div>
 
-          {/* Theme */}
-          <div className="mb-8">
-            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-              Room Theme
+          <div className="mb-5">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Room Icon
             </label>
-            <div className="flex gap-3 flex-wrap">
-              {paletteColors.map((color) => (
-                <button
-                  key={color.name}
-                  type="button"
-                  onClick={() => setThemeColor(color.name)}
-                  title={color.label}
-                  className={`relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer ${
-                    themeColor === color.name
-                      ? "ring-2 ring-white ring-offset-2 ring-offset-[#111318] scale-110"
-                      : ""
-                  }`}
-                  style={{ backgroundColor: color.hex }}
-                >
-                  {themeColor === color.name && (
-                    <Icons.Check
-                      size={16}
-                      strokeWidth={3}
-                      className="text-white drop-shadow"
-                    />
-                  )}
-                </button>
-              ))}
+            <div className="relative">
+              <input
+                value={emoji}
+                onInput={(e) => setEmoji((e.target as HTMLInputElement).value)}
+                placeholder="🏛️ Pick an emoji (optional)"
+                maxLength={8}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium text-center"
+              />
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
+              >
+                😊
+              </button>
+
+              {showEmojiPicker && (
+                <div className="absolute left-0 mt-3 w-full max-h-80 bg-[#111] border border-white/10 rounded-2xl p-4 z-50 shadow-3xl overflow-y-auto">
+                  <div className="grid grid-cols-6 gap-2">
+                    {[
+                      "😀",
+                      "😁",
+                      "😂",
+                      "🤣",
+                      "😃",
+                      "😄",
+                      "😅",
+                      "😆",
+                      "😉",
+                      "😊",
+                      "😋",
+                      "😌",
+                      "😍",
+                      "🥰",
+                      "😘",
+                      "😗",
+                      "😚",
+                      "😙",
+                      "🥲",
+                      "😜",
+                      "😝",
+                      "😛",
+                      "🤑",
+                      "🤗",
+                      "🎨",
+                      "📔",
+                      "🏛️",
+                      "⚡",
+                      "✨",
+                      "🔥",
+                      "🌿",
+                      "🌧️",
+                      "🎯",
+                      "📷",
+                      "💡",
+                      "🔒",
+                    ].map((e) => (
+                      <button
+                        key={e}
+                        type="button"
+                        onClick={() => {
+                          setEmoji(e);
+                          setShowEmojiPicker(false);
+                        }}
+                        className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all text-lg hover:scale-125 hover:bg-canvas-primary/20"
+                      >
+                        {e}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Visibility Toggle */}
-          <div className="mb-8 p-1 bg-white/5 rounded-2xl flex gap-2">
+          <div className="grid grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Category
+              </label>
+              <select
+                value={category}
+                onChange={(e) =>
+                  setCategory(
+                    (e.target as HTMLSelectElement).value as RoomCategory,
+                  )}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+              >
+                <option value="workspace">🏢 Workspace</option>
+                <option value="journal">📔 Journal</option>
+                <option value="archive">🗂️ Archive</option>
+                <option value="brainstorm">⚡ Brainstorm</option>
+                <option value="inspiration">✨ Inspiration</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Size
+              </label>
+              <select
+                value={size}
+                onChange={(e) =>
+                  setSize((e.target as HTMLSelectElement).value as RoomSize)}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+              >
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Tags
+            </label>
+            <div className="flex gap-2 mb-3 flex-wrap">
+              {tags.map((tag, idx) => (
                 <button
+                  key={idx}
+                  onClick={() => setTags(tags.filter((_, i) => i !== idx))}
+                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-canvas-primary/20 text-canvas-primary text-xs font-bold uppercase tracking-widest hover:bg-canvas-primary/30 transition-all cursor-pointer"
+                  type="button"
+                >
+                  {tag} <Icons.X size={12} />
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                value={tagInput}
+                onInput={(e) =>
+                  setTagInput((e.target as HTMLInputElement).value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && tagInput.trim()) {
+                    setTags([...tags, tagInput.trim()]);
+                    setTagInput("");
+                  }
+                }}
+                placeholder="Add tag (press Enter)"
+                className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm"
+              />
+              <button
+                onClick={() => {
+                  if (tagInput.trim()) {
+                    setTags([...tags, tagInput.trim()]);
+                    setTagInput("");
+                  }
+                }}
+                type="button"
+                className="px-4 py-3 rounded-2xl bg-white/10 text-white hover:bg-white/15 transition-all text-sm font-bold"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <label className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all">
+              <input
+                type="checkbox"
+                checked={notificationsEnabled}
+                onChange={(e) =>
+                  setNotificationsEnabled(
+                    (e.target as HTMLInputElement).checked,
+                  )}
+                className="w-5 h-5 rounded-lg accent-canvas-primary"
+              />
+              <div>
+                <p className="text-sm font-bold text-white">Notifications</p>
+                <p className="text-xs text-gray-400 font-serif italic">
+                  Get alerts when this room gets new activity
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <div className="mb-8">
+            <div className="mb-3 flex items-center justify-between">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
+                Room Theme
+              </label>
+              <div className="inline-flex rounded-full bg-white/5 p-1">
+                <button
+                  type="button"
+                  onClick={() => setUseCustomColor(false)}
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-colors ${
+                    !useCustomColor
+                      ? "bg-white/10 text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  Default
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseCustomColor(true)}
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-colors ${
+                    useCustomColor
+                      ? "bg-white/10 text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  Customize
+                </button>
+              </div>
+            </div>
+
+            {!useCustomColor
+              ? (
+                <div className="flex gap-3 flex-wrap">
+                  {paletteColors.map((color) => (
+                    <button
+                      key={color.name}
+                      type="button"
+                      onClick={() => {
+                        setThemeColor(color.name);
+                        setUseCustomColor(false);
+                      }}
+                      title={color.label}
+                      className={`relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer ${
+                        themeColor === color.name && !useCustomColor
+                          ? "ring-2 ring-white ring-offset-2 ring-offset-[#111318] scale-110"
+                          : ""
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                    >
+                      {themeColor === color.name && !useCustomColor && (
+                        <Icons.Check
+                          size={16}
+                          strokeWidth={3}
+                          className="text-white drop-shadow"
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )
+              : (
+                <div className="space-y-5 bg-white/5 rounded-2xl p-5 border border-white/10">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className="w-full h-8 rounded-lg overflow-hidden mb-3 border border-white/10 shadow-lg"
+                      style={{
+                        background: `linear-gradient(to right, 
+                      hsl(0, 100%, 60%), hsl(30, 100%, 60%), hsl(60, 100%, 60%),
+                      hsl(90, 100%, 60%), hsl(120, 100%, 60%), hsl(150, 100%, 60%),
+                      hsl(180, 100%, 60%), hsl(210, 100%, 60%), hsl(240, 100%, 60%),
+                      hsl(270, 100%, 60%), hsl(300, 100%, 60%), hsl(330, 100%, 60%), hsl(360, 100%, 60%)
+                    )`,
+                      }}
+                    >
+                      <div
+                        className="w-1 h-full bg-white border-l-2 border-r-2 border-white shadow-lg pointer-events-none"
+                        style={{
+                          left: `${(customHue / 360) * 100}%`,
+                          position: "relative",
+                        }}
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      value={customHue}
+                      onChange={(e) =>
+                        setCustomHue(
+                          Number((e.target as HTMLInputElement).value),
+                        )}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-3">
+                      Slide to choose hue
+                    </p>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Saturation
+                      </label>
+                      <span className="text-[10px] font-bold text-canvas-primary">
+                        {customSaturation}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={customSaturation}
+                      onChange={(e) =>
+                        setCustomSaturation(
+                          Number((e.target as HTMLInputElement).value),
+                        )}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Lightness
+                      </label>
+                      <span className="text-[10px] font-bold text-canvas-primary">
+                        {customLightness}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={customLightness}
+                      onChange={(e) =>
+                        setCustomLightness(
+                          Number((e.target as HTMLInputElement).value),
+                        )}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-16 h-16 rounded-xl border border-white/20 shadow-lg"
+                      style={{ backgroundColor: currentColor }}
+                    />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Preview
+                      </p>
+                      <p className="text-sm font-mono text-gray-300 mt-1">
+                        {currentColor}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+          </div>
+
+          <div className="mb-8">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+              Room Mode
+            </label>
+            <div className="space-y-2">
+              <button
+                onClick={() => setIsPublic(false)}
+                className={`w-full p-4 rounded-xl border transition-all text-left cursor-pointer ${
+                  !isPublic
+                    ? "border-white/30 bg-white/10 shadow-xl"
+                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                }`}
+                type="button"
+              >
+                <div className="flex items-center gap-3">
+                  <Icons.Lock
+                    size={16}
+                    className={!isPublic ? "text-white" : "text-gray-500"}
+                  />
+                  <div>
+                    <p className="text-sm font-bold text-white">
+                      Private — Vault Mode
+                    </p>
+                    <p className="text-xs text-gray-400 font-serif italic">
+                      Only you can access this room
+                    </p>
+                  </div>
+                </div>
+              </button>
+              <button
+                onClick={() => setIsPublic(true)}
+                className={`w-full p-4 rounded-xl border transition-all text-left cursor-pointer ${
+                  isPublic
+                    ? "border-canvas-primary/40 bg-canvas-primary/15 shadow-xl"
+                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                }`}
+                type="button"
+              >
+                <div className="flex items-center gap-3">
+                  <Icons.Globe
+                    size={16}
+                    className={isPublic
+                      ? "text-canvas-primary"
+                      : "text-gray-500"}
+                  />
+                  <div>
+                    <p
+                      className={`text-sm font-bold ${
+                        isPublic ? "text-canvas-primary" : "text-white"
+                      }`}
+                    >
+                      Community — Shared Mode
+                    </p>
+                    <p className="text-xs text-gray-400 font-serif italic">
+                      Collaborate & share with others
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 mb-6">
+            <button
+              onClick={onClose}
               type="button"
-              onClick={() => setIsPublic(false)}
-              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                !isPublic
-                  ? "bg-white/10 text-white shadow-lg"
-                  : "text-gray-500 hover:text-gray-300"
-              }`}
+              className="flex-1 py-4 rounded-2xl border border-white/10 text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
             >
-              <Icons.Lock size={14} />
-              <span className="text-[9px] font-bold uppercase tracking-widest">
-                Private — Solo Mode
-              </span>
+              Cancel
             </button>
             <button
+              onClick={handleSave}
               type="button"
-              onClick={() => setIsPublic(true)}
-              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                isPublic
-                  ? "bg-canvas-primary/20 text-canvas-primary shadow-lg shadow-canvas-primary/5"
-                  : "text-gray-500 hover:text-gray-300"
-              }`}
+              className="flex-[2] py-4 rounded-2xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer hover:-translate-y-0.5 active:scale-95 text-white"
+              style={{
+                backgroundColor: currentColor,
+                boxShadow: `0 0 30px ${currentColor}55`,
+              }}
             >
-              <Icons.Globe size={14} />
-              <span className="text-[9px] font-bold uppercase tracking-widest">
-                Community Hub
-              </span>
+              Save Changes <Icons.Check size={16} />
             </button>
           </div>
 
-          {/* Save Button */}
-          <button
-            onClick={handleSave}
-            type="button"
-            className="w-full py-4 rounded-2xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer hover:-translate-y-0.5 active:scale-95 mb-4 text-white"
-            style={{
-              backgroundColor: selectedHex,
-              boxShadow: `0 0 30px ${selectedHex}55`,
-            }}
-          >
-            Save Changes <Icons.Check size={16} />
-          </button>
-
-          {/* Delete Zone */}
           {!confirmDelete
             ? (
               <button
@@ -274,7 +703,8 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             : (
               <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-4">
                 <div className="flex items-center gap-2 text-rose-400 text-sm font-bold mb-3">
-                  <Icons.AlertTriangle size={16} /> This action cannot be undone.
+                  <Icons.AlertTriangle size={16} />{" "}
+                  This action cannot be undone.
                 </div>
                 <div className="flex gap-2">
                   <button

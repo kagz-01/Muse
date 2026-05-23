@@ -1,5 +1,11 @@
 import { JournalEntry, SynthesisData } from "../../signals/journal.ts";
-import { Zap, BookOpen, GitCommit, ArrowRight, ExternalLink } from "lucide-preact";
+import {
+  ArrowRight,
+  BookOpen,
+  ExternalLink,
+  GitCommit,
+  Zap,
+} from "lucide-preact";
 
 interface SynthesisCardProps {
   entry: JournalEntry;
@@ -82,7 +88,9 @@ export function SynthesisCard({ entry, onView, onShare }: SynthesisCardProps) {
             </div>
           ))}
           {insightCount > 2 && (
-            <p class="text-xs text-amber-400/70">+{insightCount - 2} more insights</p>
+            <p class="text-xs text-amber-400/70">
+              +{insightCount - 2} more insights
+            </p>
           )}
         </div>
       )}
@@ -128,7 +136,10 @@ export function SynthesisCard({ entry, onView, onShare }: SynthesisCardProps) {
               <ExternalLink size={16} class="text-white/60 hover:text-white" />
             </button>
           )}
-          <ArrowRight size={16} class="text-white/60 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight
+            size={16}
+            class="text-white/60 group-hover:translate-x-1 transition-transform"
+          />
         </div>
       </div>
     </div>

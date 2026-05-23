@@ -28,7 +28,7 @@ export interface Signal {
  */
 export function analyzeSynthesis(
   signals: Signal[],
-  thesis?: string
+  thesis?: string,
 ): SynthesisAnalysis {
   if (!signals.length) {
     return {
@@ -48,9 +48,10 @@ export function analyzeSynthesis(
   const signalMap = scoreSignals(signals, patterns);
 
   return {
-    thesis:
-      thesis ||
-      `Synthesis of ${signals.length} signals across ${new Set(signals.map((s) => s.roomId)).size} rooms`,
+    thesis: thesis ||
+      `Synthesis of ${signals.length} signals across ${
+        new Set(signals.map((s) => s.roomId)).size
+      } rooms`,
     coherenceScore,
     patterns,
     tensions,
@@ -147,7 +148,7 @@ function extractTensions(signals: Signal[]): string[] {
 
     if (hasPos && hasNeg) {
       tensions.push(
-        `${pair.pos[0]} vs ${pair.neg[0]} - balancing opposite forces`
+        `${pair.pos[0]} vs ${pair.neg[0]} - balancing opposite forces`,
       );
     }
   }
@@ -191,7 +192,7 @@ function calculateCoherence(signals: Signal[], patterns: string[]): number {
 
   return Math.min(
     100,
-    Math.round(normalizedAlignment + diversityBonus + lengthBonus)
+    Math.round(normalizedAlignment + diversityBonus + lengthBonus),
   );
 }
 
@@ -200,13 +201,13 @@ function calculateCoherence(signals: Signal[], patterns: string[]): number {
  */
 function generateRecommendations(
   patterns: string[],
-  tensions: string[]
+  tensions: string[],
 ): string[] {
   const recommendations: string[] = [];
 
   if (patterns.length > 0) {
     recommendations.push(
-      `Explore the theme of "${patterns[0]}" more deeply across your rooms`
+      `Explore the theme of "${patterns[0]}" more deeply across your rooms`,
     );
   }
 
@@ -216,7 +217,9 @@ function generateRecommendations(
 
   if (patterns.length > 2) {
     recommendations.push(
-      `Consider how these patterns interconnect: ${patterns.slice(0, 3).join(", ")}`
+      `Consider how these patterns interconnect: ${
+        patterns.slice(0, 3).join(", ")
+      }`,
     );
   }
 
@@ -233,7 +236,7 @@ function generateRecommendations(
  */
 function scoreSignals(
   signals: Signal[],
-  patterns: string[]
+  patterns: string[],
 ): Map<string, number> {
   const scoreMap = new Map<string, number>();
 
@@ -267,7 +270,7 @@ function scoreSignals(
  */
 export function generateThesisStatement(
   analysis: SynthesisAnalysis,
-  _roomNames: string[]
+  _roomNames: string[],
 ): string {
   const { patterns, coherenceScore } = analysis;
 
@@ -276,14 +279,15 @@ export function generateThesisStatement(
   }
 
   const mainPattern = patterns[0];
-  const strength =
-    coherenceScore > 80
-      ? "powerfully"
-      : coherenceScore > 60
-        ? "compellingly"
-        : "exploratorily";
+  const strength = coherenceScore > 80
+    ? "powerfully"
+    : coherenceScore > 60
+    ? "compellingly"
+    : "exploratorily";
 
-  return `${strength.charAt(0).toUpperCase() + strength.slice(1)} synthesizing the theme of ${mainPattern} across your collected signals.`;
+  return `${
+    strength.charAt(0).toUpperCase() + strength.slice(1)
+  } synthesizing the theme of ${mainPattern} across your collected signals.`;
 }
 
 /**
@@ -295,7 +299,7 @@ export function calculateSynthesisMetrics(analysis: SynthesisAnalysis) {
     depth: Math.min(100, analysis.patterns.length * 25),
     complexity: analysis.tensions.length * 20,
     completeness: Math.round(
-      (analysis.signalMap.size / Math.max(1, analysis.signalMap.size)) * 100
+      (analysis.signalMap.size / Math.max(1, analysis.signalMap.size)) * 100,
     ),
   };
 }

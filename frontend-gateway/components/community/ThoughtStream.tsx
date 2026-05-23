@@ -7,7 +7,7 @@ export default function ThoughtStream() {
   return (
     <div className="space-y-12">
       <div className="flex items-center justify-between">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
           <Icons.Globe size={14} className="text-emerald-500" />{" "}
           Collective Thought Stream
         </h3>
@@ -101,7 +101,10 @@ export default function ThoughtStream() {
                 </div>
                 <div className="h-10 w-px bg-white/5" />
                 <div className="flex items-center gap-6">
-                  <button type="button" className="flex items-center gap-2 group/btn">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 group/btn"
+                  >
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-rose-500/10 group-hover/btn:border-rose-500/30 transition-all">
                       <Icons.Heart
                         size={16}
@@ -112,7 +115,10 @@ export default function ThoughtStream() {
                       {pub.resonanceScore} Resonance
                     </span>
                   </button>
-                  <button type="button" className="flex items-center gap-2 group/btn">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 group/btn"
+                  >
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-canvas-primary/10 group-hover/btn:border-canvas-primary/30 transition-all">
                       <Icons.GitCommit
                         size={16}
@@ -123,7 +129,10 @@ export default function ThoughtStream() {
                       Weave
                     </span>
                   </button>
-                  <button type="button" className="flex items-center gap-2 group/btn">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 group/btn"
+                  >
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover/btn:bg-emerald-500/10 group-hover/btn:border-emerald-500/30 transition-all">
                       <Icons.MessageSquare
                         size={16}
@@ -144,7 +153,10 @@ export default function ThoughtStream() {
                       Ledger ID: {pub.txId}
                     </span>
                   </div>
-                    <button type="button" className="text-[9px] font-bold uppercase tracking-widest text-gray-700 hover:text-white transition-colors flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="text-[9px] font-bold uppercase tracking-widest text-gray-700 hover:text-white transition-colors flex items-center gap-2"
+                  >
                     View Source Evidence <Icons.ArrowUpRight size={12} />
                   </button>
                 </div>

@@ -84,7 +84,12 @@ export default function CollectiveProfile() {
             >
               {(() => {
                 const IconComponent = stat.icon as any;
-                return <IconComponent size={18} className="text-gray-600 mx-auto mb-4" />;
+                return (
+                  <IconComponent
+                    size={18}
+                    className="text-gray-600 mx-auto mb-4"
+                  />
+                );
               })()}
               <div className="text-2xl font-bold text-white mb-1">
                 {stat.value}
@@ -148,7 +153,7 @@ export default function CollectiveProfile() {
           {/* WOVEN KNOWLEDGE SHOWCASE */}
           <div className="lg:col-span-2 space-y-12">
             <div className="flex items-center justify-between">
-                <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
                 <Icons.Globe size={14} className="text-emerald-500" />{" "}
                 Public Synthesis Stream
               </h3>

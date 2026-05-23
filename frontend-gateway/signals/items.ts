@@ -1,5 +1,5 @@
 import { signal } from "@preact/signals";
-import { threadsSignal, removeItemFromThread } from "./threads.ts";
+import { removeItemFromThread, threadsSignal } from "./threads.ts";
 
 export interface Item {
   id: string;

@@ -65,7 +65,9 @@ export default function ActivityHeatmap({ data }: ActivityHeatmapProps) {
                 <div
                   key={`${weekIdx}-${dayIdx}`}
                   title={tooltip}
-                  className={`w-6 h-6 rounded border transition-all hover:scale-125 cursor-pointer ${getIntensityColor(day.count)}`}
+                  className={`w-6 h-6 rounded border transition-all hover:scale-125 cursor-pointer ${
+                    getIntensityColor(day.count)
+                  }`}
                 />
               );
             })}

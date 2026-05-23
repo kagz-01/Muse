@@ -161,7 +161,7 @@ if (typeof localStorage !== "undefined") {
       // ignore write errors in restricted environments
     }
   });
-  
+
   streakMetadataSignal.subscribe((metadata: StreakData) => {
     try {
       localStorage.setItem(STREAK_METADATA_KEY, JSON.stringify(metadata));
@@ -188,10 +188,10 @@ export function addEntry(body = "", isPublic = false): JournalEntry {
   };
 
   journalSignal.value = [newEntry, ...journalSignal.value];
-  
+
   // Update streak data on new entry
   updateStreakOnNewEntry();
-  
+
   return newEntry;
 }
 
@@ -228,15 +228,15 @@ export function getJournalStreak(): number {
 function updateStreakOnNewEntry(): void {
   const metadata = streakMetadataSignal.value;
   const today = new Date().toDateString();
-  
+
   // Already wrote today, don't update
   if (metadata.lastEntryDate === today) {
     return;
   }
-  
+
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   let newStreak = metadata.currentStreak;
-  
+
   // If wrote yesterday or today is first entry
   if (metadata.lastEntryDate === yesterday || metadata.currentStreak === 0) {
     newStreak = metadata.currentStreak + 1;
@@ -244,16 +244,19 @@ function updateStreakOnNewEntry(): void {
     // Streak broken, reset to 1
     newStreak = 1;
   }
-  
+
   // Update longest streak if current > longest
   const newLongest = Math.max(newStreak, metadata.longestStreak);
-  
+
   // Check for milestone unlock
-  const unlockedMilestones = getUnlockedMilestones(newStreak, metadata.milestonesUnlocked);
-  
+  const unlockedMilestones = getUnlockedMilestones(
+    newStreak,
+    metadata.milestonesUnlocked,
+  );
+
   // Calculate streak level
   const level = getStreakLevelForCount(newStreak);
-  
+
   const updated: StreakData = {
     ...metadata,
     currentStreak: newStreak,
@@ -263,20 +266,23 @@ function updateStreakOnNewEntry(): void {
     currentLevel: level,
     milestonesUnlocked: unlockedMilestones,
   };
-  
+
   streakMetadataSignal.value = updated;
 }
 
-function getUnlockedMilestones(currentStreak: number, alreadyUnlocked: number[]): number[] {
+function getUnlockedMilestones(
+  currentStreak: number,
+  alreadyUnlocked: number[],
+): number[] {
   const milestones = [7, 30, 100, 365, 1000];
   const newUnlocked = [...alreadyUnlocked];
-  
+
   for (const milestone of milestones) {
     if (currentStreak === milestone && !newUnlocked.includes(milestone)) {
       newUnlocked.push(milestone);
     }
   }
-  
+
   return newUnlocked;
 }
 
@@ -294,23 +300,23 @@ export function getStreakData(): StreakData {
 export function freezeStreak(): boolean {
   const metadata = streakMetadataSignal.value;
   const currentMonth = new Date().getMonth();
-  
+
   // Reset freeze count if month changed
   if (metadata.freezeResetMonth !== currentMonth) {
     metadata.freezeResetMonth = currentMonth;
     metadata.freezeCount = 2;
   }
-  
+
   // Can't freeze if no freezes left
   if (metadata.freezeCount <= 0) {
     return false;
   }
-  
+
   const updated: StreakData = {
     ...metadata,
     freezeCount: metadata.freezeCount - 1,
   };
-  
+
   streakMetadataSignal.value = updated;
   return true;
 }
@@ -319,14 +325,14 @@ export function getMilestoneUnlocked(): number | null {
   const metadata = streakMetadataSignal.value;
   const streak = metadata.currentStreak;
   const unlocked = metadata.milestonesUnlocked;
-  
+
   const milestones = [7, 30, 100, 365, 1000];
   for (const milestone of milestones) {
     if (streak === milestone && unlocked.includes(milestone)) {
       return milestone;
     }
   }
-  
+
   return null;
 }
 
@@ -361,7 +367,10 @@ function hashPassword(password: string): string {
   return Math.abs(hash).toString(16);
 }
 
-export function createVaultEntry(entry: JournalEntry, password: string): JournalEntry {
+export function createVaultEntry(
+  entry: JournalEntry,
+  password: string,
+): JournalEntry {
   const updated = { ...entry };
   updated.vault = {
     isVaulted: true,
@@ -373,7 +382,10 @@ export function createVaultEntry(entry: JournalEntry, password: string): Journal
   return updated;
 }
 
-export function verifyVaultPassword(entry: JournalEntry, password: string): boolean {
+export function verifyVaultPassword(
+  entry: JournalEntry,
+  password: string,
+): boolean {
   if (!entry.vault || !entry.vault.passwordHash) return false;
   return entry.vault.passwordHash === hashPassword(password);
 }
@@ -384,11 +396,14 @@ export function unlockVaultEntry(entry: JournalEntry): JournalEntry {
 
 // ============ PHASE 2: CONNECTIONS ============
 
-export function addLinkedArtifact(entryId: string, artifact: LinkedArtifact): void {
+export function addLinkedArtifact(
+  entryId: string,
+  artifact: LinkedArtifact,
+): void {
   journalSignal.value = journalSignal.value.map((e: JournalEntry) => {
     if (e.id === entryId) {
       const artifacts = e.linkedArtifacts || [];
-      if (!artifacts.find(a => a.id === artifact.id)) {
+      if (!artifacts.find((a) => a.id === artifact.id)) {
         return {
           ...e,
           linkedArtifacts: [...artifacts, artifact],
@@ -400,12 +415,15 @@ export function addLinkedArtifact(entryId: string, artifact: LinkedArtifact): vo
   });
 }
 
-export function removeLinkedArtifact(entryId: string, artifactId: string): void {
+export function removeLinkedArtifact(
+  entryId: string,
+  artifactId: string,
+): void {
   journalSignal.value = journalSignal.value.map((e: JournalEntry) => {
     if (e.id === entryId && e.linkedArtifacts) {
       return {
         ...e,
-        linkedArtifacts: e.linkedArtifacts.filter(a => a.id !== artifactId),
+        linkedArtifacts: e.linkedArtifacts.filter((a) => a.id !== artifactId),
         updatedAt: Date.now(),
       };
     }
@@ -414,7 +432,7 @@ export function removeLinkedArtifact(entryId: string, artifactId: string): void 
 }
 
 export function getLinkedArtifacts(entryId: string): LinkedArtifact[] {
-  const entry = journalSignal.value.find(e => e.id === entryId);
+  const entry = journalSignal.value.find((e) => e.id === entryId);
   return entry?.linkedArtifacts || [];
 }
 
@@ -423,7 +441,7 @@ export function getLinkedArtifacts(entryId: string): LinkedArtifact[] {
 export function createSynthesisEntry(
   body: string,
   synthesis: SynthesisData,
-  isPublic = false
+  isPublic = false,
 ): JournalEntry {
   const newEntry: JournalEntry = {
     id: crypto.randomUUID(),
@@ -446,11 +464,11 @@ export function createSynthesisEntry(
 }
 
 export function getSynthesisEntries(): JournalEntry[] {
-  return journalSignal.value.filter(e => e.type === "synthesis");
+  return journalSignal.value.filter((e) => e.type === "synthesis");
 }
 
 export function getReflectionEntries(): JournalEntry[] {
-  return journalSignal.value.filter(e => !e.type || e.type === "reflection");
+  return journalSignal.value.filter((e) => !e.type || e.type === "reflection");
 }
 
 // ============ PHASE 2: COMMUNITY MODE ============
@@ -468,7 +486,9 @@ export function incrementViewCount(entryId: string): void {
 }
 
 export function getPublicEntries(): JournalEntry[] {
-  return journalSignal.value.filter(e => e.isPublic && (!e.vault || !e.vault.isVaulted));
+  return journalSignal.value.filter((e) =>
+    e.isPublic && (!e.vault || !e.vault.isVaulted)
+  );
 }
 
 export function getTrendingEntries(limit = 10): JournalEntry[] {
@@ -484,42 +504,68 @@ export function getTrendingEntries(limit = 10): JournalEntry[] {
 function calculateTrendScore(entry: JournalEntry): number {
   const viewWeight = (entry.viewCount || 0) * 2;
   const favoriteWeight = entry.isFavorited ? 10 : 0;
-  const recencyWeight = Math.max(0, 100 - (Date.now() - entry.createdAt) / 3600000); // 100 points fresh, decays over hours
+  const recencyWeight = Math.max(
+    0,
+    100 - (Date.now() - entry.createdAt) / 3600000,
+  ); // 100 points fresh, decays over hours
   return viewWeight + favoriteWeight + recencyWeight;
 }
 
-export function getMoodDistribution(entries: JournalEntry[]): Record<JournalMood, number> {
+export function getMoodDistribution(
+  entries: JournalEntry[],
+): Record<JournalMood, number> {
   const distribution: Record<string, number> = {};
-  
-  for (const mood of ["reflective", "grounded", "anxious", "grateful", "melancholic", "charged", "empty", "alive", "inspired", "nostalgic", "focused", "tender", "custom"]) {
+
+  for (
+    const mood of [
+      "reflective",
+      "grounded",
+      "anxious",
+      "grateful",
+      "melancholic",
+      "charged",
+      "empty",
+      "alive",
+      "inspired",
+      "nostalgic",
+      "focused",
+      "tender",
+      "custom",
+    ]
+  ) {
     distribution[mood] = 0;
   }
-  
+
   for (const entry of entries) {
     const mood = entry.mood || "reflective";
     distribution[mood] = (distribution[mood] || 0) + 1;
   }
-  
+
   return distribution as Record<JournalMood, number>;
 }
 
 // ============ PHASE 2: MIRROR INSIGHTS ============
 
-export function getActivityTimeline(days = 30): Array<{ date: string; entries: number }> {
+export function getActivityTimeline(
+  days = 30,
+): Array<{ date: string; entries: number }> {
   const timeline: Map<string, number> = new Map();
   const now = new Date();
-  
+
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now.getTime() - i * 86400000).toDateString();
     timeline.set(date, 0);
   }
-  
+
   for (const entry of journalSignal.value) {
     const date = new Date(entry.createdAt).toDateString();
     if (timeline.has(date)) {
       timeline.set(date, (timeline.get(date) || 0) + 1);
     }
   }
-  
-  return Array.from(timeline.entries()).map(([date, entries]) => ({ date, entries }));
+
+  return Array.from(timeline.entries()).map(([date, entries]) => ({
+    date,
+    entries,
+  }));
 }

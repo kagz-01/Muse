@@ -50,7 +50,10 @@ export default function CircleMembersList({
     return (
       <div className="space-y-3">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="p-3 bg-[var(--muse-surface-soft)] rounded-lg animate-pulse" />
+          <div
+            key={i}
+            className="p-3 bg-[var(--muse-surface-soft)] rounded-lg animate-pulse"
+          />
         ))}
       </div>
     );
@@ -59,7 +62,10 @@ export default function CircleMembersList({
   if (members.length === 0) {
     return (
       <div className="text-center py-8">
-        <Icons.Users size={40} className="mx-auto mb-3 text-[var(--muse-text-muted)] opacity-30" />
+        <Icons.Users
+          size={40}
+          className="mx-auto mb-3 text-[var(--muse-text-muted)] opacity-30"
+        />
         <p className="text-[var(--muse-text-muted)]">No members yet</p>
       </div>
     );
@@ -92,7 +98,11 @@ export default function CircleMembersList({
               <h4 className="font-medium text-[var(--muse-text)] truncate">
                 {member.name}
               </h4>
-              <span className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 ${getRoleColor(member.role)}`}>
+              <span
+                className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 ${
+                  getRoleColor(member.role)
+                }`}
+              >
                 {getRoleIcon(member.role)}
                 {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
               </span>

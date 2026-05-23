@@ -59,7 +59,9 @@ export default function PulseHome() {
   const threads = threadsSignal.value;
   const items = itemsSignal.value;
   const [greeting, setGreeting] = useState("Good morning");
-  const [serviceHealth, setServiceHealth] = useState<ServiceHealthResponse | null>(
+  const [serviceHealth, setServiceHealth] = useState<
+    ServiceHealthResponse | null
+  >(
     null,
   );
 
@@ -145,20 +147,20 @@ export default function PulseHome() {
 
         <div className="relative z-10 grid gap-12 xl:grid-cols-[1.15fr_0.85fr] items-center">
           <div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-white">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-[var(--muse-text)]">
               {greeting},{" "}
-              <span className="text-gray-600 italic font-serif">
+              <span className="text-[var(--muse-muted)] italic font-serif">
                 {user?.name?.split(" ")[0] || "Creator"}
               </span>.
-              <span className="block mt-4 bg-gradient-to-r from-white via-white to-gray-700 bg-clip-text text-transparent">
+              <span className="block mt-4 bg-gradient-to-r from-[var(--muse-text)] via-[var(--muse-text)] to-[var(--muse-muted)] bg-clip-text text-transparent">
                 Your resonance is stable.
               </span>
             </h1>
 
-            <p className="mt-8 max-w-xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic opacity-80">
+            <p className="mt-8 max-w-xl text-[var(--muse-muted)] text-lg md:text-xl leading-relaxed font-serif italic opacity-90">
               The platform is reflecting your semantic patterns. You have
               maintained a{" "}
-              <span className="text-white font-sans font-bold not-italic">
+              <span className="text-[var(--muse-text)] font-sans font-bold not-italic">
                 {streak} day
               </span>{" "}
               reflection streak.
@@ -201,7 +203,10 @@ export default function PulseHome() {
 
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {mirrorStats.map((stat) => (
-                <div key={stat.label} className="min-w-[140px] flex-shrink-0 text-center snap-start">
+                <div
+                  key={stat.label}
+                  className="min-w-[140px] flex-shrink-0 text-center snap-start"
+                >
                   <div className="flex flex-col items-center gap-2">
                     <stat.icon size={18} className={stat.color} />
                     <span className="text-2xl font-bold text-white font-mono">
@@ -309,8 +314,9 @@ export default function PulseHome() {
         {/* TRENDING CONSCIOUSNESS */}
         <div className="space-y-8 min-w-0">
           <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-8 min-w-0">
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-              <Icons.TrendingUp size={20} className="text-canvas-primary" />{" "}
+            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+              <Icons.TrendingUp size={20} className="text-canvas-primary" />
+              {" "}
               Active Themes
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -349,7 +355,7 @@ export default function PulseHome() {
             </div>
 
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-              {([
+              {[
                 {
                   key: "ai",
                   label: "AI Engine",
@@ -362,7 +368,7 @@ export default function PulseHome() {
                   state: serviceHealth?.services.blockchain.status,
                   code: serviceHealth?.services.blockchain.statusCode,
                 },
-              ]).map((service) => (
+              ].map((service) => (
                 <div
                   key={service.key}
                   className="rounded-2xl border border-white/10 bg-black/20 p-4 min-w-[180px] flex-shrink-0"

@@ -67,7 +67,7 @@ export const handler = async (req: Request) => {
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   } catch (err) {
     return new Response(JSON.stringify({ error: "Invalid request" }), {

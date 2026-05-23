@@ -14,7 +14,7 @@ export const handler = async (req: Request) => {
     if (!userId || !circleId) {
       return new Response(
         JSON.stringify({ error: "userId and circleId required" }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,7 +31,7 @@ export const handler = async (req: Request) => {
         isMember: true,
         memberCount: members.size,
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     return new Response(JSON.stringify({ error: "Invalid request" }), {

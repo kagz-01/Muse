@@ -1,18 +1,21 @@
 import { useMemo, useState } from "preact/hooks";
 import {
+  addLinkedArtifact,
+  deleteJournalEntry,
   getJournalTitle,
   getLinkedArtifacts,
-  updateJournalEntry,
-  deleteJournalEntry,
-  toggleFavoriteJournal,
-  addLinkedArtifact,
-  removeLinkedArtifact,
-  verifyVaultPassword,
-  journalSignal,
   type JournalEntry,
+  journalSignal,
+  removeLinkedArtifact,
+  toggleFavoriteJournal,
+  updateJournalEntry,
+  verifyVaultPassword,
 } from "../../signals/journal.ts";
 import { VaultModal } from "../../islands/journal/VaultModal.tsx";
-import { LinkedArtifacts, ArtifactSelector } from "../../islands/journal/LinkedArtifacts.tsx";
+import {
+  ArtifactSelector,
+  LinkedArtifacts,
+} from "../../islands/journal/LinkedArtifacts.tsx";
 import * as Icons from "lucide-preact";
 
 interface EntryDetailProps {
@@ -29,7 +32,9 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editBody, setEditBody] = useState(entry.body);
 
-  const linkedArtifacts = useMemo(() => getLinkedArtifacts(entry.id), [entry.id]);
+  const linkedArtifacts = useMemo(() => getLinkedArtifacts(entry.id), [
+    entry.id,
+  ]);
   const title = getJournalTitle(entry);
   const wordCount = entry.wordCount || 0;
   const createdDate = new Date(entry.createdAt).toLocaleDateString("en-US", {
@@ -101,7 +106,10 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
                   : "bg-white/10 hover:bg-white/20 text-white/60"
               }`}
             >
-              <Icons.Star size={16} class={entry.isFavorited ? "fill-current" : ""} />
+              <Icons.Star
+                size={16}
+                class={entry.isFavorited ? "fill-current" : ""}
+              />
               {entry.isFavorited ? "Favorited" : "Favorite"}
             </button>
             <button
@@ -121,7 +129,9 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
 
         {/* Title & Meta */}
         <div class="max-w-4xl mx-auto">
-          <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">{title}</h1>
+          <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+            {title}
+          </h1>
           <div class="flex items-center gap-4 text-sm text-white/60">
             <span>{createdDate}</span>
             <span>•</span>
@@ -166,38 +176,41 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
           {/* Editable Content */}
           {isUnlocked && (
             <>
-              {isEditing ? (
-                <div class="space-y-4 mb-12">
-                  <textarea
-                    value={editBody}
-                    onChange={(e) => setEditBody((e.target as HTMLTextAreaElement).value)}
-                    class="w-full h-96 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:border-canvas-primary/50 focus:outline-none focus:ring-1 focus:ring-canvas-primary/30 font-serif"
-                  />
-                  <div class="flex gap-2">
-                    <button
-                      onClick={handleSaveEdit}
-                      class="px-6 py-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 flex items-center gap-2 transition-all"
-                    >
-                      <Icons.Check size={16} /> Save
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsEditing(false);
-                        setEditBody(entry.body);
-                      }}
-                      class="px-6 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-2 transition-all"
-                    >
-                      <Icons.X size={16} /> Cancel
-                    </button>
+              {isEditing
+                ? (
+                  <div class="space-y-4 mb-12">
+                    <textarea
+                      value={editBody}
+                      onChange={(e) =>
+                        setEditBody((e.target as HTMLTextAreaElement).value)}
+                      class="w-full h-96 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:border-canvas-primary/50 focus:outline-none focus:ring-1 focus:ring-canvas-primary/30 font-serif"
+                    />
+                    <div class="flex gap-2">
+                      <button
+                        onClick={handleSaveEdit}
+                        class="px-6 py-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 flex items-center gap-2 transition-all"
+                      >
+                        <Icons.Check size={16} /> Save
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsEditing(false);
+                          setEditBody(entry.body);
+                        }}
+                        class="px-6 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-2 transition-all"
+                      >
+                        <Icons.X size={16} /> Cancel
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div class="prose prose-invert max-w-none mb-12">
-                  <p class="text-white/80 font-serif leading-relaxed text-lg whitespace-pre-wrap">
-                    {entry.body}
-                  </p>
-                </div>
-              )}
+                )
+                : (
+                  <div class="prose prose-invert max-w-none mb-12">
+                    <p class="text-white/80 font-serif leading-relaxed text-lg whitespace-pre-wrap">
+                      {entry.body}
+                    </p>
+                  </div>
+                )}
 
               {/* Metadata */}
               <div class="space-y-8 mb-12">
@@ -294,7 +307,9 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
                     isEditing={false}
                   />
                   {linkedArtifacts.length === 0 && !isEditing && (
-                    <p class="text-sm text-white/40 italic">No connections yet</p>
+                    <p class="text-sm text-white/40 italic">
+                      No connections yet
+                    </p>
                   )}
                 </div>
               </div>

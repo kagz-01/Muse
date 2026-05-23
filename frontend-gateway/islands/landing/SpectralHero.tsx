@@ -36,7 +36,8 @@ export default function SpectralHero(
               transform: `translate(${mousePos.x * (i % 3 + 1)}px, ${
                 mousePos.y * (i % 4 + 1)
               }px)`,
-              background: `radial-gradient(circle at top left, var(--muse-text) 0%, transparent 80%)`,
+              background:
+                `radial-gradient(circle at top left, var(--muse-text) 0%, transparent 80%)`,
               opacity: 0.04 + (i % 3) * 0.03,
             }}
           />
@@ -60,7 +61,11 @@ export default function SpectralHero(
 
           {/* Central Hub */}
           <div className="absolute w-14 h-14 rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)]/80 backdrop-blur-xl flex items-center justify-center shadow-2xl z-20">
-            <Icons.Infinity size={24} className="text-[var(--muse-text)] drop-shadow-[0_0_10px_currentColor]" strokeWidth={2} />
+            <Icons.Infinity
+              size={24}
+              className="text-[var(--muse-text)] drop-shadow-[0_0_10px_currentColor]"
+              strokeWidth={2}
+            />
           </div>
         </div>
 
@@ -73,7 +78,9 @@ export default function SpectralHero(
             </span>
           </h1>
           <p className="text-sm md:text-base text-[var(--muse-muted)] font-serif italic max-w-lg mx-auto leading-relaxed">
-            A sovereign intelligence loop — where scattered signals are captured, contemplated, and synthesized into a cryptographic ledger of collective wisdom.
+            A sovereign intelligence loop — where scattered signals are
+            captured, contemplated, and synthesized into a cryptographic ledger
+            of collective wisdom.
           </p>
         </div>
       </div>

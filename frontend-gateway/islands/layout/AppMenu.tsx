@@ -21,7 +21,7 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
 
   // Muse 2.0 Unified Lifecycle Flow
   const cycleNav = [
-      {
+    {
       label: "Home",
       path: "/dashboard",
       icon: <Icons.Home size={24} />,
@@ -46,12 +46,6 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
       desc: "Contemplate",
     },
     {
-      label: "Mirror",
-      path: "/mirror",
-      icon: <Icons.Gauge size={24} />,
-      desc: "Analytics",
-    },
-    {
       label: "Community",
       path: "/connections",
       icon: <Icons.Users size={24} />,
@@ -64,29 +58,29 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
   return (
     <>
       {/* UNIVERSAL BOTTOM NAVIGATION (Cycle Bar) */}
-      <nav className="fixed bottom-0 left-0 w-full bg-[var(--muse-overlay)] backdrop-blur-3xl border-t border-[var(--muse-border)] flex justify-around items-center h-20 px-4 md:px-32 z-[60] pb-safe transition-all duration-300">
+      <nav className="fixed bottom-0 left-0 w-full bg-[var(--muse-surface)]/90 backdrop-blur-3xl border-t border-[var(--muse-border)] flex justify-around items-center h-20 px-4 md:px-32 z-[60] pb-safe transition-all duration-300">
         {cycleNav.map((item) => (
           <a
             key={item.label}
             href={item.path}
-            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-2xl transition-all duration-300 ${
+            className={`group flex flex-col items-center gap-1.5 py-1 px-4 rounded-2xl transition-all duration-300 ${
               isActive(item.path)
-                ? "text-canvas-primary scale-110"
+                ? "text-[var(--muse-text)] scale-110"
                 : "text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
             }`}
           >
             <div
               className={isActive(item.path)
-                ? "drop-shadow-[0_0_8px_rgba(212,168,83,0.35)]"
-                : ""}
+                ? "drop-shadow-[0_0_12px_rgba(var(--muse-accent-rgb),0.8)] text-canvas-primary transition-all duration-300"
+                : "group-hover:drop-shadow-[0_0_8px_rgba(var(--muse-accent-rgb),0.4)] transition-all duration-300"}
             >
               {item.icon}
             </div>
             <span
-              className={`text-[9px] font-bold uppercase tracking-widest ${
+              className={`text-[9px] font-bold uppercase tracking-widest transition-all duration-300 ${
                 isActive(item.path)
-                  ? "opacity-100 text-canvas-primary"
-                  : "opacity-40 hover:opacity-100"
+                  ? "opacity-100 text-[var(--muse-text)] drop-shadow-[0_0_8px_rgba(var(--muse-accent-rgb),0.5)]"
+                  : "opacity-60 group-hover:opacity-100"
               }`}
             >
               {item.label}
@@ -172,7 +166,10 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   Settings
                 </span>
                 {isDemo && (
-                  <Icons.Lock size={12} className="absolute right-4 opacity-50" />
+                  <Icons.Lock
+                    size={12}
+                    className="absolute right-4 opacity-50"
+                  />
                 )}
               </a>
 
@@ -188,7 +185,10 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   Security & Ledger
                 </span>
                 {isDemo && (
-                  <Icons.Lock size={12} className="absolute right-4 opacity-50" />
+                  <Icons.Lock
+                    size={12}
+                    className="absolute right-4 opacity-50"
+                  />
                 )}
               </button>
 
@@ -204,7 +204,10 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   Export Data
                 </span>
                 {isDemo && (
-                  <Icons.Lock size={12} className="absolute right-4 opacity-50" />
+                  <Icons.Lock
+                    size={12}
+                    className="absolute right-4 opacity-50"
+                  />
                 )}
               </button>
             </div>

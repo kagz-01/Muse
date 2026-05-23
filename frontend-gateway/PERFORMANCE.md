@@ -1,18 +1,18 @@
 # Performance Optimization Guide
 
-This document outlines the performance optimization strategies implemented in the Muse platform.
+This document outlines the performance optimization strategies implemented in
+the Muse platform.
 
 ## Lazy Loading
 
 ### Component Lazy Loading
+
 Components are lazy-loaded to reduce initial bundle size:
 
 ```typescript
-import { lazyLoad, LazyBoundary } from "../utils/performance.ts";
+import { LazyBoundary, lazyLoad } from "../utils/performance.ts";
 
-const HeavyComponent = lazyLoad(() =>
-  import("./HeavyComponent.tsx")
-);
+const HeavyComponent = lazyLoad(() => import("./HeavyComponent.tsx"));
 
 export default function Page() {
   return (
@@ -24,6 +24,7 @@ export default function Page() {
 ```
 
 ### Viewport Detection
+
 Use intersection observer to lazy-load components when they come into view:
 
 ```typescript
@@ -46,6 +47,7 @@ export default function LazyImage({ src }) {
 ## Image Optimization
 
 ### URL Optimization
+
 Optimize image URLs with CDN parameters:
 
 ```typescript
@@ -56,6 +58,7 @@ const optimized = optimizeImageUrl(imageUrl, 400, 85);
 ```
 
 ### Image Preloading
+
 Preload critical images before rendering:
 
 ```typescript
@@ -67,6 +70,7 @@ useEffect(() => {
 ```
 
 ### Cachebusting
+
 Auto-refresh cached images:
 
 ```typescript
@@ -78,10 +82,11 @@ const freshUrl = getCachebustedUrl(imageUrl);
 ## API Response Caching
 
 ### Simple Caching
+
 Cache API responses with automatic expiration:
 
 ```typescript
-import { setCache, getCache } from "../utils/cache.ts";
+import { getCache, setCache } from "../utils/cache.ts";
 
 // Set cache with 5 second TTL
 setCache("user-data", userData, 5000);
@@ -91,6 +96,7 @@ const cached = getCache("user-data");
 ```
 
 ### Cached Fetch
+
 Automatically cache API responses:
 
 ```typescript
@@ -101,6 +107,7 @@ const data = await cachedFetch("/api/users", 5000);
 ```
 
 ### Batch Requests
+
 Efficiently fetch multiple URLs with caching:
 
 ```typescript
@@ -116,6 +123,7 @@ const results = await batchCachedFetch([
 ## Animation Optimization
 
 ### RAF Throttling
+
 Throttle animations using requestAnimationFrame:
 
 ```typescript
@@ -130,6 +138,7 @@ addEventListener("scroll", handleScroll);
 ```
 
 ### Debouncing
+
 Debounce frequent events like input:
 
 ```typescript
@@ -144,6 +153,7 @@ const handleSearch = debounce((query) => {
 ## CSS Performance
 
 ### CSS Classes
+
 Use CSS class names instead of inline styles for better performance:
 
 ```tsx
@@ -155,6 +165,7 @@ Use CSS class names instead of inline styles for better performance:
 ```
 
 ### Tailwind Optimizations
+
 - Use predefined size classes (sm, md, lg) instead of custom values
 - Avoid dynamic class generation in render loops
 - Use CSS variables for theme colors
@@ -162,10 +173,11 @@ Use CSS class names instead of inline styles for better performance:
 ## Memory Management
 
 ### Cache Cleanup
+
 Clear cache when data becomes stale:
 
 ```typescript
-import { clearCache, clearAllCache } from "../utils/cache.ts";
+import { clearAllCache, clearCache } from "../utils/cache.ts";
 
 // Clear specific cache
 clearCache("user-data");
@@ -175,6 +187,7 @@ clearAllCache();
 ```
 
 ### Signal Cleanup
+
 Unsubscribe from signals in useEffect cleanup:
 
 ```typescript
@@ -196,6 +209,7 @@ useEffect(() => {
 ## Bundle Analysis
 
 ### Import Analysis
+
 Keep imports lean and use code splitting:
 
 ```typescript
@@ -209,12 +223,14 @@ import * as preact from "preact";
 ## Performance Metrics
 
 ### Key Metrics to Monitor
+
 - **First Contentful Paint (FCP)**: < 1.5s
 - **Largest Contentful Paint (LCP)**: < 2.5s
 - **Cumulative Layout Shift (CLS)**: < 0.1
 - **Time to Interactive (TTI)**: < 3.5s
 
 ### Measurement
+
 Use performance API:
 
 ```typescript

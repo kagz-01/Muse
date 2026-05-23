@@ -13,6 +13,8 @@ import EditRoomModal from "../modals/EditRoomModal.tsx";
 import ArtifactExtractor from "../../components/rooms/ArtifactExtractor.tsx";
 import AnalysisIndicator from "../../components/ai-feedback/AnalysisIndicator.tsx";
 import { setSystemStatus } from "../../signals/intelligence.ts";
+import VaultGateModal from "../modals/VaultGateModal.tsx";
+import { isVaultUnlockedSignal } from "../../signals/vault.ts";
 
 const themeMapping: Record<RoomTheme, {
   border: string;
@@ -109,6 +111,21 @@ export default function RoomInside({ roomId }: { roomId: string }) {
         >
           Back to Rooms
         </a>
+      </div>
+    );
+  }
+
+  if (room.isVault && !isVaultUnlockedSignal.value) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a]">
+        <VaultGateModal
+          onUnlock={() => {
+            // Re-render handled by signal
+          }}
+          onClose={() => {
+            globalThis.location.href = "/rooms";
+          }}
+        />
       </div>
     );
   }
@@ -259,8 +276,15 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
       <div className="pb-24 md:pb-10 min-h-screen bg-[#0a0a0a] relative overflow-hidden">
         <div
-          className={`fixed inset-0 pointer-events-none blur-[120px] opacity-20 transition-colors duration-1000 ${!customHex ? theme.bg : ""}`}
-          style={customHex ? { background: `linear-gradient(135deg, ${customHex}40, transparent)` } : undefined}
+          className={`fixed inset-0 pointer-events-none blur-[120px] opacity-20 transition-colors duration-1000 ${
+            !customHex ? theme.bg : ""
+          }`}
+          style={customHex
+            ? {
+              background:
+                `linear-gradient(135deg, ${customHex}40, transparent)`,
+            }
+            : undefined}
         />
 
         <header className="relative w-full h-[52vh] min-h-[400px] overflow-hidden group">
@@ -272,7 +296,17 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                 alt=""
               />
             )
-            : <div className={`absolute inset-0 ${!customHex ? theme.bg : ""}`} style={customHex ? { background: `linear-gradient(135deg, ${customHex}40, transparent)` } : undefined} />}
+            : (
+              <div
+                className={`absolute inset-0 ${!customHex ? theme.bg : ""}`}
+                style={customHex
+                  ? {
+                    background:
+                      `linear-gradient(135deg, ${customHex}40, transparent)`,
+                  }
+                  : undefined}
+              />
+            )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
@@ -347,16 +381,19 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                 <div className="flex items-center gap-3 shrink-0">
                   {/* ADVANCED COLOR PICKER */}
                   <div className="relative">
-                      <button
-                        onClick={() => setIsPaletteOpen(!isPaletteOpen)}
-                        type="button"
-                        className={`w-11 h-11 rounded-full backdrop-blur-lg border border-white/10 flex items-center justify-center transition-all shadow-xl cursor-pointer ${
+                    <button
+                      onClick={() => setIsPaletteOpen(!isPaletteOpen)}
+                      type="button"
+                      className={`w-11 h-11 rounded-full backdrop-blur-lg border border-white/10 flex items-center justify-center transition-all shadow-xl cursor-pointer ${
                         isPaletteOpen
                           ? "bg-white/20"
                           : "bg-black/50 hover:bg-white/10"
                       }`}
-                      >
-                      <Icons.Palette size={18} style={{ color: customHex || undefined }} />
+                    >
+                      <Icons.Palette
+                        size={18}
+                        style={{ color: customHex || undefined }}
+                      />
                     </button>
                     {isPaletteOpen && (
                       <div className="absolute bottom-full right-0 mb-3 bg-[#151515] border border-white/10 rounded-3xl p-6 shadow-3xl min-w-[280px] z-[20] animate-in slide-in-from-bottom-4">
@@ -471,47 +508,89 @@ export default function RoomInside({ roomId }: { roomId: string }) {
           {activeTab === "collection"
             ? (
               <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <section className="mb-8 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-                  <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 md:p-7 backdrop-blur-sm">
-                    <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                      <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-white">
-                        Collect
-                      </span>
-                      <span>Room detail</span>
+                <section className="mb-8">
+                  <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 md:p-8 backdrop-blur-sm">
+                    {/* Room label + emoji */}
+                    <div className="flex items-center gap-3 mb-5">
+                      {room.emoji && (
+                        <span className="text-3xl">{room.emoji}</span>
+                      )}
+                      <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-white">
+                          {room.category || "Workspace"}
+                        </span>
+                        <span>Room Detail</span>
+                      </div>
                     </div>
-                    <h2 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-white">
+
+                    {/* Room name + description */}
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-3">
                       {room.name}
                     </h2>
-                    <p className="mt-3 max-w-3xl text-gray-400 font-serif italic leading-relaxed">
+                    <p className="max-w-3xl text-gray-400 font-serif italic leading-relaxed">
                       {room.description ||
                         "This room is where consumed content gets collected, refined, and held until it is ready to become a pattern."}
                     </p>
-                  </div>
 
-                  <div className="flex gap-3 overflow-x-auto rounded-[2rem] border border-white/5 bg-black/25 p-4 md:p-5 backdrop-blur-sm scrollbar-hide">
-                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center min-w-[160px] flex-shrink-0">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                        Artifacts
+                    {/* Integrated stats row */}
+                    <div className="mt-6 pt-5 border-t border-white/5 flex flex-wrap items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <Icons.Layers size={13} className="text-gray-600" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                          Artifacts
+                        </span>
+                        <span className="text-sm font-bold text-white ml-1">
+                          {items.length}
+                        </span>
                       </div>
-                        <div className="mt-2 text-2xl font-bold text-white">
-                        {items.length}
+                      <div className="w-px h-4 bg-white/10" />
+                      <div className="flex items-center gap-2">
+                        {room.isPublic
+                          ? <Icons.Globe size={13} className="text-gray-600" />
+                          : <Icons.Lock size={13} className="text-gray-600" />}
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                          Access
+                        </span>
+                        <span className="text-sm font-bold text-white ml-1">
+                          {room.isPublic ? "Community" : "Vault"}
+                        </span>
                       </div>
-                    </div>
-                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center min-w-[160px] flex-shrink-0">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                        Access
+                      <div className="w-px h-4 bg-white/10" />
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: customHex || hex }}
+                        />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                          Theme
+                        </span>
+                        <span
+                          className="text-sm font-bold ml-1"
+                          style={{ color: customHex || undefined }}
+                        >
+                          {customHex ? "Custom" : room.themeColor}
+                        </span>
                       </div>
-                      <div className="mt-2 text-2xl font-bold text-white">
-                        {room.isPublic ? "Pub" : "Vault"}
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center min-w-[160px] flex-shrink-0">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                        Theme
-                      </div>
-                      <div className={`mt-2 text-2xl font-bold`} style={{ color: customHex || undefined }}>
-                        {customHex ? "Custom" : room.themeColor}
-                      </div>
+                      {room.tags && room.tags.length > 0 && (
+                        <>
+                          <div className="w-px h-4 bg-white/10" />
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {room.tags.slice(0, 4).map((tag) => (
+                              <span
+                                key={tag}
+                                className="px-2.5 py-0.5 rounded-full border border-white/8 bg-white/[0.04] text-[9px] font-bold uppercase tracking-widest text-gray-500"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                            {room.tags.length > 4 && (
+                              <span className="text-[9px] text-gray-600 font-bold">
+                                +{room.tags.length - 4}
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </section>
@@ -556,9 +635,10 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                         type="button"
                         className="px-12 py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-[12px] text-black cursor-pointer hover:-translate-y-1 active:scale-95 transition-all shadow-3xl"
                         style={{
-                          backgroundColor: customHex || paletteColors.find((c) =>
-                            c.name === room.themeColor
-                          )?.hex || "#6366f1",
+                          backgroundColor: customHex ||
+                            paletteColors.find((c) =>
+                              c.name === room.themeColor
+                            )?.hex || "#6366f1",
                         }}
                       >
                         Initialize Collection
@@ -575,11 +655,18 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                         >
                           <div
                             className="h-40 relative overflow-hidden"
-                            style={{ background: customHex ? `linear-gradient(135deg, ${customHex}40, transparent)` : undefined }}
+                            style={{
+                              background: customHex
+                                ? `linear-gradient(135deg, ${customHex}40, transparent)`
+                                : undefined,
+                            }}
                           >
                             <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
                             <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
-                              <Icons.ExternalLink size={40} className={theme.text} />
+                              <Icons.ExternalLink
+                                size={40}
+                                className={theme.text}
+                              />
                             </div>
                             <a
                               href={item.sourceUrl}
@@ -593,7 +680,9 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
                           <div className="p-7">
                             <div className="flex flex-col gap-1 mb-4">
-                              <span className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}>
+                              <span
+                                className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}
+                              >
                                 Artifact
                               </span>
                               <h4 className="font-bold text-lg leading-tight text-white/90 group-hover:text-white transition-colors line-clamp-2">

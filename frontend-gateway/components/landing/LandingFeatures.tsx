@@ -221,7 +221,7 @@ export default function LandingFeatures() {
       <section className="py-20 px-6 md:px-12 max-w-6xl mx-auto z-20 relative">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80/10 border border-white/80/20 mb-4">
-                    <Icons.Brain size={12} className="text-white/70" />
+            <Icons.Brain size={12} className="text-white/70" />
             <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">
               Real patterns from real users
             </span>
@@ -366,7 +366,7 @@ export default function LandingFeatures() {
               className="min-w-[260px] md:min-w-[300px] snap-start p-6 rounded-xl bg-gradient-to-br from-white/[0.02] to-white/[0.01] border border-white/5 hover:border-white/80/30 transition-all backdrop-blur-sm hover:shadow-lg hover:translate-y-[-5px]"
             >
               <div className="flex gap-1 mb-3">
-                  {[...Array(t.rating)].map((_, j) => (
+                {[...Array(t.rating)].map((_, j) => (
                   <Icons.Star
                     key={j}
                     size={12}
@@ -403,19 +403,19 @@ export default function LandingFeatures() {
             Join the waitlist. Be among the first to see your honest portrait.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
-              <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1">
               <Icons.Lock size={12} className="text-gray-600" />
               <span className="text-[10px] text-gray-600">Privacy first</span>
             </div>
             <div className="w-px h-3 bg-white/10" />
-              <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1">
               <Icons.Fingerprint size={12} className="text-gray-600" />
               <span className="text-[10px] text-gray-600">
                 Your data, your control
               </span>
             </div>
             <div className="w-px h-3 bg-white/10" />
-              <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1">
               <Icons.Download size={12} className="text-gray-600" />
               <span className="text-[10px] text-gray-600">
                 Export your portrait anytime

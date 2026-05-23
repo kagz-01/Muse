@@ -16,8 +16,9 @@ export default function SynthesisWeb({ threadId }: { threadId: string }) {
 
       <div className="relative z-10 space-y-10">
         <div className="flex items-center justify-between">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-            <Icons.Layers size={14} className="text-canvas-primary" /> Synthesis Web
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+            <Icons.Layers size={14} className="text-canvas-primary" />{" "}
+            Synthesis Web
           </h3>
           <div className="flex items-center gap-3 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
             <Icons.Aperture size={12} className="text-emerald-500" />
@@ -33,14 +34,23 @@ export default function SynthesisWeb({ threadId }: { threadId: string }) {
               <div
                 className={`w-32 h-32 rounded-[2.5rem] border border-white/10 bg-black/40 flex items-center justify-center overflow-hidden transition-all duration-700 group-hover:scale-110 group-hover:border-canvas-primary/40 shadow-2xl`}
               >
-                  {room.coverImage ? (
+                {room.coverImage
+                  ? (
                     <img
                       src={room.coverImage}
                       className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity"
                       alt=""
                     />
-                  ) : (
-                    <div className="w-full h-full" style={{ background: room.customThemeHex ? `linear-gradient(135deg, ${room.customThemeHex}40, transparent)` : undefined }} />
+                  )
+                  : (
+                    <div
+                      className="w-full h-full"
+                      style={{
+                        background: room.customThemeHex
+                          ? `linear-gradient(135deg, ${room.customThemeHex}40, transparent)`
+                          : undefined,
+                      }}
+                    />
                   )}
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
                   <Icons.Hash size={20} className="text-gray-500 mb-2" />
@@ -59,7 +69,7 @@ export default function SynthesisWeb({ threadId }: { threadId: string }) {
             <div className="w-40 h-40 rounded-full border-2 border-dashed border-canvas-primary/40 flex items-center justify-center animate-[spin_40s_linear_infinite]">
               <div className="w-32 h-32 rounded-full border border-canvas-primary/20" />
             </div>
-                <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-24 h-24 rounded-3xl bg-canvas-primary/20 border border-canvas-primary/40 flex items-center justify-center shadow-[0_0_80px_rgba(99,102,241,0.3)]">
                 <Icons.GitCommit size={40} className="text-canvas-primary" />
               </div>
@@ -77,10 +87,16 @@ export default function SynthesisWeb({ threadId }: { threadId: string }) {
         </div>
 
         <div className="flex gap-4">
-          <button type="button" className="flex-1 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-gray-200 transition-all shadow-xl">
+          <button
+            type="button"
+            className="flex-1 py-4 bg-white text-black font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-gray-200 transition-all shadow-xl"
+          >
             Publish to Collective
           </button>
-          <button type="button" className="flex-1 py-4 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-white/10 transition-all">
+          <button
+            type="button"
+            className="flex-1 py-4 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[11px] rounded-2xl hover:bg-white/10 transition-all"
+          >
             Analyze New Connections
           </button>
         </div>

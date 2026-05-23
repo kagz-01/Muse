@@ -10,7 +10,12 @@ export type RoomTheme =
   | "cyan"
   | "slate";
 
-export type RoomCategory = "workspace" | "journal" | "archive" | "brainstorm" | "inspiration";
+export type RoomCategory =
+  | "workspace"
+  | "journal"
+  | "archive"
+  | "brainstorm"
+  | "inspiration";
 export type RoomSize = "small" | "medium" | "large";
 
 export interface Room {
@@ -39,9 +44,7 @@ export interface Room {
     fontFamily?: string;
   };
   // Vault-related properties
-  isVault?: boolean; // True if this is a private vault room (like Snapchat's "my eyes only")
-  vaultPassword?: string; // Encrypted/hashed password for vault access
-  isVaultUnlocked?: boolean; // True if user has unlocked this vault in session
+  isVault?: boolean; // True if this is a private vault room
 }
 
 const STORAGE_KEY = "muse_rooms_v1";
@@ -93,18 +96,6 @@ function loadRooms(): Room[] {
     if (!stored) return INITIAL_ROOMS;
     const parsed = JSON.parse(stored) as Room[];
     const base = Array.isArray(parsed) ? parsed : INITIAL_ROOMS;
-
-    // Restore session unlocks from sessionStorage (per-tab/session expiry)
-    try {
-      const unlocked = typeof sessionStorage !== "undefined"
-        ? JSON.parse(sessionStorage.getItem("muse_vault_unlocked_v1") || "[]")
-        : [];
-      if (Array.isArray(unlocked) && unlocked.length > 0) {
-        return base.map((r) => ({ ...r, isVaultUnlocked: unlocked.includes(r.id) || !!r.isVaultUnlocked }));
-      }
-    } catch {
-      // ignore
-    }
 
     return base;
   } catch {
@@ -191,63 +182,4 @@ export function deleteRoom(id: string) {
 
 export function resetRooms() {
   roomsSignal.value = [];
-}
-
-// Attempt to unlock a vault room by verifying the provided password.
-// Returns true when unlocked successfully, false otherwise.
-// Generate a random salt (hex string)
-export function generateSalt(): string {
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  return Array.from(array).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-// Hash password with salt using SHA-256 and return `salt$hex` format
-export async function hashPassword(password: string, salt?: string): Promise<string> {
-  const s = salt || generateSalt();
-  const encoder = new TextEncoder();
-  const data = encoder.encode(s + password);
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  const hex = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
-  return `${s}$${hex}`;
-}
-
-export async function unlockVault(id: string, password: string): Promise<boolean> {
-  const room = roomsSignal.value.find((r) => r.id === id);
-  if (!room || !room.isVault || !room.vaultPassword) return false;
-
-  const [salt] = room.vaultPassword.split("$");
-  const candidate = await hashPassword(password, salt);
-  const matches = candidate === room.vaultPassword;
-  if (!matches) return false;
-
-  roomsSignal.value = roomsSignal.value.map((r) =>
-    r.id === id ? { ...r, isVaultUnlocked: true, updatedAt: new Date().toISOString() } : r
-  );
-
-  // Persist unlock to sessionStorage so page refresh preserves unlocked state within session
-  try {
-    if (typeof sessionStorage !== "undefined") {
-      const key = "muse_vault_unlocked_v1";
-      const current = JSON.parse(sessionStorage.getItem(key) || "[]");
-      if (!current.includes(id)) {
-        current.push(id);
-        sessionStorage.setItem(key, JSON.stringify(current));
-      }
-    }
-  } catch (_err) {
-    void _err;
-  }
-
-  return true;
-}
-
-export function clearSessionVaultUnlocks() {
-  try {
-    if (typeof sessionStorage !== "undefined") {
-      sessionStorage.removeItem("muse_vault_unlocked_v1");
-    }
-  } catch (_err) {
-    void _err;
-  }
 }

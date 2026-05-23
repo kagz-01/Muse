@@ -47,10 +47,8 @@ export default function LandingFooter() {
   return (
     <footer className="relative bg-[var(--muse-bg)] border-t border-[var(--muse-border)] pt-8 pb-5 overflow-hidden">
       <div className="w-full max-w-[1800px] mx-auto px-6 md:px-16">
-
         {/* MAIN ROW */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6">
-
           {/* LEFT: Logo + Slogan */}
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
@@ -70,7 +68,8 @@ export default function LandingFooter() {
               Turn your consumption into creation.
             </p>
             <p className="text-xs font-serif italic text-[var(--muse-muted)] max-w-xs leading-relaxed">
-              "The bridge between consumption and consciousness. Every artifact captured is a neuron in your digital soul."
+              "The bridge between consumption and consciousness. Every artifact
+              captured is a neuron in your digital soul."
             </p>
           </div>
 
@@ -125,7 +124,6 @@ export default function LandingFooter() {
             v2.1.0
           </span>
         </div>
-
       </div>
     </footer>
   );

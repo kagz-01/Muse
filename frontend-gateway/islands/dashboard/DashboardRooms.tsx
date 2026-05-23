@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { Plus as _Plus, Globe, Lock } from "../../components/LucideIcons.tsx";
+import { Globe, Lock, Plus as _Plus } from "../../components/LucideIcons.tsx";
 import { roomsSignal, type RoomTheme } from "../../signals/rooms.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 
@@ -35,12 +35,12 @@ export default function DashboardRooms() {
             >
               View All
             </a>
-              <button
+            <button
               onClick={() => setShowCreate(true)}
               type="button"
               className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer"
             >
-// @ts-ignore
+              // @ts-ignore
             </button>
           </div>
         </header>
@@ -56,10 +56,13 @@ export default function DashboardRooms() {
               cyan: "#06b6d4",
               slate: "#64748b",
             };
-            const hex = customHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo;
+            const hex = customHex || baseHexMap[room.themeColor as RoomTheme] ||
+              baseHexMap.indigo;
             const glowStyle: Record<string, string | undefined> = {
               boxShadow: `0 18px 50px ${hex}33`,
-              background: customHex ? `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))` : undefined,
+              background: customHex
+                ? `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))`
+                : undefined,
             };
             return (
               <a
@@ -68,18 +71,33 @@ export default function DashboardRooms() {
                 className="flex-shrink-0 w-80 h-56 relative rounded-4xl overflow-hidden cursor-pointer group shadow-xl border border-white/5 hover:border-white/20 transition-all transform hover:-translate-y-1 text-left"
                 style={glowStyle}
               >
-                {room.coverImage ? (
-                  <img
-                    src={room.coverImage}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                ) : (
-                  <div className="absolute inset-0" style={customHex ? { background: `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))` } : {}} />
-                )}
+                {room.coverImage
+                  ? (
+                    <img
+                      src={room.coverImage}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                  )
+                  : (
+                    <div
+                      className="absolute inset-0"
+                      style={customHex
+                        ? {
+                          background:
+                            `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))`,
+                        }
+                        : {}}
+                    />
+                  )}
 
                 <div
                   className={`absolute inset-0 bg-linear-to-t via-canvas-bg-dark/60 to-canvas-bg-dark opacity-60 group-hover:opacity-80 transition-opacity duration-500`}
-                  style={customHex ? { background: `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))` } : undefined}
+                  style={customHex
+                    ? {
+                      background:
+                        `linear-gradient(180deg, ${customHex}30, rgba(0,0,0,0.05))`,
+                    }
+                    : undefined}
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-canvas-bg-dark via-canvas-bg-dark/40 to-transparent opacity-90">
                 </div>

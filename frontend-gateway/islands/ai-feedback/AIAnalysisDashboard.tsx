@@ -2,8 +2,8 @@ import { useEffect } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   aiFeedbackSignal,
-  startAnalysis,
   resetAnalysis,
+  startAnalysis,
 } from "../../signals/ai-feedback.ts";
 import AnalysisProgress from "../../components/ai-feedback/AnalysisProgress.tsx";
 import AIRecommendations from "../../components/ai-feedback/AIRecommendations.tsx";
@@ -52,11 +52,19 @@ export default function AIAnalysisDashboard() {
         {feedback.analysisProgress.patterns.length > 0 && (
           <div className="mb-8">
             <PatternDetectionUI
-              patterns={feedback.analysisProgress.patterns.map((p: any, idx: number) => ({
+              patterns={feedback.analysisProgress.patterns.map((
+                p: any,
+                idx: number,
+              ) => ({
                 id: `pattern-${idx}`,
                 name: p,
                 confidence: 65 + Math.random() * 35,
-                category: ["theme", "topic", "sentiment", "connection"][idx % 4] as any,
+                category: [
+                  "theme",
+                  "topic",
+                  "sentiment",
+                  "connection",
+                ][idx % 4] as any,
                 timestamp: Date.now(),
               }))}
               isAnalyzing={feedback.isAnalyzing}
@@ -71,19 +79,21 @@ export default function AIAnalysisDashboard() {
             disabled={feedback.isAnalyzing}
             className="px-6 py-3 rounded-lg bg-[var(--muse-accent)] text-white font-medium hover:bg-[var(--muse-accent-bright)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {feedback.isAnalyzing ? (
-              <>
-                <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Icons.Play size={18} />
-                {feedback.analysisProgress.stage === "idle"
-                  ? "Start Analysis"
-                  : "Run Again"}
-              </>
-            )}
+            {feedback.isAnalyzing
+              ? (
+                <>
+                  <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  Analyzing...
+                </>
+              )
+              : (
+                <>
+                  <Icons.Play size={18} />
+                  {feedback.analysisProgress.stage === "idle"
+                    ? "Start Analysis"
+                    : "Run Again"}
+                </>
+              )}
           </button>
 
           {feedback.analysisProgress.stage !== "idle" && (
@@ -103,7 +113,10 @@ export default function AIAnalysisDashboard() {
             {/* Patterns */}
             <div className="bg-[var(--muse-surface-bright)] rounded-2xl p-6 border border-[var(--muse-border-light)]">
               <div className="flex items-center gap-2 mb-4">
-                <Icons.Sparkles size={20} className="text-[var(--muse-accent)]" />
+                <Icons.Sparkles
+                  size={20}
+                  className="text-[var(--muse-accent)]"
+                />
                 <h3 className="font-semibold text-[var(--muse-text)]">
                   Patterns Found
                 </h3>
@@ -174,8 +187,8 @@ export default function AIAnalysisDashboard() {
                         rec.priority === "high"
                           ? "bg-red-500"
                           : rec.priority === "medium"
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
+                          ? "bg-yellow-500"
+                          : "bg-green-500"
                       }`}
                     />
                     {rec.title}
@@ -189,7 +202,10 @@ export default function AIAnalysisDashboard() {
         {/* Info */}
         <div className="mt-10 p-6 bg-[var(--muse-accent)]/10 border border-[var(--muse-accent)]/20 rounded-2xl">
           <div className="flex gap-4">
-            <Icons.Info size={24} className="text-[var(--muse-accent)] flex-shrink-0 mt-1" />
+            <Icons.Info
+              size={24}
+              className="text-[var(--muse-accent)] flex-shrink-0 mt-1"
+            />
             <div>
               <h4 className="font-semibold text-[var(--muse-text)] mb-2">
                 How AI Analysis Works
@@ -198,8 +214,8 @@ export default function AIAnalysisDashboard() {
                 <li className="flex gap-2">
                   <span className="text-[var(--muse-accent)]">•</span>
                   <span>
-                    Real-time pattern recognition detects themes and concepts
-                    in your content
+                    Real-time pattern recognition detects themes and concepts in
+                    your content
                   </span>
                 </li>
                 <li className="flex gap-2">

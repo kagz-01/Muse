@@ -20,7 +20,7 @@ export default function DemoVideo(
 
           {/* In a real scenario, we'd use a <video> tag here */}
           <div className="relative text-center space-y-8 p-12">
-              <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 animate-pulse">
+            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 animate-pulse">
               <Icons.Activity size={40} className="text-canvas-primary" />
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter uppercase">

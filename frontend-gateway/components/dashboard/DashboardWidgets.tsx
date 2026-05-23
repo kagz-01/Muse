@@ -31,7 +31,7 @@ export default function DashboardWidgets() {
           <p className="text-sm text-gray-400 mb-6 font-serif italic leading-relaxed relative z-10 pr-4">
             "You've been collecting a lot of ambient music lately..."
           </p>
-            <div className="flex items-center gap-2 text-xs font-medium text-canvas-primary relative z-10 group-hover:translate-x-1 transition-transform">
+          <div className="flex items-center gap-2 text-xs font-medium text-canvas-primary relative z-10 group-hover:translate-x-1 transition-transform">
             Reflect now <Icons.ArrowRight size={14} />
           </div>
         </a>
@@ -46,7 +46,10 @@ export default function DashboardWidgets() {
           <div className="flex flex-col h-full relative z-10">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <Icons.MessageSquare size={20} className="text-canvas-primary" />
+                <Icons.MessageSquare
+                  size={20}
+                  className="text-canvas-primary"
+                />
                 <h3 className="font-bold text-white tracking-tight">
                   Community Hub
                 </h3>

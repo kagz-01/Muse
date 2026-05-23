@@ -98,7 +98,12 @@ export default function LandingPage() {
               onClick={(e) => {
                 e.preventDefault();
                 const el = document.getElementById(link.href.slice(1));
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                if (el) {
+                  el.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }
               }}
               className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors duration-300"
             >
@@ -115,9 +120,13 @@ export default function LandingPage() {
             title={`Switch to next theme (Current: ${currentTheme})`}
           >
             {currentTheme === "dark" && <Icons.Moon size={16} />}
-            {currentTheme === "dim" && <Icons.Circle size={14} fill="currentColor" />}
+            {currentTheme === "dim" && (
+              <Icons.Circle size={14} fill="currentColor" />
+            )}
             {currentTheme === "tint" && <Icons.CloudSun size={16} />}
-            {currentTheme === "light" && <Icons.Sun size={16} fill="currentColor" />}
+            {currentTheme === "light" && (
+              <Icons.Sun size={16} fill="currentColor" />
+            )}
           </button>
 
           <button
@@ -152,10 +161,11 @@ export default function LandingPage() {
         </div>
 
         <div id="ledger">
-          <LedgerSection onCTA={() => setAuthMode("signup")} onGuestEntry={handleGuestEntry} />
+          <LedgerSection
+            onCTA={() => setAuthMode("signup")}
+            onGuestEntry={handleGuestEntry}
+          />
         </div>
-
-
 
         <LandingFooter />
       </main>

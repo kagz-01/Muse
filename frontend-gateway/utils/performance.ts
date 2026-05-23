@@ -1,4 +1,4 @@
-import { lazy, type ComponentType } from "preact";
+import { type ComponentType, lazy } from "preact";
 import { Suspense } from "preact/compat";
 
 interface LazyComponentProps {
@@ -9,7 +9,7 @@ interface LazyComponentProps {
 
 // Lazy loading utility for heavy components
 export const lazyLoad = (
-  loader: () => Promise<{ default: ComponentType<any> }>
+  loader: () => Promise<{ default: ComponentType<any> }>,
 ) => {
   return lazy(loader);
 };
@@ -30,7 +30,7 @@ export const LazyBoundary = ({
 // Intersection Observer hook for viewport detection
 export const useIntersection = (ref: { current: Element | null }) => {
   if (typeof window === "undefined") return false;
-  
+
   if (!("IntersectionObserver" in window)) return true;
 
   const [isVisible, setIsVisible] = window.preact?.hooks?.useState?.(false) ?? [
@@ -67,7 +67,7 @@ export const throttleRAF = (callback: () => void) => {
 // Debounce utility
 export const debounce = <T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ) => {
   let timeoutId: number;
   return (...args: Parameters<T>) => {

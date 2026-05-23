@@ -38,11 +38,12 @@ export default function DialogueHub({ threadId }: { threadId: string }) {
   return (
     <div className="space-y-12">
       <div className="flex items-center justify-between">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-          <Icons.MessageSquare size={14} className="text-canvas-primary" /> Dialogue Layers
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+          <Icons.MessageSquare size={14} className="text-canvas-primary" />{" "}
+          Dialogue Layers
         </h3>
         <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg border border-white/5">
+          <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg border border-white/5">
             <Icons.Heart size={10} className="text-rose-500" />
             <span className="text-[9px] font-bold text-white uppercase tracking-widest">
               {thread.resonanceMetrics.connections} Resonance Connections
@@ -87,7 +88,7 @@ export default function DialogueHub({ threadId }: { threadId: string }) {
                 : "Add a new signal to this synthesis..."}
               className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-8 py-6 min-h-[120px] text-lg text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 transition-all font-serif italic outline-none resize-none"
             />
-              <button
+            <button
               type="button"
               onClick={handleSend}
               disabled={!content.trim() || isSending}
@@ -138,10 +139,18 @@ export default function DialogueHub({ threadId }: { threadId: string }) {
             </p>
 
             <div className="flex items-center gap-6 pt-6 border-t border-white/5">
-              <button type="button" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors">
-                <Icons.GitCommit size={14} className="text-canvas-primary" /> Woven Pattern ({layer.resonanceScore})
+              <button
+                type="button"
+                className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors"
+              >
+                <Icons.GitCommit size={14} className="text-canvas-primary" />
+                {" "}
+                Woven Pattern ({layer.resonanceScore})
               </button>
-              <button type="button" className="text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors ml-auto">
+              <button
+                type="button"
+                className="text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-white transition-colors ml-auto"
+              >
                 Acknowledge
               </button>
             </div>

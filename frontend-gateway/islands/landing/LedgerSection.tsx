@@ -7,7 +7,8 @@ export default function LedgerSection(
     {
       title: "The Thought Stream",
       subtitle: "Collective Consensus",
-      desc: "Broadcast your cognitive workflow. Every broadcasted thread carries a rigorous cryptographic signature that guarantees individual provenance while plugging into the global intelligence layer.",
+      desc:
+        "Broadcast your cognitive workflow. Every broadcasted thread carries a rigorous cryptographic signature that guarantees individual provenance while plugging into the global intelligence layer.",
       icon: Icons.Activity,
       color: "text-purple-400",
       bg: "bg-purple-500/5",
@@ -20,7 +21,8 @@ export default function LedgerSection(
     {
       title: "Proof of Resonance",
       subtitle: "Intellectual Compounding",
-      desc: "A verifiable audit trail of your intellectual velocity. Watch your ideas compound across pulsing node clusters as the decentralized engine logs your structural influence.",
+      desc:
+        "A verifiable audit trail of your intellectual velocity. Watch your ideas compound across pulsing node clusters as the decentralized engine logs your structural influence.",
       icon: Icons.Shield,
       color: "text-amber-400",
       bg: "bg-amber-500/5",
@@ -33,7 +35,8 @@ export default function LedgerSection(
     {
       title: "The Intelligence Loop",
       subtitle: "Predictive Pipeline",
-      desc: "A multi-stage AI Analysis Pipeline works with your private Journal Terminal — extracting semantic meaning, automating pattern recognition, and constructing Blueprint Scores.",
+      desc:
+        "A multi-stage AI Analysis Pipeline works with your private Journal Terminal — extracting semantic meaning, automating pattern recognition, and constructing Blueprint Scores.",
       icon: Icons.BrainCircuit,
       color: "text-cyan-400",
       bg: "bg-cyan-500/5",
@@ -55,10 +58,14 @@ export default function LedgerSection(
           </h2>
           <h3 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--muse-text)] leading-tight">
             Cryptographic{" "}
-            <span className="text-emerald-400 font-serif italic">Provenance.</span>
+            <span className="text-emerald-400 font-serif italic">
+              Provenance.
+            </span>
           </h3>
           <p className="mt-4 text-[var(--muse-muted)] font-serif italic text-sm leading-relaxed">
-            Absolute ownership by design. Your intellectual output is mathematically isolated, cryptographically sealed, and anchored permanently to the distributed ledger via unique Ledger IDs.
+            Absolute ownership by design. Your intellectual output is
+            mathematically isolated, cryptographically sealed, and anchored
+            permanently to the distributed ledger via unique Ledger IDs.
           </p>
         </div>
 
@@ -68,15 +75,25 @@ export default function LedgerSection(
             <div
               key={item.title}
               className={`group ${item.bg} border ${item.border} rounded-2xl p-6 md:p-8 ${item.glow} ${item.hoverAnim} ${item.slideAnim} transition-all duration-500 w-full md:w-[85%] relative ${
-                i === 0 ? "md:mr-auto" : i === 1 ? "md:ml-auto" : "md:mr-auto md:ml-[8%]"
+                i === 0
+                  ? "md:mr-auto"
+                  : i === 1
+                  ? "md:ml-auto"
+                  : "md:mr-auto md:ml-[8%]"
               }`}
             >
               <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-xl ${item.bg} border ${item.border.split(" ")[0]} ${item.color} shrink-0 transition-all duration-500 ${item.iconAnim} group-hover:shadow-[0_0_12px_currentColor]/[0.15]`}>
+                <div
+                  className={`p-3 rounded-xl ${item.bg} border ${
+                    item.border.split(" ")[0]
+                  } ${item.color} shrink-0 transition-all duration-500 ${item.iconAnim} group-hover:shadow-[0_0_12px_currentColor]/[0.15]`}
+                >
                   <item.icon size={20} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h4 className={`text-base font-bold ${item.color} tracking-tight`}>
+                  <h4
+                    className={`text-base font-bold ${item.color} tracking-tight`}
+                  >
                     {item.title}
                   </h4>
                   <span className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)] block mb-1.5">
@@ -110,7 +127,11 @@ export default function LedgerSection(
               onClick={onCTA}
               className="group px-7 py-3 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-[0.2em] text-[10px] rounded-full hover:-translate-y-0.5 active:scale-95 transition-all flex items-center gap-2 shadow-lg cursor-pointer"
             >
-              Start The Loop <Icons.ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+              Start The Loop{" "}
+              <Icons.ArrowRight
+                size={12}
+                className="group-hover:translate-x-1 transition-transform"
+              />
             </button>
             <button
               type="button"

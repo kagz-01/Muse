@@ -57,7 +57,9 @@ const getTimeAgo = (date: Date) => {
   return `${days}d ago`;
 };
 
-export default function ActivityTimeline({ activities }: ActivityTimelineProps) {
+export default function ActivityTimeline(
+  { activities }: ActivityTimelineProps,
+) {
   return (
     <div className="space-y-4">
       {activities.map((activity, idx) => (
@@ -90,7 +92,10 @@ export default function ActivityTimeline({ activities }: ActivityTimelineProps) 
 
       {activities.length === 0 && (
         <div className="py-12 text-center">
-          <Icons.Inbox size={40} className="mx-auto mb-3 text-[var(--muse-text-muted)] opacity-50" />
+          <Icons.Inbox
+            size={40}
+            className="mx-auto mb-3 text-[var(--muse-text-muted)] opacity-50"
+          />
           <p className="text-[var(--muse-text-muted)]">
             No activity yet. Start engaging with the community!
           </p>

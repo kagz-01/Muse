@@ -29,7 +29,7 @@ export const handler = async (req: Request) => {
 
     return new Response(
       JSON.stringify({ success: true, action: "unfollowed" }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     return new Response(JSON.stringify({ error: "Invalid request" }), {

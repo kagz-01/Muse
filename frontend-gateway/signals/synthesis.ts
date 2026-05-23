@@ -62,7 +62,7 @@ export const parseLink = async (url: string) => {
 
 export const createArtifactFromLink = async (
   linkMetadata: LinkMetadata,
-  roomId?: string
+  roomId?: string,
 ) => {
   synthesisSignal.value = {
     ...synthesisSignal.value,

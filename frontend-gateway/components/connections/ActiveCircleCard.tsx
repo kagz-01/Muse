@@ -47,9 +47,11 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
           {/* Resonance Score Badge */}
           <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/30 rounded-lg">
             <Icons.Zap size={14} className="text-purple-400" />
-            <span className="text-[10px] font-bold text-purple-300">92 Resonance</span>
+            <span className="text-[10px] font-bold text-purple-300">
+              92 Resonance
+            </span>
           </div>
-          
+
           {/* Join Button */}
           <button
             type="button"
@@ -70,10 +72,15 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
 
       {/* Emerging Topics */}
       <div className="mb-6">
-        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2.5">Trending Topics</p>
+        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2.5">
+          Trending Topics
+        </p>
         <div className="flex flex-wrap gap-2">
           {["Consciousness", "Emergence", "Synthesis"].map((topic) => (
-            <span key={topic} className="text-[9px] font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 rounded-lg uppercase tracking-widest hover:border-emerald-500/60 transition-all cursor-default">
+            <span
+              key={topic}
+              className="text-[9px] font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 rounded-lg uppercase tracking-widest hover:border-emerald-500/60 transition-all cursor-default"
+            >
               {topic}
             </span>
           ))}
@@ -84,7 +91,7 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
         <span className="text-[10px] font-bold text-gray-500 border border-white/5 bg-white/[0.02] px-4 py-2 rounded-xl uppercase tracking-widest hover:border-white/20 hover:text-white transition-all cursor-default flex items-center gap-2">
           <Icons.Globe size={12} /> {circle.theme}
         </span>
-        
+
         {/* Live Indicator */}
         <span className="text-[10px] font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 rounded-xl uppercase tracking-widest flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

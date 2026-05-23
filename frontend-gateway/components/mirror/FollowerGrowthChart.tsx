@@ -4,7 +4,9 @@ interface FollowerGrowthChartProps {
   data: { date: string; count: number }[];
 }
 
-export default function FollowerGrowthChart({ data }: FollowerGrowthChartProps) {
+export default function FollowerGrowthChart(
+  { data }: FollowerGrowthChartProps,
+) {
   const maxCount = Math.max(...data.map((d) => d.count));
   const minCount = Math.min(...data.map((d) => d.count));
   const range = maxCount - minCount || 1;
@@ -33,7 +35,8 @@ export default function FollowerGrowthChart({ data }: FollowerGrowthChartProps) 
               key={idx}
               className="flex-1 flex flex-col items-center gap-2 group cursor-pointer"
             >
-              <div className="w-full bg-gradient-to-t from-[var(--muse-accent)] to-[var(--muse-accent-light)] rounded-t-lg transition-all duration-300 group-hover:from-[var(--muse-accent-bright)] group-hover:to-[var(--muse-accent)]"
+              <div
+                className="w-full bg-gradient-to-t from-[var(--muse-accent)] to-[var(--muse-accent-light)] rounded-t-lg transition-all duration-300 group-hover:from-[var(--muse-accent-bright)] group-hover:to-[var(--muse-accent)]"
                 style={{ height: `${Math.max(height, 10)}%` }}
               />
               <span className="text-xs text-[var(--muse-text-muted)] font-medium">

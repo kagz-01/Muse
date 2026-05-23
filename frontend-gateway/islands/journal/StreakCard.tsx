@@ -8,8 +8,11 @@ interface StreakCardProps {
   onFreezeUsed?: () => void;
 }
 
-export default function StreakCard({ streakData, onFreezeUsed }: StreakCardProps) {
-  const { currentStreak, longestStreak, freezeCount, currentLevel } = streakData;
+export default function StreakCard(
+  { streakData, onFreezeUsed }: StreakCardProps,
+) {
+  const { currentStreak, longestStreak, freezeCount, currentLevel } =
+    streakData;
 
   const levelEmoji = useMemo(() => {
     switch (currentLevel) {
@@ -51,7 +54,9 @@ export default function StreakCard({ streakData, onFreezeUsed }: StreakCardProps
   return (
     <div className="flex flex-col gap-4">
       {/* Main Streak Card */}
-      <div className={`relative overflow-hidden rounded-3xl p-8 shadow-2xl transition-all hover:scale-105 hover:shadow-2xl group cursor-default bg-gradient-to-br ${levelColor}`}>
+      <div
+        className={`relative overflow-hidden rounded-3xl p-8 shadow-2xl transition-all hover:scale-105 hover:shadow-2xl group cursor-default bg-gradient-to-br ${levelColor}`}
+      >
         <div className="absolute inset-0 opacity-10 bg-black pointer-events-none" />
 
         <div className="relative z-10 flex items-center gap-6">

@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
-import { addThread, createVaultThread, type ThreadMood } from "../../signals/threads.ts";
+import {
+  addThread,
+  createVaultThread,
+  type ThreadMood,
+} from "../../signals/threads.ts";
 
 interface Props {
   onClose: () => void;
@@ -115,7 +119,7 @@ export default function CreateThreadModal({ onClose }: Props) {
           itemIds: [],
           sourceRoomIds: [],
         },
-        vaultPassword.trim()
+        vaultPassword.trim(),
       );
     } else {
       newId = addThread({
@@ -351,15 +355,14 @@ export default function CreateThreadModal({ onClose }: Props) {
                   onClick={() => setShowVaultPassword(!showVaultPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
                 >
-                  {showVaultPassword ? (
-                    <Icons.EyeOff size={16} />
-                  ) : (
-                    <Icons.Eye size={16} />
-                  )}
+                  {showVaultPassword
+                    ? <Icons.EyeOff size={16} />
+                    : <Icons.Eye size={16} />}
                 </button>
               </div>
               <p className="text-gray-500 text-xs mt-2">
-                💡 Only you can unlock this private synthesis with this password.
+                💡 Only you can unlock this private synthesis with this
+                password.
               </p>
             </div>
           )}

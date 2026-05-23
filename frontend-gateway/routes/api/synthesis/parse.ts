@@ -23,7 +23,8 @@ const parseLinkMetadata = async (url: string): Promise<LinkParseResult> => {
         url,
         source: domain,
         type: "article",
-        image: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+        image:
+          "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
       },
       "medium.com": {
         title: "Medium – Where good ideas find you.",
@@ -43,7 +44,8 @@ const parseLinkMetadata = async (url: string): Promise<LinkParseResult> => {
       },
       "twitter.com": {
         title: "X. It's what's happening",
-        description: "From breaking news and entertainment to sports and politics.",
+        description:
+          "From breaking news and entertainment to sports and politics.",
         url,
         source: domain,
         type: "article",
@@ -97,7 +99,7 @@ export const handler = async (req: Request) => {
       JSON.stringify({
         error: err instanceof Error ? err.message : "Failed to parse link",
       }),
-      { status: 400 }
+      { status: 400 },
     );
   }
 };

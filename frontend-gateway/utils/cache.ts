@@ -49,7 +49,7 @@ export const clearAllCache = () => {
 // Cached API fetch
 export const cachedFetch = async <T>(
   url: string,
-  ttl: number = 5000
+  ttl: number = 5000,
 ): Promise<T | null> => {
   const cached = getCache<T>(url);
   if (cached) return cached;
@@ -69,7 +69,7 @@ export const cachedFetch = async <T>(
 // Batch requests with caching
 export const batchCachedFetch = async <T>(
   urls: string[],
-  ttl: number = 5000
+  ttl: number = 5000,
 ): Promise<(T | null)[]> => {
   return Promise.all(urls.map((url) => cachedFetch<T>(url, ttl)));
 };

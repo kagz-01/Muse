@@ -4,14 +4,18 @@ import {
   perspectivesSignal as persSig,
   submitPerspective as subPers,
 } from "../../signals/connections.ts";
-import { feedFilterSignal, setFeedFilter, filterPerspectivesByFollowing } from "../../signals/feed-filter.ts";
+import {
+  feedFilterSignal,
+  filterPerspectivesByFollowing,
+  setFeedFilter,
+} from "../../signals/feed-filter.ts";
 import { followersSignal } from "../../signals/followers.ts";
 
 export default function ThoughtStream() {
   const [newThought, setNewThought] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [visibility, setVisibility] = useState<"public" | "followers-only">(
-    "public"
+    "public",
   );
 
   const allPerspectives = persSig.value;
@@ -22,7 +26,7 @@ export default function ThoughtStream() {
   const perspectives = filterPerspectivesByFollowing(
     allPerspectives,
     followers.following,
-    feedFilter.type
+    feedFilter.type,
   );
 
   const handleSubmit = (e: Event) => {
@@ -42,7 +46,8 @@ export default function ThoughtStream() {
         <div className="relative z-10 space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-              <Icons.MessageSquare size={14} className="text-canvas-primary" />{" "}
+              <Icons.MessageSquare size={14} className="text-canvas-primary" />
+              {" "}
               Contribute Perspective
             </h2>
             <div className="flex items-center gap-4">
@@ -136,7 +141,7 @@ export default function ThoughtStream() {
           <Icons.GitBranch size={14} className="text-canvas-primary" />
           Community Thought Stream
         </h3>
-        
+
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -149,7 +154,7 @@ export default function ThoughtStream() {
           >
             <Icons.Globe size={12} /> All Posts
           </button>
-          
+
           <button
             type="button"
             onClick={() => setFeedFilter("following")}
@@ -223,7 +228,10 @@ export default function ThoughtStream() {
                         <span className="text-[11px] font-bold uppercase tracking-widest text-white">
                           {pers.author.name}
                         </span>
-                        <Icons.CheckCircle size={12} className="text-emerald-400" />
+                        <Icons.CheckCircle
+                          size={12}
+                          className="text-emerald-400"
+                        />
                       </div>
                       <div className="flex items-center gap-3 mt-1 flex-wrap">
                         <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
@@ -245,19 +253,25 @@ export default function ThoughtStream() {
                     {/* Visibility Badge */}
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                       <Icons.Globe size={11} className="text-amber-400" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-amber-400">Public</span>
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-amber-400">
+                        Public
+                      </span>
                     </div>
 
                     {/* Immutability Badge */}
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
                       <Icons.Lock size={11} className="text-emerald-400" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400">Immutable</span>
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400">
+                        Immutable
+                      </span>
                     </div>
-                    
+
                     {/* Real-time Analysis Badge */}
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-lg">
                       <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-indigo-400">Analyzing</span>
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-indigo-400">
+                        Analyzing
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -294,7 +308,9 @@ export default function ThoughtStream() {
                 {/* Resonance Score */}
                 <div className="flex items-center gap-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-lg">
                   <Icons.Zap size={12} className="text-amber-400" />
-                  <span className="text-[9px] font-bold text-amber-300">87 Resonance</span>
+                  <span className="text-[9px] font-bold text-amber-300">
+                    87 Resonance
+                  </span>
                 </div>
               </div>
 
@@ -308,18 +324,31 @@ export default function ThoughtStream() {
                   onClick={() => setReplyingTo(pers.id)}
                   className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors group/btn"
                 >
-                  <Icons.CornerDownRight size={16} className="group-hover/btn:translate-x-1 transition-transform" /> Synthesize Perspective
+                  <Icons.CornerDownRight
+                    size={16}
+                    className="group-hover/btn:translate-x-1 transition-transform"
+                  />{" "}
+                  Synthesize Perspective
                 </button>
-                
-                <button type="button" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-emerald-400 transition-colors">
+
+                <button
+                  type="button"
+                  className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-emerald-400 transition-colors"
+                >
                   <Icons.Heart size={16} /> 24 Collaborators
                 </button>
 
-                <button type="button" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-indigo-400 transition-colors">
+                <button
+                  type="button"
+                  className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-indigo-400 transition-colors"
+                >
                   <Icons.MessageCircle size={16} /> 18 Comments
                 </button>
 
-                <button type="button" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-amber-400 transition-colors">
+                <button
+                  type="button"
+                  className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-amber-400 transition-colors"
+                >
                   <Icons.TrendingUp size={16} /> 342 Views
                 </button>
               </div>

@@ -25,24 +25,46 @@ declare module "preact" {
     interface HTMLAttributes<T = unknown> {
       [elem: string]: unknown;
     }
-    interface ElementChildrenAttribute { children: unknown }
+    interface ElementChildrenAttribute {
+      children: unknown;
+    }
     interface ElementClass {}
-    interface ElementAttributesProperty { props: unknown }
-    interface LibraryManagedAttributes<C, P> { [key: string]: unknown }
+    interface ElementAttributesProperty {
+      props: unknown;
+    }
+    interface LibraryManagedAttributes<C, P> {
+      [key: string]: unknown;
+    }
   }
 }
 
 declare module "preact/hooks" {
-  export function useState<T>(initialState?: T | (() => T)):
-    [T, (next: T | ((prev: T) => T)) => void];
-  export function useEffect(effect: () => void | (() => void), deps?: unknown[]): void;
+  export function useState<T>(
+    initialState?: T | (() => T),
+  ): [T, (next: T | ((prev: T) => T)) => void];
+  export function useEffect(
+    effect: () => void | (() => void),
+    deps?: unknown[],
+  ): void;
   export function useMemo<T>(factory: () => T, deps?: unknown[]): T;
   export function useRef<T>(initial?: T | null): { current: T | null };
-  export function useCallback<T extends (...args: unknown[]) => unknown>(cb: T, deps?: unknown[]): T;
-  export function useLayoutEffect(effect: () => void | (() => void), deps?: unknown[]): void;
+  export function useCallback<T extends (...args: unknown[]) => unknown>(
+    cb: T,
+    deps?: unknown[],
+  ): T;
+  export function useLayoutEffect(
+    effect: () => void | (() => void),
+    deps?: unknown[],
+  ): void;
   export function useContext<T = unknown>(ctx: unknown): T;
 }
 
 // Allow importing CSS or static assets in TS files without type errors
-declare module "*.css" { const content: unknown; export default content; }
-declare module "*.svg" { const content: unknown; export default content; }
+declare module "*.css" {
+  const content: unknown;
+  export default content;
+}
+declare module "*.svg" {
+  const content: unknown;
+  export default content;
+}

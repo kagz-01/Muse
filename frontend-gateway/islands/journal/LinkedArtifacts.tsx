@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks";
 import { LinkedArtifact } from "../../signals/journal.ts";
-import { Link2, Trash2, BookOpen, GitCommit } from "lucide-preact";
+import { BookOpen, GitCommit, Link2, Trash2 } from "lucide-preact";
 
 interface LinkedArtifactsProps {
   artifacts: LinkedArtifact[];
@@ -35,15 +35,17 @@ export function LinkedArtifacts({
             class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group"
           >
             <div class="flex items-center gap-3 flex-1">
-              {artifact.type === "room" ? (
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                  <BookOpen size={18} class="text-white" />
-                </div>
-              ) : (
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0">
-                  <GitCommit size={18} class="text-white" />
-                </div>
-              )}
+              {artifact.type === "room"
+                ? (
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                    <BookOpen size={18} class="text-white" />
+                  </div>
+                )
+                : (
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                    <GitCommit size={18} class="text-white" />
+                  </div>
+                )}
               <div class="min-w-0">
                 <p class="font-medium text-white truncate">{artifact.title}</p>
                 <p class="text-xs text-white/50">
@@ -95,10 +97,11 @@ export function ArtifactSelector({
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<"rooms" | "threads">("rooms");
 
-  const filtered =
-    tab === "rooms"
-      ? rooms.filter((r) => r.title.toLowerCase().includes(search.toLowerCase()))
-      : threads.filter((t) => t.title.toLowerCase().includes(search.toLowerCase()));
+  const filtered = tab === "rooms"
+    ? rooms.filter((r) => r.title.toLowerCase().includes(search.toLowerCase()))
+    : threads.filter((t) =>
+      t.title.toLowerCase().includes(search.toLowerCase())
+    );
 
   return (
     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -144,27 +147,27 @@ export function ArtifactSelector({
 
         {/* List */}
         <div class="max-h-64 overflow-y-auto space-y-2 mb-4">
-          {filtered.length === 0 ? (
-            <p class="text-center text-white/60 py-4">No {tab} found</p>
-          ) : (
-            filtered.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onSelect({
-                    id: item.id,
-                    type: tab === "rooms" ? "room" : "thread",
-                    title: item.title,
-                    linkedAt: Date.now(),
-                  });
-                  onClose();
-                }}
-                class="w-full text-left px-4 py-2 rounded-lg hover:bg-white/10 text-white transition-all"
-              >
-                {item.title}
-              </button>
-            ))
-          )}
+          {filtered.length === 0
+            ? <p class="text-center text-white/60 py-4">No {tab} found</p>
+            : (
+              filtered.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    onSelect({
+                      id: item.id,
+                      type: tab === "rooms" ? "room" : "thread",
+                      title: item.title,
+                      linkedAt: Date.now(),
+                    });
+                    onClose();
+                  }}
+                  class="w-full text-left px-4 py-2 rounded-lg hover:bg-white/10 text-white transition-all"
+                >
+                  {item.title}
+                </button>
+              ))
+            )}
         </div>
 
         {/* Close Button */}

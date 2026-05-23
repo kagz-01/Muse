@@ -76,7 +76,10 @@ export default function LinkPreview({ metadata, onClose }: LinkPreviewProps) {
 
         {/* URL */}
         <div className="flex items-center gap-2 p-3 bg-[var(--muse-surface-soft)] rounded-lg mb-4">
-          <Icons.Link2 size={14} className="text-[var(--muse-text-muted)] flex-shrink-0" />
+          <Icons.Link2
+            size={14}
+            className="text-[var(--muse-text-muted)] flex-shrink-0"
+          />
           <a
             href={metadata.url}
             target="_blank"

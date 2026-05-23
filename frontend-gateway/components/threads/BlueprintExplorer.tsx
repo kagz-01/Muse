@@ -2,19 +2,26 @@ import { h } from "preact";
 import { useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
-  blueprintsSignal,
   acceptBlueprint,
+  blueprintsSignal,
   discardBlueprint,
   updateBlueprintThesis,
 } from "../../signals/blueprints.ts";
 
-type BlueprintStatus = "all" | "pending" | "refining" | "accepted" | "discarded";
+type BlueprintStatus =
+  | "all"
+  | "pending"
+  | "refining"
+  | "accepted"
+  | "discarded";
 
 export default function BlueprintExplorer() {
   const [statusFilter, setStatusFilter] = useState<BlueprintStatus>("all");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedThesis, setEditedThesis] = useState("");
-  const [selectedBlueprint, setSelectedBlueprint] = useState<string | null>(null);
+  const [selectedBlueprint, setSelectedBlueprint] = useState<string | null>(
+    null,
+  );
 
   const blueprints = blueprintsSignal.value;
 
@@ -24,10 +31,26 @@ export default function BlueprintExplorer() {
   });
 
   const statusColors = {
-    pending: { bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/20" },
-    refining: { bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20" },
-    accepted: { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/20" },
-    discarded: { bg: "bg-slate-500/10", text: "text-slate-400", border: "border-slate-500/20" },
+    pending: {
+      bg: "bg-amber-500/10",
+      text: "text-amber-400",
+      border: "border-amber-500/20",
+    },
+    refining: {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      border: "border-blue-500/20",
+    },
+    accepted: {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-400",
+      border: "border-emerald-500/20",
+    },
+    discarded: {
+      bg: "bg-slate-500/10",
+      text: "text-slate-400",
+      border: "border-slate-500/20",
+    },
   };
 
   const statusIcons = {
@@ -51,13 +74,20 @@ export default function BlueprintExplorer() {
           Blueprint Gallery
         </h3>
         <span className="px-4 py-2 bg-canvas-primary/10 border border-canvas-primary/30 rounded-xl text-xs font-bold uppercase tracking-widest text-canvas-primary">
-          {filteredBlueprints.length} Blueprint{filteredBlueprints.length !== 1 ? "s" : ""}
+          {filteredBlueprints.length}{" "}
+          Blueprint{filteredBlueprints.length !== 1 ? "s" : ""}
         </span>
       </div>
 
       {/* Status Filter */}
       <div className="flex gap-2 overflow-x-auto pb-2">
-        {(["all", "pending", "refining", "accepted", "discarded"] as BlueprintStatus[]).map(
+        {([
+          "all",
+          "pending",
+          "refining",
+          "accepted",
+          "discarded",
+        ] as BlueprintStatus[]).map(
           (status) => (
             <button
               key={status}
@@ -68,137 +98,147 @@ export default function BlueprintExplorer() {
                   : "bg-white/5 text-gray-400 border-white/10 hover:text-white"
               } border`}
             >
-              {status === "all" ? "All Blueprints" : status.charAt(0).toUpperCase() + status.slice(1)}
+              {status === "all"
+                ? "All Blueprints"
+                : status.charAt(0).toUpperCase() + status.slice(1)}
             </button>
-          )
+          ),
         )}
       </div>
 
       {/* Blueprints Grid */}
-      {filteredBlueprints.length === 0 ? (
-        <div className="text-center py-12">
-          <Icons.Lightbulb size={48} className="text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400 font-serif italic">
-            No blueprints found in this category
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {filteredBlueprints.map((bp) => {
-            const colors = statusColors[bp.status];
-            const Icon = statusIcons[bp.status];
-            const isSelected = selectedBlueprint === bp.id;
+      {filteredBlueprints.length === 0
+        ? (
+          <div className="text-center py-12">
+            <Icons.Lightbulb size={48} className="text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-400 font-serif italic">
+              No blueprints found in this category
+            </p>
+          </div>
+        )
+        : (
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {filteredBlueprints.map((bp) => {
+              const colors = statusColors[bp.status];
+              const Icon = statusIcons[bp.status];
+              const isSelected = selectedBlueprint === bp.id;
 
-            return (
-              <div
-                key={bp.id}
-                onClick={() => setSelectedBlueprint(isSelected ? null : bp.id)}
-                className={`group relative overflow-hidden rounded-[2.5rem] border transition-all cursor-pointer ${
-                  isSelected
-                    ? `${colors.border} ${colors.bg} shadow-2xl`
-                    : "border-white/10 hover:border-white/20"
-                }`}
-              >
-                {/* Background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              return (
+                <div
+                  key={bp.id}
+                  onClick={() =>
+                    setSelectedBlueprint(isSelected ? null : bp.id)}
+                  className={`group relative overflow-hidden rounded-[2.5rem] border transition-all cursor-pointer ${
+                    isSelected
+                      ? `${colors.border} ${colors.bg} shadow-2xl`
+                      : "border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  {/* Background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                {/* Content */}
-                <div className="relative z-10 p-6 md:p-7 h-full flex flex-col">
-                  {/* Header */}
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex-1">
-                      <h4 className="text-lg md:text-xl font-bold text-white group-hover:text-canvas-primary transition-colors line-clamp-2">
-                        {bp.suggestedTitle}
-                      </h4>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {bp.sourceRoomIds.length} room{bp.sourceRoomIds.length !== 1 ? "s" : ""} • {bp.itemIds.length} signal{bp.itemIds.length !== 1 ? "s" : ""}
-                      </p>
-                    </div>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${colors.bg} border ${colors.border}`}>
-                      <Icon size={16} className={colors.text} />
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-sm text-gray-400 line-clamp-2 mb-4 flex-1">
-                    {bp.suggestedDescription}
-                  </p>
-
-                  {/* Confidence Score */}
-                  <div className="mb-6 pb-6 border-t border-white/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
-                        AI Confidence
-                      </span>
-                      <span className={`text-lg font-bold ${colors.text}`}>
-                        {bp.confidenceScore}%
-                      </span>
-                    </div>
-                    <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  {/* Content */}
+                  <div className="relative z-10 p-6 md:p-7 h-full flex flex-col">
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className="flex-1">
+                        <h4 className="text-lg md:text-xl font-bold text-white group-hover:text-canvas-primary transition-colors line-clamp-2">
+                          {bp.suggestedTitle}
+                        </h4>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {bp.sourceRoomIds.length}{" "}
+                          room{bp.sourceRoomIds.length !== 1 ? "s" : ""} •{" "}
+                          {bp.itemIds.length}{" "}
+                          signal{bp.itemIds.length !== 1 ? "s" : ""}
+                        </p>
+                      </div>
                       <div
-                        className={`h-full rounded-full transition-all ${colors.text}`}
-                        style={{ width: `${bp.confidenceScore}%` }}
-                      />
+                        className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${colors.bg} border ${colors.border}`}
+                      >
+                        <Icon size={16} className={colors.text} />
+                      </div>
                     </div>
+
+                    {/* Description */}
+                    <p className="text-sm text-gray-400 line-clamp-2 mb-4 flex-1">
+                      {bp.suggestedDescription}
+                    </p>
+
+                    {/* Confidence Score */}
+                    <div className="mb-6 pb-6 border-t border-white/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                          AI Confidence
+                        </span>
+                        <span className={`text-lg font-bold ${colors.text}`}>
+                          {bp.confidenceScore}%
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${colors.text}`}
+                          style={{ width: `${bp.confidenceScore}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Thesis Preview */}
+                    {isSelected && (
+                      <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                        <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
+                          Synthesized Thesis
+                        </p>
+                        <p className="text-sm text-white font-serif italic leading-relaxed">
+                          "{bp.thesis}"
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    {isSelected && bp.status === "pending" && (
+                      <div className="flex gap-2 mt-auto">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAccept(bp.id);
+                          }}
+                          className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2"
+                        >
+                          <Icons.Check size={14} />
+                          Accept
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            discardBlueprint(bp.id);
+                            setSelectedBlueprint(null);
+                          }}
+                          className="flex-1 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all"
+                        >
+                          <Icons.X size={14} />
+                        </button>
+                      </div>
+                    )}
+
+                    {bp.status === "accepted" && (
+                      <div className="flex items-center gap-2 text-xs text-emerald-400 mt-auto">
+                        <Icons.CheckCircle2 size={14} />
+                        <span className="font-bold uppercase">Accepted</span>
+                      </div>
+                    )}
+
+                    {bp.status === "discarded" && (
+                      <div className="flex items-center gap-2 text-xs text-slate-400 mt-auto">
+                        <Icons.Trash2 size={14} />
+                        <span className="font-bold uppercase">Discarded</span>
+                      </div>
+                    )}
                   </div>
-
-                  {/* Thesis Preview */}
-                  {isSelected && (
-                    <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-2xl">
-                      <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
-                        Synthesized Thesis
-                      </p>
-                      <p className="text-sm text-white font-serif italic leading-relaxed">
-                        "{bp.thesis}"
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  {isSelected && bp.status === "pending" && (
-                    <div className="flex gap-2 mt-auto">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAccept(bp.id);
-                        }}
-                        className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2"
-                      >
-                        <Icons.Check size={14} />
-                        Accept
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          discardBlueprint(bp.id);
-                          setSelectedBlueprint(null);
-                        }}
-                        className="flex-1 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all"
-                      >
-                        <Icons.X size={14} />
-                      </button>
-                    </div>
-                  )}
-
-                  {bp.status === "accepted" && (
-                    <div className="flex items-center gap-2 text-xs text-emerald-400 mt-auto">
-                      <Icons.CheckCircle2 size={14} />
-                      <span className="font-bold uppercase">Accepted</span>
-                    </div>
-                  )}
-
-                  {bp.status === "discarded" && (
-                    <div className="flex items-center gap-2 text-xs text-slate-400 mt-auto">
-                      <Icons.Trash2 size={14} />
-                      <span className="font-bold uppercase">Discarded</span>
-                    </div>
-                  )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
     </div>
   );
 }

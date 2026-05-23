@@ -4,15 +4,33 @@ import type { Room } from "../../signals/rooms.ts";
 import type { Thread } from "../../signals/threads.ts";
 
 // Lightweight icon stubs to avoid JSX typing issues in the sandbox environment.
-const Activity = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🔄</span>;
-const Aperture = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🔆</span>;
-const BookOpen = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>📖</span>;
-const GitCommit = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>📝</span>;
-const Hash = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>#</span>;
-const ImageIcon = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🖼️</span>;
-const Palette = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🎨</span>;
-const Send = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>📤</span>;
-const Type = (props: JSX.HTMLAttributes<HTMLSpanElement>) => <span {...props}>🔤</span>;
+const Activity = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>🔄</span>
+);
+const Aperture = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>🔆</span>
+);
+const BookOpen = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>📖</span>
+);
+const GitCommit = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>📝</span>
+);
+const Hash = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>#</span>
+);
+const ImageIcon = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>🖼️</span>
+);
+const Palette = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>🎨</span>
+);
+const Send = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>📤</span>
+);
+const Type = (props: JSX.HTMLAttributes<HTMLSpanElement>) => (
+  <span {...props}>🔤</span>
+);
 import { roomsSignal } from "../../signals/rooms.ts";
 import { threadsSignal } from "../../signals/threads.ts";
 import { addEntry } from "../../signals/journal.ts";
@@ -38,7 +56,9 @@ export default function JournalTerminal() {
 
     // Simulate AI analysis and capture
     setTimeout(() => {
-      const body = `${title ? `# ${title}\n\n` : ""}${content}\n\nSources: ${activeSources.join(", ")}`;
+      const body = `${title ? `# ${title}\n\n` : ""}${content}\n\nSources: ${
+        activeSources.join(", ")
+      }`;
       addEntry(body, false);
       setTitle("");
       setContent("");
@@ -86,7 +106,10 @@ export default function JournalTerminal() {
               Journal Stylist
             </h4>
             <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
-              <button type="button" className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+              <button
+                type="button"
+                className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group"
+              >
                 <Type
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"
@@ -95,7 +118,10 @@ export default function JournalTerminal() {
                   Typography
                 </span>
               </button>
-              <button type="button" className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+              <button
+                type="button"
+                className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group"
+              >
                 <ImageIcon
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"
@@ -104,7 +130,10 @@ export default function JournalTerminal() {
                   Wallpaper
                 </span>
               </button>
-              <button type="button" className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+              <button
+                type="button"
+                className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group"
+              >
                 <Palette
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"
@@ -113,7 +142,10 @@ export default function JournalTerminal() {
                   Spectrum
                 </span>
               </button>
-              <button type="button" className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group">
+              <button
+                type="button"
+                className="min-w-[140px] snap-start p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-2 group"
+              >
                 <Aperture
                   size={18}
                   className="text-gray-500 group-hover:text-white transition-colors"

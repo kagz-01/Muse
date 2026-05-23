@@ -38,7 +38,7 @@ export const handler = async (req: Request) => {
     if (!metadata || !metadata.url) {
       return new Response(
         JSON.stringify({ error: "Metadata with URL required" }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -64,7 +64,7 @@ export const handler = async (req: Request) => {
       JSON.stringify({
         error: err instanceof Error ? err.message : "Failed to create artifact",
       }),
-      { status: 400 }
+      { status: 400 },
     );
   }
 };

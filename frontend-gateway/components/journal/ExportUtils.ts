@@ -10,7 +10,10 @@ export interface ExportOptions {
   filterMoods?: string[];
 }
 
-export function exportAsJSON(entries: JournalEntry[], options: Partial<ExportOptions> = {}): string {
+export function exportAsJSON(
+  entries: JournalEntry[],
+  options: Partial<ExportOptions> = {},
+): string {
   const filtered = filterEntries(entries, options);
   const data = {
     exported: new Date().toISOString(),
@@ -39,7 +42,10 @@ export function exportAsJSON(entries: JournalEntry[], options: Partial<ExportOpt
   return JSON.stringify(data, null, 2);
 }
 
-export function exportAsCSV(entries: JournalEntry[], options: Partial<ExportOptions> = {}): string {
+export function exportAsCSV(
+  entries: JournalEntry[],
+  options: Partial<ExportOptions> = {},
+): string {
   const filtered = filterEntries(entries, options);
 
   const headers = [
@@ -60,7 +66,9 @@ export function exportAsCSV(entries: JournalEntry[], options: Partial<ExportOpti
     e.wordCount,
     !!e.synthesis ? "Yes" : "No",
     e.synthesis
-      ? `${e.synthesis.sourceRoomIds?.length || 0} rooms, ${e.synthesis.sourceThreadIds?.length || 0} threads`
+      ? `${e.synthesis.sourceRoomIds?.length || 0} rooms, ${
+        e.synthesis.sourceThreadIds?.length || 0
+      } threads`
       : "",
   ]);
 
@@ -72,7 +80,10 @@ export function exportAsCSV(entries: JournalEntry[], options: Partial<ExportOpti
   return csv;
 }
 
-export function exportAsMarkdown(entries: JournalEntry[], options: Partial<ExportOptions> = {}): string {
+export function exportAsMarkdown(
+  entries: JournalEntry[],
+  options: Partial<ExportOptions> = {},
+): string {
   const filtered = filterEntries(entries, options);
 
   const md = [
@@ -89,7 +100,11 @@ export function exportAsMarkdown(entries: JournalEntry[], options: Partial<Expor
     md.push(`## ${i + 1}. Entry #${e.id}`);
     md.push("");
     md.push(
-      `**Date:** ${new Date(e.createdAt).toLocaleString()} | **Mood:** ${e.mood} | **Visibility:** ${e.isPublic ? "Public" : "Private"}`
+      `**Date:** ${
+        new Date(e.createdAt).toLocaleString()
+      } | **Mood:** ${e.mood} | **Visibility:** ${
+        e.isPublic ? "Public" : "Private"
+      }`,
     );
 
     if (e.tags && e.tags.length > 0) {
@@ -131,7 +146,11 @@ export function exportAsMarkdown(entries: JournalEntry[], options: Partial<Expor
   return md.join("\n");
 }
 
-export function downloadFile(content: string, filename: string, mimeType: string): void {
+export function downloadFile(
+  content: string,
+  filename: string,
+  mimeType: string,
+): void {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -145,7 +164,7 @@ export function downloadFile(content: string, filename: string, mimeType: string
 
 export function triggerExport(
   entries: JournalEntry[],
-  options: ExportOptions
+  options: ExportOptions,
 ): void {
   let content: string;
   let filename: string;
@@ -174,7 +193,10 @@ export function triggerExport(
   downloadFile(content, filename, mimeType);
 }
 
-function filterEntries(entries: JournalEntry[], options: Partial<ExportOptions>): JournalEntry[] {
+function filterEntries(
+  entries: JournalEntry[],
+  options: Partial<ExportOptions>,
+): JournalEntry[] {
   let filtered = [...entries];
 
   // Filter by vault status
@@ -185,7 +207,9 @@ function filterEntries(entries: JournalEntry[], options: Partial<ExportOptions>)
   // Filter by date range
   if (options.dateRange) {
     filtered = filtered.filter(
-      (e) => e.createdAt >= options.dateRange!.start && e.createdAt <= options.dateRange!.end
+      (e) =>
+        e.createdAt >= options.dateRange!.start &&
+        e.createdAt <= options.dateRange!.end,
     );
   }
 
@@ -197,7 +221,10 @@ function filterEntries(entries: JournalEntry[], options: Partial<ExportOptions>)
   return filtered.sort((a, b) => b.createdAt - a.createdAt);
 }
 
-export function getExportStats(entries: JournalEntry[], options: Partial<ExportOptions>) {
+export function getExportStats(
+  entries: JournalEntry[],
+  options: Partial<ExportOptions>,
+) {
   const filtered = filterEntries(entries, options);
   const wordCount = filtered.reduce((sum, e) => sum + e.wordCount, 0);
   const synthesisCount = filtered.filter((e) => !!e.synthesis).length;
@@ -208,9 +235,11 @@ export function getExportStats(entries: JournalEntry[], options: Partial<ExportO
     synthesisCount,
     publicCount: filtered.filter((e) => e.isPublic).length,
     vaultedCount: filtered.filter((e) => !!e.vault).length,
-    dateRange: filtered.length > 0 ? {
-      earliest: new Date(filtered[filtered.length - 1].createdAt),
-      latest: new Date(filtered[0].createdAt),
-    } : null,
+    dateRange: filtered.length > 0
+      ? {
+        earliest: new Date(filtered[filtered.length - 1].createdAt),
+        latest: new Date(filtered[0].createdAt),
+      }
+      : null,
   };
 }

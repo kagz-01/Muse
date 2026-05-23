@@ -45,17 +45,19 @@ export default function NotificationToast({
       className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 flex items-start gap-3 shadow-xl animate-in slide-in-from-right-4 fade-in duration-300"
       key={notification.id}
     >
-      {notification.avatar ? (
-        <img
-          src={notification.avatar}
-          alt="User"
-          className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-        />
-      ) : (
-        <div className={`${config.color} p-2 rounded-lg flex-shrink-0`}>
-          <IconComponent size={18} className="text-white" />
-        </div>
-      )}
+      {notification.avatar
+        ? (
+          <img
+            src={notification.avatar}
+            alt="User"
+            className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+          />
+        )
+        : (
+          <div className={`${config.color} p-2 rounded-lg flex-shrink-0`}>
+            <IconComponent size={18} className="text-white" />
+          </div>
+        )}
 
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-white text-sm">{notification.title}</p>

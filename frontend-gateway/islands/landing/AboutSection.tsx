@@ -19,7 +19,11 @@ export default function AboutSection() {
             </h3>
           </div>
           <p className="text-[var(--muse-muted)] font-serif italic text-sm md:text-base leading-relaxed max-w-2xl group-hover:text-[var(--muse-text)] transition-colors duration-500">
-            A sovereign sanctuary engineered to eliminate cognitive noise. By fusing Sovereign Knowledge Rooms (The Vaults), Real-time AI Feedback pipelines, and a high-performance, fluid Radial Menu interface, the system intercepts chaotic data flows and processes them into a structured, cryptographic ledger of collective intelligence.
+            A sovereign sanctuary engineered to eliminate cognitive noise. By
+            fusing Sovereign Knowledge Rooms (The Vaults), Real-time AI Feedback
+            pipelines, and a high-performance, fluid Radial Menu interface, the
+            system intercepts chaotic data flows and processes them into a
+            structured, cryptographic ledger of collective intelligence.
           </p>
         </div>
       </div>
@@ -42,7 +46,10 @@ export default function AboutSection() {
               Cognitive Optimization
             </h4>
             <p className="text-[var(--muse-muted)] font-serif italic text-sm leading-relaxed group-hover:text-[var(--muse-text)] transition-colors duration-500">
-              To upgrade human intellectual output. We engineer proactive synthesis tools that allow operators to seamlessly capture raw signals, contemplate deep patterns, and isolate profound meaning from fragmented digital feeds.
+              To upgrade human intellectual output. We engineer proactive
+              synthesis tools that allow operators to seamlessly capture raw
+              signals, contemplate deep patterns, and isolate profound meaning
+              from fragmented digital feeds.
             </p>
           </div>
         </div>
@@ -63,7 +70,11 @@ export default function AboutSection() {
               Sovereign Attention Networks
             </h4>
             <p className="text-[var(--muse-muted)] font-serif italic text-sm leading-relaxed group-hover:text-[var(--muse-text)] transition-colors duration-500">
-              We are building a decentralized information layer where attention is treated as an immutable, sovereign asset rather than a liquid commodity. We envision an advanced collective intelligence network where high-fidelity thoughts compound, evolve, and permanently outlast ephemeral social streams.
+              We are building a decentralized information layer where attention
+              is treated as an immutable, sovereign asset rather than a liquid
+              commodity. We envision an advanced collective intelligence network
+              where high-fidelity thoughts compound, evolve, and permanently
+              outlast ephemeral social streams.
             </p>
           </div>
         </div>
