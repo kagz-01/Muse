@@ -150,7 +150,7 @@ export default function PulseHome() {
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-[var(--muse-text)]">
               {greeting},{" "}
               <span className="text-[var(--muse-muted)] italic font-serif">
-                {user?.name?.split(" ")[0] || "Creator"}
+                {user?.username?.split(" ")[0] || "Creator"}
               </span>.
               <span className="block mt-4 bg-gradient-to-r from-[var(--muse-text)] via-[var(--muse-text)] to-[var(--muse-muted)] bg-clip-text text-transparent">
                 Your resonance is stable.

@@ -70,6 +70,29 @@ export function addNotification(title: string, detail: string) {
 export const appThemeSignal = signal<AppTheme>("dark");
 export const appAccentSignal = signal<AppAccentColor>("cyan");
 export const appFontSizeSignal = signal<AppFontSize>("medium");
+export const customAccentHexSignal = signal<string>("");
+
+// HSL → Hex conversion utility (shared with room/thread creation)
+export function hslToHex(h: number, s: number, l: number): string {
+  const a = (s * Math.min(l, 100 - l)) / 100;
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const color = (l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)) / 100;
+    return Math.round(255 * color)
+      .toString(16)
+      .padStart(2, "0");
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+function hexToRgbString(hex: string): string {
+  const clean = hex.replace("#", "");
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return "34 211 238";
+  return `${r} ${g} ${b}`;
+}
 
 function updateStoredAppearance(
   partial: Partial<
@@ -154,21 +177,60 @@ export function initializeTheme() {
   const theme = resolveSavedTheme();
   appThemeSignal.value = theme;
   applyThemeToDocument(theme);
-  // Try to load saved accent color too
   try {
     const settingsRaw = globalThis.localStorage?.getItem("muse-fresh-settings");
     if (settingsRaw) {
       const parsed = JSON.parse(settingsRaw) as {
-        appearance?: { accentColor?: AppAccentColor };
+        appearance?: {
+          accentColor?: AppAccentColor;
+          customAccentHex?: string;
+          compactMode?: boolean;
+          animations?: boolean;
+          reduceMotion?: boolean;
+        };
       };
       if (parsed.appearance?.accentColor) {
         appAccentSignal.value = parsed.appearance.accentColor;
       }
+      // Restore custom accent hex if saved
+      if (parsed.appearance?.customAccentHex) {
+        customAccentHexSignal.value = parsed.appearance.customAccentHex;
+        applyCustomAccentToDocument(parsed.appearance.customAccentHex);
+        return; // Custom accent takes priority
+      }
+      // Restore appearance data attributes
+      applyAppearanceAttributes(parsed.appearance);
     }
   } catch {
     // Ignore
   }
   applyAccentToDocument(appAccentSignal.value, theme);
+}
+
+function applyCustomAccentToDocument(hex: string) {
+  const docEl = globalThis.document?.documentElement;
+  if (!docEl || !hex) return;
+  docEl.style.setProperty("--muse-accent-rgb", hexToRgbString(hex));
+}
+
+function applyAppearanceAttributes(
+  appearance?: {
+    compactMode?: boolean;
+    animations?: boolean;
+    reduceMotion?: boolean;
+  },
+) {
+  const docEl = globalThis.document?.documentElement;
+  if (!docEl || !appearance) return;
+  if (appearance.compactMode !== undefined) {
+    docEl.setAttribute("data-compact", String(appearance.compactMode));
+  }
+  if (appearance.animations !== undefined) {
+    docEl.setAttribute("data-animations", String(appearance.animations));
+  }
+  if (appearance.reduceMotion !== undefined) {
+    docEl.setAttribute("data-reduce-motion", String(appearance.reduceMotion));
+  }
 }
 
 export function setTheme(theme: AppTheme) {
@@ -194,8 +256,29 @@ export function toggleTheme() {
 
 export function setAccentColor(accentColor: AppAccentColor) {
   appAccentSignal.value = accentColor;
+  customAccentHexSignal.value = ""; // Clear custom when preset chosen
   applyAccentToDocument(accentColor, appThemeSignal.value);
-  updateStoredAppearance({ accentColor });
+  updateStoredAppearance({ accentColor, customAccentHex: "" } as Partial<{ theme: AppTheme; accentColor: AppAccentColor; fontSize: AppFontSize; customAccentHex: string }>);
+}
+
+export function setCustomAccentHex(hex: string) {
+  customAccentHexSignal.value = hex;
+  applyCustomAccentToDocument(hex);
+  updateStoredAppearance({ customAccentHex: hex } as Partial<{ theme: AppTheme; accentColor: AppAccentColor; fontSize: AppFontSize; customAccentHex: string }>);
+}
+
+export function setAppearanceAttribute(
+  key: "compactMode" | "animations" | "reduceMotion",
+  value: boolean,
+) {
+  const docEl = globalThis.document?.documentElement;
+  if (!docEl) return;
+  const attr = key === "compactMode"
+    ? "data-compact"
+    : key === "animations"
+    ? "data-animations"
+    : "data-reduce-motion";
+  docEl.setAttribute(attr, String(value));
 }
 
 export function setGlobalFontSize(fontSize: AppFontSize) {

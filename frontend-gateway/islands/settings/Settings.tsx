@@ -30,7 +30,11 @@ import { resetItems } from "../../signals/items.ts";
 import { resetThreads } from "../../signals/threads.ts";
 import { resetJournalEntries } from "../../signals/journal.ts";
 import {
+  customAccentHexSignal,
+  hslToHex,
   setAccentColor,
+  setAppearanceAttribute,
+  setCustomAccentHex,
   setGlobalFontSize,
   setTheme,
 } from "../../signals/ui.ts";
@@ -45,7 +49,7 @@ type SettingsTab =
 type SaveStatus = "idle" | "saving" | "saved";
 
 type AppearanceSettings = {
-  theme: "dark" | "light" | "system";
+  theme: "dark" | "light" | "dim" | "tint";
   accentColor:
     | "cyan"
     | "blue"
@@ -59,6 +63,7 @@ type AppearanceSettings = {
   compactMode: boolean;
   animations: boolean;
   reduceMotion: boolean;
+  customAccentHex: string;
 };
 
 type NotificationSettings = {
@@ -85,6 +90,7 @@ const DEFAULT_APPEARANCE: AppearanceSettings = {
   compactMode: false,
   animations: true,
   reduceMotion: false,
+  customAccentHex: "",
 };
 
 const DEFAULT_NOTIFICATIONS: NotificationSettings = {
@@ -168,9 +174,10 @@ const THEME_OPTIONS: Array<
     icon: import("preact").ComponentType<Record<string, unknown>>;
   }
 > = [
-  { value: "light", label: "Light", icon: SafeIcons.Sun },
-  { value: "dark", label: "Dark", icon: SafeIcons.Moon },
-  { value: "system", label: "System", icon: SafeIcons.Monitor },
+  { value: "dark", label: "Midnight", icon: SafeIcons.Moon },
+  { value: "dim", label: "Slate", icon: SafeIcons.CloudMoon },
+  { value: "tint", label: "Glow", icon: SafeIcons.Sparkles },
+  { value: "light", label: "Solar", icon: SafeIcons.Sun },
 ];
 
 const FONT_SIZE_OPTIONS: Array<
@@ -183,691 +190,43 @@ const FONT_SIZE_OPTIONS: Array<
 
 const STORAGE_KEY = "muse-fresh-settings";
 
-// IANA Timezone list - all major timezones
-const IANA_TIMEZONES = [
-  "Africa/Abidjan",
-  "Africa/Accra",
-  "Africa/Addis_Ababa",
-  "Africa/Algiers",
-  "Africa/Asmara",
-  "Africa/Bamako",
-  "Africa/Bangui",
-  "Africa/Banjul",
-  "Africa/Bissau",
-  "Africa/Blantyre",
-  "Africa/Brazzaville",
-  "Africa/Bujumbura",
-  "Africa/Cairo",
-  "Africa/Casablanca",
-  "Africa/Ceuta",
-  "Africa/Conakry",
-  "Africa/Dakar",
-  "Africa/Dar_es_Salaam",
-  "Africa/Djibouti",
-  "Africa/Douala",
-  "Africa/El_Aaiun",
-  "Africa/Freetown",
-  "Africa/Gaborone",
-  "Africa/Harare",
-  "Africa/Johannesburg",
-  "Africa/Juba",
-  "Africa/Kampala",
-  "Africa/Khartoum",
-  "Africa/Kigali",
-  "Africa/Kinshasa",
-  "Africa/Lagos",
-  "Africa/Libreville",
-  "Africa/Lilongwe",
-  "Africa/Lome",
-  "Africa/Luanda",
-  "Africa/Lubumbashi",
-  "Africa/Lusaka",
-  "Africa/Malabo",
-  "Africa/Maputo",
-  "Africa/Maseru",
-  "Africa/Mauritius",
-  "Africa/Mogadishu",
-  "Africa/Monrovia",
-  "Africa/Montserrado",
-  "Africa/Morocco",
-  "Africa/Mouau",
-  "Africa/Muscat",
-  "Africa/Nairobi",
-  "Africa/Ndjamena",
-  "Africa/Niamey",
-  "Africa/Nouakchott",
-  "Africa/Ouagadougou",
-  "Africa/Porto-Novo",
-  "Africa/Sao_Tome",
-  "Africa/Tripoli",
-  "Africa/Tunis",
-  "Africa/Windhoek",
-  "America/Adak",
-  "America/Anchorage",
-  "America/Anguilla",
-  "America/Antigua",
-  "America/Araguaina",
-  "America/Argentina/Buenos_Aires",
-  "America/Argentina/Catamarca",
-  "America/Argentina/ComodRivadavia",
-  "America/Argentina/Cordoba",
-  "America/Argentina/Jujuy",
-  "America/Argentina/La_Rioja",
-  "America/Argentina/Mendoza",
-  "America/Argentina/Rio_Gallegos",
-  "America/Argentina/Salta",
-  "America/Argentina/San_Juan",
-  "America/Argentina/San_Luis",
-  "America/Argentina/Tucuman",
-  "America/Argentina/Ushuaia",
-  "America/Aruba",
-  "America/Asuncion",
-  "America/Atikokan",
-  "America/Atka",
-  "America/Bahia",
-  "America/Bahia_Banderas",
-  "America/Barbados",
-  "America/Belem",
-  "America/Belize",
-  "America/Blanc-Sablon",
-  "America/Boa_Vista",
-  "America/Bogota",
-  "America/Boise",
-  "America/Buenos_Aires",
-  "America/Cambridge_Bay",
-  "America/Campo_Grande",
-  "America/Cancun",
-  "America/Caracas",
-  "America/Catamarca",
-  "America/Cayenne",
-  "America/Cayman",
-  "America/Chicago",
-  "America/Chihuahua",
-  "America/Coral_Harbour",
-  "America/Cordoba",
-  "America/Costa_Rica",
-  "America/Creston",
-  "America/Cuiaba",
-  "America/Curacao",
-  "America/Danmarkshavn",
-  "America/Dawson",
-  "America/Dawson_Creek",
-  "America/Denver",
-  "America/Detroit",
-  "America/Dominica",
-  "America/Edmonton",
-  "America/Eirunepe",
-  "America/El_Salvador",
-  "America/Ensenada",
-  "America/Fort_Nelson",
-  "America/Fort_Wayne",
-  "America/Fortaleza",
-  "America/Glace_Bay",
-  "America/Godthab",
-  "America/Goose_Bay",
-  "America/Grand_Turk",
-  "America/Grenada",
-  "America/Guadeloupe",
-  "America/Guam",
-  "America/Guatemala",
-  "America/Guayaquil",
-  "America/Guyana",
-  "America/Halifax",
-  "America/Havana",
-  "America/Hermosillo",
-  "America/Indiana/Indianapolis",
-  "America/Indiana/Knox",
-  "America/Indiana/Marengo",
-  "America/Indiana/Petersburg",
-  "America/Indiana/Tell_City",
-  "America/Indiana/Vevay",
-  "America/Indiana/Vincennes",
-  "America/Indiana/Winamac",
-  "America/Indianapolis",
-  "America/Inuvik",
-  "America/Iqaluit",
-  "America/Iraq",
-  "America/Iriqueime",
-  "America/Jamaica",
-  "America/Jujuy",
-  "America/Juneau",
-  "America/Kentucky/Louisville",
-  "America/Kentucky/Monticello",
-  "America/Knox_IN",
-  "America/Kralendijk",
-  "America/La_Paz",
-  "America/La_Rioja",
-  "America/La_Seu_d_Urgell",
-  "America/Lagos",
-  "America/Lake_Tahoe",
-  "America/Lakshadweep",
-  "America/Langley",
-  "America/Laredo",
-  "America/Las_Vegas",
-  "America/Lashio",
-  "America/Latem",
-  "America/Latin",
-  "America/Latina",
-  "America/Latitude",
-  "America/Lauderdale",
-  "America/Laurel",
-  "America/Laval",
-  "America/Lawrence",
-  "America/Lawrence_Township",
-  "America/Laws",
-  "America/Lázaro_Cárdenas",
-  "America/Leadville",
-  "America/League_City",
-  "America/Lebanon",
-  "America/Leblanc",
-  "America/Lecarre",
-  "America/Ledbetter",
-  "America/Ledge",
-  "America/Ledges",
-  "America/Lee",
-  "America/Leech_Lake",
-  "America/Leeds",
-  "America/Leesville",
-  "America/Leeton",
-  "America/Lefors",
-  "America/Leftwick",
-  "America/Legacy",
-  "America/Legal",
-  "America/Leggett",
-  "America/Lehew",
-  "America/Lehighton",
-  "America/Lehlbach",
-  "America/Lehr",
-  "America/Leibnitz",
-  "America/Leigh",
-  "America/Leighton",
-  "America/Leila",
-  "America/Leilani",
-  "America/Leipsic",
-  "America/Leita",
-  "America/Leiston",
-  "America/Leiter",
-  "America/Lejitas",
-  "America/Lekornell",
-  "America/Lelack",
-  "America/Lelvista",
-  "America/Lem",
-  "America/Lemitar",
-  "America/Lemmon",
-  "America/Lemoyne",
-  "America/Lemons",
-  "America/Lenaweee",
-  "America/Lenbark",
-  "America/Leneta",
-  "America/Lenexia",
-  "America/Lenorah",
-  "America/Lenox",
-  "America/Lensboro",
-  "America/Lenwood",
-  "America/Lima",
-  "America/Limana",
-  "America/Limavady",
-  "America/Limeira",
-  "America/Limelette",
-  "America/Limeneh",
-  "America/Limes",
-  "America/Limeton",
-  "America/Limetree",
-  "America/Limeville",
-  "America/Limewood",
-  "America/Liminel",
-  "America/Liminton",
-  "America/Liming",
-  "America/Liminois",
-  "America/Limit",
-  "America/Limixa",
-  "America/Limkiln",
-  "America/Limley",
-  "America/Limone",
-  "America/Limousin",
-  "America/Limouton",
-  "America/Limpet",
-  "America/Limpopo",
-  "America/Limpy",
-  "America/Limquist",
-  "America/Limrock",
-  "America/Limrush",
-  "America/Limshop",
-  "America/Limster",
-  "America/Limstone",
-  "America/Limstrut",
-  "America/Limtree",
-  "America/Limtuck",
-  "America/Limung",
-  "America/Limuri",
-  "America/Limurst",
-  "America/Limusy",
-  "America/Limut",
-  "America/Limuton",
-  "America/Limva",
-  "America/Limville",
-  "America/Limwich",
-  "America/Limwood",
-  "America/Limworth",
-  "America/Limworthy",
-  "America/Limyard",
-  "America/Limyear",
-  "America/Limyll",
-  "America/Limylon",
-  "America/Limyne",
-  "America/Limyork",
-  "America/Limyth",
-  "America/Limyville",
-  "America/Lincoln",
-  "America/Lindal",
-  "America/Lindale",
-  "America/Lindane",
-  "America/Lindantol",
-  "America/Lindarin",
-  "America/Lindbad",
-  "America/Lindberg",
-  "America/Lindblad",
-  "America/Lindbrook",
-  "America/Lindby",
-  "America/Lindale",
-  "America/Lindal",
-  "America/Lindane",
-  "America/Lindantol",
-  "America/Linde",
-  "America/Lindell",
-  "America/Linden",
-  "America/Lindene",
-  "America/Lindenglen",
-  "America/Lindent",
-  "America/Lindenthal",
-  "America/Lindeny",
-  "America/Linderal",
-  "America/Linders",
-  "America/Linderson",
-  "America/Lindesay",
-  "America/Lindeship",
-  "America/Lindessheim",
-  "America/Lindessy",
-  "America/Lindetal",
-  "America/Lindeterry",
-  "America/Lindethorpe",
-  "America/Lindetone",
-  "America/Lindetophe",
-  "America/Lindetoun",
-  "America/Lindetra",
-  "America/Lindetrath",
-  "America/Lindetren",
-  "America/Lindetric",
-  "America/Lindetta",
-  "America/Lindettia",
-  "America/Lindettide",
-  "America/Lindetto",
-  "America/Lindeuilly",
-  "America/Lindevale",
-  "America/Lindeva",
-  "America/Lindeville",
-  "America/Lindey",
-  "America/Lindeyland",
-  "America/Lindhall",
-  "America/Lindhalo",
-  "America/Lindhammer",
-  "America/Lindhams",
-  "America/Lindhara",
-  "America/Lindharam",
-  "America/Lindharem",
-  "America/Lindharm",
-  "America/Lindharn",
-  "America/Lindhart",
-  "America/Lindhas",
-  "America/Lindhash",
-  "America/Lindhaven",
-  "America/Lindhaus",
-  "America/Lindhead",
-  "America/Lindheap",
-  "America/Lindhear",
-  "America/Lindhearst",
-  "America/Lindheart",
-  "America/Lindhearts",
-  "America/Lindheaton",
-  "America/Lindheaton",
-  "America/Lindheather",
-  "America/Lindheaths",
-  "America/Lindheaton",
-  "America/Lindheath",
-  "America/Lindheaths",
-  "America/Lindheavers",
-  "America/Lindheaven",
-  "America/Lindheaver",
-  "America/Lindheavi",
-  "America/Lindheavin",
-  "America/Lindheavings",
-  "America/Lindheavis",
-  "America/Lindheavist",
-  "America/Lindheavle",
-  "America/Lindheavy",
-  "America/Lindhecke",
-  "America/Lindhecker",
-  "America/Lindheda",
-  "America/Lindhedge",
-  "America/Lindhee",
-  "America/Lindheem",
-  "America/Lindheels",
-  "America/Lindheely",
-  "America/Lindheene",
-  "America/Lindheeny",
-  "America/Lindheen",
-  "America/Lindheens",
-  "America/Lindheep",
-  "America/Lindheeps",
-  "America/Lindheer",
-  "America/Lindhears",
-  "America/Lindheers",
-  "America/Lindhees",
-  "America/Lindhee",
-  "America/Lindheese",
-  "America/Lindheest",
-  "America/Lindheester",
-  "America/Lindheesters",
-  "America/Lindheft",
-  "America/Lindhefte",
-  "America/Lindhefte",
-  "America/Lindheg",
-  "America/Lindhegan",
-  "America/Lindhegartt",
-  "America/Lindhegart",
-  "America/Lindhegast",
-  "America/Lindhegas",
-  "America/Lindhegaste",
-  "America/Lindhegates",
-  "America/Lindhegatti",
-  "America/Lindhegatto",
-  "America/Lindhegazz",
-  "America/Lindhegazze",
-  "America/Lindhegazza",
-  "America/Lindhegazzi",
-  "America/Lindhegazzo",
-  "America/Lindhegazza",
-  "America/Lindhegazzi",
-  "America/Lindhegazzo",
-  "America/Lindhegback",
-  "America/Lindhegbert",
-  "America/Lindhegborough",
-  "America/Lindhegeburt",
-  "America/Lindhegecross",
-  "America/Lindhegedge",
-  "America/Lindhegedly",
-  "America/Lindhegedwort",
-  "America/Lindhegedworth",
-  "America/Lindhegefedt",
-  "America/Lindhegefelt",
-  "America/Lindhegefelt",
-  "America/Lindhegefen",
-  "America/Lindhegeffer",
-  "America/Lindhegegath",
-  "America/Lindhegeholm",
-  "America/Lindhegek",
-  "America/Lindhegekirk",
-  "America/Lindhegelake",
-  "America/Lindhegelden",
-  "America/Lindhegelh",
-  "America/Lindhegelia",
-  "America/Lindhegelich",
-  "America/Lindhegelig",
-  "America/Lindhegelig",
-  "America/Lindhegelik",
-  "America/Lindhegeling",
-  "America/Lindhegelinger",
-  "America/Lindhegelinn",
-  "America/Lindhegel",
-  "America/Lindhegelt",
-  "America/Lindhegelu",
-  "America/Lindhegely",
-  "America/Lindhegeltzer",
-  "America/Lindhegeman",
-  "America/Lindhegematt",
-  "America/Lindhegeme",
-  "America/Lindhegemen",
-  "America/Lindhegemenn",
-  "America/Lindhegemer",
-  "America/Lindhegemi",
-  "America/Lindhegemin",
-  "America/Lindhegeminn",
-  "America/Lindhegemint",
-  "America/Lindhegem",
-  "America/Lindhegemo",
-  "America/Lindhegemoh",
-  "America/Lindhegemond",
-  "America/Lindhegemondy",
-  "America/Lindhegemon",
-  "America/Lindhegemonth",
-  "America/Lindhegemons",
-  "America/Lindhegemonss",
-  "America/Lindhegemony",
-  "America/Lindhegemonys",
-  "America/Lindhegemonz",
-  "America/Lindhegemont",
-  "America/Lindhegemonty",
-  "America/Lindhegemott",
-  "America/Lindhegemontz",
-  "America/Lindhegemont",
-  "America/Lindhegemonz",
-  "America/Lindhegemony",
-  "America/Lindhegemonys",
-  "America/Lindhegemons",
-  "America/Lindhegemonss",
-  "America/Lindhegemony",
-  "America/Lindhegemonys",
-  "America/Lindhegemonz",
-  "America/Lindhegemon",
-  "America/Lindhegemonth",
-  "America/Lindhegemon",
-  "America/Lindhegemont",
-  "America/Lindhegemonts",
-  "America/Lindhegemontt",
-  "America/Lindhegemontts",
-  "America/Lindhegemonts",
-  "America/Lindhegemontts",
-  "America/Lindhegemontt",
-  "America/Lindhegemonts",
-  "America/Lindhegemont",
-  "America/Lindhegemonte",
-  "America/Lindhegemontes",
-  "America/Lindhegemontes",
-  "America/Lindhegemonte",
-  "America/Lindhegemonte",
-  "America/Lindhegemontes",
-  "America/Lindhegemonte",
-  "America/Lindhegemontes",
-  "America/Lindhegemonte",
-  "America/Lindhegemontes",
-  "America/Lindhegemontes",
-  "America/Lindhegemonte",
-  "America/Lindhegemony",
-  "America/Lindhegemonys",
-  "America/Lindhegemony",
-  "America/Lindhegemonys",
-  "America/Lindhegemonys",
-  "America/Lindhegemons",
-  "America/Lindhegemonss",
-  "America/Lindhegemonss",
-  "America/Lindhegemonss",
-  "America/Lindhegemons",
-  "America/Lindhegemons",
-  "America/Lindhegemonss",
-  "America/Lindhegemonss",
-  "America/Lindhegemons",
-  "America/Lindhegemonss",
-  "America/Lindhegemons",
-  "America/Lindhegemons",
-  "America/Lindhegemonss",
-  "America/Lindhegemonss",
-  "America/Lindhegemons",
-  "America/Lindhegemonss",
-  "America/Lindhegemons",
-  "America/Lindhegemons",
-  "America/Lindhegemonss",
-  "America/Amyamia",
-  "America/Los_Angeles",
-  "America/Louisville",
-  "America/Lower_Princes",
-  "America/Lucia",
-  "America/Luck",
-  "America/Lucknow",
-  "America/Lucy",
-  "America/Luddington",
-  "America/Ludington",
-  "America/Ludmannshavn",
-  "America/Ludlow",
-  "America/Ludlow",
-  "America/Ludlowville",
-  "America/Ludmila",
-  "America/Ludmillah",
-  "America/Ludmiller",
-  "America/Ludmillia",
-  "America/Ludmillian",
-  "America/Ludmilliana",
-  "America/Ludmillians",
-  "America/Ludmillias",
-  "America/Ludmillide",
-  "America/Ludmillidis",
-  "America/Ludmillin",
-  "America/Ludmillinae",
-  "America/Ludmillina",
-  "America/Ludmilline",
-  "America/Ludmillini",
-  "America/Ludmillinina",
-  "America/Ludmillinine",
-  "America/Ludmillino",
-  "America/Ludmillins",
-  "America/Ludmillins",
-  "America/Ludmillinum",
-  "America/Ludmillinus",
-  "America/Ludmilliny",
-  "America/Ludmillis",
-  "America/Ludmillissa",
-  "America/Ludmillisse",
-  "America/Ludmillissi",
-  "America/Ludmillissia",
-  "America/Ludmillissima",
-  "America/Ludmillissin",
-  "America/Ludmillissin",
-  "America/Ludmillissina",
-  "America/Ludmillissine",
-  "America/Ludmillissinia",
-  "America/Ludmillissiniae",
-  "America/Ludmillissino",
-  "America/Ludmillissinor",
-  "America/Ludmillissinos",
-  "America/Ludmillisson",
-  "America/Ludmillissons",
-  "America/Ludmillissonss",
-  "America/Ludmillissons",
-  "America/Ludmillissons",
-  "America/Ludmillis",
-  "America/Ludmillisen",
-  "America/Ludmillisena",
-  "America/Ludmillisenas",
-  "America/Ludmillisene",
-  "America/Ludmillisenia",
-  "America/Ludmillisenie",
-  "America/Ludmillisieno",
-  "America/Ludmillisens",
-  "America/Ludmillisensa",
-  "America/Ludmillisense",
-  "America/Ludmillisensa",
-  "America/Ludmillisense",
-  "America/Ludmilliseneae",
-  "America/Ludmillisense",
-  "America/Ludmillisenses",
-  "America/Ludmillis",
-  "America/Ludmillisia",
-  "America/Ludmillisiae",
-  "America/Ludmillisiae",
-  "America/Ludmillisin",
-  "America/Ludmillisina",
-  "America/Ludmillisinae",
-  "America/Ludmillisinae",
-  "America/Ludmillisina",
-  "America/Ludmillisinae",
-  "America/Ludmillisina",
-  "America/Ludmillisinae",
-  "America/Ludmillisinae",
-  "America/Ludmillisina",
-  "America/Ludmillisinae",
-  "America/Ludmillisina",
-  "America/Ludmillisinae",
-  // This is getting way too long, let me just use a curated list
-  "Asia/Kolkata",
-  "Asia/Bangkok",
-  "Asia/Hong_Kong",
-  "Asia/Tokyo",
-  "Asia/Seoul",
-  "Asia/Shanghai",
-  "Atlantic/Bermuda",
-  "Atlantic/Canary",
-  "Atlantic/Cape_Verde",
-  "Atlantic/Faroe",
-  "Atlantic/Madeira",
-  "Atlantic/Reykjavik",
-  "Atlantic/South_Georgia",
-  "Atlantic/Stanley",
-  "Atlantic/Azores",
-  "Europe/London",
-  "Europe/Dublin",
-  "Europe/Paris",
-  "Europe/Berlin",
-  "Europe/Madrid",
-  "Europe/Rome",
-  "Europe/Amsterdam",
-  "Europe/Brussels",
-  "Europe/Vienna",
-  "Europe/Prague",
-  "Europe/Warsaw",
-  "Europe/Moscow",
-  "Europe/Athens",
-  "Europe/Bucharest",
-  "Europe/Sofia",
-  "Europe/Helsinki",
-  "Europe/Stockholm",
-  "Europe/Lisbon",
-  "Europe/Zurich",
-  "Europe/Istanbul",
-  "Europe/Kiev",
-  "Europe/Riga",
-  "Europe/Tallinn",
-  "Europe/Vilnius",
-  "Europe/Minsk",
-  "Europe/Chisinau",
-  "Europe/Tirane",
-  "Europe/Andorra",
-  "Europe/Monaco",
-  "Europe/Montreux",
-  "Europe/Vaduz",
-  "Europe/San_Marino",
-  "Europe/Vatican",
-  "Pacific/Auckland",
-  "Pacific/Fiji",
-  "Pacific/Honolulu",
-  "Pacific/Guam",
-  "Pacific/Port_Moresby",
-  "Pacific/Tongatapu",
-  "Pacific/Apia",
-  "Pacific/Kiritimati",
-  "Pacific/Chatham",
-  "Pacific/Easter",
-  "Pacific/Galapagos",
-  "Pacific/Marquesas",
-  "Pacific/Midway",
-  "Pacific/Nauru",
-  "Pacific/Niue",
-  "Pacific/Palau",
-  "Pacific/Pitcairn",
-  "Pacific/Samoa",
-  "Pacific/Tahiti",
-  "Pacific/Wake",
-  "Pacific/Wallis",
-  "Pacific/Pago_Pago",
-];
+// Dynamic IANA timezone list – uses browser API when available, curated fallback otherwise
+const IANA_TIMEZONES: string[] = (() => {
+  try {
+    // Modern browsers support Intl.supportedValuesOf
+    if (typeof Intl !== "undefined" && "supportedValuesOf" in Intl) {
+      return (Intl as unknown as { supportedValuesOf: (key: string) => string[] })
+        .supportedValuesOf("timeZone");
+    }
+  } catch {
+    // Fallback below
+  }
+  // Curated fallback – major world timezones
+  return [
+    "Africa/Abidjan", "Africa/Accra", "Africa/Addis_Ababa", "Africa/Algiers",
+    "Africa/Cairo", "Africa/Casablanca", "Africa/Dar_es_Salaam", "Africa/Johannesburg",
+    "Africa/Lagos", "Africa/Nairobi", "Africa/Tunis",
+    "America/Anchorage", "America/Argentina/Buenos_Aires", "America/Bogota",
+    "America/Chicago", "America/Denver", "America/Halifax", "America/Lima",
+    "America/Los_Angeles", "America/Mexico_City", "America/New_York",
+    "America/Phoenix", "America/Santiago", "America/Sao_Paulo", "America/Toronto",
+    "America/Vancouver",
+    "Asia/Baghdad", "Asia/Bangkok", "Asia/Colombo", "Asia/Dubai", "Asia/Hong_Kong",
+    "Asia/Jakarta", "Asia/Jerusalem", "Asia/Karachi", "Asia/Kolkata", "Asia/Kuala_Lumpur",
+    "Asia/Manila", "Asia/Seoul", "Asia/Shanghai", "Asia/Singapore", "Asia/Taipei",
+    "Asia/Tehran", "Asia/Tokyo",
+    "Atlantic/Azores", "Atlantic/Reykjavik",
+    "Australia/Adelaide", "Australia/Brisbane", "Australia/Melbourne",
+    "Australia/Perth", "Australia/Sydney",
+    "Europe/Amsterdam", "Europe/Athens", "Europe/Berlin", "Europe/Brussels",
+    "Europe/Bucharest", "Europe/Dublin", "Europe/Helsinki", "Europe/Istanbul",
+    "Europe/Lisbon", "Europe/London", "Europe/Madrid", "Europe/Moscow",
+    "Europe/Oslo", "Europe/Paris", "Europe/Prague", "Europe/Rome",
+    "Europe/Stockholm", "Europe/Vienna", "Europe/Warsaw", "Europe/Zurich",
+    "Pacific/Auckland", "Pacific/Fiji", "Pacific/Honolulu",
+    "Pacific/Port_Moresby", "Pacific/Tongatapu",
+  ];
+})();
 
 function getDetectedTimezone(): string {
   try {
@@ -958,6 +317,10 @@ export default function Settings() {
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [_showTimezoneDropdown, setShowTimezoneDropdown] = useState(false);
   const [_timezoneSearch, setTimezoneSearch] = useState("");
+  const [showCustomAccentPicker, setShowCustomAccentPicker] = useState(false);
+  const [customHue, setCustomHueState] = useState(200);
+  const [customSat, setCustomSatState] = useState(100);
+  const [customLight, setCustomLightState] = useState(60);
 
   const hasInitialized = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -994,13 +357,7 @@ export default function Settings() {
   }, []);
 
   useEffect(() => {
-    const selectedTheme = appearance.theme === "system"
-      ? (globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light")
-      : appearance.theme;
-
-    setTheme(selectedTheme);
+    setTheme(appearance.theme);
   }, [appearance.theme]);
 
   useEffect(() => {
@@ -1238,7 +595,16 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas-bg-dark px-6 md:px-10 py-8 max-w-6xl mx-auto pb-24 md:pb-12">
+    <div className="min-h-screen bg-canvas-bg-dark px-6 md:px-10 py-8 max-w-6xl mx-auto pb-48">
+      <button
+        type="button"
+        onClick={() => globalThis.location.href = "/"}
+        className="flex items-center gap-2 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition mb-6"
+      >
+        <LucideIcon icon={SafeIcons.ArrowLeft} size={16} />
+        <span className="text-sm font-bold uppercase tracking-widest">Back</span>
+      </button>
+
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-white tracking-tight">
@@ -1337,21 +703,7 @@ export default function Settings() {
               <div className="grid md:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-gray-400 block mb-1">
-                    Display Name
-                  </label>
-                  <input
-                    type="text"
-                    value={user.name}
-                    onInput={(event) =>
-                      handleProfileUpdate({
-                        name: (event.target as HTMLInputElement).value,
-                      })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-400 block mb-1">
-                    Username
+                    Full Name(s)
                   </label>
                   <input
                     type="text"
@@ -1845,14 +1197,15 @@ export default function Settings() {
         )}
 
         {activeTab === "appearance" && (
-          <section className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-5">
+          <section className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-6">
             <h3 className="text-sm font-bold uppercase tracking-widest text-white">
               Appearance
             </h3>
 
+            {/* Theme Selection – 4 themes */}
             <div>
               <label className="text-xs text-gray-400 block mb-2">Theme</label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {THEME_OPTIONS.map((theme) => {
                   const Icon = theme.icon;
                   return (
@@ -1864,14 +1217,14 @@ export default function Settings() {
                           ...current,
                           theme: theme.value,
                         }))}
-                      className={`px-3 py-1.5 text-xs rounded-lg transition ${
+                      className={`px-3 py-2.5 text-xs rounded-xl transition-all duration-200 ${
                         appearance.theme === theme.value
-                          ? "bg-white text-black"
-                          : "bg-white/10 text-white"
+                          ? "bg-white text-black shadow-lg scale-[1.02]"
+                          : "bg-white/10 text-white hover:bg-white/15"
                       }`}
                     >
                       <span className="inline-flex items-center gap-1.5">
-                        <LucideIcon icon={Icon} size={12} /> {theme.label}
+                        <LucideIcon icon={Icon} size={14} /> {theme.label}
                       </span>
                     </button>
                   );
@@ -1879,23 +1232,28 @@ export default function Settings() {
               </div>
             </div>
 
+            {/* Accent Color – Presets + Custom */}
             <div>
-              <label className="text-xs text-gray-400 block mb-2">Accent</label>
-              <div className="flex flex-wrap gap-2">
+              <label className="text-xs text-gray-400 block mb-2">
+                Accent Color
+              </label>
+              <div className="flex flex-wrap gap-2 mb-3">
                 {ACCENT_OPTIONS.map((accent) => (
                   <button
                     type="button"
                     key={accent.value}
-                    onClick={() =>
-                      setAppearance((current) => {
-                        const nextAppearance: AppearanceSettings = {
-                          ...current,
-                          accentColor: accent.value,
-                        };
-                        return nextAppearance;
-                      })}
-                    className={`w-8 h-8 rounded-full ${accent.className} ${
-                      appearance.accentColor === accent.value
+                    onClick={() => {
+                      setAppearance((current) => ({
+                        ...current,
+                        accentColor: accent.value,
+                        customAccentHex: "",
+                      }));
+                      setAccentColor(accent.value);
+                      setShowCustomAccentPicker(false);
+                    }}
+                    className={`w-8 h-8 rounded-full ${accent.className} transition-all hover:scale-110 active:scale-95 cursor-pointer ${
+                      appearance.accentColor === accent.value &&
+                        !customAccentHexSignal.value
                         ? "ring-2 ring-white ring-offset-2 ring-offset-black"
                         : ""
                     }`}
@@ -1903,9 +1261,163 @@ export default function Settings() {
                     <span className="sr-only">{accent.value}</span>
                   </button>
                 ))}
+
+                {/* Custom color toggle */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowCustomAccentPicker(!showCustomAccentPicker)}
+                  className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center ${
+                    showCustomAccentPicker || customAccentHexSignal.value
+                      ? "border-white scale-110 shadow-lg"
+                      : "border-white/30"
+                  }`}
+                  style={{
+                    background: customAccentHexSignal.value
+                      ? customAccentHexSignal.value
+                      : "conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
+                  }}
+                  title="Custom accent color"
+                >
+                  <LucideIcon
+                    icon={SafeIcons.Plus}
+                    size={12}
+                    className="text-white drop-shadow-md"
+                  />
+                </button>
               </div>
+
+              {/* Custom HSL Color Picker */}
+              {showCustomAccentPicker && (
+                <div className="space-y-4 bg-white/5 rounded-2xl p-5 border border-white/10">
+                  {/* Hue Selector Strip */}
+                  <div>
+                    <div
+                      className="w-full h-7 rounded-lg overflow-hidden mb-2 border border-white/10 shadow-lg"
+                      style={{
+                        background:
+                          `linear-gradient(to right, hsl(0,100%,60%), hsl(30,100%,60%), hsl(60,100%,60%), hsl(90,100%,60%), hsl(120,100%,60%), hsl(150,100%,60%), hsl(180,100%,60%), hsl(210,100%,60%), hsl(240,100%,60%), hsl(270,100%,60%), hsl(300,100%,60%), hsl(330,100%,60%), hsl(360,100%,60%))`,
+                      }}
+                    >
+                      <div
+                        className="w-1 h-full bg-white border-l border-r border-white shadow pointer-events-none"
+                        style={{
+                          marginLeft: `${(customHue / 360) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      value={customHue}
+                      onInput={(e) => {
+                        const v = Number(
+                          (e.target as HTMLInputElement).value,
+                        );
+                        setCustomHueState(v);
+                        const hex = hslToHex(v, customSat, customLight);
+                        setCustomAccentHex(hex);
+                        setAppearance((c) => ({
+                          ...c,
+                          customAccentHex: hex,
+                        }));
+                      }}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-2">
+                      Slide to choose hue
+                    </p>
+                  </div>
+
+                  {/* Saturation */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Saturation
+                      </label>
+                      <span className="text-[10px] font-bold text-canvas-primary">
+                        {customSat}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={customSat}
+                      onInput={(e) => {
+                        const v = Number(
+                          (e.target as HTMLInputElement).value,
+                        );
+                        setCustomSatState(v);
+                        const hex = hslToHex(customHue, v, customLight);
+                        setCustomAccentHex(hex);
+                        setAppearance((c) => ({
+                          ...c,
+                          customAccentHex: hex,
+                        }));
+                      }}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                  </div>
+
+                  {/* Lightness */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Lightness
+                      </label>
+                      <span className="text-[10px] font-bold text-canvas-primary">
+                        {customLight}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="10"
+                      max="90"
+                      value={customLight}
+                      onInput={(e) => {
+                        const v = Number(
+                          (e.target as HTMLInputElement).value,
+                        );
+                        setCustomLightState(v);
+                        const hex = hslToHex(customHue, customSat, v);
+                        setCustomAccentHex(hex);
+                        setAppearance((c) => ({
+                          ...c,
+                          customAccentHex: hex,
+                        }));
+                      }}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                  </div>
+
+                  {/* Color Preview */}
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-14 h-14 rounded-xl border border-white/20 shadow-lg"
+                      style={{
+                        backgroundColor: hslToHex(
+                          customHue,
+                          customSat,
+                          customLight,
+                        ),
+                      }}
+                    />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Preview
+                      </p>
+                      <p className="text-sm font-mono text-gray-300 mt-1">
+                        {hslToHex(customHue, customSat, customLight)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
+            {/* Font Size */}
             <div>
               <label className="text-xs text-gray-400 block mb-2">
                 Font Size
@@ -1920,10 +1432,10 @@ export default function Settings() {
                         ...current,
                         fontSize: fontOption.value,
                       }))}
-                    className={`flex-1 p-2 rounded-xl text-sm flex items-center justify-center gap-2 ${
+                    className={`flex-1 p-2 rounded-xl text-sm flex items-center justify-center gap-2 transition-all ${
                       appearance.fontSize === fontOption.value
                         ? "bg-white text-black"
-                        : "bg-white/10 text-white"
+                        : "bg-white/10 text-white hover:bg-white/15"
                     }`}
                   >
                     <LucideIcon icon={SafeIcons.Type} size={fontOption.size} />
@@ -1934,11 +1446,24 @@ export default function Settings() {
               </div>
             </div>
 
+            {/* Display Toggles – wired to data-attributes */}
             <div className="grid md:grid-cols-2 gap-3">
               {[
-                { key: "compactMode", label: "Compact Mode" },
-                { key: "animations", label: "Animations" },
-                { key: "reduceMotion", label: "Reduce Motion" },
+                {
+                  key: "compactMode",
+                  label: "Compact Mode",
+                  desc: "Tighten spacing across the interface",
+                },
+                {
+                  key: "animations",
+                  label: "Animations",
+                  desc: "Enable smooth transitions and effects",
+                },
+                {
+                  key: "reduceMotion",
+                  label: "Reduce Motion",
+                  desc: "Minimize movement for accessibility",
+                },
               ].map((toggle) => {
                 const key = toggle.key as keyof Pick<
                   AppearanceSettings,
@@ -1950,17 +1475,25 @@ export default function Settings() {
                     key={toggle.key}
                     className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
                   >
-                    <span className="text-sm text-gray-300">
-                      {toggle.label}
-                    </span>
+                    <div>
+                      <span className="text-sm text-gray-300">
+                        {toggle.label}
+                      </span>
+                      <p className="text-[10px] text-gray-500 mt-0.5">
+                        {toggle.desc}
+                      </p>
+                    </div>
                     <button
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
+                        const next = !enabled;
                         setAppearance((current) => ({
                           ...current,
-                          [key]: !current[key],
-                        }))}
-                      className={`w-10 h-5 rounded-full transition ${
+                          [key]: next,
+                        }));
+                        setAppearanceAttribute(key, next);
+                      }}
+                      className={`w-10 h-5 rounded-full transition flex-shrink-0 ${
                         enabled ? "bg-white" : "bg-white/20"
                       }`}
                     >
@@ -1989,16 +1522,19 @@ export default function Settings() {
                     key: "emailNotifications",
                     label: "Email Notifications",
                     icon: SafeIcons.Mail,
+                    comingSoon: true,
                   },
                   {
                     key: "pushNotifications",
                     label: "Push Notifications",
                     icon: SafeIcons.Smartphone,
+                    comingSoon: true,
                   },
                   {
                     key: "inAppNotifications",
                     label: "In-App Notifications",
                     icon: SafeIcons.Bell,
+                    comingSoon: false,
                   },
                 ].map((toggle) => {
                   const key = toggle.key as keyof Pick<
@@ -2012,7 +1548,7 @@ export default function Settings() {
                   return (
                     <div
                       key={toggle.key}
-                      className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
+                      className={`flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10 ${toggle.comingSoon ? "opacity-60" : ""}`}
                     >
                       <div className="flex items-center gap-2">
                         <LucideIcon
@@ -2023,6 +1559,11 @@ export default function Settings() {
                         <span className="text-sm text-gray-300">
                           {toggle.label}
                         </span>
+                        {toggle.comingSoon && (
+                          <span className="text-[8px] font-bold uppercase tracking-widest bg-white/10 text-gray-400 px-1.5 py-0.5 rounded-md">
+                            Soon
+                          </span>
+                        )}
                       </div>
                       <button
                         type="button"
@@ -2214,6 +1755,9 @@ export default function Settings() {
                     className="text-gray-400"
                   />{" "}
                   Two-Factor Authentication
+                  <span className="text-[8px] font-bold uppercase tracking-widest bg-white/10 text-gray-400 px-1.5 py-0.5 rounded-md">
+                    Soon
+                  </span>
                 </p>
                 <p className="text-[10px] text-gray-500">
                   Add an extra layer of security

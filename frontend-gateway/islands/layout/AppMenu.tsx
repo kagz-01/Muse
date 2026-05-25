@@ -1,9 +1,13 @@
+import { useState } from "preact/hooks";
 import {
   AppAccentColor,
   appAccentSignal,
   closeMenu,
+  customAccentHexSignal,
+  hslToHex,
   isMenuOpenSignal,
   setAccentColor,
+  setCustomAccentHex,
 } from "../../signals/ui.ts";
 import * as Icons from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
@@ -15,9 +19,13 @@ interface AppMenuProps {
 
 export default function AppMenu({ currentPath }: AppMenuProps) {
   const isOpen = isMenuOpenSignal.value;
-
   const user = userSignal.value;
   const isDemo = user?.email === "demo@muse.app";
+
+  const [showCustomPicker, setShowCustomPicker] = useState(false);
+  const [customHue, setCustomHue] = useState(200);
+  const [customSaturation, setCustomSaturation] = useState(100);
+  const [customLightness, setCustomLightness] = useState(60);
 
   // Muse 2.0 Unified Lifecycle Flow
   const cycleNav = [
@@ -54,6 +62,18 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
   ];
 
   const isActive = (path: string) => currentPath.startsWith(path);
+
+  const presetAccents: AppAccentColor[] = [
+    "cyan",
+    "blue",
+    "pink",
+    "green",
+    "yellow",
+    "red",
+    "white",
+  ];
+
+  const liveCustomHex = hslToHex(customHue, customSaturation, customLightness);
 
   return (
     <>
@@ -115,11 +135,11 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
         />
 
         <div
-          className={`relative w-full max-w-[280px] h-full bg-[var(--muse-surface)] border-l border-[var(--muse-border)] shadow-2xl flex flex-col p-8 overflow-y-auto transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+          className={`relative w-full max-w-[320px] h-full bg-[var(--muse-surface)] border-l border-[var(--muse-border)] shadow-2xl flex flex-col p-8 overflow-y-auto transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="flex justify-between items-center mb-10">
+          <div className="flex justify-between items-center mb-8">
             <h2 className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em]">
               System Menu
             </h2>
@@ -133,31 +153,40 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
           </div>
 
           <div className="flex flex-col flex-1">
-            {/* PROFILE HEAD */}
-            <div className="flex items-center gap-4 mb-8 px-2">
-              <img
-                src={user?.avatarUrl}
-                className="w-12 h-12 rounded-full object-cover border border-[var(--muse-border)]"
-                alt=""
-              />
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-[var(--muse-text)] tracking-tight truncate">
-                  {user?.name}
-                </h3>
-                <p className="text-[10px] text-[var(--muse-muted)] font-bold uppercase tracking-widest truncate">
-                  {user?.username}
-                </p>
+            {/* PROFILE HEAD – Centered large avatar + single display name */}
+            <div className="flex flex-col items-center gap-3 mb-8">
+              <div className="relative group">
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-white/20 to-white/5 overflow-hidden border-2 border-[var(--muse-border)] shadow-xl transition-transform duration-300 group-hover:scale-105">
+                  {user?.avatarUrl
+                    ? (
+                      <img
+                        src={user.avatarUrl}
+                        className="w-full h-full object-cover"
+                        alt={user.name}
+                      />
+                    )
+                    : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl md:text-5xl text-[var(--muse-text)] font-bold">
+                        {user?.name?.charAt(0) || "M"}
+                      </div>
+                    )}
+                </div>
+                {/* Subtle glow ring */}
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-canvas-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-sm" />
               </div>
+              <h3 className="text-sm font-bold text-[var(--muse-text)] tracking-tight text-center">
+                {user?.name}
+              </h3>
             </div>
 
-            {/* MAIN NAVIGATION LIST */}
+            {/* MAIN NAVIGATION LIST – Profile & Settings only */}
             <div className="flex flex-col gap-1 space-y-1">
               <a
                 href={isDemo ? "/" : "/profile"}
                 onClick={closeMenu}
                 className="flex items-center gap-4 p-3 rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors"
               >
-                <Icons.Users size={20} />
+                <Icons.User size={20} />
                 <span className="text-xs font-bold uppercase tracking-widest">
                   {isDemo ? "Establish Soul Link" : "Profile"}
                 </span>
@@ -184,68 +213,27 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                   />
                 )}
               </a>
-
-              <button
-                type="button"
-                onClick={isDemo
-                  ? () => globalThis.location.href = "/"
-                  : undefined}
-                className="flex items-center gap-4 p-3 w-full rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors cursor-pointer relative"
-              >
-                <Icons.Shield size={20} />
-                <span className="text-xs font-bold uppercase tracking-widest text-left flex-1">
-                  Security & Ledger
-                </span>
-                {isDemo && (
-                  <Icons.Lock
-                    size={12}
-                    className="absolute right-4 opacity-50"
-                  />
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={isDemo
-                  ? () => globalThis.location.href = "/"
-                  : undefined}
-                className="flex items-center gap-4 p-3 w-full rounded-2xl text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors cursor-pointer relative"
-              >
-                <Icons.Download size={20} />
-                <span className="text-xs font-bold uppercase tracking-widest text-left flex-1">
-                  Export Data
-                </span>
-                {isDemo && (
-                  <Icons.Lock
-                    size={12}
-                    className="absolute right-4 opacity-50"
-                  />
-                )}
-              </button>
             </div>
 
-            {/* THEME SELECTOR MINI */}
+            {/* SYSTEM RESONANCE – Accent Color Palette */}
             <div className="mt-8 px-3">
               <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)] mb-3 block px-1">
                 System Resonance
               </span>
-              <div className="flex flex-wrap gap-2">
-                {([
-                  "cyan",
-                  "blue",
-                  "purple",
-                  "pink",
-                  "green",
-                  "yellow",
-                  "red",
-                  "white",
-                ] as AppAccentColor[]).map((color) => (
+
+              {/* Preset accent swatches */}
+              <div className="flex flex-wrap gap-2 mb-3">
+                {presetAccents.map((color) => (
                   <button
                     type="button"
                     key={color}
-                    onClick={() => setAccentColor(color)}
-                    className={`w-5 h-5 rounded-full border transition-all hover:scale-110 active:scale-90 ${
-                      appAccentSignal.value === color
+                    onClick={() => {
+                      setAccentColor(color);
+                      setShowCustomPicker(false);
+                    }}
+                    className={`w-5 h-5 rounded-full border transition-all hover:scale-110 active:scale-90 cursor-pointer ${
+                      appAccentSignal.value === color &&
+                        !customAccentHexSignal.value
                         ? "border-[var(--muse-text)] scale-110 shadow-md"
                         : "border-transparent"
                     }`}
@@ -254,7 +242,130 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                     }}
                   />
                 ))}
+
+                {/* Custom color toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowCustomPicker(!showCustomPicker)}
+                  className={`w-5 h-5 rounded-full border transition-all hover:scale-110 active:scale-90 cursor-pointer flex items-center justify-center ${
+                    showCustomPicker || customAccentHexSignal.value
+                      ? "border-[var(--muse-text)] scale-110 shadow-md"
+                      : "border-[var(--muse-muted)]"
+                  }`}
+                  style={{
+                    background: customAccentHexSignal.value
+                      ? customAccentHexSignal.value
+                      : "conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
+                  }}
+                  title="Custom color"
+                />
               </div>
+
+              {/* Custom HSL Color Picker (inline) */}
+              {showCustomPicker && (
+                <div className="space-y-3 bg-[var(--muse-surface-soft)] rounded-xl p-4 border border-[var(--muse-border)] animate-in slide-in-from-top-2 duration-200">
+                  {/* Hue Strip */}
+                  <div>
+                    <div
+                      className="w-full h-5 rounded-lg overflow-hidden mb-2 border border-[var(--muse-border)]"
+                      style={{
+                        background:
+                          `linear-gradient(to right, hsl(0,100%,60%), hsl(60,100%,60%), hsl(120,100%,60%), hsl(180,100%,60%), hsl(240,100%,60%), hsl(300,100%,60%), hsl(360,100%,60%))`,
+                      }}
+                    >
+                      <div
+                        className="w-0.5 h-full bg-white border border-white/50 shadow pointer-events-none"
+                        style={{
+                          marginLeft: `${(customHue / 360) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      value={customHue}
+                      onInput={(e) => {
+                        const v = Number(
+                          (e.target as HTMLInputElement).value,
+                        );
+                        setCustomHue(v);
+                        setCustomAccentHex(
+                          hslToHex(v, customSaturation, customLightness),
+                        );
+                      }}
+                      className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                  </div>
+
+                  {/* Saturation */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                        Saturation
+                      </span>
+                      <span className="text-[8px] font-bold text-canvas-primary">
+                        {customSaturation}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={customSaturation}
+                      onInput={(e) => {
+                        const v = Number(
+                          (e.target as HTMLInputElement).value,
+                        );
+                        setCustomSaturation(v);
+                        setCustomAccentHex(
+                          hslToHex(customHue, v, customLightness),
+                        );
+                      }}
+                      className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                  </div>
+
+                  {/* Lightness */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                        Lightness
+                      </span>
+                      <span className="text-[8px] font-bold text-canvas-primary">
+                        {customLightness}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="10"
+                      max="90"
+                      value={customLightness}
+                      onInput={(e) => {
+                        const v = Number(
+                          (e.target as HTMLInputElement).value,
+                        );
+                        setCustomLightness(v);
+                        setCustomAccentHex(
+                          hslToHex(customHue, customSaturation, v),
+                        );
+                      }}
+                      className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-canvas-primary"
+                    />
+                  </div>
+
+                  {/* Preview */}
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-8 h-8 rounded-lg border border-[var(--muse-border)] shadow-lg"
+                      style={{ backgroundColor: liveCustomHex }}
+                    />
+                    <span className="text-[10px] font-mono text-[var(--muse-muted)]">
+                      {liveCustomHex}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="mt-auto pt-8 pb-4 px-2">

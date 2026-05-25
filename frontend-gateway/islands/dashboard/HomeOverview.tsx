@@ -134,7 +134,7 @@ export default function HomeOverview() {
             </div>
 
             <h1 className="mt-5 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] text-white max-w-3xl">
-              {greeting}, {user?.name || "Creator"}.
+              {greeting}, {user?.username || "Creator"}.
               <span className="block bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
                 Your creative universe is in motion.
               </span>
