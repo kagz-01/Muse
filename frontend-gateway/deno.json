@@ -21,7 +21,7 @@
     "tailwindcss": "npm:tailwindcss@3.4.1",
     "tailwindcss/": "npm:/tailwindcss@3.4.1/",
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
-    "emoji-picker-element": "https://cdn.jsdelivr.net/npm/emoji-picker-element@1.50.0",
+    "emoji-picker-element": "https://esm.sh/emoji-picker-element@1.29.1",
     "$std/": "https://deno.land/std@0.216.0/"
   },
   "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
