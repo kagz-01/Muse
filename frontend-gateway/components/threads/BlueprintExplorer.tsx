@@ -110,7 +110,10 @@ export default function BlueprintExplorer() {
       {filteredBlueprints.length === 0
         ? (
           <div className="text-center py-12">
-            <Icons.Lightbulb size={48} className="text-[var(--muse-muted)] mx-auto mb-4" />
+            <Icons.Lightbulb
+              size={48}
+              className="text-[var(--muse-muted)] mx-auto mb-4"
+            />
             <p className="text-[var(--muse-muted)] font-serif italic">
               No blueprints found in this category
             </p>

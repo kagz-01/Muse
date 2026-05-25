@@ -89,7 +89,9 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
               </div>
               <span
                 className={`text-[9px] font-bold uppercase tracking-widest transition-all duration-300 ${
-                  isActive(item.path) ? "opacity-100" : "opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 absolute -bottom-4"
+                  isActive(item.path)
+                    ? "opacity-100"
+                    : "opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 absolute -bottom-4"
                 }`}
               >
                 {item.label}

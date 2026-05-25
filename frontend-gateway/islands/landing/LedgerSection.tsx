@@ -83,7 +83,8 @@ export default function LedgerSection(
         <div className="w-full md:w-3/4 relative h-[450px] md:h-[500px]">
           {items.map((item, i) => {
             const isActive = i === activeIndex;
-            const isPrev = i === (activeIndex - 1 + items.length) % items.length;
+            const isPrev =
+              i === (activeIndex - 1 + items.length) % items.length;
             const isNext = i === (activeIndex + 1) % items.length;
 
             let translateY = "translate-y-0";
@@ -94,19 +95,25 @@ export default function LedgerSection(
 
             if (isActive) {
               translateY = "top-[120px] md:top-[150px]";
-              translateX = i % 2 === 0 ? "left-0 md:left-[10%]" : "right-0 md:right-[10%]";
+              translateX = i % 2 === 0
+                ? "left-0 md:left-[10%]"
+                : "right-0 md:right-[10%]";
               scale = "scale-105";
               opacity = "opacity-100";
               zIndex = "z-30 shadow-[0_30px_60px_rgba(0,0,0,0.3)]";
             } else if (isPrev) {
               translateY = "top-0 md:top-[20px]";
-              translateX = i % 2 === 0 ? "left-0 md:-left-[5%]" : "right-0 md:-right-[5%]";
+              translateX = i % 2 === 0
+                ? "left-0 md:-left-[5%]"
+                : "right-0 md:-right-[5%]";
               scale = "scale-95";
               opacity = "opacity-40";
               zIndex = "z-10";
             } else if (isNext) {
               translateY = "top-[240px] md:top-[300px]";
-              translateX = i % 2 === 0 ? "left-0 md:-left-[5%]" : "right-0 md:-right-[5%]";
+              translateX = i % 2 === 0
+                ? "left-0 md:-left-[5%]"
+                : "right-0 md:-right-[5%]";
               scale = "scale-95";
               opacity = "opacity-40";
               zIndex = "z-20";
@@ -140,7 +147,13 @@ export default function LedgerSection(
                     <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] block mb-3">
                       {item.subtitle}
                     </span>
-                    <p className={`font-serif italic text-sm leading-relaxed transition-colors duration-500 ${isActive ? "text-[var(--muse-text)]" : "text-[var(--muse-muted)]"}`}>
+                    <p
+                      className={`font-serif italic text-sm leading-relaxed transition-colors duration-500 ${
+                        isActive
+                          ? "text-[var(--muse-text)]"
+                          : "text-[var(--muse-muted)]"
+                      }`}
+                    >
                       {item.desc}
                     </p>
                   </div>

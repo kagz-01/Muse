@@ -26,6 +26,7 @@ import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
 import * as $api_circles_id_membership from "./routes/api/circles/[id]/membership.ts";
 import * as $api_circles_join from "./routes/api/circles/join.ts";
 import * as $api_circles_leave from "./routes/api/circles/leave.ts";
+import * as $api_extract from "./routes/api/extract.ts";
 import * as $api_followers_follow from "./routes/api/followers/follow.ts";
 import * as $api_followers_index from "./routes/api/followers/index.ts";
 import * as $api_followers_status from "./routes/api/followers/status.ts";
@@ -136,6 +137,7 @@ const manifest = {
     "./routes/api/circles/[id]/membership.ts": $api_circles_id_membership,
     "./routes/api/circles/join.ts": $api_circles_join,
     "./routes/api/circles/leave.ts": $api_circles_leave,
+    "./routes/api/extract.ts": $api_extract,
     "./routes/api/followers/follow.ts": $api_followers_follow,
     "./routes/api/followers/index.ts": $api_followers_index,
     "./routes/api/followers/status.ts": $api_followers_status,

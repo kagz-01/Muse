@@ -138,7 +138,9 @@ function applyAccentToDocument(accentColor: AppAccentColor, theme: AppTheme) {
   const docEl = globalThis.document?.documentElement;
   if (!docEl) return;
   const isLight = theme === "light" || theme === "tint";
-  const rgb = isLight ? LIGHT_THEME_ACCENT_MAP[accentColor] : ACCENT_RGB_MAP[accentColor];
+  const rgb = isLight
+    ? LIGHT_THEME_ACCENT_MAP[accentColor]
+    : ACCENT_RGB_MAP[accentColor];
   docEl.style.setProperty("--muse-accent-rgb", rgb);
 }
 
@@ -156,7 +158,9 @@ export function initializeTheme() {
   try {
     const settingsRaw = globalThis.localStorage?.getItem("muse-fresh-settings");
     if (settingsRaw) {
-      const parsed = JSON.parse(settingsRaw) as { appearance?: { accentColor?: AppAccentColor } };
+      const parsed = JSON.parse(settingsRaw) as {
+        appearance?: { accentColor?: AppAccentColor };
+      };
       if (parsed.appearance?.accentColor) {
         appAccentSignal.value = parsed.appearance.accentColor;
       }

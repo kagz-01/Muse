@@ -2,7 +2,11 @@ import { useEffect, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 
 export default function SpectralHero(
-  { onOpenAuth: _onOpenAuth, onWatchDemo: _onWatchDemo, onGuestEntry: _onGuestEntry }: {
+  {
+    onOpenAuth: _onOpenAuth,
+    onWatchDemo: _onWatchDemo,
+    onGuestEntry: _onGuestEntry,
+  }: {
     onOpenAuth: (mode: "login" | "signup") => void;
     onWatchDemo: () => void;
     onGuestEntry: () => void;

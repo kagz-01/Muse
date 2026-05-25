@@ -61,7 +61,7 @@ function setupFreshState() {
   addThread({
     title: "Thread AB",
     description: "joined",
-    mood: "curious",
+    mood: "focus",
     itemIds: [i1, i2],
     sourceRoomIds: [r1, r2],
     isPublic: true,
@@ -72,7 +72,7 @@ function setupFreshState() {
   addThread({
     title: "Thread A-only",
     description: "single",
-    mood: "contemplative",
+    mood: "focus",
     itemIds: [i1],
     sourceRoomIds: [r1],
     isPublic: false,
@@ -118,7 +118,7 @@ Deno.test("deleteItem removes references from threads", () => {
   addThread({
     title: "Thread for deleteItem",
     description: "test",
-    mood: "curious",
+    mood: "focus",
     itemIds: [i1],
     sourceRoomIds: [r1],
     isPublic: false,

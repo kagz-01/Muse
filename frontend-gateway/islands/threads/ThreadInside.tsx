@@ -5,7 +5,7 @@ import {
   threadsSignal,
   toggleThreadPrivacy,
 } from "../../signals/threads.ts";
-import { roomsSignal, MOOD_OPTIONS } from "../../signals/rooms.ts";
+import { MOOD_OPTIONS, roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
 import SynthesisWeb from "../../components/threads/SynthesisWeb.tsx";
 
@@ -152,9 +152,12 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
             <div className="flex items-center gap-3">
               <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
                 <span className="text-sm">
-                  {MOOD_OPTIONS.find(m => m.id === thread.mood)?.emoji || "🎯"}
+                  {MOOD_OPTIONS.find((m) => m.id === thread.mood)?.emoji ||
+                    "🎯"}
                 </span>
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${mood.text}`}>
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-widest ${mood.text}`}
+                >
                   {thread.mood}
                 </span>
               </div>

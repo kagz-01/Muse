@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   addThread,
-  type ThreadMood,
-  type ThreadFormat,
   type ThreadDepth,
+  type ThreadFormat,
+  type ThreadMood,
 } from "../../signals/threads.ts";
 import { MOOD_OPTIONS } from "../../signals/rooms.ts";
 
@@ -66,7 +66,8 @@ export default function CreateThreadModal({ onClose }: Props) {
     }
   };
 
-  const selectedMoodOption = MOOD_OPTIONS.find((m) => m.id === mood) || MOOD_OPTIONS[0];
+  const selectedMoodOption = MOOD_OPTIONS.find((m) => m.id === mood) ||
+    MOOD_OPTIONS[0];
   const moodColor = moodColors[selectedMoodOption.id] || "#6366f1";
 
   const handleCreate = () => {
@@ -88,7 +89,7 @@ export default function CreateThreadModal({ onClose }: Props) {
       sourceRoomIds: [],
       isVault: !isPublic, // Links to global vault
     });
-    
+
     onClose();
     globalThis.location.href = `/threads/${newId}`;
   };
@@ -229,7 +230,10 @@ export default function CreateThreadModal({ onClose }: Props) {
               <div className="relative">
                 <select
                   value={format}
-                  onChange={(e) => setFormat((e.target as HTMLSelectElement).value as ThreadFormat)}
+                  onChange={(e) =>
+                    setFormat(
+                      (e.target as HTMLSelectElement).value as ThreadFormat,
+                    )}
                   className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none focus:border-white/30 transition-all cursor-pointer"
                 >
                   <option value="essay">Essay</option>
@@ -237,9 +241,14 @@ export default function CreateThreadModal({ onClose }: Props) {
                   <option value="blueprint">Blueprint</option>
                   <option value="debate">Debate</option>
                 </select>
-                <Icons.ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <Icons.ChevronDown
+                  size={14}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
               </div>
-              <p className="text-gray-500 text-[10px] mt-1">Dictates the structure of synthesis.</p>
+              <p className="text-gray-500 text-[10px] mt-1">
+                Dictates the structure of synthesis.
+              </p>
             </div>
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
@@ -248,16 +257,24 @@ export default function CreateThreadModal({ onClose }: Props) {
               <div className="relative">
                 <select
                   value={depth}
-                  onChange={(e) => setDepth((e.target as HTMLSelectElement).value as ThreadDepth)}
+                  onChange={(e) =>
+                    setDepth(
+                      (e.target as HTMLSelectElement).value as ThreadDepth,
+                    )}
                   className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none focus:border-white/30 transition-all cursor-pointer"
                 >
                   <option value="surface">Surface</option>
                   <option value="deep">Deep</option>
                   <option value="comprehensive">Comprehensive</option>
                 </select>
-                <Icons.ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <Icons.ChevronDown
+                  size={14}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
               </div>
-              <p className="text-gray-500 text-[10px] mt-1">Defines AI contemplation intensity.</p>
+              <p className="text-gray-500 text-[10px] mt-1">
+                Defines AI contemplation intensity.
+              </p>
             </div>
           </div>
 
@@ -315,8 +332,12 @@ export default function CreateThreadModal({ onClose }: Props) {
             >
               <Icons.Lock size={16} />
               <div className="text-left">
-                <span className="block text-[10px] font-bold uppercase tracking-widest">Private Vault</span>
-                <span className="block text-[9px] text-gray-400 font-normal">Uses Master Password</span>
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Private Vault
+                </span>
+                <span className="block text-[9px] text-gray-400 font-normal">
+                  Uses Master Password
+                </span>
               </div>
             </button>
             <button
@@ -330,8 +351,12 @@ export default function CreateThreadModal({ onClose }: Props) {
             >
               <Icons.Globe size={16} />
               <div className="text-left">
-                <span className="block text-[10px] font-bold uppercase tracking-widest">Community Hub</span>
-                <span className="block text-[9px] text-indigo-400/60 font-normal">Visible to others</span>
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Community Hub
+                </span>
+                <span className="block text-[9px] text-indigo-400/60 font-normal">
+                  Visible to others
+                </span>
               </div>
             </button>
           </div>

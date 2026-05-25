@@ -1,5 +1,6 @@
-import { type ComponentType, lazy } from "preact";
-import { Suspense } from "preact/compat";
+import { type ComponentType } from "preact";
+import { Suspense, lazy } from "preact/compat";
+import { useState, useEffect } from "preact/hooks";
 
 interface LazyComponentProps {
   component: () => Promise<{ default: ComponentType<any> }>;
@@ -29,16 +30,14 @@ export const LazyBoundary = ({
 
 // Intersection Observer hook for viewport detection
 export const useIntersection = (ref: { current: Element | null }) => {
-  if (typeof window === "undefined") return false;
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    if (!("IntersectionObserver" in window)) return true;
+    return false;
+  });
 
-  if (!("IntersectionObserver" in window)) return true;
-
-  const [isVisible, setIsVisible] = window.preact?.hooks?.useState?.(false) ?? [
-    false,
-    () => {},
-  ];
-
-  window.preact?.hooks?.useEffect?.(() => {
+  useEffect(() => {
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) return;
     if (!ref.current) return;
 
     const observer = new IntersectionObserver(([entry]) => {

@@ -20,7 +20,7 @@ export const blueprintsSignal = signal<ThreadBlueprint[]>([
     suggestedTitle: "The Architecture of Sovereignty",
     suggestedDescription:
       "A recurring pattern found across your Aesthetic Brutalism and Cognitive Stoicism rooms.",
-    suggestedMood: "contemplative",
+    suggestedMood: "focus",
     itemIds: ["i1", "i2"],
     sourceRoomIds: ["r1", "r2"],
     thesis:

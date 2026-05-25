@@ -31,19 +31,84 @@ export type RoomMood =
   | "cosmic"
   | "storm";
 
-export const MOOD_OPTIONS: { id: RoomMood; emoji: string; label: string; description: string }[] = [
-  { id: "focus", emoji: "🎯", label: "Focus", description: "Deep work, no distractions" },
-  { id: "zen", emoji: "🧘", label: "Zen", description: "Calm, meditative breathing" },
-  { id: "chaos", emoji: "🌀", label: "Chaos", description: "Glitchy, raw creative energy" },
-  { id: "energetic", emoji: "⚡", label: "Energetic", description: "Fast-paced, vibrant pulse" },
-  { id: "melancholy", emoji: "🌧️", label: "Melancholy", description: "Thoughtful, introspective depth" },
-  { id: "dreamy", emoji: "☁️", label: "Dreamy", description: "Soft, floating, ethereal" },
-  { id: "noir", emoji: "🖤", label: "Noir", description: "Dark cinematic mystery" },
-  { id: "warm", emoji: "🕯️", label: "Warm", description: "Cozy, candlelit comfort" },
-  { id: "electric", emoji: "💜", label: "Electric", description: "Neon-lit cyberpunk haze" },
-  { id: "minimal", emoji: "◻️", label: "Minimal", description: "Clean, stripped-back clarity" },
-  { id: "cosmic", emoji: "🌌", label: "Cosmic", description: "Deep space, infinite scale" },
-  { id: "storm", emoji: "🌩️", label: "Storm", description: "Intense, volatile urgency" },
+export const MOOD_OPTIONS: {
+  id: RoomMood;
+  emoji: string;
+  label: string;
+  description: string;
+}[] = [
+  {
+    id: "focus",
+    emoji: "🎯",
+    label: "Focus",
+    description: "Deep work, no distractions",
+  },
+  {
+    id: "zen",
+    emoji: "🧘",
+    label: "Zen",
+    description: "Calm, meditative breathing",
+  },
+  {
+    id: "chaos",
+    emoji: "🌀",
+    label: "Chaos",
+    description: "Glitchy, raw creative energy",
+  },
+  {
+    id: "energetic",
+    emoji: "⚡",
+    label: "Energetic",
+    description: "Fast-paced, vibrant pulse",
+  },
+  {
+    id: "melancholy",
+    emoji: "🌧️",
+    label: "Melancholy",
+    description: "Thoughtful, introspective depth",
+  },
+  {
+    id: "dreamy",
+    emoji: "☁️",
+    label: "Dreamy",
+    description: "Soft, floating, ethereal",
+  },
+  {
+    id: "noir",
+    emoji: "🖤",
+    label: "Noir",
+    description: "Dark cinematic mystery",
+  },
+  {
+    id: "warm",
+    emoji: "🕯️",
+    label: "Warm",
+    description: "Cozy, candlelit comfort",
+  },
+  {
+    id: "electric",
+    emoji: "💜",
+    label: "Electric",
+    description: "Neon-lit cyberpunk haze",
+  },
+  {
+    id: "minimal",
+    emoji: "◻️",
+    label: "Minimal",
+    description: "Clean, stripped-back clarity",
+  },
+  {
+    id: "cosmic",
+    emoji: "🌌",
+    label: "Cosmic",
+    description: "Deep space, infinite scale",
+  },
+  {
+    id: "storm",
+    emoji: "🌩️",
+    label: "Storm",
+    description: "Intense, volatile urgency",
+  },
 ];
 
 export interface Room {

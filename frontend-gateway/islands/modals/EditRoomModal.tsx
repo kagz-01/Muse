@@ -5,9 +5,9 @@ import {
   MOOD_OPTIONS,
   type Room,
   type RoomCategory,
+  type RoomMood,
   type RoomSize,
   type RoomTheme,
-  type RoomMood,
   updateRoom,
 } from "../../signals/rooms.ts";
 
@@ -111,7 +111,8 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
     const f = (n: number) => {
       const k = (n + h / 30) % 12;
       const color = lNorm - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * Math.max(0, Math.min(1, color))).toString(16).padStart(2, "0");
+      return Math.round(255 * Math.max(0, Math.min(1, color))).toString(16)
+        .padStart(2, "0");
     };
     return `#${f(0)}${f(8)}${f(4)}`;
   };
@@ -374,7 +375,9 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                 <option value="brainstorm">⚡ Brainstorm</option>
                 <option value="inspiration">✨ Inspiration</option>
               </select>
-              <p className="text-[10px] text-gray-500 mt-1.5">Classifies the room's purpose and default behavior.</p>
+              <p className="text-[10px] text-gray-500 mt-1.5">
+                Classifies the room's purpose and default behavior.
+              </p>
             </div>
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
@@ -390,7 +393,9 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                 <option value="medium">Medium — Carousel</option>
                 <option value="large">Large — Gallery</option>
               </select>
-              <p className="text-[10px] text-gray-500 mt-1.5">Controls how artifacts are displayed inside the room.</p>
+              <p className="text-[10px] text-gray-500 mt-1.5">
+                Controls how artifacts are displayed inside the room.
+              </p>
             </div>
           </div>
 
@@ -412,9 +417,11 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                   }`}
                 >
                   <span className="text-lg block mb-1">{m.emoji}</span>
-                  <span className={`text-[11px] font-bold block ${
-                    mood === m.id ? "text-white" : "text-gray-300"
-                  }`}>
+                  <span
+                    className={`text-[11px] font-bold block ${
+                      mood === m.id ? "text-white" : "text-gray-300"
+                    }`}
+                  >
                     {m.label}
                   </span>
                   <span className="text-[9px] text-gray-500 leading-tight block mt-0.5">
@@ -599,7 +606,8 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                     <div
                       className="w-full h-3 rounded-lg mb-1 border border-white/10"
                       style={{
-                        background: `linear-gradient(to right, hsl(${customHue}, 0%, ${customLightness}%), hsl(${customHue}, 100%, ${customLightness}%))`,
+                        background:
+                          `linear-gradient(to right, hsl(${customHue}, 0%, ${customLightness}%), hsl(${customHue}, 100%, ${customLightness}%))`,
                       }}
                     />
                     <input
@@ -626,7 +634,8 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                     <div
                       className="w-full h-3 rounded-lg mb-1 border border-white/10"
                       style={{
-                        background: `linear-gradient(to right, hsl(${customHue}, ${customSaturation}%, 0%), hsl(${customHue}, ${customSaturation}%, 50%), hsl(${customHue}, ${customSaturation}%, 100%))`,
+                        background:
+                          `linear-gradient(to right, hsl(${customHue}, ${customSaturation}%, 0%), hsl(${customHue}, ${customSaturation}%, 50%), hsl(${customHue}, ${customSaturation}%, 100%))`,
                       }}
                     />
                     <input

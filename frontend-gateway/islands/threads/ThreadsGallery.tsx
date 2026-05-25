@@ -20,7 +20,11 @@ const moodFilterOptions: {
   mood?: ThreadMood;
 }[] = [
   { id: "all", label: "All Moods" },
-  ...MOOD_OPTIONS.map(m => ({ id: m.id as ThreadFilter, label: m.label, mood: m.id as ThreadMood }))
+  ...MOOD_OPTIONS.map((m) => ({
+    id: m.id as ThreadFilter,
+    label: m.label,
+    mood: m.id as ThreadMood,
+  })),
 ];
 
 const moodColors: Record<string, string> = {
@@ -270,7 +274,9 @@ export default function ThreadsGallery() {
               : (
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6">
                   {filteredThreads.map((thread: Thread) => {
-                    const moodOption = MOOD_OPTIONS.find(m => m.id === thread.mood) || MOOD_OPTIONS[0];
+                    const moodOption = MOOD_OPTIONS.find((m) =>
+                      m.id === thread.mood
+                    ) || MOOD_OPTIONS[0];
                     const hex = moodColors[thread.mood] || moodColors.focus;
 
                     return (

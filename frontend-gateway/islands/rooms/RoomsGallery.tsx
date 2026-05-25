@@ -90,7 +90,9 @@ function RoomActionButton({
       }`}
     >
       <Icon size={12} className={active ? "text-white" : "text-current"} />
-      <span className={`${tooltipClass} px-2 py-1 rounded bg-black/90 text-white text-[10px] font-bold uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/action:opacity-100 pointer-events-none transition-opacity duration-200 border border-white/10 z-20 shadow-lg`}>
+      <span
+        className={`${tooltipClass} px-2 py-1 rounded bg-black/90 text-white text-[10px] font-bold uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/action:opacity-100 pointer-events-none transition-opacity duration-200 border border-white/10 z-20 shadow-lg`}
+      >
         {label}
       </span>
     </button>

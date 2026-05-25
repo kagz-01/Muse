@@ -4,9 +4,9 @@ import {
   addRoom,
   MOOD_OPTIONS,
   type RoomCategory,
+  type RoomMood,
   type RoomSize,
   type RoomTheme,
-  type RoomMood,
 } from "../../signals/rooms.ts";
 
 interface Props {
@@ -423,7 +423,9 @@ export default function CreateRoomModal({ onClose }: Props) {
                 <option value="brainstorm">⚡ Brainstorm</option>
                 <option value="inspiration">✨ Inspiration</option>
               </select>
-              <p className="text-[10px] text-gray-500 mt-1.5">Classifies the room's purpose and default behavior.</p>
+              <p className="text-[10px] text-gray-500 mt-1.5">
+                Classifies the room's purpose and default behavior.
+              </p>
             </div>
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
@@ -439,7 +441,9 @@ export default function CreateRoomModal({ onClose }: Props) {
                 <option value="medium">Medium — Carousel</option>
                 <option value="large">Large — Gallery</option>
               </select>
-              <p className="text-[10px] text-gray-500 mt-1.5">Controls how artifacts are displayed inside the room.</p>
+              <p className="text-[10px] text-gray-500 mt-1.5">
+                Controls how artifacts are displayed inside the room.
+              </p>
             </div>
           </div>
 
@@ -461,9 +465,11 @@ export default function CreateRoomModal({ onClose }: Props) {
                   }`}
                 >
                   <span className="text-lg block mb-1">{m.emoji}</span>
-                  <span className={`text-[11px] font-bold block ${
-                    mood === m.id ? "text-white" : "text-gray-300"
-                  }`}>
+                  <span
+                    className={`text-[11px] font-bold block ${
+                      mood === m.id ? "text-white" : "text-gray-300"
+                    }`}
+                  >
                     {m.label}
                   </span>
                   <span className="text-[9px] text-gray-500 leading-tight block mt-0.5">

@@ -18,39 +18,65 @@ export default function ArtifactExtractor(
 ) {
   const [inputType, setInputType] = useState<InputType>("link");
   const [input, setInput] = useState("");
+  const [fileInput, setFileInput] = useState<File | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
   const [step, setStep] = useState<number>(0);
   const [metadata, setMetadata] = useState<ExtractedMetadata | null>(null);
 
   const rooms = roomsSignal.value;
 
-  const simulateExtraction = () => {
-    if (!input.trim()) return;
+  const performExtraction = async () => {
+    if (inputType !== "file" && !input.trim()) return;
+    if (inputType === "file" && !fileInput) return;
+
     setIsExtracting(true);
     setStep(1);
 
-    // Simulation steps
-    setTimeout(() => setStep(2), 800);
-    setTimeout(() => setStep(3), 1600);
-    setTimeout(() => {
+    try {
       let meta: ExtractedMetadata;
 
       if (inputType === "link") {
+        setStep(2);
+        // Call the real API
+        const res = await fetch(
+          `/api/extract?url=${encodeURIComponent(input)}`,
+        );
+        if (!res.ok) throw new Error("Failed to extract");
+
+        const data = await res.json();
+        setStep(3);
+
         meta = {
-          title: input.includes("x.com") || input.includes("twitter.com")
-            ? "Decentralized Social Signal"
-            : input.includes("github.com") 
-            ? "Repository Reference"
-            : "External Artifact Link",
-          source: input.includes("x.com") ? "X (Twitter)" : input.includes("github") ? "GitHub" : "Web Protocol",
-          type: input.includes("x.com") ? "Post" : "Article",
-          summary: `Extracted metadata for: ${input}`,
-          image: "https://images.unsplash.com/photo-1518005020250-58003994bf3b?auto=format&fit=crop&w=1200&q=80",
+          title: data.title,
+          source: data.source,
+          type: data.type as any,
+          summary: data.summary,
+          image: data.image,
           suggestedRoomId: rooms[0]?.id,
         };
+      } else if (inputType === "file" && fileInput) {
+        setStep(2);
+        await new Promise((resolve) => setTimeout(resolve, 600)); // simulate reading time
+        setStep(3);
+        const isImage = fileInput.type.startsWith("image/");
+        meta = {
+          title: fileInput.name,
+          source: "Local Upload",
+          type: isImage ? "Image" : "Raw Text",
+          summary: `Size: ${(fileInput.size / 1024).toFixed(2)} KB. Type: ${
+            fileInput.type || "Unknown"
+          }`,
+          suggestedRoomId: rooms[1]?.id,
+        };
       } else {
-        const textPreview = input.slice(0, 150) + (input.length > 150 ? "..." : "");
-        const titleSnippet = input.slice(0, 40).split('\n')[0] + (input.length > 40 ? "..." : "");
+        // text
+        setStep(2);
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        setStep(3);
+        const textPreview = input.slice(0, 150) +
+          (input.length > 150 ? "..." : "");
+        const titleSnippet = input.slice(0, 40).split("\n")[0] +
+          (input.length > 40 ? "..." : "");
         meta = {
           title: titleSnippet || "Raw Intellectual Fragment",
           source: "Manual Entry",
@@ -60,10 +86,21 @@ export default function ArtifactExtractor(
         };
       }
 
-      setMetadata(meta);
-      setIsExtracting(false);
       setStep(4);
-    }, 2400);
+      setMetadata(meta);
+    } catch (err) {
+      console.error(err);
+      // Fallback on error
+      setStep(4);
+      setMetadata({
+        title: "Unknown Signal",
+        source: "Extraction Failed",
+        type: "Article",
+        summary: "Could not establish connection to the provided signal.",
+      });
+    } finally {
+      setIsExtracting(false);
+    }
   };
 
   const handleReset = () => {
@@ -115,14 +152,39 @@ export default function ArtifactExtractor(
                     className="w-full bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl px-8 py-6 min-h-[160px] text-lg text-[var(--muse-text)] placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-[var(--muse-text)]/[0.08] transition-all font-serif italic outline-none resize-none"
                   />
                 )
+                : inputType === "file"
+                ? (
+                  <div className="w-full bg-[var(--muse-text)]/5 border border-dashed border-[var(--muse-text)]/20 hover:border-canvas-primary/50 rounded-2xl px-8 py-10 min-h-[160px] flex items-center justify-center transition-all relative overflow-hidden group">
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        const target = e.target as HTMLInputElement;
+                        if (target.files && target.files.length > 0) {
+                          setFileInput(target.files[0]);
+                        }
+                      }}
+                      disabled={isExtracting}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                    />
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <Icons.UploadCloud
+                        size={28}
+                        className="text-gray-600 group-hover:text-canvas-primary transition-colors"
+                      />
+                      <span className="text-gray-500 font-bold uppercase tracking-widest text-xs group-hover:text-[var(--muse-text)] transition-colors">
+                        {fileInput
+                          ? fileInput.name
+                          : "Click or Drop File Signal Here"}
+                      </span>
+                    </div>
+                  </div>
+                )
                 : (
                   <input
                     value={input}
                     onInput={(e) =>
                       setInput((e.target as HTMLInputElement).value)}
-                    placeholder={inputType === "link"
-                      ? "Paste social signal (X, Reddit, Notion, etc.)..."
-                      : "Drop file signal..."}
+                    placeholder="Paste social signal (X, Reddit, Notion, etc.)..."
                     disabled={isExtracting}
                     className="w-full bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-2xl px-8 py-6 text-xl text-[var(--muse-text)] placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-[var(--muse-text)]/[0.08] transition-all font-serif italic outline-none"
                   />
@@ -130,7 +192,7 @@ export default function ArtifactExtractor(
               {!isExtracting && (
                 <button
                   type="button"
-                  onClick={simulateExtraction}
+                  onClick={performExtraction}
                   className={`absolute bottom-6 right-6 w-12 h-12 bg-[var(--muse-text)] text-[var(--muse-bg)] rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl ${
                     inputType !== "text" ? "top-1/2 -translate-y-1/2" : ""
                   }`}
@@ -159,7 +221,9 @@ export default function ArtifactExtractor(
                   <div
                     key={i}
                     className={`flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest transition-all duration-500 ${
-                      s.active ? "text-[var(--muse-text)]" : "text-[var(--muse-muted)]"
+                      s.active
+                        ? "text-[var(--muse-text)]"
+                        : "text-[var(--muse-muted)]"
                     }`}
                   >
                     {s.active

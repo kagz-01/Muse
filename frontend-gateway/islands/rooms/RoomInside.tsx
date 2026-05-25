@@ -9,6 +9,7 @@ import {
   updateRoomCover,
 } from "../../signals/rooms.ts";
 import { addItem, deleteItem, itemsSignal } from "../../signals/items.ts";
+import { addThread, type ThreadMood } from "../../signals/threads.ts";
 import EditRoomModal from "../modals/EditRoomModal.tsx";
 import ArtifactExtractor from "../../components/rooms/ArtifactExtractor.tsx";
 import AnalysisIndicator from "../../components/ai-feedback/AnalysisIndicator.tsx";
@@ -97,6 +98,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
   const [dialogueInput, setDialogueInput] = useState("");
   const [shareCopied, setShareCopied] = useState(false);
   const [threadShared, setThreadShared] = useState(false);
+  const [newThreadId, setNewThreadId] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -149,27 +151,40 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
   const getMoodStyle = (mood?: string) => {
     switch (mood) {
-      case "zen": return "opacity-10 blur-[150px] animate-pulse";
-      case "chaos": return "opacity-30 blur-[80px] mix-blend-color-dodge animate-pulse duration-700";
-      case "energetic": return "opacity-40 blur-[100px] animate-bounce";
-      case "melancholy": return "opacity-15 blur-[140px] animate-pulse duration-[3s]";
-      case "dreamy": return "opacity-15 blur-[180px] animate-pulse duration-[4s]";
-      case "noir": return "opacity-5 blur-[100px]";
-      case "warm": return "opacity-25 blur-[160px] animate-pulse duration-[5s]";
-      case "electric": return "opacity-35 blur-[90px] mix-blend-screen animate-pulse duration-[1.5s]";
-      case "minimal": return "opacity-5 blur-[200px]";
-      case "cosmic": return "opacity-20 blur-[100px] mix-blend-screen animate-pulse duration-[6s]";
-      case "storm": return "opacity-40 blur-[70px] mix-blend-hard-light animate-pulse duration-500";
-      case "focus": 
+      case "zen":
+        return "opacity-10 blur-[150px] animate-pulse";
+      case "chaos":
+        return "opacity-30 blur-[80px] mix-blend-color-dodge animate-pulse duration-700";
+      case "energetic":
+        return "opacity-40 blur-[100px] animate-bounce";
+      case "melancholy":
+        return "opacity-15 blur-[140px] animate-pulse duration-[3s]";
+      case "dreamy":
+        return "opacity-15 blur-[180px] animate-pulse duration-[4s]";
+      case "noir":
+        return "opacity-5 blur-[100px]";
+      case "warm":
+        return "opacity-25 blur-[160px] animate-pulse duration-[5s]";
+      case "electric":
+        return "opacity-35 blur-[90px] mix-blend-screen animate-pulse duration-[1.5s]";
+      case "minimal":
+        return "opacity-5 blur-[200px]";
+      case "cosmic":
+        return "opacity-20 blur-[100px] mix-blend-screen animate-pulse duration-[6s]";
+      case "storm":
+        return "opacity-40 blur-[70px] mix-blend-hard-light animate-pulse duration-500";
+      case "focus":
       default:
         return "opacity-20 blur-[120px]";
     }
   };
 
   const getGridClass = (size?: string) => {
-    switch(size) {
-      case "small": return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
-      case "large": return "grid grid-cols-1 md:grid-cols-2 gap-8";
+    switch (size) {
+      case "small":
+        return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+      case "large":
+        return "grid grid-cols-1 md:grid-cols-2 gap-8";
       case "medium":
       default:
         return "flex gap-6 overflow-x-auto pb-4 scrollbar-hide";
@@ -213,6 +228,79 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     setMismatchAlert(null);
   };
 
+  const generateDynamicInsight = (
+    currentItems: typeof items,
+    action: string,
+  ) => {
+    if (currentItems.length === 0) {
+      return {
+        response: "Your room is expectant. Add signals to begin synthesis.",
+        keywords: [],
+      };
+    }
+
+    // Very naive bag of words extraction
+    const textBody = currentItems.map((i) => `${i.title} ${i.note || ""}`).join(
+      " ",
+    ).toLowerCase();
+    const words = textBody.split(/\W+/).filter((w) => w.length > 4);
+    const frequencies: Record<string, number> = {};
+    words.forEach((w) => {
+      if (
+        !["about", "which", "there", "their", "where", "would", "https"]
+          .includes(w)
+      ) {
+        frequencies[w] = (frequencies[w] || 0) + 1;
+      }
+    });
+
+    const sortedWords = Object.entries(frequencies).sort((a, b) => b[1] - a[1])
+      .slice(0, 3).map((e) => e[0]);
+    const capitalizedWords = sortedWords.map((w) =>
+      w.charAt(0).toUpperCase() + w.slice(1)
+    );
+    const keywordString = capitalizedWords.join("' and '");
+
+    if (action === "Identify core themes") {
+      return {
+        response:
+          `Neural mapping complete. Your collection focuses heavily on '${keywordString}'. ${
+            Math.floor(Math.random() * 20) + 70
+          }% of artifacts share these semantic nodes.`,
+        keywords: capitalizedWords,
+      };
+    } else if (action === "Find contradictions") {
+      return {
+        response: `Conflict analysis complete. We detected a tension between '${
+          capitalizedWords[0] || "Unknown"
+        }' and other thematic signals in your latest artifact.`,
+        keywords: capitalizedWords,
+      };
+    } else if (action === "Suggest next collection") {
+      return {
+        response:
+          `The collective suggests searching for external signals related to '${
+            capitalizedWords[capitalizedWords.length - 1] || "New patterns"
+          }' to reinforce the current thematic resonance.`,
+        keywords: capitalizedWords,
+      };
+    } else if (action === "Synthesize to Thread") {
+      return {
+        response:
+          `Sovereign synthesis ready. The patterns are stable enough to be woven into a formal intelligence document centered around '${
+            capitalizedWords.join(", ")
+          }'. This thread has been published to the community.`,
+        keywords: capitalizedWords,
+      };
+    }
+
+    return {
+      response:
+        `Your neural query has been synthesized around the concepts of '${keywordString}'. The patterns in this room are maturing toward deep resonance.`,
+      keywords: capitalizedWords,
+    };
+  };
+
   const handleDialogueAction = (action: string) => {
     setIsAnalyzing(true);
     setSystemStatus("Analyzing");
@@ -220,37 +308,35 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
     // Simulate complex neural processing
     setTimeout(() => {
-      let response = "";
-      switch (action) {
-        case "Identify core themes":
-          response =
-            "Neural mapping complete. Your collection focuses on 'Structural Integrity' and 'Industrial Brutalism'. 85% of artifacts share these semantic nodes.";
-          break;
-        case "Find contradictions":
-          response =
-            "Conflict detected. Your latest artifact on 'Nature-Inspired Design' contrasts with the brutalist foundation of this room.";
-          break;
-        case "Suggest next collection":
-          response =
-            "The collective suggests searching for 'Modernist Concrete' to reinforce the current thematic resonance.";
-          break;
-        case "Synthesize to Thread":
-          response =
-            "Sovereign synthesis ready. The patterns are stable enough to be woven into a formal intelligence document. This thread has been added to your collection and shared with the community.";
-          addItem({
-            roomId: room.id,
-            title: "AI Pattern Synthesis",
-            sourceUrl: "Muse Intelligence",
-            note: "Dialogue is the bridge between consumption and synthesis. Talk to your room to discover the hidden lineage of your collected signals.",
-            isPublic: true,
-          });
-          setThreadShared(true);
-          setTimeout(() => setThreadShared(false), 4000);
-          break;
-        default:
-          response =
-            "Your neural query has been synthesized. The patterns in this room are maturing toward deep resonance.";
+      const { response, keywords } = generateDynamicInsight(items, action);
+
+      if (action === "Synthesize to Thread" && !threadShared) {
+        const generatedTitle = keywords.length > 0
+          ? `The Patterns of ${keywords.join(" & ")}`
+          : "AI Pattern Synthesis";
+        const threadId = addThread({
+          title: generatedTitle,
+          description:
+            `A synthesized thread derived from the ${room.name} room, focusing on ${
+              keywords.join(", ")
+            }.`,
+          mood: "focus" as ThreadMood, // Fallback, would match room theme normally
+          format: "essay",
+          depth: "deep",
+          itemIds: items.map((i) => i.id),
+          sourceRoomIds: [room.id],
+          isPublic: true, // Auto share to community
+          coverImage: room.coverImage || "",
+          thesis: `By analyzing the resonance of ${
+            keywords.join(" and ") || "these artifacts"
+          }, we can uncover the underlying truth of this collection.`,
+          isVault: room.isVault, // Inherit vault status
+        });
+
+        setNewThreadId(threadId);
+        setThreadShared(true);
       }
+
       setAiResponse(response);
       setIsAnalyzing(false);
       setSystemStatus("Idle");
@@ -289,8 +375,9 @@ export default function RoomInside({ roomId }: { roomId: string }) {
               "This artifact (related to{" "}
               <span className="text-amber-500 font-bold">Romance/Sex</span>)
               shows low resonance with your current room{" "}
-              <span className="text-[var(--muse-text)] font-bold">"{room.name}"</span>. Do
-              you truly wish to store this signal here?"
+              <span className="text-[var(--muse-text)] font-bold">
+                "{room.name}"
+              </span>. Do you truly wish to store this signal here?"
             </p>
 
             <div className="flex gap-4">
@@ -315,9 +402,9 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
       <div className="pb-24 md:pb-10 min-h-screen bg-[#0a0a0a] relative overflow-hidden">
         <div
-          className={`fixed inset-0 pointer-events-none transition-all duration-1000 ${getMoodStyle(room.mood)} ${
-            !customHex ? theme.bg : ""
-          }`}
+          className={`fixed inset-0 pointer-events-none transition-all duration-1000 ${
+            getMoodStyle(room.mood)
+          } ${!customHex ? theme.bg : ""}`}
           style={customHex
             ? {
               background:
@@ -427,7 +514,8 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     }}
                     className="px-6 py-3 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer w-28 justify-center"
                   >
-                    <Icons.Share2 size={15} /> {shareCopied ? "Copied" : "Share"}
+                    <Icons.Share2 size={15} />{" "}
+                    {shareCopied ? "Copied" : "Share"}
                   </button>
                 </div>
               </div>
@@ -492,7 +580,10 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     {/* Integrated stats row */}
                     <div className="mt-6 pt-5 border-t border-[var(--muse-text)]/5 flex flex-wrap items-center gap-4">
                       <div className="flex items-center gap-2">
-                        <Icons.Layers size={13} className="text-[var(--muse-muted)]" />
+                        <Icons.Layers
+                          size={13}
+                          className="text-[var(--muse-muted)]"
+                        />
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           Artifacts
                         </span>
@@ -503,8 +594,18 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                       <div className="flex items-center gap-2">
                         {room.isPublic
-                          ? <Icons.Globe size={13} className="text-[var(--muse-muted)]" />
-                          : <Icons.Lock size={13} className="text-[var(--muse-muted)]" />}
+                          ? (
+                            <Icons.Globe
+                              size={13}
+                              className="text-[var(--muse-muted)]"
+                            />
+                          )
+                          : (
+                            <Icons.Lock
+                              size={13}
+                              className="text-[var(--muse-muted)]"
+                            />
+                          )}
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           Access
                         </span>
@@ -530,20 +631,29 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       </div>
                       <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                       <div className="flex items-center gap-2">
-                        <Icons.Activity size={13} className="text-[var(--muse-muted)]" />
+                        <Icons.Activity
+                          size={13}
+                          className="text-[var(--muse-muted)]"
+                        />
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           Mood
                         </span>
                         <span className="text-sm font-bold text-[var(--muse-text)] ml-1">
-                          {MOOD_OPTIONS.find(m => m.id === room.mood)?.emoji || "🎯"}{" "}
-                          <span className="capitalize">{room.mood || "Focus"}</span>
+                          {MOOD_OPTIONS.find((m) => m.id === room.mood)
+                            ?.emoji || "🎯"}{" "}
+                          <span className="capitalize">
+                            {room.mood || "Focus"}
+                          </span>
                         </span>
                       </div>
                       {room.category && (
                         <>
                           <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                           <div className="flex items-center gap-2">
-                            <Icons.FolderOpen size={13} className="text-[var(--muse-muted)]" />
+                            <Icons.FolderOpen
+                              size={13}
+                              className="text-[var(--muse-muted)]"
+                            />
                             <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                               Category
                             </span>
@@ -557,7 +667,10 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                         <>
                           <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                           <div className="flex items-center gap-2">
-                            <Icons.LayoutGrid size={13} className="text-[var(--muse-muted)]" />
+                            <Icons.LayoutGrid
+                              size={13}
+                              className="text-[var(--muse-muted)]"
+                            />
                             <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                               Size
                             </span>
@@ -593,18 +706,26 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-bold text-[var(--muse-text)] tracking-tight flex items-center gap-4">
-                    <Icons.Layers size={32} className="text-[var(--muse-muted)]" />{" "}
+                    <Icons.Layers
+                      size={32}
+                      className="text-[var(--muse-muted)]"
+                    />{" "}
                     Curated Artifacts
                   </h3>
-                  {items.length > 0 && (
-                    <button
-                      onClick={() => setShowExtractor(true)}
-                      type="button"
-                      className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-[var(--muse-text)] text-[var(--muse-bg)] text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer active:scale-95 shadow-xl hover:-translate-y-1"
-                    >
-                      <Icons.Plus size={18} /> Collect Artifact
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setShowExtractor(!showExtractor)}
+                    type="button"
+                    className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer shadow-xl hover:-translate-y-1 ${
+                      showExtractor
+                        ? "bg-[var(--muse-text)]/10 text-[var(--muse-text)] border border-[var(--muse-text)]/20"
+                        : "bg-[var(--muse-text)] text-[var(--muse-bg)]"
+                    }`}
+                  >
+                    {showExtractor
+                      ? <Icons.X size={18} />
+                      : <Icons.Plus size={18} />}
+                    {showExtractor ? "Close Terminal" : "Collect Artifact"}
+                  </button>
                 </div>
 
                 {showExtractor && (
@@ -624,23 +745,11 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       <p className="text-[var(--muse-text)] text-2xl font-bold tracking-tight mb-2">
                         This space is expectant.
                       </p>
-                      <p className="text-[var(--muse-muted)] font-serif italic text-lg mb-10 max-w-lg text-center">
+                      <p className="text-[var(--muse-muted)] font-serif italic text-lg max-w-lg text-center">
                         Your artifacts will appear here as clusters of
-                        intelligence. Begin the collection phase.
+                        intelligence. Open the Multi-Signal Terminal to begin
+                        extraction.
                       </p>
-                      <button
-                        onClick={() => setShowExtractor(true)}
-                        type="button"
-                        className="px-12 py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-[12px] text-[var(--muse-bg)] cursor-pointer hover:-translate-y-1 active:scale-95 transition-all shadow-3xl"
-                        style={{
-                          backgroundColor: customHex ||
-                            paletteColors.find((c) =>
-                              c.name === room.themeColor
-                            )?.hex || "#6366f1",
-                        }}
-                      >
-                        Initialize Collection
-                      </button>
                     </div>
                   )
                   : (
@@ -648,7 +757,11 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       {items.map((item) => (
                         <div
                           key={item.id}
-                          className={`bg-[#111] rounded-[2.5rem] border border-[var(--muse-text)]/5 overflow-hidden group transition-all duration-500 ${room.size === "small" || room.size === "large" ? "w-full" : "min-w-[320px] flex-shrink-0"}`}
+                          className={`bg-[#111] rounded-[2.5rem] border border-[var(--muse-text)]/5 overflow-hidden group transition-all duration-500 ${
+                            room.size === "small" || room.size === "large"
+                              ? "w-full"
+                              : "min-w-[320px] flex-shrink-0"
+                          }`}
                           style={glowStyle}
                         >
                           <div
@@ -842,15 +955,34 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     <p className="text-[var(--muse-muted)] font-serif italic text-lg leading-relaxed mb-8">
                       Ready to weave these artifacts into a living document?
                     </p>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDialogueAction("Synthesize to Thread")}
-                      disabled={threadShared}
-                      className={`w-full py-5 ${theme.bg.replace("/10", "/80")} ${theme.border} border text-[var(--muse-text)] font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer ${threadShared ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {threadShared ? "Thread Initialized & Shared" : "Initialize Pattern Thread"}
-                    </button>
+                    {threadShared && newThreadId
+                      ? (
+                        <a
+                          href={`/threads/${newThreadId}`}
+                          className={`w-full py-5 block text-center bg-indigo-500/20 border-indigo-500/40 border text-indigo-400 font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer`}
+                        >
+                          View Published Thread
+                        </a>
+                      )
+                      : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleDialogueAction("Synthesize to Thread")}
+                          disabled={items.length === 0}
+                          className={`w-full py-5 ${
+                            theme.bg.replace("/10", "/80")
+                          } ${theme.border} border text-[var(--muse-text)] font-bold uppercase tracking-widest text-[11px] rounded-2xl shadow-xl hover:-translate-y-1 transition-all cursor-pointer ${
+                            items.length === 0
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
+                        >
+                          {items.length === 0
+                            ? "Add artifacts to synthesize"
+                            : "Initialize Pattern Thread"}
+                        </button>
+                      )}
                   </div>
                 </div>
               </div>

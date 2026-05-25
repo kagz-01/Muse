@@ -32,7 +32,10 @@ export async function hashPassword(
   return `${s}$${hex}`;
 }
 
-export async function setupMasterVault(password: string, securityAnswer: string) {
+export async function setupMasterVault(
+  password: string,
+  securityAnswer: string,
+) {
   const hashedPass = await hashPassword(password);
   const hashedAnswer = await hashPassword(securityAnswer.toLowerCase().trim());
   localStorage.setItem(VAULT_KEY, `${hashedPass}|${hashedAnswer}`);
@@ -55,7 +58,10 @@ export async function attemptUnlockVault(password: string): Promise<boolean> {
   return false;
 }
 
-export async function recoverMasterVault(securityAnswer: string, newPassword: string): Promise<boolean> {
+export async function recoverMasterVault(
+  securityAnswer: string,
+  newPassword: string,
+): Promise<boolean> {
   const stored = localStorage.getItem(VAULT_KEY);
   if (!stored) return false;
 
@@ -64,7 +70,10 @@ export async function recoverMasterVault(securityAnswer: string, newPassword: st
 
   const answerSection = parts[1];
   const [answerSalt] = answerSection.split("$");
-  const candidateAnswer = await hashPassword(securityAnswer.toLowerCase().trim(), answerSalt);
+  const candidateAnswer = await hashPassword(
+    securityAnswer.toLowerCase().trim(),
+    answerSalt,
+  );
 
   if (candidateAnswer === answerSection) {
     // Answer is correct, setup new password
