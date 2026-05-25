@@ -707,6 +707,20 @@ export default function Settings() {
                   </label>
                   <input
                     type="text"
+                    value={user.name}
+                    onInput={(event) =>
+                      handleProfileUpdate({
+                        name: (event.target as HTMLInputElement).value,
+                      })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">
+                    Username
+                  </label>
+                  <input
+                    type="text"
                     value={user.username}
                     onInput={(event) =>
                       handleProfileUpdate({
@@ -1273,9 +1287,7 @@ export default function Settings() {
                       : "border-white/30"
                   }`}
                   style={{
-                    background: customAccentHexSignal.value
-                      ? customAccentHexSignal.value
-                      : "conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
+                    background: "conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
                   }}
                   title="Custom accent color"
                 >
