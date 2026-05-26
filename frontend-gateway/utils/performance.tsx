@@ -1,6 +1,6 @@
 import { type ComponentType } from "preact";
-import { Suspense, lazy } from "preact/compat";
-import { useState, useEffect } from "preact/hooks";
+import { lazy, Suspense } from "preact/compat";
+import { useEffect, useState } from "preact/hooks";
 
 interface LazyComponentProps {
   component: () => Promise<{ default: ComponentType<any> }>;
@@ -37,7 +37,9 @@ export const useIntersection = (ref: { current: Element | null }) => {
   });
 
   useEffect(() => {
-    if (typeof window === "undefined" || !("IntersectionObserver" in window)) return;
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
+      return;
+    }
     if (!ref.current) return;
 
     const observer = new IntersectionObserver(([entry]) => {

@@ -258,13 +258,31 @@ export function setAccentColor(accentColor: AppAccentColor) {
   appAccentSignal.value = accentColor;
   customAccentHexSignal.value = ""; // Clear custom when preset chosen
   applyAccentToDocument(accentColor, appThemeSignal.value);
-  updateStoredAppearance({ accentColor, customAccentHex: "" } as Partial<{ theme: AppTheme; accentColor: AppAccentColor; fontSize: AppFontSize; customAccentHex: string }>);
+  updateStoredAppearance(
+    { accentColor, customAccentHex: "" } as Partial<
+      {
+        theme: AppTheme;
+        accentColor: AppAccentColor;
+        fontSize: AppFontSize;
+        customAccentHex: string;
+      }
+    >,
+  );
 }
 
 export function setCustomAccentHex(hex: string) {
   customAccentHexSignal.value = hex;
   applyCustomAccentToDocument(hex);
-  updateStoredAppearance({ customAccentHex: hex } as Partial<{ theme: AppTheme; accentColor: AppAccentColor; fontSize: AppFontSize; customAccentHex: string }>);
+  updateStoredAppearance(
+    { customAccentHex: hex } as Partial<
+      {
+        theme: AppTheme;
+        accentColor: AppAccentColor;
+        fontSize: AppFontSize;
+        customAccentHex: string;
+      }
+    >,
+  );
 }
 
 export function setAppearanceAttribute(

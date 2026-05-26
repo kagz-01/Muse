@@ -195,7 +195,9 @@ const IANA_TIMEZONES: string[] = (() => {
   try {
     // Modern browsers support Intl.supportedValuesOf
     if (typeof Intl !== "undefined" && "supportedValuesOf" in Intl) {
-      return (Intl as unknown as { supportedValuesOf: (key: string) => string[] })
+      return (Intl as unknown as {
+        supportedValuesOf: (key: string) => string[];
+      })
         .supportedValuesOf("timeZone");
     }
   } catch {
@@ -203,28 +205,81 @@ const IANA_TIMEZONES: string[] = (() => {
   }
   // Curated fallback – major world timezones
   return [
-    "Africa/Abidjan", "Africa/Accra", "Africa/Addis_Ababa", "Africa/Algiers",
-    "Africa/Cairo", "Africa/Casablanca", "Africa/Dar_es_Salaam", "Africa/Johannesburg",
-    "Africa/Lagos", "Africa/Nairobi", "Africa/Tunis",
-    "America/Anchorage", "America/Argentina/Buenos_Aires", "America/Bogota",
-    "America/Chicago", "America/Denver", "America/Halifax", "America/Lima",
-    "America/Los_Angeles", "America/Mexico_City", "America/New_York",
-    "America/Phoenix", "America/Santiago", "America/Sao_Paulo", "America/Toronto",
+    "Africa/Abidjan",
+    "Africa/Accra",
+    "Africa/Addis_Ababa",
+    "Africa/Algiers",
+    "Africa/Cairo",
+    "Africa/Casablanca",
+    "Africa/Dar_es_Salaam",
+    "Africa/Johannesburg",
+    "Africa/Lagos",
+    "Africa/Nairobi",
+    "Africa/Tunis",
+    "America/Anchorage",
+    "America/Argentina/Buenos_Aires",
+    "America/Bogota",
+    "America/Chicago",
+    "America/Denver",
+    "America/Halifax",
+    "America/Lima",
+    "America/Los_Angeles",
+    "America/Mexico_City",
+    "America/New_York",
+    "America/Phoenix",
+    "America/Santiago",
+    "America/Sao_Paulo",
+    "America/Toronto",
     "America/Vancouver",
-    "Asia/Baghdad", "Asia/Bangkok", "Asia/Colombo", "Asia/Dubai", "Asia/Hong_Kong",
-    "Asia/Jakarta", "Asia/Jerusalem", "Asia/Karachi", "Asia/Kolkata", "Asia/Kuala_Lumpur",
-    "Asia/Manila", "Asia/Seoul", "Asia/Shanghai", "Asia/Singapore", "Asia/Taipei",
-    "Asia/Tehran", "Asia/Tokyo",
-    "Atlantic/Azores", "Atlantic/Reykjavik",
-    "Australia/Adelaide", "Australia/Brisbane", "Australia/Melbourne",
-    "Australia/Perth", "Australia/Sydney",
-    "Europe/Amsterdam", "Europe/Athens", "Europe/Berlin", "Europe/Brussels",
-    "Europe/Bucharest", "Europe/Dublin", "Europe/Helsinki", "Europe/Istanbul",
-    "Europe/Lisbon", "Europe/London", "Europe/Madrid", "Europe/Moscow",
-    "Europe/Oslo", "Europe/Paris", "Europe/Prague", "Europe/Rome",
-    "Europe/Stockholm", "Europe/Vienna", "Europe/Warsaw", "Europe/Zurich",
-    "Pacific/Auckland", "Pacific/Fiji", "Pacific/Honolulu",
-    "Pacific/Port_Moresby", "Pacific/Tongatapu",
+    "Asia/Baghdad",
+    "Asia/Bangkok",
+    "Asia/Colombo",
+    "Asia/Dubai",
+    "Asia/Hong_Kong",
+    "Asia/Jakarta",
+    "Asia/Jerusalem",
+    "Asia/Karachi",
+    "Asia/Kolkata",
+    "Asia/Kuala_Lumpur",
+    "Asia/Manila",
+    "Asia/Seoul",
+    "Asia/Shanghai",
+    "Asia/Singapore",
+    "Asia/Taipei",
+    "Asia/Tehran",
+    "Asia/Tokyo",
+    "Atlantic/Azores",
+    "Atlantic/Reykjavik",
+    "Australia/Adelaide",
+    "Australia/Brisbane",
+    "Australia/Melbourne",
+    "Australia/Perth",
+    "Australia/Sydney",
+    "Europe/Amsterdam",
+    "Europe/Athens",
+    "Europe/Berlin",
+    "Europe/Brussels",
+    "Europe/Bucharest",
+    "Europe/Dublin",
+    "Europe/Helsinki",
+    "Europe/Istanbul",
+    "Europe/Lisbon",
+    "Europe/London",
+    "Europe/Madrid",
+    "Europe/Moscow",
+    "Europe/Oslo",
+    "Europe/Paris",
+    "Europe/Prague",
+    "Europe/Rome",
+    "Europe/Stockholm",
+    "Europe/Vienna",
+    "Europe/Warsaw",
+    "Europe/Zurich",
+    "Pacific/Auckland",
+    "Pacific/Fiji",
+    "Pacific/Honolulu",
+    "Pacific/Port_Moresby",
+    "Pacific/Tongatapu",
   ];
 })();
 
@@ -602,7 +657,9 @@ export default function Settings() {
         className="flex items-center gap-2 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition mb-6"
       >
         <LucideIcon icon={SafeIcons.ArrowLeft} size={16} />
-        <span className="text-sm font-bold uppercase tracking-widest">Back</span>
+        <span className="text-sm font-bold uppercase tracking-widest">
+          Back
+        </span>
       </button>
 
       <div className="flex justify-between items-center mb-8">
@@ -1287,7 +1344,8 @@ export default function Settings() {
                       : "border-white/30"
                   }`}
                   style={{
-                    background: "conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
+                    background:
+                      "conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
                   }}
                   title="Custom accent color"
                 >
@@ -1560,7 +1618,9 @@ export default function Settings() {
                   return (
                     <div
                       key={toggle.key}
-                      className={`flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10 ${toggle.comingSoon ? "opacity-60" : ""}`}
+                      className={`flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10 ${
+                        toggle.comingSoon ? "opacity-60" : ""
+                      }`}
                     >
                       <div className="flex items-center gap-2">
                         <LucideIcon

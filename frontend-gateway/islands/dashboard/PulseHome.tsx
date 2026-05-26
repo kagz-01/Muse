@@ -394,7 +394,7 @@ export default function PulseHome() {
 
           <div className="bg-canvas-primary/10 rounded-[2.5rem] border border-canvas-primary/20 p-8 text-center min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary mb-2">
-              Total Intelligence
+              Total Synthesis
             </p>
             <p className="text-4xl font-bold text-[var(--muse-text)] mb-2">
               {rooms.reduce((s, r) => s + r.count, 0)}

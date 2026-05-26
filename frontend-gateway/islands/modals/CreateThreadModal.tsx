@@ -2,11 +2,15 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   addThread,
-  type ThreadDepth,
-  type ThreadFormat,
-  type ThreadMood,
 } from "../../signals/threads.ts";
-import { MOOD_OPTIONS } from "../../signals/rooms.ts";
+
+const CORE_MOODS = [
+  { id: "focus", label: "Focus", emoji: "🧠" },
+  { id: "chaos", label: "Chaos", emoji: "🌪️" },
+  { id: "minimal", label: "Minimal", emoji: "⬜" },
+  { id: "cosmic", label: "Cosmic", emoji: "🌌" },
+  { id: "noir", label: "Noir", emoji: "🕵️" },
+];
 
 interface Props {
   onClose: () => void;
@@ -31,9 +35,10 @@ export default function CreateThreadModal({ onClose }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [thesis, setThesis] = useState("");
-  const [mood, setMood] = useState<ThreadMood>("focus");
-  const [format, setFormat] = useState<ThreadFormat>("essay");
-  const [depth, setDepth] = useState<ThreadDepth>("deep");
+  const [mood, setMood] = useState("focus");
+  const [format, setFormat] = useState("Essay");
+  const [depth, setDepth] = useState("50");
+  const [theme, setTheme] = useState("");
   const [coverPreview, setCoverPreview] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState("");
@@ -66,9 +71,8 @@ export default function CreateThreadModal({ onClose }: Props) {
     }
   };
 
-  const selectedMoodOption = MOOD_OPTIONS.find((m) => m.id === mood) ||
-    MOOD_OPTIONS[0];
-  const moodColor = moodColors[selectedMoodOption.id] || "#6366f1";
+  const selectedMoodOption = CORE_MOODS.find((m) => m.id === mood);
+  const moodColor = selectedMoodOption ? moodColors[selectedMoodOption.id] : "#a855f7"; // default to purple-ish if custom
 
   const handleCreate = () => {
     if (!title.trim()) {
@@ -83,6 +87,7 @@ export default function CreateThreadModal({ onClose }: Props) {
       mood,
       format,
       depth,
+      theme,
       coverImage: coverPreview,
       isPublic,
       itemIds: [],
@@ -222,59 +227,69 @@ export default function CreateThreadModal({ onClose }: Props) {
           </div>
 
           {/* Format and Depth Grid */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-                Thread Format
+                Synthesis Format
               </label>
               <div className="relative">
-                <select
+                <Icons.Type size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input
                   value={format}
-                  onChange={(e) =>
-                    setFormat(
-                      (e.target as HTMLSelectElement).value as ThreadFormat,
-                    )}
-                  className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none focus:border-white/30 transition-all cursor-pointer"
-                >
-                  <option value="essay">Essay</option>
-                  <option value="manifesto">Manifesto</option>
-                  <option value="blueprint">Blueprint</option>
-                  <option value="debate">Debate</option>
-                </select>
-                <Icons.ChevronDown
-                  size={14}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                  onInput={(e) => setFormat((e.target as HTMLInputElement).value)}
+                  placeholder="e.g. Technical Spec, Poem"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white text-sm font-medium focus:outline-none focus:border-canvas-primary/50 transition-all"
                 />
               </div>
-              <p className="text-gray-500 text-[10px] mt-1">
-                Dictates the structure of synthesis.
-              </p>
+              <div className="flex gap-2 mt-3 flex-wrap">
+                {["Essay", "Manifesto", "Blueprint", "Debate"].map(f => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setFormat(f)}
+                    className="px-2 py-1 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded text-[10px] uppercase font-bold tracking-widest transition-colors"
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-                Synthesis Depth
+              <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 flex justify-between">
+                <span>Cognitive Depth</span>
+                <span className="text-canvas-primary">{depth}%</span>
               </label>
-              <div className="relative">
-                <select
+              <div className="pt-2 pb-1">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
                   value={depth}
-                  onChange={(e) =>
-                    setDepth(
-                      (e.target as HTMLSelectElement).value as ThreadDepth,
-                    )}
-                  className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none focus:border-white/30 transition-all cursor-pointer"
-                >
-                  <option value="surface">Surface</option>
-                  <option value="deep">Deep</option>
-                  <option value="comprehensive">Comprehensive</option>
-                </select>
-                <Icons.ChevronDown
-                  size={14}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                  onInput={(e) => setDepth((e.target as HTMLInputElement).value)}
+                  className="w-full accent-canvas-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
                 />
               </div>
-              <p className="text-gray-500 text-[10px] mt-1">
-                Defines AI contemplation intensity.
-              </p>
+              <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-gray-500 mt-2">
+                <span>Surface</span>
+                <span>Deep</span>
+                <span>Comprehensive</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Theme */}
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Aesthetic Theme (Optional)
+            </label>
+            <div className="relative">
+              <Icons.Palette size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+              <input
+                value={theme}
+                onInput={(e) => setTheme((e.target as HTMLInputElement).value)}
+                placeholder="e.g. Cyberpunk, Minimalist, Brutalist"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
+              />
             </div>
           </div>
 
@@ -282,34 +297,37 @@ export default function CreateThreadModal({ onClose }: Props) {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
-                Synthesis Mood
+                Generative Mood
               </label>
-              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                {selectedMoodOption.label}
-              </span>
             </div>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {MOOD_OPTIONS.map((m) => {
-                const isSelected = mood === m.id;
+            <div className="relative mb-4">
+              <Icons.Sparkles size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-canvas-primary/60" />
+              <input
+                value={mood}
+                onInput={(e) => setMood((e.target as HTMLInputElement).value)}
+                placeholder="Type any mood..."
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all"
+              />
+            </div>
+            <div className="grid grid-cols-5 gap-2">
+              {CORE_MOODS.map((m) => {
+                const isSelected = mood.toLowerCase() === m.id.toLowerCase();
                 return (
                   <button
                     key={m.id}
                     type="button"
-                    onClick={() => setMood(m.id as ThreadMood)}
-                    className={`relative p-3 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all cursor-pointer ${
+                    onClick={() => setMood(m.id)}
+                    className={`relative p-2 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                       isSelected
-                        ? "border-white/40 bg-white/10 shadow-lg scale-105 z-10"
+                        ? "border-canvas-primary/40 bg-canvas-primary/10 shadow-lg"
                         : "border-white/5 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
                     }`}
                   >
-                    {isSelected && (
-                      <div className="absolute inset-0 rounded-2xl bg-white/5 pointer-events-none" />
-                    )}
-                    <span className="text-2xl filter drop-shadow-md">
+                    <span className="text-lg filter drop-shadow-md">
                       {m.emoji}
                     </span>
                     <div className="text-center w-full">
-                      <p className="text-white text-[10px] font-bold capitalize truncate">
+                      <p className="text-gray-400 text-[9px] font-bold capitalize truncate">
                         {m.label}
                       </p>
                     </div>

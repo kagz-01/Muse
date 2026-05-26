@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Muse | Digital Intelligence Gateway</title>
+        <title>Muse | Digital Synthesis Gateway</title>
         <meta
           name="description"
           content="Capture raw thought, contemplate patterns, and synthesize your digital soul with Muse."

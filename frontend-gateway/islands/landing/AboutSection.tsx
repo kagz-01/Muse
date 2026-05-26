@@ -23,7 +23,7 @@ export default function AboutSection() {
             fusing Sovereign Knowledge Rooms (The Vaults), Real-time AI Feedback
             pipelines, and a high-performance, fluid Radial Menu interface, the
             system intercepts chaotic data flows and processes them into a
-            structured, cryptographic ledger of collective intelligence.
+            structured, cryptographic ledger of Collective Synthesis.
           </p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function AboutSection() {
             <p className="text-[var(--muse-muted)] font-serif italic text-sm leading-relaxed group-hover:text-[var(--muse-text)] transition-colors duration-500">
               We are building a decentralized information layer where attention
               is treated as an immutable, sovereign asset rather than a liquid
-              commodity. We envision an advanced collective intelligence network
+              commodity. We envision an advanced Collective Synthesis network
               where high-fidelity thoughts compound, evolve, and permanently
               outlast ephemeral social streams.
             </p>

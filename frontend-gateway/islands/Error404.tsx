@@ -5,7 +5,7 @@ export default function Error404() {
   return (
     <>
       <Head>
-        <title>Signal Lost - Muse Intelligence</title>
+        <title>Signal Lost - Muse</title>
       </Head>
       <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 selection:bg-canvas-primary selection:text-white relative overflow-hidden">
         {/* CINEMATIC BACKGROUND */}

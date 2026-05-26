@@ -9,12 +9,12 @@ export default function App({ Component }: PageProps) {
         <title>Muse | Your Digital Consciousness Gateway</title>
         <meta
           name="description"
-          content="Muse is a cinematic, high-fidelity platform for capturing thought, contemplating patterns, and synthesizing intelligence in a sovereign digital environment."
+          content="Muse is a cinematic, high-fidelity platform for capturing thought, contemplating patterns, and synthesizing wisdom in a sovereign digital environment."
         />
         <meta property="og:title" content="Muse | Digital Consciousness" />
         <meta
           property="og:description"
-          content="Synthesize your intelligence in a high-fidelity environment."
+          content="Synthesize your wisdom in a high-fidelity environment."
         />
         <meta property="og:type" content="website" />
         <link rel="stylesheet" href="/styles.css" />

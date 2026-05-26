@@ -96,9 +96,9 @@ export default function SpectralHero(
             </span>
           </h1>
           <p className="text-sm md:text-base text-[var(--muse-muted)] font-serif italic max-w-lg mx-auto leading-relaxed">
-            A sovereign intelligence loop — where scattered signals are
-            captured, contemplated, and synthesized into a cryptographic ledger
-            of collective wisdom.
+            A sovereign cognitive loop where scattered signals are captured,
+            contemplated, and synthesized into a cryptographic ledger of
+            collective wisdom.
           </p>
         </div>
       </div>

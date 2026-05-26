@@ -118,7 +118,7 @@ export default function LandingFooter() {
         {/* BOTTOM BAR */}
         <div className="pt-4 border-t border-[var(--muse-border)] flex items-center justify-between">
           <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] opacity-50">
-            © 2026 Muse Intelligence Protocol · Built on Sovereignty
+            © 2026 Muse Protocol · Built on Sovereignty
           </span>
           <span className="text-[9px] text-[var(--muse-muted)] opacity-40 font-serif italic">
             v2.1.0

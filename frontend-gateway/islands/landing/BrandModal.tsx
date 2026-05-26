@@ -183,8 +183,8 @@ export default function BrandModal({ onClose, onOpenAuth }: {
                 Turn your consumption into creation.
               </p>
               <p className="text-xs font-serif italic text-[var(--muse-muted)] leading-relaxed mb-4 max-w-sm">
-                A sovereign intelligence loop where scattered signals evolve
-                into an immutable cryptographic ledger of collective wisdom.
+                A sovereign cognitive loop where scattered signals evolve into
+                an immutable cryptographic ledger of collective wisdom.
               </p>
 
               {/* 4 THEME COLOR SWATCHES */}
@@ -252,7 +252,7 @@ export default function BrandModal({ onClose, onOpenAuth }: {
           {/* FOOTER */}
           <div className="flex items-center justify-center pt-2">
             <p className="text-[10px] text-[var(--muse-muted)] font-serif italic">
-              © 2026 Muse Intelligence Protocol · v2.1.0
+              © 2026 Muse Protocol · v2.1.0
             </p>
           </div>
         </div>

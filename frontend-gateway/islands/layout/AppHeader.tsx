@@ -1,5 +1,6 @@
 import * as Icons from "lucide-preact";
-import { useEffect, useRef } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
+import LogoModal from "./LogoModal.tsx";
 import {
   soloModeSignal,
   toggleSoloMode,
@@ -19,8 +20,10 @@ import {
   toggleTheme,
 } from "../../signals/ui.ts";
 
-const { Search, Moon, Circle, CloudSun, Sun, Bell, Menu } =
-  Icons as unknown as Record<string, import("preact").ComponentType<unknown>>;
+const { Moon, Circle, CloudSun, Sun, Bell, Menu } = Icons as unknown as Record<
+  string,
+  import("preact").ComponentType<unknown>
+>;
 
 export const prerender = false;
 export default function AppHeader(
@@ -32,6 +35,7 @@ export default function AppHeader(
   const unreadCount =
     notifications.filter((n: AppNotification) => !n.isRead).length;
   const notificationPanelRef = useRef<HTMLDivElement | null>(null);
+  const [showLogoModal, setShowLogoModal] = useState(false);
 
   useEffect(() => {
     initializeTheme();
@@ -58,6 +62,7 @@ export default function AppHeader(
   const isDemo = user?.email === "demo@muse.app";
 
   return (
+    <>
     <header
       className={`fixed top-0 left-0 w-full z-50 bg-[var(--muse-overlay)] backdrop-blur-3xl border-b border-[var(--muse-border)] transition-all duration-500 ${
         isDemo ? "pt-8" : ""
@@ -80,34 +85,30 @@ export default function AppHeader(
         </div>
       )}
       <div className="flex items-center justify-between px-6 md:px-10 h-20">
-        <div className="flex items-center gap-6">
-          <a
-            href="/dashboard"
-            className="cursor-pointer flex items-center gap-3 group"
+        <div className="flex items-center gap-8">
+          <button
+            type="button"
+            onClick={() => setShowLogoModal(true)}
+            className="cursor-pointer flex items-center gap-3 group text-left"
           >
-            <div className="w-10 h-10 bg-[var(--muse-surface)] rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-all duration-500 shadow-2xl border border-[var(--muse-border)] overflow-hidden p-1.5">
+            <div className="w-10 h-10 bg-[var(--muse-surface)] rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-all duration-500 shadow-2xl border border-[var(--muse-border)] overflow-hidden p-1.5 relative">
+              <div className="absolute inset-0 bg-canvas-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              </div>
               <img
                 src="/assets/muse-logo.png"
                 alt="Muse Logo"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain relative z-10"
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight text-[var(--muse-text)] leading-none transition-colors duration-300">
+              <span className="text-xl font-bold tracking-tight text-[var(--muse-text)] leading-none transition-colors duration-300">
                 Muse
               </span>
-              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-canvas-primary mt-1">
-                Intelligence
+              <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-canvas-primary mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                Network
               </span>
             </div>
-          </a>
-
-          <div className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-full text-[var(--muse-muted)] cursor-text hover:border-[var(--muse-text)]/20 transition-all duration-300 min-w-[320px]">
-            {Search ? <Search size={14} /> : null}
-            <span className="text-[10px] font-bold uppercase tracking-widest">
-              Search your collective consciousness...
-            </span>
-          </div>
+          </button>
         </div>
 
         <div className="flex items-center gap-3 md:gap-5">
@@ -232,5 +233,7 @@ export default function AppHeader(
         </div>
       </div>
     </header>
+    {showLogoModal && <LogoModal onClose={() => setShowLogoModal(false)} />}
+    </>
   );
 }

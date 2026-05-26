@@ -5,7 +5,7 @@ import {
   type ThreadMood,
   threadsSignal,
 } from "../../signals/threads.ts";
-import { MOOD_OPTIONS } from "../../signals/rooms.ts";
+
 import BlueprintReview from "../../components/threads/BlueprintReview.tsx";
 import VaultGateModal from "../modals/VaultGateModal.tsx";
 import CreateThreadModal from "../modals/CreateThreadModal.tsx";
@@ -14,17 +14,12 @@ import { isVaultUnlockedSignal } from "../../signals/vault.ts";
 
 type ThreadFilter = "all" | ThreadMood;
 
-const moodFilterOptions: {
-  id: ThreadFilter;
-  label: string;
-  mood?: ThreadMood;
-}[] = [
-  { id: "all", label: "All Moods" },
-  ...MOOD_OPTIONS.map((m) => ({
-    id: m.id as ThreadFilter,
-    label: m.label,
-    mood: m.id as ThreadMood,
-  })),
+const CORE_MOODS: { id: string; label: string }[] = [
+  { id: "focus", label: "Focus" },
+  { id: "chaos", label: "Chaos" },
+  { id: "minimal", label: "Minimal" },
+  { id: "cosmic", label: "Cosmic" },
+  { id: "noir", label: "Noir" },
 ];
 
 const moodColors: Record<string, string> = {
@@ -45,7 +40,8 @@ const moodColors: Record<string, string> = {
 export default function ThreadsGallery() {
   const threads = threadsSignal.value;
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeMoodFilter, setActiveMoodFilter] = useState<ThreadFilter>("all");
+  const [activeMoodFilter, setActiveMoodFilter] = useState<string>("all");
+  const [customMoodInput, setCustomMoodInput] = useState("");
   const [filterVisibility, setFilterVisibility] = useState<
     "all" | "public" | "private"
   >("all");
@@ -53,6 +49,7 @@ export default function ThreadsGallery() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isGeneratingThreads, _setIsGeneratingThreads] = useState(false);
   const [generatedThreadCount, _setGeneratedThreadCount] = useState(0);
+  const [zoomingThreadId, setZoomingThreadId] = useState<string | null>(null);
 
   const filteredThreads = useMemo(() => {
     return threads.filter((t: Thread) => {
@@ -102,8 +99,7 @@ export default function ThreadsGallery() {
                 Thread Engine
               </h1>
               <p className="max-w-3xl text-lg md:text-xl leading-relaxed font-serif italic text-gray-400 border-l-2 border-white/10 pl-8">
-                Where diverse signals from your rooms converge into living
-                documents of collective intelligence.
+                Where diverse signals from your rooms converge into living documents of Collective Synthesis.
               </p>
             </div>
 
@@ -119,31 +115,48 @@ export default function ThreadsGallery() {
             </button>
           </div>
 
-          {/* STATS */}
-          <div className="relative z-10 mt-12 grid gap-4 grid-cols-3 md:grid-cols-3 lg:grid-cols-3">
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-3">
-                Active Syntheses
+          {/* STATS & QUICK ACTIONS */}
+          <div className="relative z-10 mt-12 grid gap-6 grid-cols-1 lg:grid-cols-4">
+            <div className="lg:col-span-3 grid gap-4 grid-cols-3">
+              <div className="rounded-2xl bg-white/5 border border-white/10 p-5 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-canvas-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-3 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Active Syntheses
+                </div>
+                <div className="text-3xl md:text-4xl font-bold text-white tabular-nums tracking-tighter">
+                  {stats.activeSyntheses}
+                </div>
               </div>
-              <div className="text-3xl md:text-4xl font-bold text-white">
-                {stats.activeSyntheses}
+              <div className="rounded-2xl bg-white/5 border border-white/10 p-5 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-canvas-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-3 flex items-center gap-2">
+                  <Icons.FolderOpen size={12} className="text-gray-400" />
+                  Connected Rooms
+                </div>
+                <div className="text-3xl md:text-4xl font-bold text-white tabular-nums tracking-tighter">
+                  {stats.connectedRooms}
+                </div>
+              </div>
+              <div className="rounded-2xl bg-white/5 border border-white/10 p-5 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-canvas-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-3 flex items-center gap-2">
+                  <Icons.Activity size={12} className="text-gray-400" />
+                  Total Signals
+                </div>
+                <div className="text-3xl md:text-4xl font-bold text-white tabular-nums tracking-tighter">
+                  {stats.totalSignals}
+                </div>
               </div>
             </div>
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-3">
-                Connected Rooms
-              </div>
-              <div className="text-3xl md:text-4xl font-bold text-white">
-                {stats.connectedRooms}
-              </div>
-            </div>
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-3">
-                Total Signals
-              </div>
-              <div className="text-3xl md:text-4xl font-bold text-white">
-                {stats.totalSignals}
-              </div>
+            <div className="flex items-center justify-center">
+              <button 
+                type="button"
+                className="w-full h-full rounded-2xl border border-canvas-primary/30 bg-canvas-primary/10 hover:bg-canvas-primary/20 text-canvas-primary transition-all flex flex-col items-center justify-center gap-3 p-6 group"
+              >
+                <Icons.RefreshCw size={24} className="group-hover:rotate-180 transition-transform duration-700" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-center">Trigger Real-time<br/>Analysis</span>
+              </button>
             </div>
           </div>
         </section>
@@ -172,18 +185,41 @@ export default function ThreadsGallery() {
         {/* FILTERS */}
         <section className="space-y-4">
           <div className="rounded-[2rem] bg-white/[0.02] border border-white/10 p-5 md:p-6">
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
-              <h3 className="text-lg font-bold text-white">Mood Filters</h3>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600">
-                {moodFilterOptions.length} moods
-              </span>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4 pb-4 border-b border-white/10">
+              <h3 className="text-lg font-bold text-white">Generative Mood Filter</h3>
+              <div className="relative w-full md:w-64">
+                <Icons.Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 text-canvas-primary/60" size={14} />
+                <input
+                  type="text"
+                  placeholder="Custom mood..."
+                  value={customMoodInput}
+                  onInput={(e) => {
+                    const val = (e.target as HTMLInputElement).value;
+                    setCustomMoodInput(val);
+                    if (val.trim()) setActiveMoodFilter(val.toLowerCase());
+                    else setActiveMoodFilter("all");
+                  }}
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-full px-9 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
+                />
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {moodFilterOptions.map((option) => (
+              <button
+                type="button"
+                onClick={() => { setActiveMoodFilter("all"); setCustomMoodInput(""); }}
+                className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  activeMoodFilter === "all"
+                    ? "border-canvas-primary/40 bg-canvas-primary/15 text-canvas-primary"
+                    : "border-white/10 bg-white/[0.03] text-gray-500 hover:border-white/20 hover:text-white"
+                }`}
+              >
+                All
+              </button>
+              {CORE_MOODS.map((option) => (
                 <button
                   key={option.id}
                   type="button"
-                  onClick={() => setActiveMoodFilter(option.id)}
+                  onClick={() => { setActiveMoodFilter(option.id); setCustomMoodInput(""); }}
                   className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
                     activeMoodFilter === option.id
                       ? "border-canvas-primary/40 bg-canvas-primary/15 text-canvas-primary"
@@ -274,9 +310,8 @@ export default function ThreadsGallery() {
               : (
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6">
                   {filteredThreads.map((thread: Thread) => {
-                    const moodOption = MOOD_OPTIONS.find((m) =>
-                      m.id === thread.mood
-                    ) || MOOD_OPTIONS[0];
+                    const coreMood = CORE_MOODS.find((m) => m.id === thread.mood);
+                    const moodLabel = coreMood?.label || thread.mood;
                     const hex = moodColors[thread.mood] || moodColors.focus;
 
                     return (
@@ -286,10 +321,15 @@ export default function ThreadsGallery() {
                           if (thread.isVault && !isVaultUnlockedSignal.value) {
                             setVaultModalThread(thread);
                           } else {
-                            globalThis.location.href = `/threads/${thread.id}`;
+                            setZoomingThreadId(thread.id);
+                            setTimeout(() => {
+                              globalThis.location.href = `/threads/${thread.id}`;
+                            }, 600); // 600ms matches CSS transition duration
                           }
                         }}
-                        className="group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-white/5 text-white transition-all duration-500 cursor-pointer hover:border-white/20 h-full"
+                        className={`group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-white/5 text-white transition-all duration-500 cursor-pointer hover:border-white/20 h-full ${
+                          zoomingThreadId === thread.id ? "scale-[10] opacity-0 z-[100]" : ""
+                        }`}
                         style={{ boxShadow: `0 20px 60px ${hex}33` }}
                       >
                         {/* Background with mood gradient */}
@@ -389,8 +429,8 @@ export default function ThreadsGallery() {
                                   color: hex,
                                 }}
                               >
-                                <span>{moodOption.emoji}</span>
-                                {moodOption.label}
+                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: hex }} />
+                                {moodLabel}
                               </div>
                               {thread.format && (
                                 <div className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[8px] font-bold uppercase tracking-[0.15em] text-gray-400">
@@ -458,6 +498,11 @@ export default function ThreadsGallery() {
       {/* Create Thread Modal */}
       {showCreateModal && (
         <CreateThreadModal onClose={() => setShowCreateModal(false)} />
+      )}
+
+      {/* Immersive Zoom Overlay */}
+      {zoomingThreadId && (
+        <div className="fixed inset-0 z-[90] bg-black pointer-events-none animate-in fade-in duration-500" />
       )}
     </div>
   );

@@ -253,7 +253,8 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
                       : "border-[var(--muse-muted)]"
                   }`}
                   style={{
-                    background: "conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
+                    background:
+                      "conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
                   }}
                   title="Custom color"
                 />

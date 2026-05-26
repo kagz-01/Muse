@@ -142,7 +142,7 @@ export default function HomeOverview() {
 
             <p className="mt-5 max-w-2xl text-gray-400 text-base md:text-lg leading-relaxed font-serif italic">
               A quiet dashboard for collecting, contemplating, and turning
-              patterns into output. This is the skeleton; the real intelligence
+              patterns into output. This is the skeleton; the real synthesis
               will layer in here next.
             </p>
 

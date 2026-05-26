@@ -83,6 +83,7 @@ import * as $landing_index from "./islands/landing/index.ts";
 import * as $layout_AppHeader from "./islands/layout/AppHeader.tsx";
 import * as $layout_AppLayoutWrapper from "./islands/layout/AppLayoutWrapper.tsx";
 import * as $layout_AppMenu from "./islands/layout/AppMenu.tsx";
+import * as $layout_LogoModal from "./islands/layout/LogoModal.tsx";
 import * as $layout_index from "./islands/layout/index.ts";
 import * as $library_UnifiedVault from "./islands/library/UnifiedVault.tsx";
 import * as $mirror_Mirror from "./islands/mirror/Mirror.tsx";
@@ -200,6 +201,7 @@ const manifest = {
     "./islands/layout/AppHeader.tsx": $layout_AppHeader,
     "./islands/layout/AppLayoutWrapper.tsx": $layout_AppLayoutWrapper,
     "./islands/layout/AppMenu.tsx": $layout_AppMenu,
+    "./islands/layout/LogoModal.tsx": $layout_LogoModal,
     "./islands/layout/index.ts": $layout_index,
     "./islands/library/UnifiedVault.tsx": $library_UnifiedVault,
     "./islands/mirror/Mirror.tsx": $mirror_Mirror,

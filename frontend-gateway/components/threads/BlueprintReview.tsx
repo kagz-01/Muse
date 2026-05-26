@@ -19,22 +19,43 @@ export default function BlueprintReview() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
-          <Icons.Aperture size={14} className="text-canvas-primary" />{" "}
-          Autonomous Blueprints
-        </h3>
-        <span className="px-3 py-1 bg-canvas-primary/10 border border-canvas-primary/30 rounded-lg text-[9px] font-bold uppercase tracking-widest text-canvas-primary">
-          {blueprints.length} Synthesis Suggested
-        </span>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3 mb-2">
+            <Icons.Aperture size={14} className="text-canvas-primary" />{" "}
+            Autonomous Blueprints
+          </h3>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-[pulse_1s_ease-in-out_infinite]" />
+              Real-time Sync Active
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1 bg-canvas-primary/10 border border-canvas-primary/30 rounded-lg text-[9px] font-bold uppercase tracking-widest text-canvas-primary">
+            {blueprints.length} Synthesis Suggested
+          </span>
+          {blueprints.length > 2 && (
+            <div className="hidden md:flex gap-2">
+              <button type="button" className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white/5 disabled:opacity-30">
+                <Icons.ChevronLeft size={14} />
+              </button>
+              <button type="button" className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white/5 disabled:opacity-30">
+                <Icons.ChevronRight size={14} />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="flex gap-8 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
-        {blueprints.map((bp) => (
-          <div
-            key={bp.id}
-            className="min-w-[320px] snap-start inline-block bg-[#111318] border border-white/10 rounded-[2.5rem] p-10 relative overflow-hidden shadow-3xl group"
-          >
+      <div className="relative group">
+        <div className="flex gap-6 overflow-x-auto pb-6 pt-2 px-2 -mx-2 snap-x snap-mandatory scrollbar-hide scroll-smooth">
+          {blueprints.map((bp) => (
+            <div
+              key={bp.id}
+              className="min-w-[85vw] md:min-w-[400px] max-w-[450px] snap-center shrink-0 bg-[#111318] border border-white/10 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden shadow-2xl transition-all hover:border-canvas-primary/30"
+            >
             <div className="absolute top-0 right-0 h-full w-1/3 bg-canvas-primary/5 blur-[100px] pointer-events-none" />
 
             <div className="relative z-10 space-y-8">
@@ -152,7 +173,12 @@ export default function BlueprintReview() {
                 : null}
             </div>
           </div>
-        ))}
+          ))}
+        </div>
+        
+        {/* Carousel fade edges */}
+        <div className="absolute top-0 bottom-0 left-0 w-12 bg-gradient-to-r from-[#0a0a0a] to-transparent pointer-events-none" />
+        <div className="absolute top-0 bottom-0 right-0 w-12 bg-gradient-to-l from-[#0a0a0a] to-transparent pointer-events-none" />
       </div>
     </div>
   );

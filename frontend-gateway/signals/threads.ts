@@ -1,10 +1,9 @@
 import { signal } from "@preact/signals";
-import { type RoomMood } from "./rooms.ts";
 
-export type ThreadMood = RoomMood;
+export type ThreadMood = string;
 
-export type ThreadFormat = "essay" | "manifesto" | "blueprint" | "debate";
-export type ThreadDepth = "surface" | "deep" | "comprehensive";
+export type ThreadFormat = string;
+export type ThreadDepth = string;
 
 export interface DialogueLayer {
   id: string;
@@ -23,6 +22,7 @@ export interface Thread {
   mood: ThreadMood;
   format?: ThreadFormat;
   depth?: ThreadDepth;
+  theme?: string;
   itemIds: string[];
   sourceRoomIds: string[];
   isPublic: boolean;

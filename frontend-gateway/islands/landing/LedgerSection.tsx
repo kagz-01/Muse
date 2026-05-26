@@ -9,7 +9,7 @@ export default function LedgerSection(
       title: "The Thought Stream",
       subtitle: "Collective Consensus",
       desc:
-        "Broadcast your cognitive workflow. Every broadcasted thread carries a rigorous cryptographic signature that guarantees individual provenance while plugging into the global intelligence layer.",
+        "Broadcast your cognitive workflow. Every broadcasted thread carries a rigorous cryptographic signature that guarantees individual provenance while plugging into the global synthesis layer.",
       icon: Icons.Activity,
       color: "text-purple-400",
       bg: "bg-purple-500/5",
@@ -34,7 +34,7 @@ export default function LedgerSection(
       slideAnim: "animate-[zigzag-left_25s_ease-in-out_infinite_alternate]",
     },
     {
-      title: "The Intelligence Loop",
+      title: "The Synthesis Loop",
       subtitle: "Predictive Pipeline",
       desc:
         "A multi-stage AI Analysis Pipeline works with your private Journal Terminal — extracting semantic meaning, automating pattern recognition, and constructing Blueprint Scores.",

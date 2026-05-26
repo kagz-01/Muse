@@ -24,7 +24,7 @@ export default function DemoVideo(
               <Icons.Activity size={40} className="text-canvas-primary" />
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter uppercase">
-              System Intelligence{" "}
+              System Analysis{" "}
               <span className="text-gray-600 italic font-serif lowercase">
                 preview
               </span>
