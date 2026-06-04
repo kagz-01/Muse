@@ -1,9 +1,5 @@
 export { default as JournalEntryView } from "./JournalEntryView.tsx";
 export { default as JournalGallery } from "./JournalGallery.tsx";
-export { default as StreakCard } from "./StreakCard.tsx";
-export { default as MilestoneNotification } from "./MilestoneNotification.tsx";
-export { default as ActivityHeatmap } from "./ActivityHeatmap.tsx";
-export { default as MoodDistribution } from "./MoodDistribution.tsx";
 
 // Phase 2
 export { VaultModal } from "./VaultModal.tsx";

@@ -27,6 +27,26 @@ export interface SynthesisData {
   synthesizedAt: number;
 }
 
+export const moodConfig: Record<
+  JournalMood | "custom",
+  { label: string; color: string; emoji: string; hex: string }
+> = {
+  reflective: { label: "Reflective", color: "blue-400", emoji: "💭", hex: "#60a5fa" },
+  grounded: { label: "Grounded", color: "emerald-400", emoji: "🌱", hex: "#34d399" },
+  charged: { label: "Charged", color: "amber-400", emoji: "⚡️", hex: "#fbbf24" },
+  anxious: { label: "Anxious", color: "rose-400", emoji: "🌪", hex: "#fb7185" },
+  custom: { label: "Custom", color: "#6b7280", emoji: "✨", hex: "#6b7280" },
+};
+
+export type MoodStat = {
+  mood: string;
+  label: string;
+  emoji: string;
+  color: string;
+  count: number;
+};
+export type HeatmapDay = { date: Date; count: number };
+
 export interface VaultConfig {
   isVaulted: boolean;
   passwordHash?: string;
@@ -404,6 +424,44 @@ export function freezeStreak(): boolean {
 
   streakMetadataSignal.value = updated;
   return true;
+}
+
+export function getMoodStats(): MoodStat[] {
+  const entries = journalSignal.value;
+  const stats: Record<string, number> = {};
+  entries.forEach((entry: JournalEntry) => {
+    const m = entry.mood === "custom" && entry.customMood ? entry.customMood : entry.mood;
+    stats[m] = (stats[m] || 0) + 1;
+  });
+  return Object.entries(stats)
+    .map(([mood, count]) => {
+      const isDefault = mood in moodConfig && mood !== "custom";
+      const cfg = isDefault ? moodConfig[mood as JournalMood] : moodConfig["custom"];
+      return {
+        mood,
+        label: isDefault ? cfg.label : mood,
+        emoji: isDefault ? cfg.emoji : "✨",
+        color: cfg.hex,
+        count: count || 0,
+      };
+    })
+    .sort((a, b) => b.count - a.count);
+}
+
+export function getActivityHeatmap(): HeatmapDay[] {
+  const entries = journalSignal.value;
+  const days = [...Array(31)].map((_, i): HeatmapDay => {
+    const d = new Date();
+    d.setDate(d.getDate() - (30 - i));
+    const dateStr = d.toDateString();
+    const count = entries
+      .filter((entry: JournalEntry) =>
+        new Date(entry.createdAt).toDateString() === dateStr
+      )
+      .reduce((sum: number, entry: JournalEntry) => sum + entry.wordCount, 0);
+    return { date: d, count };
+  });
+  return days;
 }
 
 export function getMilestoneUnlocked(): number | null {

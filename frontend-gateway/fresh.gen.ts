@@ -53,7 +53,6 @@ import * as $dashboard_DashboardRooms from "./islands/dashboard/DashboardRooms.t
 import * as $dashboard_HomeOverview from "./islands/dashboard/HomeOverview.tsx";
 import * as $dashboard_PulseHome from "./islands/dashboard/PulseHome.tsx";
 import * as $dashboard_index from "./islands/dashboard/index.ts";
-import * as $journal_ActivityHeatmap from "./islands/journal/ActivityHeatmap.tsx";
 import * as $journal_CommunityCard from "./islands/journal/CommunityCard.tsx";
 import * as $journal_DiscoveryFeed from "./islands/journal/DiscoveryFeed.tsx";
 import * as $journal_EntryDetail from "./islands/journal/EntryDetail.tsx";
@@ -61,10 +60,7 @@ import * as $journal_ExportModal from "./islands/journal/ExportModal.tsx";
 import * as $journal_JournalEntryView from "./islands/journal/JournalEntryView.tsx";
 import * as $journal_JournalGallery from "./islands/journal/JournalGallery.tsx";
 import * as $journal_LinkedArtifacts from "./islands/journal/LinkedArtifacts.tsx";
-import * as $journal_MilestoneNotification from "./islands/journal/MilestoneNotification.tsx";
 import * as $journal_MirrorTimeline from "./islands/journal/MirrorTimeline.tsx";
-import * as $journal_MoodDistribution from "./islands/journal/MoodDistribution.tsx";
-import * as $journal_StreakCard from "./islands/journal/StreakCard.tsx";
 import * as $journal_SynthesisCard from "./islands/journal/SynthesisCard.tsx";
 import * as $journal_SynthesisCreationForm from "./islands/journal/SynthesisCreationForm.tsx";
 import * as $journal_UserProfile from "./islands/journal/UserProfile.tsx";
@@ -86,8 +82,12 @@ import * as $layout_AppMenu from "./islands/layout/AppMenu.tsx";
 import * as $layout_LogoModal from "./islands/layout/LogoModal.tsx";
 import * as $layout_index from "./islands/layout/index.ts";
 import * as $library_UnifiedVault from "./islands/library/UnifiedVault.tsx";
+import * as $mirror_ActivityHeatmap from "./islands/mirror/ActivityHeatmap.tsx";
+import * as $mirror_MilestoneNotification from "./islands/mirror/MilestoneNotification.tsx";
 import * as $mirror_Mirror from "./islands/mirror/Mirror.tsx";
 import * as $mirror_MirrorDashboard from "./islands/mirror/MirrorDashboard.tsx";
+import * as $mirror_MoodDistribution from "./islands/mirror/MoodDistribution.tsx";
+import * as $mirror_StreakCard from "./islands/mirror/StreakCard.tsx";
 import * as $mirror_index from "./islands/mirror/index.ts";
 import * as $modals_AuthModal from "./islands/modals/AuthModal.tsx";
 import * as $modals_CaptureModal from "./islands/modals/CaptureModal.tsx";
@@ -169,7 +169,6 @@ const manifest = {
     "./islands/dashboard/HomeOverview.tsx": $dashboard_HomeOverview,
     "./islands/dashboard/PulseHome.tsx": $dashboard_PulseHome,
     "./islands/dashboard/index.ts": $dashboard_index,
-    "./islands/journal/ActivityHeatmap.tsx": $journal_ActivityHeatmap,
     "./islands/journal/CommunityCard.tsx": $journal_CommunityCard,
     "./islands/journal/DiscoveryFeed.tsx": $journal_DiscoveryFeed,
     "./islands/journal/EntryDetail.tsx": $journal_EntryDetail,
@@ -177,11 +176,7 @@ const manifest = {
     "./islands/journal/JournalEntryView.tsx": $journal_JournalEntryView,
     "./islands/journal/JournalGallery.tsx": $journal_JournalGallery,
     "./islands/journal/LinkedArtifacts.tsx": $journal_LinkedArtifacts,
-    "./islands/journal/MilestoneNotification.tsx":
-      $journal_MilestoneNotification,
     "./islands/journal/MirrorTimeline.tsx": $journal_MirrorTimeline,
-    "./islands/journal/MoodDistribution.tsx": $journal_MoodDistribution,
-    "./islands/journal/StreakCard.tsx": $journal_StreakCard,
     "./islands/journal/SynthesisCard.tsx": $journal_SynthesisCard,
     "./islands/journal/SynthesisCreationForm.tsx":
       $journal_SynthesisCreationForm,
@@ -204,8 +199,12 @@ const manifest = {
     "./islands/layout/LogoModal.tsx": $layout_LogoModal,
     "./islands/layout/index.ts": $layout_index,
     "./islands/library/UnifiedVault.tsx": $library_UnifiedVault,
+    "./islands/mirror/ActivityHeatmap.tsx": $mirror_ActivityHeatmap,
+    "./islands/mirror/MilestoneNotification.tsx": $mirror_MilestoneNotification,
     "./islands/mirror/Mirror.tsx": $mirror_Mirror,
     "./islands/mirror/MirrorDashboard.tsx": $mirror_MirrorDashboard,
+    "./islands/mirror/MoodDistribution.tsx": $mirror_MoodDistribution,
+    "./islands/mirror/StreakCard.tsx": $mirror_StreakCard,
     "./islands/mirror/index.ts": $mirror_index,
     "./islands/modals/AuthModal.tsx": $modals_AuthModal,
     "./islands/modals/CaptureModal.tsx": $modals_CaptureModal,

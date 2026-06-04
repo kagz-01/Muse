@@ -12,10 +12,6 @@ import {
   togglePinJournal,
   toggleArchiveJournal,
 } from "../../signals/journal.ts";
-import StreakCard from "./StreakCard.tsx";
-import MilestoneNotification from "./MilestoneNotification.tsx";
-import ActivityHeatmap from "./ActivityHeatmap.tsx";
-import MoodDistribution from "./MoodDistribution.tsx";
 import * as Icons from "lucide-preact";
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import { ExportModal } from "./ExportModal.tsx";
@@ -41,15 +37,6 @@ export const moodConfig: Record<
   custom: { label: "Custom", color: "#6b7280", emoji: "✨", hex: "#6b7280" },
 };
 
-type MoodStat = {
-  mood: string;
-  label: string;
-  emoji: string;
-  color: string;
-  count: number;
-};
-type HeatmapDay = { date: Date; count: number };
-
 function timeFormat(ts: number): string {
   const diff = Date.now() - ts;
   const mins = Math.floor(diff / 60000);
@@ -72,7 +59,6 @@ function excerpt(body: string, chars = 160): string {
 
 export default function JournalGallery() {
   const entries: JournalEntry[] = journalSignal.value;
-  const streakData = getStreakData();
 
   const [search, setSearch] = useState("");
   const [filterMood, setFilterMood] = useState<string>("all");
@@ -83,8 +69,7 @@ export default function JournalGallery() {
     "all" | "reflections" | "synthesis"
   >("all");
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showHeatmap, setShowHeatmap] = useState(true);
-  const [milestone, setMilestone] = useState<number | null>(null);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -92,44 +77,6 @@ export default function JournalGallery() {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-
-  const todayWords = getTodayWordCount();
-
-  const moodStats = useMemo<MoodStat[]>(() => {
-    const stats: Record<string, number> = {};
-    entries.forEach((entry: JournalEntry) => {
-      const m = entry.mood === "custom" && entry.customMood ? entry.customMood : entry.mood;
-      stats[m] = (stats[m] || 0) + 1;
-    });
-    return Object.entries(stats)
-      .map(([mood, count]) => {
-        const isDefault = mood in moodConfig && mood !== "custom";
-        const cfg = isDefault ? moodConfig[mood as JournalMood] : moodConfig["custom"];
-        return {
-          mood,
-          label: isDefault ? cfg.label : mood,
-          emoji: isDefault ? cfg.emoji : "✨",
-          color: cfg.hex,
-          count: count || 0,
-        };
-      })
-      .sort((a, b) => b.count - a.count);
-  }, [entries]);
-
-  const heatmap = useMemo<HeatmapDay[]>(() => {
-    const days = [...Array(31)].map((_, i): HeatmapDay => {
-      const d = new Date();
-      d.setDate(d.getDate() - (30 - i));
-      const dateStr = d.toDateString();
-      const count = entries
-        .filter((entry: JournalEntry) =>
-          new Date(entry.createdAt).toDateString() === dateStr
-        )
-        .reduce((sum: number, entry: JournalEntry) => sum + entry.wordCount, 0);
-      return { date: d, count };
-    });
-    return days;
-  }, [entries]);
 
   const uniqueCustomMoods = useMemo(() => {
     const custom = new Set<string>();
@@ -146,10 +93,7 @@ export default function JournalGallery() {
       entries.filter((entry: JournalEntry) => {
         const matchSearch = search === "" ||
           entry.body.toLowerCase().includes(search.toLowerCase()) ||
-          getJournalTitle(entry).toLowerCase().includes(search.toLowerCase()) ||
-          entry.tags.some((tag: string) =>
-            tag.toLowerCase().includes(search.toLowerCase())
-          );
+          getJournalTitle(entry).toLowerCase().includes(search.toLowerCase());
         const matchMood = filterMood === "all" || entry.mood === filterMood || (entry.mood === "custom" && entry.customMood === filterMood);
         const matchFav = !showFavorites || entry.isFavorited;
         const matchVisibility = filterVisibility === "all" ||
@@ -159,8 +103,7 @@ export default function JournalGallery() {
           (filterType === "synthesis" && entry.type === "synthesis") ||
           (filterType === "reflections" &&
             (!entry.type || entry.type === "reflection"));
-        return matchSearch && matchMood && matchFav && matchVisibility &&
-          matchType;
+        return matchSearch && matchMood && matchFav && matchVisibility && matchType;
       }),
     [entries, search, filterMood, showFavorites, filterVisibility, filterType],
   );
@@ -173,14 +116,6 @@ export default function JournalGallery() {
       alert("Error creating entry: " + e.message);
     }
   };
-
-  // Check for milestone when streak changes
-  useEffect(() => {
-    const unlocked = getMilestoneUnlocked();
-    if (unlocked) {
-      setMilestone(unlocked);
-    }
-  }, [streakData.currentStreak]);
 
   if (!isHydrated) {
     return (
@@ -214,94 +149,38 @@ export default function JournalGallery() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-32 md:pb-10 space-y-12">
-      <MilestoneNotification milestone={milestone} />
-
       {/* Hero Section */}
       <div className="w-full px-6 md:px-10">
-        <section className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0d0d0d] p-6 md:p-10 shadow-xl">
+        <section className="relative overflow-hidden rounded-[2rem] border border-[var(--muse-border)] bg-[var(--muse-surface)] p-8 md:p-12 shadow-xl">
           <div className="absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l from-violet-500/10 to-transparent blur-3xl pointer-events-none" />
           <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            <div className="flex-1">
-              <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400 mb-4" style={{ background: 'var(--muse-surface-soft)', borderColor: 'var(--muse-border)'}}>
-                <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-                Contemplation Layer
-              </div>
-              <h1 className="text-2xl md:text-4xl font-bold tracking-tight leading-tight text-[var(--muse-text)] mb-4">
-                Quiet Your
-                <span className="inline-block italic font-serif text-violet-400 bg-gradient-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent px-2">
-                  Mental Noise.
-                </span>
-              </h1>
-              <p className="max-w-2xl text-[var(--muse-muted)] text-sm leading-relaxed font-serif italic border-l-2 border-white/5 pl-4">
-                Your Journal is the sanctuary for raw thought. This is where
-                patterns from your collection are tested against your intuition
-                before they become creation.
-              </p>
+          <div className="relative z-10 flex flex-col items-center text-center justify-center gap-6 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400" style={{ background: 'var(--muse-surface-soft)', borderColor: 'var(--muse-border)'}}>
+              <div className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+              Contemplation Layer
             </div>
+            
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-[var(--muse-text)]">
+              Quiet Your
+              <span className="inline-block italic font-serif text-violet-400 bg-gradient-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent px-3">
+                Mental Noise.
+              </span>
+            </h1>
+            
+            <p className="text-[var(--muse-muted)] text-base md:text-lg leading-relaxed font-serif italic mb-4">
+              Your Journal is the sanctuary for raw thought. This is where patterns from your collection are tested against your intuition before they become creation.
+            </p>
 
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="px-4 py-3 rounded-xl border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 12px 40px rgba(var(--muse-accent-rgb),0.06)'}}>
-                <p className="text-[var(--muse-text)] font-bold text-xl leading-none">
-                  {streakData.currentStreak}
-                </p>
-                <p className="text-[9px] text-[var(--muse-muted)] uppercase tracking-widest mt-1.5">
-                  Current Streak
-                </p>
-              </div>
-              <div className="px-4 py-3 rounded-xl border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 12px 40px rgba(var(--muse-accent-rgb),0.06)'}}>
-                <p className="text-[var(--muse-text)] font-bold text-xl leading-none">
-                  {streakData.longestStreak}
-                </p>
-                <p className="text-[9px] text-[var(--muse-muted)] uppercase tracking-widest mt-1.5">
-                  Best Streak
-                </p>
-              </div>
-              <div className="px-4 py-3 rounded-xl border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 12px 40px rgba(var(--muse-accent-rgb),0.06)'}}>
-                <p className="text-[var(--muse-text)] font-bold text-xl leading-none">
-                  {todayWords}
-                </p>
-                <p className="text-[9px] text-[var(--muse-muted)] uppercase tracking-widest mt-1.5">
-                  Words Today
-                </p>
-              </div>
-              <div className="px-4 py-3 rounded-xl border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 12px 40px rgba(var(--muse-accent-rgb),0.06)'}}>
-                <p className="text-[var(--muse-text)] font-bold text-xl leading-none">
-                  {streakData.totalDays}
-                </p>
-                <p className="text-[9px] text-[var(--muse-muted)] uppercase tracking-widest mt-1.5">
-                  Total Days
-                </p>
-              </div>
-            </div>
-
-            {/* Streak Card */}
-            <div className="mt-8">
-              <StreakCard streakData={streakData} />
-            </div>
-
-            {/* New Entry Button */}
             <button
               onClick={handleNewEntry}
               type="button"
-              className="w-full md:w-auto inline-flex items-center justify-center gap-3 rounded-2xl px-8 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muse-text)] border border-[var(--muse-border)] transition-all hover:shadow-[0_12px_30px_rgba(var(--muse-accent-rgb),0.06)] active:scale-98 cursor-pointer bg-[var(--muse-surface-soft)]"
+              className="inline-flex items-center justify-center gap-3 rounded-full px-10 py-4 text-[13px] font-bold uppercase tracking-[0.15em] text-[var(--muse-bg)] bg-[var(--muse-text)] transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:-translate-y-1 active:scale-95 cursor-pointer"
             >
-              <Icons.Plus size={16} /> New Journal Entry
+              <Icons.Plus size={18} /> New Journal Entry
             </button>
           </div>
         </section>
-      </div>
-
-      {/* Visualizations Section */}
-      <div className="px-6 md:px-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {showHeatmap && <ActivityHeatmap data={heatmap} />}
-        <MoodDistribution
-          moodStats={moodStats}
-          onMoodClick={(mood) => setFilterMood(mood)}
-          activeMood={filterMood}
-        />
       </div>
 
       {/* Search & Filters */}

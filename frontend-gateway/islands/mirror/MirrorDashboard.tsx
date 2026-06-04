@@ -1,9 +1,13 @@
-import { useEffect } from "preact/hooks";
+import { useMemo, useEffect } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import { loadMirrorStats, mirrorSignal } from "../../signals/mirror.ts";
+import { getMoodStats, getActivityHeatmap, getStreakData, journalSignal } from "../../signals/journal.ts";
 import EngagementCard from "../../components/mirror/EngagementCard.tsx";
 import ActivityTimeline from "../../components/mirror/ActivityTimeline.tsx";
-import FollowerGrowthChart from "../../components/mirror/FollowerGrowthChart.tsx";
+import { LineChart, PieChart } from "../../components/mirror/MirrorCharts.tsx";
+import StreakCard from "./StreakCard.tsx";
+import ActivityHeatmap from "./ActivityHeatmap.tsx";
+import MoodDistribution from "./MoodDistribution.tsx";
 
 export default function MirrorDashboard() {
   const currentUserId = "user-123";
@@ -13,6 +17,16 @@ export default function MirrorDashboard() {
   }, []);
 
   const stats = mirrorSignal.value;
+  const streakData = getStreakData();
+  const entries = journalSignal.value;
+
+  const moodStats = useMemo(() => {
+    return getMoodStats();
+  }, [entries]);
+
+  const heatmap = useMemo(() => {
+    return getActivityHeatmap();
+  }, [entries]);
 
   return (
     <div className="min-h-screen bg-[var(--muse-background)] pb-32 md:pb-28">
@@ -138,25 +152,51 @@ export default function MirrorDashboard() {
               </div>
             </div>
 
+            {/* Streak & Momentum */}
+            <div className="mb-10">
+              <h2 className="text-xl font-semibold text-[var(--muse-text)] mb-6">
+                Synthesis Chain
+              </h2>
+              <StreakCard streakData={streakData} />
+            </div>
+
+            {/* Visualizations Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+              <ActivityHeatmap data={heatmap} />
+              <MoodDistribution
+                moodStats={moodStats}
+                onMoodClick={() => {}}
+                activeMood="all"
+              />
+            </div>
+
             {/* Growth Chart and Activity Timeline */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-              <FollowerGrowthChart data={stats.followerHistory} />
+              <div className="flex flex-col gap-6">
+                <LineChart 
+                  data={stats.followerHistory.map(h => h.count)} 
+                  title="Audience Momentum" 
+                  color="#8b5cf6" 
+                />
+                <PieChart
+                  data={[
+                    { label: "Reflections", value: entries.length, color: "#60a5fa" },
+                    { label: "Syntheses", value: mirrorSignal.value.stats.collaborations, color: "#a78bfa" },
+                    { label: "Public Broadcasts", value: entries.filter(e => e.isPublic).length, color: "#f472b6" }
+                  ]}
+                  title="Content Synthesis Distribution"
+                />
+              </div>
 
-              <div>
-                <h2 className="text-xl font-semibold text-[var(--muse-text)] mb-6">
-                  Recent Activity
+              <div className="bg-[#0d0d0d] rounded-[2rem] p-8 border border-white/5 shadow-xl">
+                <h2 className="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--muse-muted)] mb-6">
+                  Live Activity Feed
                 </h2>
-                <ActivityTimeline activities={stats.activity.slice(0, 4)} />
+                <ActivityTimeline activities={stats.activity.slice(0, 6)} />
               </div>
             </div>
 
-            {/* Full Activity Feed */}
-            <div>
-              <h2 className="text-xl font-semibold text-[var(--muse-text)] mb-6">
-                All Activity
-              </h2>
-              <ActivityTimeline activities={stats.activity} />
-            </div>
+
           </>
         )}
       </div>

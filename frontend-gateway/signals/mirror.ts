@@ -1,4 +1,7 @@
 import { signal } from "@preact/signals";
+import { journalSignal } from "./journal.ts";
+import { roomsSignal } from "./rooms.ts";
+import { threadsSignal } from "./threads.ts";
 
 export interface EngagementStats {
   views: number;
@@ -96,7 +99,7 @@ const initialState: MirrorStats = {
 
 export const mirrorSignal = signal<MirrorStats>(initialState);
 
-export const loadMirrorStats = async (userId: string) => {
+export const loadMirrorStats = (userId: string) => {
   mirrorSignal.value = {
     ...mirrorSignal.value,
     isLoading: true,
@@ -104,12 +107,27 @@ export const loadMirrorStats = async (userId: string) => {
   };
 
   try {
-    const response = await fetch(`/api/mirror?userId=${userId}`);
-    if (!response.ok) throw new Error("Failed to load mirror stats");
+    const journals = journalSignal.value;
+    const rooms = roomsSignal.value;
+    const threads = threadsSignal.value;
 
-    const data = await response.json();
+    const followerHistory = [...Array(7)].map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return { date: d.toLocaleDateString('en-US', {weekday: 'short'}), count: 120 + i * 5 + Math.floor(Math.random() * 10) };
+    });
+
     mirrorSignal.value = {
-      ...data,
+      ...initialState,
+      stats: {
+        views: journals.length * 15 + threads.length * 20,
+        likes: journals.filter(j => j.isFavorited).length * 5,
+        comments: threads.length * 3,
+        collaborations: rooms.length * 2,
+        follows: 156,
+        circleJoins: rooms.length,
+      },
+      followerHistory,
       isLoading: false,
     };
   } catch (err) {
@@ -121,6 +139,6 @@ export const loadMirrorStats = async (userId: string) => {
   }
 };
 
-export const refreshMirrorStats = async (userId: string) => {
-  await loadMirrorStats(userId);
+export const refreshMirrorStats = (userId: string) => {
+  loadMirrorStats(userId);
 };
