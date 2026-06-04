@@ -43,7 +43,7 @@ export default function ActivityHeatmap({ data }: ActivityHeatmapProps) {
   }, [data]);
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+    <div className="rounded-2xl p-6 border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 10px 30px rgba(var(--muse-accent-rgb),0.04)'}}>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
           <span className="text-violet-400">📊</span> 31-Day Activity

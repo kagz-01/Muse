@@ -50,11 +50,11 @@ export default function BlueprintReview() {
       </div>
 
       <div className="relative group">
-        <div className="flex gap-6 overflow-x-auto pb-6 pt-2 px-2 -mx-2 snap-x snap-mandatory scrollbar-hide scroll-smooth">
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6">
           {blueprints.map((bp) => (
             <div
               key={bp.id}
-              className="min-w-[85vw] md:min-w-[400px] max-w-[450px] snap-center shrink-0 bg-[#111318] border border-white/10 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden shadow-2xl transition-all hover:border-canvas-primary/30"
+              className="bg-[#111318] border border-white/10 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden shadow-2xl transition-all hover:border-canvas-primary/30"
             >
             <div className="absolute top-0 right-0 h-full w-1/3 bg-canvas-primary/5 blur-[100px] pointer-events-none" />
 
@@ -175,10 +175,6 @@ export default function BlueprintReview() {
           </div>
           ))}
         </div>
-        
-        {/* Carousel fade edges */}
-        <div className="absolute top-0 bottom-0 left-0 w-12 bg-gradient-to-r from-[#0a0a0a] to-transparent pointer-events-none" />
-        <div className="absolute top-0 bottom-0 right-0 w-12 bg-gradient-to-l from-[#0a0a0a] to-transparent pointer-events-none" />
       </div>
     </div>
   );

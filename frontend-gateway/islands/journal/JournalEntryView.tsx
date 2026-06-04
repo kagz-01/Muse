@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   deleteJournalEntry,
@@ -6,6 +6,8 @@ import {
   type JournalMood,
   journalSignal,
   toggleFavoriteJournal,
+  togglePinJournal,
+  toggleArchiveJournal,
   updateJournalEntry,
 } from "../../signals/journal.ts";
 import { itemsSignal } from "../../signals/items.ts";
@@ -19,6 +21,7 @@ import {
   storeJournalOnBlockchain,
 } from "../../utils/api.ts";
 import { userSignal } from "../../signals/user.ts";
+import EmojiInput from "../../components/ui/EmojiInput.tsx";
 
 const moods = Object.entries(moodConfig) as [
   JournalMood,
@@ -29,52 +32,24 @@ const PROMPTS_BY_MOOD: Record<JournalMood, string[]> = {
   reflective: [
     "What have you been replaying in your mind lately?",
     "What truth are you slowly coming to accept?",
+    "What pattern do you keep noticing in your life?",
   ],
   grounded: [
     "Describe the physical space you're in right now, in detail.",
     "What feels stable right now, and why?",
-  ],
-  anxious: [
-    "Name the thing you're avoiding thinking about.",
-    "Write down every fear, no matter how irrational.",
-  ],
-  grateful: [
-    "Who helped you recently that you haven't thanked?",
-    "What ordinary thing are you most glad exists?",
-  ],
-  melancholic: [
-    "What are you mourning that no one knows about?",
-    "Write a letter to a past version of yourself.",
+    "Name three things anchoring you today.",
   ],
   charged: [
     "What idea is consuming you right now?",
     "Where is this energy trying to take you?",
+    "If you could act on one impulse right now, what would it be?",
   ],
-  empty: [
-    "Write one sentence. Any sentence.",
-    "Describe the last thing you noticed that made you feel anything.",
+  anxious: [
+    "Name the thing you're avoiding thinking about.",
+    "Write down every fear, no matter how irrational.",
+    "What would you tell a friend feeling exactly this way?",
   ],
-  alive: [
-    "What made today feel worth it?",
-    "Write about the last moment you felt completely present.",
-  ],
-  inspired: [
-    "Where did this inspiration come from?",
-    "If you acted on this idea right now, what's the first step?",
-  ],
-  nostalgic: [
-    "What memory keeps coming back?",
-    "What from the past still shapes who you are today?",
-  ],
-  focused: [
-    "What is the one thing that matters most today?",
-    "What would you do if distraction was impossible?",
-  ],
-  tender: [
-    "Who are you feeling soft towards right now?",
-    "What are you being gentle with in yourself?",
-  ],
-  custom: ["What's on your mind?", "Start anywhere."],
+  custom: ["What's on your mind?", "Start anywhere.", "Write freely."],
 };
 
 function formatDate(ts: number): string {
@@ -100,10 +75,13 @@ const fontSizes: Record<FontSize, { label: string; class: string }> = {
 };
 
 export default function JournalEntryView({ entryId }: { entryId: string }) {
-  const entry = journalSignal.value.find((e) => e.id === entryId);
+  // Reactive entry lookup — re-reads signal on every render to handle SSR hydration
+  const entries = journalSignal.value;
+  const entry = useMemo(() => entries.find((e) => e.id === entryId), [entries, entryId]);
   const allItems = itemsSignal.value;
   const rooms = roomsSignal.value;
 
+  const [isHydrated, setIsHydrated] = useState(false);
   const [body, setBody] = useState(entry?.body ?? "");
   const [mood, setMood] = useState<JournalMood>(entry?.mood ?? "reflective");
   const [customMoodText, setCustomMoodText] = useState(entry?.customMood ?? "");
@@ -112,6 +90,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
   const [linkedItemIds, setLinkedItemIds] = useState<string[]>(
     entry?.linkedItemIds ?? [],
   );
+  const [isPublic, setIsPublic] = useState(entry?.isPublic ?? false);
   const [fontSize, setFontSize] = useState<FontSize>("standard");
   const [saved, setSaved] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
@@ -122,6 +101,25 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
   );
   const [showPrompt, setShowPrompt] = useState(!entry?.body);
   const [promptIdx, setPromptIdx] = useState(0);
+
+  // Mark hydration complete so we can distinguish SSR "not found" from real "not found"
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Sync state from entry when it becomes available after hydration
+  useEffect(() => {
+    if (entry && !body && !isHydrated) return; // skip during SSR
+    if (entry) {
+      setBody((prev) => prev || entry.body);
+      setMood(entry.mood);
+      setCustomMoodText(entry.customMood ?? "");
+      setTags(entry.tags);
+      setLinkedItemIds(entry.linkedItemIds);
+      setIsPublic(entry.isPublic);
+      setLastSavedTime(entry.updatedAt);
+    }
+  }, [entry?.id]);
 
   // Web3 & AI Integration States
   const [isProcessing, setIsProcessing] = useState(false);
@@ -159,11 +157,10 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
     }
   };
 
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!entry?.body) textareaRef.current?.focus();
+    // if (!entry?.body) textareaRef.current?.focus();
   }, []);
 
   const save = useCallback(() => {
@@ -174,10 +171,11 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
       customMood: mood === "custom" ? customMoodText : undefined,
       tags,
       linkedItemIds,
+      isPublic,
     });
     setSaved(true);
     setLastSavedTime(Date.now());
-  }, [entry, body, mood, customMoodText, tags, linkedItemIds]);
+  }, [entry, body, mood, customMoodText, tags, linkedItemIds, isPublic]);
 
   useEffect(() => {
     setSaved(false);
@@ -186,9 +184,20 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [body, mood, customMoodText, tags, linkedItemIds, save]);
+  }, [body, mood, customMoodText, tags, linkedItemIds, isPublic, save]);
 
   if (!entry) {
+    // During SSR or before hydration, show a loading state instead of "not found"
+    if (!isHydrated) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-[#0a0a0a]">
+          <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+          <p className="text-sm text-gray-500 font-bold uppercase tracking-widest">
+            Loading Entry...
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#0a0a0a]">
         <p className="text-2xl font-bold text-white tracking-tight">
@@ -308,15 +317,31 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                       {c.label}
                     </button>
                   ))}
+                  
+                  {/* Custom Mood Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMood("custom");
+                      setShowMoodPicker(false);
+                    }}
+                    className={`min-w-[140px] flex-shrink-0 snap-start flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold cursor-pointer transition-all text-left ${
+                      mood === "custom"
+                        ? "text-white bg-white/10 border border-white/20"
+                        : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    }`}
+                  >
+                    <span className="text-xl leading-none">✨</span>
+                    Custom
+                  </button>
                 </div>
                 <div className="border-t border-white/5 pt-5">
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.25em] mb-3 px-1">
-                    Custom Mood
+                    Custom Mood Details
                   </p>
-                  <input
+                  <EmojiInput
                     value={customMoodText}
-                    onInput={(e) =>
-                      setCustomMoodText((e.target as HTMLInputElement).value)}
+                    onInput={setCustomMoodText}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && customMoodText.trim()) {
                         setMood("custom");
@@ -368,6 +393,50 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             />
           </button>
 
+          <button
+            onClick={() => togglePinJournal(entry.id)}
+            type="button"
+            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
+              entry.isPinned
+                ? "border-blue-500/40 bg-blue-500/10 text-blue-500"
+                : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <Icons.Pin
+              size={20}
+              fill={entry.isPinned ? "currentColor" : "transparent"}
+            />
+          </button>
+
+          <button
+            onClick={() => toggleArchiveJournal(entry.id)}
+            type="button"
+            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
+              entry.isArchived
+                ? "border-gray-500/40 bg-gray-500/10 text-gray-400"
+                : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <Icons.Archive size={20} />
+          </button>
+
+          <button
+            onClick={() => setIsPublic(!isPublic)}
+            type="button"
+            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg group relative ${
+              isPublic
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
+                : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            {isPublic ? <Icons.Globe size={20} /> : <Icons.Lock size={20} />}
+            
+            {/* Tooltip */}
+            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[#1a1a1a] border border-white/10 rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+              {isPublic ? "Published to Community" : "Private Entry"}
+            </div>
+          </button>
+
           <div className="w-px h-8 bg-white/10 mx-2" />
 
           <div className="flex items-center gap-5 font-bold text-[10px] uppercase tracking-[0.25em]">
@@ -398,8 +467,8 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
       </header>
 
       {showDelete && (
-        <div className="bg-rose-500/5 border-b border-rose-500/10 px-6 md:px-10 py-6 flex items-center justify-between relative z-20 animate-in slide-in-from-top-2 duration-300 backdrop-blur-md">
-          <div className="flex items-center gap-4 text-[11px] font-bold text-rose-300 uppercase tracking-[0.25em]">
+        <div className="px-6 md:px-10 py-6 flex items-center justify-between relative z-20 animate-in slide-in-from-top-2 duration-300" style={{ background: 'var(--muse-surface)', borderBottom: '1px solid rgba(var(--muse-accent-rgb),0.06)'}}>
+          <div className="flex items-center gap-4 text-[11px] font-bold text-[var(--muse-muted)] uppercase tracking-[0.25em]">
             <Icons.AlertTriangle size={20} className="text-rose-500" />{" "}
             Confirm permanent deletion.
           </div>
@@ -407,14 +476,14 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             <button
               onClick={() => setShowDelete(false)}
               type="button"
-              className="text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors cursor-pointer"
+              className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-white transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={handleDelete}
               type="button"
-              className="px-8 py-3 bg-rose-500 hover:bg-rose-600 text-white text-[11px] font-bold uppercase tracking-[0.3em] rounded-2xl shadow-[0_10px_30px_rgba(244,63,94,0.3)] transition-all cursor-pointer"
+              className="px-6 py-2 border border-rose-500 text-rose-500 text-[11px] font-bold uppercase tracking-[0.3em] rounded-2xl transition-all cursor-pointer bg-white/3 hover:bg-rose-500/8"
             >
               Purge Entry
             </button>
@@ -476,46 +545,42 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
           <div className="mb-16 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
             {aiInsights && (
               <div
-                className="bg-[#111] border border-indigo-500/20 rounded-[2.5rem] p-8 relative overflow-hidden"
-                style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
+                className="rounded-[2.5rem] p-6 relative overflow-hidden border"
+                style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 20px 60px rgba(var(--muse-accent-rgb),0.06)'}}
               >
-                <div className="absolute top-0 right-0 p-8 opacity-10">
-                  <Icons.Aperture size={48} className="text-indigo-400" />
+                <div className="absolute top-0 right-0 p-6 opacity-8">
+                  <Icons.Aperture size={42} className="text-indigo-400" />
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-5 flex items-center gap-2">
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-4 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                   {" "}
                   AI Semantic Analysis
                 </p>
-                <p className="text-gray-300 font-serif italic text-lg leading-relaxed relative z-10">
-                  "{aiInsights.message ||
-                    aiInsights.keywords?.join(", ") ||
-                    aiInsights.status ||
-                    "Your neural patterns have been successfully mapped to the collective consciousness."}"
+                <p className="text-[var(--muse-muted)] font-serif italic text-base leading-relaxed relative z-10">
+                  "{aiInsights.message || aiInsights.keywords?.join(", ") || aiInsights.status || "Your neural patterns have been analyzed."}"
                 </p>
               </div>
             )}
             {blockchainResult && (
               <div
-                className="bg-[#111] border border-violet-500/20 rounded-[2.5rem] p-8 relative overflow-hidden"
-                style={{ boxShadow: `0 20px 60px rgba(139,92,246,0.12)` }}
+                className="rounded-[2.5rem] p-6 relative overflow-hidden border"
+                style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 20px 60px rgba(var(--muse-accent-rgb),0.06)'}}
               >
-                <div className="absolute top-0 right-0 p-8 opacity-10">
-                  <Icons.Lock size={48} className="text-violet-400" />
+                <div className="absolute top-0 right-0 p-6 opacity-8">
+                  <Icons.Lock size={42} className="text-violet-400" />
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-violet-400 mb-5 flex items-center gap-2">
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-violet-400 mb-4 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-violet-400" />
                   {" "}
                   Immutable Resonance
                 </p>
                 <div className="space-y-4 relative z-10">
                   <div className="flex flex-col gap-2">
-                    <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">
+                    <p className="text-[9px] font-bold text-[var(--muse-muted)] uppercase tracking-widest">
                       Transaction ID
                     </p>
-                    <p className="text-[10px] text-gray-400 font-mono bg-white/5 p-2 rounded-lg truncate">
-                      {blockchainResult.solana_transaction_id ||
-                        "Transaction unavailable"}
+                    <p className="text-[10px] text-[var(--muse-muted)] font-mono bg-white/5 p-2 rounded-lg truncate">
+                      {blockchainResult.solana_transaction_id || "Transaction unavailable"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 text-[10px] text-emerald-400 font-bold uppercase tracking-[0.2em]">
@@ -559,11 +624,11 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
           </div>
         )}
 
-        <textarea
-          ref={textareaRef}
+        <EmojiInput
           value={body}
-          onInput={(e) => setBody((e.target as HTMLTextAreaElement).value)}
+          onInput={setBody}
           placeholder="Start writing..."
+          multiline
           className={`flex-1 w-full min-h-[60vh] bg-transparent text-white/95 resize-none outline-none font-serif leading-[2.1] placeholder-gray-800 transition-all tracking-wide ${
             fontSizes[fontSize].class
           } custom-scrollbar`}
@@ -673,10 +738,9 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                     </button>
                   </span>
                 ))}
-                <input
+                <EmojiInput
                   value={tagInput}
-                  onInput={(e) =>
-                    setTagInput((e.target as HTMLInputElement).value)}
+                  onInput={setTagInput}
                   onKeyDown={handleAddTag}
                   placeholder="New tag..."
                   className="bg-transparent text-[11px] font-bold text-gray-500 placeholder-gray-800 outline-none w-24 py-2"

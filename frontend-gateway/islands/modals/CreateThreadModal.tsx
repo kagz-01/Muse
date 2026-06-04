@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
+import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import {
   addThread,
 } from "../../signals/threads.ts";
@@ -178,11 +179,10 @@ export default function CreateThreadModal({ onClose }: Props) {
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Thread Title *
             </label>
-            <input
-              ref={titleRef}
+            <EmojiInput
               value={title}
-              onInput={(e) => {
-                setTitle((e.target as HTMLInputElement).value);
+              onInput={(v) => {
+                setTitle(v);
                 setError("");
               }}
               onKeyDown={(e) => {
@@ -201,11 +201,11 @@ export default function CreateThreadModal({ onClose }: Props) {
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Core Thesis
             </label>
-            <textarea
+            <EmojiInput
               value={thesis}
-              onInput={(e) =>
-                setThesis((e.target as HTMLTextAreaElement).value)}
+              onInput={setThesis}
               placeholder="What core question or idea does this thread explore?"
+              multiline
               rows={2}
               className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm font-serif italic leading-relaxed resize-none"
             />
@@ -216,11 +216,11 @@ export default function CreateThreadModal({ onClose }: Props) {
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Brief Description
             </label>
-            <textarea
+            <EmojiInput
               value={description}
-              onInput={(e) =>
-                setDescription((e.target as HTMLTextAreaElement).value)}
+              onInput={setDescription}
               placeholder="A short summary of what you're gathering here…"
+              multiline
               rows={2}
               className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm leading-relaxed resize-none"
             />
@@ -233,12 +233,12 @@ export default function CreateThreadModal({ onClose }: Props) {
                 Synthesis Format
               </label>
               <div className="relative">
-                <Icons.Type size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input
+                <EmojiInput
                   value={format}
-                  onInput={(e) => setFormat((e.target as HTMLInputElement).value)}
+                  onInput={setFormat}
                   placeholder="e.g. Technical Spec, Poem"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white text-sm font-medium focus:outline-none focus:border-canvas-primary/50 transition-all"
+                  iconLeft={<Icons.Type size={14} className="text-gray-500" />}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm font-medium focus:outline-none focus:border-canvas-primary/50 transition-all"
                 />
               </div>
               <div className="flex gap-2 mt-3 flex-wrap">
@@ -283,13 +283,13 @@ export default function CreateThreadModal({ onClose }: Props) {
               Aesthetic Theme (Optional)
             </label>
             <div className="relative">
-              <Icons.Palette size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-              <input
-                value={theme}
-                onInput={(e) => setTheme((e.target as HTMLInputElement).value)}
-                placeholder="e.g. Cyberpunk, Minimalist, Brutalist"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
-              />
+            <EmojiInput
+              value={theme}
+              onInput={setTheme}
+              placeholder="e.g. Cyberpunk, Minimalist, Brutalist"
+              iconLeft={<Icons.Palette size={14} className="text-gray-500" />}
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
+            />
             </div>
           </div>
 
@@ -300,13 +300,13 @@ export default function CreateThreadModal({ onClose }: Props) {
                 Generative Mood
               </label>
             </div>
-            <div className="relative mb-4">
-              <Icons.Sparkles size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-canvas-primary/60" />
-              <input
+            <div className="mb-4">
+              <EmojiInput
                 value={mood}
-                onInput={(e) => setMood((e.target as HTMLInputElement).value)}
+                onInput={setMood}
                 placeholder="Type any mood..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all"
+                iconLeft={<Icons.Sparkles size={14} className="text-canvas-primary/60" />}
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all"
               />
             </div>
             <div className="grid grid-cols-5 gap-2">

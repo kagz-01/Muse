@@ -3,7 +3,9 @@ import * as Icons from "lucide-preact";
 import {
   removeItemFromThread,
   threadsSignal,
-  toggleThreadPrivacy,
+  toggleFavoriteThread,
+  togglePinThread,
+  toggleArchiveThread,
 } from "../../signals/threads.ts";
 import { MOOD_OPTIONS, roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
@@ -183,6 +185,45 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                   {thread.sourceRoomIds.length} Rooms
                 </span>
               </div>
+              
+              <div className="flex items-center gap-2 border-l border-white/10 pl-3 ml-1">
+                <button
+                  onClick={() => toggleFavoriteThread(thread.id)}
+                  type="button"
+                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer backdrop-blur-md border shadow-lg ${
+                    thread.isFavorited
+                      ? "border-amber-500/40 bg-amber-500/10 text-amber-500"
+                      : "bg-black/50 border-white/10 text-gray-400 hover:text-white"
+                  }`}
+                >
+                  <Icons.Star size={14} fill={thread.isFavorited ? "currentColor" : "transparent"} />
+                </button>
+
+                <button
+                  onClick={() => togglePinThread(thread.id)}
+                  type="button"
+                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer backdrop-blur-md border shadow-lg ${
+                    thread.isPinned
+                      ? "border-blue-500/40 bg-blue-500/10 text-blue-500"
+                      : "bg-black/50 border-white/10 text-gray-400 hover:text-white"
+                  }`}
+                >
+                  <Icons.Pin size={14} fill={thread.isPinned ? "currentColor" : "transparent"} />
+                </button>
+
+                <button
+                  onClick={() => toggleArchiveThread(thread.id)}
+                  type="button"
+                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer backdrop-blur-md border shadow-lg ${
+                    thread.isArchived
+                      ? "border-gray-500/40 bg-gray-500/10 text-gray-400"
+                      : "bg-black/50 border-white/10 text-gray-400 hover:text-white"
+                  }`}
+                >
+                  <Icons.Archive size={14} />
+                </button>
+              </div>
+
               <button
                 onClick={() => toggleThreadPrivacy(thread.id)}
                 type="button"

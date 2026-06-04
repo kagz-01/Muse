@@ -1,14 +1,5 @@
 import { JournalEntry } from "../../signals/journal.ts";
-import {
-  ArrowRight,
-  Eye,
-  Heart,
-  Lock,
-  MessageCircle,
-  Share2,
-  User,
-  Zap,
-} from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 interface CommunityCardProps {
   entry: JournalEntry;
@@ -34,16 +25,8 @@ export function CommunityCard({
   const moodConfig: Record<string, { bg: string; text: string }> = {
     reflective: { bg: "from-indigo-600/40", text: "text-indigo-300" },
     grounded: { bg: "from-green-600/40", text: "text-green-300" },
+    charged: { bg: "from-cyan-600/40", text: "text-cyan-300" },
     anxious: { bg: "from-red-600/40", text: "text-red-300" },
-    grateful: { bg: "from-blue-600/40", text: "text-blue-300" },
-    melancholic: { bg: "from-slate-600/40", text: "text-slate-300" },
-    charged: { bg: "from-yellow-600/40", text: "text-yellow-300" },
-    empty: { bg: "from-gray-600/40", text: "text-gray-300" },
-    alive: { bg: "from-emerald-600/40", text: "text-emerald-300" },
-    inspired: { bg: "from-purple-600/40", text: "text-purple-300" },
-    nostalgic: { bg: "from-pink-600/40", text: "text-pink-300" },
-    focused: { bg: "from-cyan-600/40", text: "text-cyan-300" },
-    tender: { bg: "from-rose-600/40", text: "text-rose-300" },
     custom: { bg: "from-white/20", text: "text-white/80" },
   };
 
@@ -59,13 +42,14 @@ export function CommunityCard({
 
   return (
     <div
-      class={`group rounded-2xl overflow-hidden bg-gradient-to-br ${moodStyle.bg} to-transparent border border-white/10 hover:border-white/20 p-6 flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:shadow-white/10 cursor-pointer`}
+      class={`group rounded-2xl overflow-hidden p-6 flex flex-col h-full transition-all duration-300 cursor-pointer`}
+      style={{ background: 'var(--muse-surface)', border: '1px solid var(--muse-border)' }}
       onClick={onView}
     >
       {/* Author Info */}
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-canvas-primary to-purple-600 flex items-center justify-center flex-shrink-0">
+          <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
             {authorAvatar
               ? (
                 <img
@@ -74,7 +58,7 @@ export function CommunityCard({
                   class="w-full h-full rounded-full"
                 />
               )
-              : <User size={18} class="text-white" />}
+              : <Icons.User size={18} class="text-white" />}
           </div>
           <div>
             <p class="font-medium text-white">{authorName}</p>
@@ -85,7 +69,7 @@ export function CommunityCard({
         </div>
         {isSynthesis && (
           <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-            <Zap size={16} class="text-amber-400" />
+            <Icons.Zap size={16} class="text-amber-400" />
           </div>
         )}
       </div>
@@ -132,11 +116,11 @@ export function CommunityCard({
       <div class="flex items-center justify-between py-4 border-t border-white/10 mb-4">
         <div class="flex gap-4 text-xs text-white/60">
           <div class="flex items-center gap-1">
-            <Eye size={14} />
+            <Icons.Eye size={14} />
             <span>{entry.viewCount || 0}</span>
           </div>
           <div class="flex items-center gap-1">
-            <Heart
+            <Icons.Heart
               size={14}
               class={entry.isFavorited ? "fill-red-500 text-red-500" : ""}
             />
@@ -153,6 +137,7 @@ export function CommunityCard({
       {/* Actions */}
       <div class="flex gap-2">
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onLike?.();
@@ -163,7 +148,7 @@ export function CommunityCard({
               : "bg-white/10 text-white/60 hover:bg-white/20"
           }`}
         >
-          <Heart size={14} class={entry.isFavorited ? "fill-current" : ""} />
+          <Icons.Heart size={14} class={entry.isFavorited ? "fill-current" : ""} />
           <span class="text-xs font-medium">Like</span>
         </button>
         <button
@@ -171,16 +156,18 @@ export function CommunityCard({
             e.stopPropagation();
             onShare?.();
           }}
+          type="button"
           class="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition-all"
         >
-          <Share2 size={14} />
+          <Icons.Share2 size={14} />
           <span class="text-xs font-medium">Share</span>
         </button>
         <button
           onClick={onView}
+          type="button"
           class="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-canvas-primary/20 hover:bg-canvas-primary/30 text-canvas-primary hover:text-canvas-primary transition-all"
         >
-          <ArrowRight size={14} />
+          <Icons.ArrowRight size={14} />
           <span class="text-xs font-medium">Read</span>
         </button>
       </div>
@@ -188,7 +175,7 @@ export function CommunityCard({
       {/* Vault Badge Overlay */}
       {isVaulted && (
         <div class="absolute top-6 right-6 w-12 h-12 rounded-xl bg-black/40 backdrop-blur-sm flex items-center justify-center">
-          <Lock size={20} class="text-amber-400" />
+          <Icons.Lock size={20} class="text-amber-400" />
         </div>
       )}
     </div>
@@ -228,6 +215,7 @@ export function CommunityFeed({
       {onLoadMore && entries.length > 0 && (
         <div class="flex justify-center pt-6">
           <button
+            type="button"
             onClick={onLoadMore}
             disabled={isLoading}
             class="px-8 py-3 rounded-xl bg-canvas-primary/20 hover:bg-canvas-primary/30 text-canvas-primary font-semibold transition-all disabled:opacity-50"

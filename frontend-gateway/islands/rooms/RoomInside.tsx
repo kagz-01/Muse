@@ -11,6 +11,7 @@ import {
 import { addItem, deleteItem, itemsSignal } from "../../signals/items.ts";
 import { addThread, type ThreadMood } from "../../signals/threads.ts";
 import EditRoomModal from "../modals/EditRoomModal.tsx";
+import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import ArtifactExtractor from "../../components/rooms/ArtifactExtractor.tsx";
 import AnalysisIndicator from "../../components/ai-feedback/AnalysisIndicator.tsx";
 import { setSystemStatus } from "../../signals/intelligence.ts";
@@ -67,15 +68,6 @@ const themeMapping: Record<RoomTheme, {
     fill: "bg-slate-500",
   },
 };
-
-const paletteColors: { name: RoomTheme; hex: string }[] = [
-  { name: "indigo", hex: "#6366f1" },
-  { name: "emerald", hex: "#10b981" },
-  { name: "rose", hex: "#f43f5e" },
-  { name: "amber", hex: "#f59e0b" },
-  { name: "cyan", hex: "#06b6d4" },
-  { name: "slate", hex: "#64748b" },
-];
 
 export default function RoomInside({ roomId }: { roomId: string }) {
   const room = roomsSignal.value.find((r) => r.id === roomId);
@@ -858,14 +850,13 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     </p>
 
                     <div className="relative max-w-2xl mx-auto">
-                      <textarea
+                      <EmojiInput
                         value={dialogueInput}
-                        onInput={(e) =>
-                          setDialogueInput(
-                            (e.target as HTMLTextAreaElement).value,
-                          )}
+                        onInput={setDialogueInput}
                         placeholder="What patterns are emerging in this room?"
-                        className="w-full bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-[2.5rem] px-10 py-8 text-[var(--muse-text)] placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-[var(--muse-text)]/[0.08] transition-all min-h-[160px] text-xl font-serif italic outline-none"
+                        multiline
+                        rows={5}
+                        className="w-full bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 rounded-[2.5rem] px-10 py-8 text-[var(--muse-text)] placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-[var(--muse-text)]/[0.08] transition-all min-h-[160px] text-xl font-serif italic outline-none resize-none"
                       />
                       <button
                         type="button"

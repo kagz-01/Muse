@@ -9,7 +9,7 @@ interface LinkParseResult {
 }
 
 // Mock link parser - in production, would use a library like metascraper or open-graph-scraper
-const parseLinkMetadata = async (url: string): Promise<LinkParseResult> => {
+const parseLinkMetadata = (url: string): Promise<LinkParseResult> => {
   try {
     const urlObj = new URL(url);
     const domain = urlObj.hostname;
@@ -55,19 +55,19 @@ const parseLinkMetadata = async (url: string): Promise<LinkParseResult> => {
     // Check if domain matches any mock
     for (const [mockDomain, response] of Object.entries(mockResponses)) {
       if (domain.includes(mockDomain)) {
-        return response;
+        return Promise.resolve(response);
       }
     }
 
     // Generic fallback for unknown URLs
-    return {
+    return Promise.resolve({
       title: urlObj.hostname,
       description: "Link content",
       url,
       source: domain,
       type: "unknown",
-    };
-  } catch (err) {
+    });
+  } catch (_err) {
     throw new Error("Invalid URL provided");
   }
 };

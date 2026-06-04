@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { Award, Calendar, TrendingUp, Users, Zap } from "lucide-preact";
+import * as Icons from "lucide-preact";
 
 interface UserStats {
   userId: string;
@@ -45,7 +45,7 @@ const moodColors: Record<string, string> = {
   tender: "bg-orange-500/20 text-orange-300",
 };
 
-export function UserProfile({ userId, onClose }: UserProfileProps) {
+export function UserProfile({ userId }: UserProfileProps) {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -152,37 +152,37 @@ export function UserProfile({ userId, onClose }: UserProfileProps) {
             {/* Stats Grid */}
             <div class="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4">
               <StatBox
-                icon={<Zap size={18} />}
+                icon={<Icons.Zap size={18} />}
                 label="Current Streak"
                 value={stats.currentStreak}
                 unit="days"
               />
               <StatBox
-                icon={<Award size={18} />}
+                icon={<Icons.Award size={18} />}
                 label="Longest Streak"
                 value={stats.longestStreak}
                 unit="days"
               />
               <StatBox
-                icon={<TrendingUp size={18} />}
+                icon={<Icons.TrendingUp size={18} />}
                 label="Public Entries"
                 value={stats.publicEntries}
                 unit="posts"
               />
               <StatBox
-                icon={<Users size={18} />}
+                icon={<Icons.Users size={18} />}
                 label="Community Views"
                 value={stats.communityViews}
                 unit="views"
               />
               <StatBox
-                icon={<Zap size={18} />}
+                icon={<Icons.Zap size={18} />}
                 label="Total Synthesis"
                 value={stats.totalSynthesis}
                 unit="created"
               />
               <StatBox
-                icon={<Calendar size={18} />}
+                icon={<Icons.Calendar size={18} />}
                 label="Member Since"
                 value={formatDate(stats.joinedAt)}
               />
@@ -196,7 +196,7 @@ export function UserProfile({ userId, onClose }: UserProfileProps) {
           <div class="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
             <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <span class="w-8 h-8 rounded-lg bg-canvas-primary/20 flex items-center justify-center">
-                <Zap size={16} class="text-canvas-primary" />
+                <Icons.Zap size={16} class="text-canvas-primary" />
               </span>
               Top Moods
             </h2>
@@ -232,7 +232,7 @@ export function UserProfile({ userId, onClose }: UserProfileProps) {
           <div class="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
             <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <span class="w-8 h-8 rounded-lg bg-canvas-primary/20 flex items-center justify-center">
-                <TrendingUp size={16} class="text-canvas-primary" />
+                <Icons.TrendingUp size={16} class="text-canvas-primary" />
               </span>
               Top Tags
             </h2>
@@ -263,13 +263,14 @@ export function UserProfile({ userId, onClose }: UserProfileProps) {
         <div class="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
           <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
             <span class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-              <Zap size={16} class="text-amber-400" />
+              <Icons.Zap size={16} class="text-amber-400" />
             </span>
             Recent Synthesis
           </h2>
           <div class="space-y-3">
             {stats.recentSynthesis.map((synthesis) => (
               <button
+                type="button"
                 key={synthesis.id}
                 class="w-full text-left p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all flex items-start justify-between group"
               >

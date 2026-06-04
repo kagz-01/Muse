@@ -1,24 +1,24 @@
-import { useMemo, useState } from "preact/hooks";
+import { useMemo, useState, useEffect } from "preact/hooks";
 import {
   addEntry,
-  dailyWordGoalSignal,
-  getJournalStreak,
   getJournalTitle,
   getMilestoneUnlocked,
-  getReflectionEntries,
   getStreakData,
-  getSynthesisEntries,
   getTodayWordCount,
   type JournalEntry,
   type JournalMood,
   journalSignal,
-  streakMetadataSignal,
+  toggleFavoriteJournal,
+  togglePinJournal,
+  toggleArchiveJournal,
 } from "../../signals/journal.ts";
 import StreakCard from "./StreakCard.tsx";
 import MilestoneNotification from "./MilestoneNotification.tsx";
 import ActivityHeatmap from "./ActivityHeatmap.tsx";
 import MoodDistribution from "./MoodDistribution.tsx";
 import * as Icons from "lucide-preact";
+import EmojiInput from "../../components/ui/EmojiInput.tsx";
+import { ExportModal } from "./ExportModal.tsx";
 
 export const moodConfig: Record<
   JournalMood,
@@ -36,50 +36,13 @@ export const moodConfig: Record<
     emoji: "🌿",
     hex: "#10b981",
   },
-  anxious: { label: "Anxious", color: "#f43f5e", emoji: "⚡", hex: "#f43f5e" },
-  grateful: {
-    label: "Grateful",
-    color: "#f59e0b",
-    emoji: "✨",
-    hex: "#f59e0b",
-  },
-  melancholic: {
-    label: "Melancholic",
-    color: "#64748b",
-    emoji: "🌧️",
-    hex: "#64748b",
-  },
   charged: { label: "Charged", color: "#06b6d4", emoji: "🌊", hex: "#06b6d4" },
-  empty: { label: "Empty", color: "#374151", emoji: "○", hex: "#374151" },
-  alive: { label: "Alive", color: "#84cc16", emoji: "🔥", hex: "#84cc16" },
-  inspired: {
-    label: "Inspired",
-    color: "#e879f9",
-    emoji: "💡",
-    hex: "#e879f9",
-  },
-  nostalgic: {
-    label: "Nostalgic",
-    color: "#fb923c",
-    emoji: "📷",
-    hex: "#fb923c",
-  },
-  focused: { label: "Focused", color: "#38bdf8", emoji: "🎯", hex: "#38bdf8" },
-  tender: { label: "Tender", color: "#f472b6", emoji: "🌸", hex: "#f472b6" },
-  custom: { label: "Other", color: "#9ca3af", emoji: "◈", hex: "#9ca3af" },
+  anxious: { label: "Anxious", color: "#f43f5e", emoji: "⚡", hex: "#f43f5e" },
+  custom: { label: "Custom", color: "#6b7280", emoji: "✨", hex: "#6b7280" },
 };
 
-const PROMPTS: string[] = [
-  "What's one thing you observed today that felt 'out of place'?",
-  "If your current mood was a weather system, what would it look like?",
-  "What idea are you currently protecting from being finished?",
-  "Who is someone you want to be more like, and why?",
-  "What is the most beautiful thing you saw today?",
-  "What are you waiting for, and is it worth the wait?",
-];
-
 type MoodStat = {
-  mood: JournalMood;
+  mood: string;
   label: string;
   emoji: string;
   color: string;
@@ -110,10 +73,9 @@ function excerpt(body: string, chars = 160): string {
 export default function JournalGallery() {
   const entries: JournalEntry[] = journalSignal.value;
   const streakData = getStreakData();
-  const dailyWordGoal = dailyWordGoalSignal.value;
 
   const [search, setSearch] = useState("");
-  const [filterMood, setFilterMood] = useState<JournalMood | "all">("all");
+  const [filterMood, setFilterMood] = useState<string>("all");
   const [filterVisibility, setFilterVisibility] = useState<
     "all" | "public" | "private"
   >("all");
@@ -123,23 +85,35 @@ export default function JournalGallery() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(true);
   const [milestone, setMilestone] = useState<number | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const todayWords = getTodayWordCount();
 
   const moodStats = useMemo<MoodStat[]>(() => {
-    const stats: Partial<Record<JournalMood, number>> = {};
+    const stats: Record<string, number> = {};
     entries.forEach((entry: JournalEntry) => {
-      stats[entry.mood] = (stats[entry.mood] || 0) + 1;
+      const m = entry.mood === "custom" && entry.customMood ? entry.customMood : entry.mood;
+      stats[m] = (stats[m] || 0) + 1;
     });
     return Object.entries(stats)
-      .map(([mood, count]) => ({
-        mood: mood as JournalMood,
-        label: moodConfig[mood as JournalMood].label,
-        emoji: moodConfig[mood as JournalMood].emoji,
-        color: moodConfig[mood as JournalMood].hex,
-        count: count || 0,
-      }))
-      .sort((a, b) => b.count - a.count) as MoodStat[];
+      .map(([mood, count]) => {
+        const isDefault = mood in moodConfig && mood !== "custom";
+        const cfg = isDefault ? moodConfig[mood as JournalMood] : moodConfig["custom"];
+        return {
+          mood,
+          label: isDefault ? cfg.label : mood,
+          emoji: isDefault ? cfg.emoji : "✨",
+          color: cfg.hex,
+          count: count || 0,
+        };
+      })
+      .sort((a, b) => b.count - a.count);
   }, [entries]);
 
   const heatmap = useMemo<HeatmapDay[]>(() => {
@@ -157,6 +131,16 @@ export default function JournalGallery() {
     return days;
   }, [entries]);
 
+  const uniqueCustomMoods = useMemo(() => {
+    const custom = new Set<string>();
+    entries.forEach((e) => {
+      if (e.mood === "custom" && e.customMood) {
+        custom.add(e.customMood);
+      }
+    });
+    return Array.from(custom);
+  }, [entries]);
+
   const filtered = useMemo<JournalEntry[]>(
     () =>
       entries.filter((entry: JournalEntry) => {
@@ -166,7 +150,7 @@ export default function JournalGallery() {
           entry.tags.some((tag: string) =>
             tag.toLowerCase().includes(search.toLowerCase())
           );
-        const matchMood = filterMood === "all" || entry.mood === filterMood;
+        const matchMood = filterMood === "all" || entry.mood === filterMood || (entry.mood === "custom" && entry.customMood === filterMood);
         const matchFav = !showFavorites || entry.isFavorited;
         const matchVisibility = filterVisibility === "all" ||
           (filterVisibility === "public" && entry.isPublic) ||
@@ -182,26 +166,38 @@ export default function JournalGallery() {
   );
 
   const handleNewEntry = () => {
-    const entry = addEntry();
-    globalThis.location.href = `/journal/${entry.id}`;
+    try {
+      const entry = addEntry();
+      globalThis.location.assign(`/journal/${entry.id}`);
+    } catch (e: any) {
+      alert("Error creating entry: " + e.message);
+    }
   };
 
-  // Check for milestone on mount/update
-  useMemo(() => {
+  // Check for milestone when streak changes
+  useEffect(() => {
     const unlocked = getMilestoneUnlocked();
     if (unlocked) {
       setMilestone(unlocked);
     }
   }, [streakData.currentStreak]);
 
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center items-center">
+        <div className="w-10 h-10 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (entries.length === 0) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center items-center px-6 pb-24">
-        <div className="w-24 h-24 rounded-4xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-10 shadow-[0_0_80px_rgba(139,92,246,0.1)]">
-          <span className="text-violet-400 text-4xl">📖</span>
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center items-center px-6 pb-12">
+        <div className="w-20 h-20 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(139,92,246,0.1)]">
+          <span className="text-violet-400 text-3xl">📖</span>
         </div>
-        <h1 className="text-4xl font-bold mb-4 text-white">Your Journal</h1>
-        <p className="text-gray-400 font-serif italic text-lg max-w-md text-center leading-relaxed mb-12">
+        <h1 className="text-3xl font-bold mb-3 text-white">Your Journal</h1>
+        <p className="text-gray-400 font-serif italic text-base max-w-md text-center leading-relaxed mb-8">
           A private space for raw thought, emotional tracking, and quiet
           reflection. Completely local. Completely yours.
         </p>
@@ -222,23 +218,23 @@ export default function JournalGallery() {
 
       {/* Hero Section */}
       <div className="w-full px-6 md:px-10">
-        <section className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-10 md:p-16 shadow-2xl">
+        <section className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0d0d0d] p-6 md:p-10 shadow-xl">
           <div className="absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l from-violet-500/10 to-transparent blur-3xl pointer-events-none" />
           <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 space-y-10">
-            <div>
-              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-violet-400">
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400 mb-4" style={{ background: 'var(--muse-surface-soft)', borderColor: 'var(--muse-border)'}}>
                 <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
                 Contemplation Layer
               </div>
-              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight leading-tight text-white">
+              <h1 className="text-2xl md:text-4xl font-bold tracking-tight leading-tight text-[var(--muse-text)] mb-4">
                 Quiet Your
-                <span className="block italic font-serif text-violet-400 bg-gradient-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent pb-4 pr-4">
+                <span className="inline-block italic font-serif text-violet-400 bg-gradient-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent px-2">
                   Mental Noise.
                 </span>
               </h1>
-              <p className="mt-8 max-w-4xl text-gray-400 text-lg md:text-xl leading-relaxed font-serif italic border-l-2 border-white/10 pl-6">
+              <p className="max-w-2xl text-[var(--muse-muted)] text-sm leading-relaxed font-serif italic border-l-2 border-white/5 pl-4">
                 Your Journal is the sanctuary for raw thought. This is where
                 patterns from your collection are tested against your intuition
                 before they become creation.
@@ -246,36 +242,36 @@ export default function JournalGallery() {
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="px-5 py-4 bg-white/5 border border-white/10 rounded-2xl">
-                <p className="text-white font-bold text-2xl leading-none">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="px-4 py-3 rounded-xl border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 12px 40px rgba(var(--muse-accent-rgb),0.06)'}}>
+                <p className="text-[var(--muse-text)] font-bold text-xl leading-none">
                   {streakData.currentStreak}
                 </p>
-                <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-2">
+                <p className="text-[9px] text-[var(--muse-muted)] uppercase tracking-widest mt-1.5">
                   Current Streak
                 </p>
               </div>
-              <div className="px-5 py-4 bg-white/5 border border-white/10 rounded-2xl">
-                <p className="text-white font-bold text-2xl leading-none">
+              <div className="px-4 py-3 rounded-xl border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 12px 40px rgba(var(--muse-accent-rgb),0.06)'}}>
+                <p className="text-[var(--muse-text)] font-bold text-xl leading-none">
                   {streakData.longestStreak}
                 </p>
-                <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-2">
+                <p className="text-[9px] text-[var(--muse-muted)] uppercase tracking-widest mt-1.5">
                   Best Streak
                 </p>
               </div>
-              <div className="px-5 py-4 bg-white/5 border border-white/10 rounded-2xl">
-                <p className="text-white font-bold text-2xl leading-none">
+              <div className="px-4 py-3 rounded-xl border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 12px 40px rgba(var(--muse-accent-rgb),0.06)'}}>
+                <p className="text-[var(--muse-text)] font-bold text-xl leading-none">
                   {todayWords}
                 </p>
-                <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-2">
+                <p className="text-[9px] text-[var(--muse-muted)] uppercase tracking-widest mt-1.5">
                   Words Today
                 </p>
               </div>
-              <div className="px-5 py-4 bg-white/5 border border-white/10 rounded-2xl">
-                <p className="text-white font-bold text-2xl leading-none">
+              <div className="px-4 py-3 rounded-xl border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 12px 40px rgba(var(--muse-accent-rgb),0.06)'}}>
+                <p className="text-[var(--muse-text)] font-bold text-xl leading-none">
                   {streakData.totalDays}
                 </p>
-                <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-2">
+                <p className="text-[9px] text-[var(--muse-muted)] uppercase tracking-widest mt-1.5">
                   Total Days
                 </p>
               </div>
@@ -290,7 +286,7 @@ export default function JournalGallery() {
             <button
               onClick={handleNewEntry}
               type="button"
-              className="w-full md:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-10 py-5 text-[12px] font-bold uppercase tracking-[0.2em] text-black shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-all hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(255,255,255,0.25)] active:scale-95 cursor-pointer"
+              className="w-full md:w-auto inline-flex items-center justify-center gap-3 rounded-2xl px-8 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--muse-text)] border border-[var(--muse-border)] transition-all hover:shadow-[0_12px_30px_rgba(var(--muse-accent-rgb),0.06)] active:scale-98 cursor-pointer bg-[var(--muse-surface-soft)]"
             >
               <Icons.Plus size={16} /> New Journal Entry
             </button>
@@ -317,9 +313,9 @@ export default function JournalGallery() {
             <div className="absolute left-8 text-gray-500 group-focus-within:text-violet-400 transition-colors">
               <Icons.Search size={20} />
             </div>
-            <input
+            <EmojiInput
               value={search}
-              onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
+              onInput={setSearch}
               placeholder="Search raw thoughts, patterns, depths…"
               className="w-full bg-transparent pl-20 pr-10 py-6 text-white text-lg font-bold tracking-tight placeholder-gray-700 focus:outline-none"
             />
@@ -406,6 +402,31 @@ export default function JournalGallery() {
             <Icons.BarChart3 size={12} /> Heatmap
           </button>
 
+          <button
+            onClick={() => {
+              if (isSyncing) return;
+              setIsSyncing(true);
+              setTimeout(() => setIsSyncing(false), 2000);
+            }}
+            type="button"
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
+              isSyncing
+                ? "bg-blue-500/20 border-blue-500/40 text-blue-400"
+                : "bg-white/5 border-white/10 text-gray-500 hover:border-white/25"
+            }`}
+          >
+            <Icons.RefreshCw size={12} className={isSyncing ? "animate-spin" : ""} /> 
+            {isSyncing ? "Syncing..." : "Data Sync"}
+          </button>
+
+          <button
+            onClick={() => setShowExportModal(true)}
+            type="button"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border bg-white/5 border-white/10 text-gray-500 hover:border-white/25 transition-all cursor-pointer"
+          >
+            <Icons.Download size={12} /> Export
+          </button>
+
           <div className="w-px h-6 bg-white/5" />
 
           {/* Entry Type Filter */}
@@ -444,10 +465,10 @@ export default function JournalGallery() {
         <button
           onClick={() => setFilterMood("all")}
           type="button"
-          className={`px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
+          className={`px-3 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
             filterMood === "all"
-              ? "bg-canvas-primary/20 border-canvas-primary/50 text-canvas-primary"
-              : "bg-white/5 border-white/10 text-gray-500 hover:border-white/25"
+              ? "bg-canvas-primary/12 border-canvas-primary/40 text-canvas-primary"
+              : "bg-[var(--muse-surface)] border-[var(--muse-border)] text-[var(--muse-muted)] hover:border-white/20"
           }`}
         >
           All Moods
@@ -462,21 +483,36 @@ export default function JournalGallery() {
               key={mood}
               onClick={() => setFilterMood(filterMood === mood ? "all" : mood)}
               type="button"
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
                 filterMood === mood
                   ? "border-opacity-100 text-opacity-100"
-                  : "opacity-60 hover:opacity-100"
+                  : "opacity-80 hover:opacity-100"
               }`}
               style={filterMood === mood
                 ? {
-                  backgroundColor: cfg.hex + "22",
-                  borderColor: cfg.hex,
+                  backgroundColor: cfg.hex + "18",
+                  borderColor: cfg.hex + "44",
                   color: cfg.hex,
                 }
                 : undefined}
             >
               <span>{cfg.emoji}</span>
               {cfg.label}
+            </button>
+          ))}
+          {uniqueCustomMoods.map((customMood) => (
+            <button
+              key={customMood}
+              onClick={() => setFilterMood(filterMood === customMood ? "all" : customMood)}
+              type="button"
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
+                filterMood === customMood
+                  ? "border-opacity-100 text-opacity-100 bg-[#6b7280]/20 border-[#6b7280] text-[#6b7280]"
+                  : "opacity-60 hover:opacity-100 bg-white/5 border-white/10 text-gray-500 hover:border-white/25"
+              }`}
+            >
+              <span>✨</span>
+              {customMood}
             </button>
           ))}
       </div>
@@ -498,12 +534,15 @@ export default function JournalGallery() {
           : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((entry: JournalEntry) => {
-                const cfg = moodConfig[entry.mood];
+                const isCustom = entry.mood === "custom" && entry.customMood;
+                const cfg = moodConfig[entry.mood as JournalMood] || moodConfig["reflective"];
+                const emoji = isCustom ? "✨" : cfg.emoji;
+                const label = isCustom ? entry.customMood : cfg.label;
                 const title = getJournalTitle(entry);
                 return (
-                  <a
+                  <div
                     key={entry.id}
-                    href={`/journal/${entry.id}`}
+                    onClick={() => globalThis.location.href = `/journal/${entry.id}`}
                     className="group relative bg-gradient-to-br border rounded-[2.5rem] p-8 cursor-pointer transition-all duration-300 overflow-hidden shadow-xl hover:shadow-2xl hover:scale-105 h-full flex flex-col"
                     style={{
                       backgroundColor: cfg.hex + "15",
@@ -526,9 +565,12 @@ export default function JournalGallery() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <span className="text-3xl animate-pulse">
-                            {cfg.emoji}
+                            {emoji}
                           </span>
                           <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                              {label}
+                            </p>
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
                               {entry.isPublic ? "👁️ Public" : "🔒 Private"}
                             </p>
@@ -537,7 +579,7 @@ export default function JournalGallery() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 z-20">
                           {entry.vault?.isVaulted && (
                             <div className="px-2 py-1 rounded-full bg-amber-500/20 border border-amber-500/30">
                               <Icons.Lock
@@ -556,12 +598,36 @@ export default function JournalGallery() {
                               />
                             </div>
                           )}
-                          {entry.isFavorited && (
-                            <Icons.Star
-                              size={18}
-                              className="text-amber-400 fill-amber-400"
-                            />
-                          )}
+                          
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); toggleFavoriteJournal(entry.id); }}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                              entry.isFavorited ? "bg-amber-500/10 text-amber-500" : "text-gray-500 hover:text-white hover:bg-white/10"
+                            }`}
+                          >
+                            <Icons.Star size={14} fill={entry.isFavorited ? "currentColor" : "transparent"} />
+                          </button>
+                          
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); togglePinJournal(entry.id); }}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                              entry.isPinned ? "bg-blue-500/10 text-blue-500" : "text-gray-500 hover:text-white hover:bg-white/10"
+                            }`}
+                          >
+                            <Icons.Pin size={14} fill={entry.isPinned ? "currentColor" : "transparent"} />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); toggleArchiveJournal(entry.id); }}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                              entry.isArchived ? "bg-gray-500/20 text-gray-400" : "text-gray-500 hover:text-white hover:bg-white/10"
+                            }`}
+                          >
+                            <Icons.Archive size={14} />
+                          </button>
                         </div>
                       </div>
 
@@ -599,12 +665,18 @@ export default function JournalGallery() {
                         )}
                       </div>
                     </div>
-                  </a>
+                  </div>
                 );
               })}
             </div>
           )}
       </main>
+      {showExportModal && (
+        <ExportModal
+          entries={entries}
+          onClose={() => setShowExportModal(false)}
+        />
+      )}
     </div>
   );
 }

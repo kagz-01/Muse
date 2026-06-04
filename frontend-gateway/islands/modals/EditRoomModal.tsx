@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
+import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import {
   deleteRoom,
   MOOD_OPTIONS,
@@ -73,7 +74,6 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
   const [name, setName] = useState(room.name);
   const [description, setDescription] = useState(room.description || "");
   const [emoji, setEmoji] = useState(room.emoji || "🏛️");
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [category, setCategory] = useState<RoomCategory>(
     room.category || "workspace",
   );
@@ -101,7 +101,6 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
 
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const nameRef = useRef<HTMLInputElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const hslToHex = (h: number, s: number, l: number): string => {
@@ -246,11 +245,10 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Room Name *
             </label>
-            <input
-              ref={nameRef}
+            <EmojiInput
               value={name}
-              onInput={(e) => {
-                setName((e.target as HTMLInputElement).value);
+              onInput={(v) => {
+                setName(v);
                 setError("");
               }}
               onKeyDown={(e) => {
@@ -267,10 +265,10 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Description
             </label>
-            <textarea
+            <EmojiInput
               value={description}
-              onInput={(e) =>
-                setDescription((e.target as HTMLTextAreaElement).value)}
+              onInput={setDescription}
+              multiline
               rows={3}
               className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm font-serif italic leading-relaxed resize-none"
             />
@@ -280,79 +278,12 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Room Icon
             </label>
-            <div className="relative">
-              <input
-                value={emoji}
-                onInput={(e) => setEmoji((e.target as HTMLInputElement).value)}
-                placeholder="🏛️ Pick an emoji (optional)"
-                maxLength={8}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium text-center"
-              />
-              <button
-                type="button"
-                onClick={() => setShowEmojiPicker((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
-              >
-                😊
-              </button>
-
-              {showEmojiPicker && (
-                <div className="absolute left-0 mt-3 w-full max-h-80 bg-[#111] border border-white/10 rounded-2xl p-4 z-50 shadow-3xl overflow-y-auto">
-                  <div className="grid grid-cols-6 gap-2">
-                    {[
-                      "😀",
-                      "😁",
-                      "😂",
-                      "🤣",
-                      "😃",
-                      "😄",
-                      "😅",
-                      "😆",
-                      "😉",
-                      "😊",
-                      "😋",
-                      "😌",
-                      "😍",
-                      "🥰",
-                      "😘",
-                      "😗",
-                      "😚",
-                      "😙",
-                      "🥲",
-                      "😜",
-                      "😝",
-                      "😛",
-                      "🤑",
-                      "🤗",
-                      "🎨",
-                      "📔",
-                      "🏛️",
-                      "⚡",
-                      "✨",
-                      "🔥",
-                      "🌿",
-                      "🌧️",
-                      "🎯",
-                      "📷",
-                      "💡",
-                      "🔒",
-                    ].map((e) => (
-                      <button
-                        key={e}
-                        type="button"
-                        onClick={() => {
-                          setEmoji(e);
-                          setShowEmojiPicker(false);
-                        }}
-                        className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all text-lg hover:scale-125 hover:bg-canvas-primary/20"
-                      >
-                        {e}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <EmojiInput
+              value={emoji}
+              onInput={setEmoji}
+              placeholder="🏛️ Pick an emoji (optional)"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium text-center"
+            />
           </div>
 
           {/* Category & Size */}
@@ -449,10 +380,9 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
               ))}
             </div>
             <div className="flex gap-2">
-              <input
+              <EmojiInput
                 value={tagInput}
-                onInput={(e) =>
-                  setTagInput((e.target as HTMLInputElement).value)}
+                onInput={setTagInput}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && tagInput.trim()) {
                     setTags([...tags, tagInput.trim()]);

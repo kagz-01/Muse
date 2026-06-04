@@ -47,34 +47,19 @@ export default function MilestoneNotification(
 
   return (
     <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-50">
-      {/* Confetti effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-bounce"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 50}%`,
-              animationDelay: `${Math.random() * 0.5}s`,
-            }}
-          >
-            <span className="text-2xl">{["🎉", "✨", "🎊", "⭐"][i % 4]}</span>
+      {/* Notification Card - subtle */}
+      <div className="animate-in fade-in duration-300 pointer-events-auto relative z-10 mx-4">
+        <div className="rounded-2xl p-6 border shadow-lg" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 20px 60px rgba(var(--muse-accent-rgb),0.06)'}}>
+          <div className="text-4xl mb-3" style={{ color: 'var(--muse-text)'}}>
+            {milestoneText.emoji}
           </div>
-        ))}
-      </div>
-
-      {/* Notification Card */}
-      <div className="animate-in fade-in zoom-in-95 duration-300 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-10 shadow-2xl text-center max-w-md mx-4 pointer-events-auto relative z-10 border border-white/20">
-        <div className="text-8xl mb-6 animate-bounce">
-          {milestoneText.emoji}
+          <h2 className="text-xl font-bold mb-1 text-[var(--muse-text)]">
+            {milestoneText.title}
+          </h2>
+          <p className="text-[var(--muse-muted)] font-serif italic">
+            {milestoneText.subtitle}
+          </p>
         </div>
-        <h2 className="text-3xl font-bold text-white mb-2">
-          {milestoneText.title}
-        </h2>
-        <p className="text-white/90 font-serif italic">
-          {milestoneText.subtitle}
-        </p>
       </div>
     </div>
   );

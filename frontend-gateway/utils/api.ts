@@ -1,6 +1,13 @@
-export const AI_ENGINE_URL = Deno.env.get("AI_ENGINE_URL") ||
+function getEnv(name: string): string | undefined {
+  if (typeof Deno !== "undefined" && Deno?.env?.get) {
+    return Deno.env.get(name);
+  }
+  return undefined;
+}
+
+export const AI_ENGINE_URL = getEnv("AI_ENGINE_URL") ||
   "http://localhost:8000";
-export const BLOCKCHAIN_URL = Deno.env.get("BLOCKCHAIN_URL") ||
+export const BLOCKCHAIN_URL = getEnv("BLOCKCHAIN_URL") ||
   "http://localhost:3000";
 
 export interface AIInsightsResponse {

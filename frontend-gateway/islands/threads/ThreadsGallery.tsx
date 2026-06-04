@@ -1,12 +1,16 @@
-import { useMemo, useState } from "preact/hooks";
+import { useMemo, useState, useEffect } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   type Thread,
   type ThreadMood,
   threadsSignal,
+  toggleFavoriteThread,
+  togglePinThread,
+  toggleArchiveThread,
 } from "../../signals/threads.ts";
 
 import BlueprintReview from "../../components/threads/BlueprintReview.tsx";
+import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import VaultGateModal from "../modals/VaultGateModal.tsx";
 import CreateThreadModal from "../modals/CreateThreadModal.tsx";
 import ThreadGenerationIndicator from "../../components/threads/ThreadGenerationIndicator.tsx";
@@ -48,8 +52,14 @@ export default function ThreadsGallery() {
   const [vaultModalThread, setVaultModalThread] = useState<Thread | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isGeneratingThreads, _setIsGeneratingThreads] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [generatedThreadCount, _setGeneratedThreadCount] = useState(0);
   const [zoomingThreadId, setZoomingThreadId] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const filteredThreads = useMemo(() => {
     return threads.filter((t: Thread) => {
@@ -80,6 +90,14 @@ export default function ThreadsGallery() {
     }),
     [threads],
   );
+
+  if (!isHydrated) {
+    return (
+      <div className="pb-32 md:pb-28 min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="pb-32 md:pb-28 min-h-screen bg-[#0a0a0a]">
@@ -152,10 +170,24 @@ export default function ThreadsGallery() {
             <div className="flex items-center justify-center">
               <button 
                 type="button"
-                className="w-full h-full rounded-2xl border border-canvas-primary/30 bg-canvas-primary/10 hover:bg-canvas-primary/20 text-canvas-primary transition-all flex flex-col items-center justify-center gap-3 p-6 group"
+                onClick={() => {
+                  if (isAnalyzing) return;
+                  setIsAnalyzing(true);
+                  // Simulate an analysis scan for 2 seconds
+                  setTimeout(() => {
+                    setIsAnalyzing(false);
+                  }, 2000);
+                }}
+                className={`w-full h-full rounded-2xl border border-canvas-primary/30 transition-all flex flex-col items-center justify-center gap-3 p-6 group ${
+                  isAnalyzing 
+                    ? "bg-canvas-primary/20 text-canvas-primary/70" 
+                    : "bg-white/5 hover:bg-canvas-primary/10 text-gray-400 hover:text-white"
+                }`}
               >
-                <Icons.RefreshCw size={24} className="group-hover:rotate-180 transition-transform duration-700" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-center">Trigger Real-time<br/>Analysis</span>
+                <Icons.RefreshCw size={24} className={isAnalyzing ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-700"} />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-center">
+                  {isAnalyzing ? "Analyzing..." : <>Trigger Real-time<br/>Analysis</>}
+                </span>
               </button>
             </div>
           </div>
@@ -163,17 +195,12 @@ export default function ThreadsGallery() {
 
         {/* SEARCH */}
         <div className="relative">
-          <Icons.Search
-            className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-700"
-            size={20}
-          />
-          <input
-            type="text"
-            placeholder="Search threads, patterns, or themes..."
+          <EmojiInput
             value={searchQuery}
-            onInput={(e) =>
-              setSearchQuery((e.target as HTMLInputElement).value)}
-            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-16 py-6 text-lg text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all font-serif italic"
+            onInput={setSearchQuery}
+            placeholder="Search threads, patterns, or themes..."
+            iconLeft={<Icons.Search className="text-gray-700" size={20} />}
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-6 text-lg text-white placeholder-gray-700 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all font-serif italic"
           />
         </div>
 
@@ -188,18 +215,16 @@ export default function ThreadsGallery() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4 pb-4 border-b border-white/10">
               <h3 className="text-lg font-bold text-white">Generative Mood Filter</h3>
               <div className="relative w-full md:w-64">
-                <Icons.Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 text-canvas-primary/60" size={14} />
-                <input
-                  type="text"
-                  placeholder="Custom mood..."
+                <EmojiInput
                   value={customMoodInput}
-                  onInput={(e) => {
-                    const val = (e.target as HTMLInputElement).value;
+                  onInput={(val) => {
                     setCustomMoodInput(val);
                     if (val.trim()) setActiveMoodFilter(val.toLowerCase());
                     else setActiveMoodFilter("all");
                   }}
-                  className="w-full bg-white/[0.05] border border-white/10 rounded-full px-9 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
+                  placeholder="Custom mood..."
+                  iconLeft={<Icons.Sparkles className="text-canvas-primary/60" size={14} />}
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-full py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
                 />
               </div>
             </div>
@@ -308,7 +333,7 @@ export default function ThreadsGallery() {
                 </div>
               )
               : (
-                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6">
+                <div className="flex gap-4 overflow-x-auto pb-6 pt-2 px-2 -mx-2 snap-x snap-mandatory custom-scrollbar scroll-smooth mt-6">
                   {filteredThreads.map((thread: Thread) => {
                     const coreMood = CORE_MOODS.find((m) => m.id === thread.mood);
                     const moodLabel = coreMood?.label || thread.mood;
@@ -324,11 +349,11 @@ export default function ThreadsGallery() {
                             setZoomingThreadId(thread.id);
                             setTimeout(() => {
                               globalThis.location.href = `/threads/${thread.id}`;
-                            }, 600); // 600ms matches CSS transition duration
+                            }, 300);
                           }
                         }}
-                        className={`group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-white/5 text-white transition-all duration-500 cursor-pointer hover:border-white/20 h-full ${
-                          zoomingThreadId === thread.id ? "scale-[10] opacity-0 z-[100]" : ""
+                        className={`group relative shrink-0 snap-start min-w-[85vw] md:min-w-[280px] lg:min-w-[320px] max-w-[350px] flex flex-col overflow-hidden rounded-[2.5rem] border border-white/5 text-white transition-all duration-300 cursor-pointer hover:border-white/20 h-[380px] ${
+                          zoomingThreadId === thread.id ? "scale-[0.95] opacity-0 z-[100]" : ""
                         }`}
                         style={{ boxShadow: `0 20px 60px ${hex}33` }}
                       >
@@ -406,6 +431,38 @@ export default function ThreadsGallery() {
                                   className="text-white/30"
                                 />
                               )}
+                              
+                            <div className="flex items-center gap-1 z-20">
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); toggleFavoriteThread(thread.id); }}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                                  thread.isFavorited ? "bg-amber-500/10 text-amber-500" : "text-gray-500 hover:text-white hover:bg-white/10"
+                                }`}
+                              >
+                                <Icons.Star size={14} fill={thread.isFavorited ? "currentColor" : "transparent"} />
+                              </button>
+                              
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); togglePinThread(thread.id); }}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                                  thread.isPinned ? "bg-blue-500/10 text-blue-500" : "text-gray-500 hover:text-white hover:bg-white/10"
+                                }`}
+                              >
+                                <Icons.Pin size={14} fill={thread.isPinned ? "currentColor" : "transparent"} />
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); toggleArchiveThread(thread.id); }}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                                  thread.isArchived ? "bg-gray-500/20 text-gray-400" : "text-gray-500 hover:text-white hover:bg-white/10"
+                                }`}
+                              >
+                                <Icons.Archive size={14} />
+                              </button>
+                            </div>
                           </div>
 
                           {/* Title and description */}

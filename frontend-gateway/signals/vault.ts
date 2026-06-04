@@ -3,13 +3,30 @@ import { signal } from "@preact/signals";
 const VAULT_KEY = "muse_master_vault_v1";
 const UNLOCK_KEY = "muse_vault_unlocked_session_v1";
 
+function safeSessionGet(key: string): string | null {
+  try {
+    if (typeof sessionStorage === "undefined") return null;
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeLocalGet(key: string): string | null {
+  try {
+    if (typeof localStorage === "undefined") return null;
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
 export const isVaultUnlockedSignal = signal<boolean>(
-  typeof sessionStorage !== "undefined" &&
-    sessionStorage.getItem(UNLOCK_KEY) === "true",
+  safeSessionGet(UNLOCK_KEY) === "true",
 );
 
 export const hasMasterPasswordSignal = signal<boolean>(
-  typeof localStorage !== "undefined" && !!localStorage.getItem(VAULT_KEY),
+  !!safeLocalGet(VAULT_KEY),
 );
 
 function generateSalt(): string {

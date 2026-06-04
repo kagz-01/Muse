@@ -3,16 +3,8 @@ import { signal } from "@preact/signals";
 export type JournalMood =
   | "reflective"
   | "grounded"
-  | "anxious"
-  | "grateful"
-  | "melancholic"
   | "charged"
-  | "empty"
-  | "alive"
-  | "inspired"
-  | "nostalgic"
-  | "focused"
-  | "tender"
+  | "anxious"
   | "custom";
 
 export type StreakLevel = "Spark" | "Flame" | "Inferno" | "Phoenix";
@@ -49,6 +41,8 @@ export interface JournalEntry {
   tags: string[];
   linkedItemIds: string[];
   isFavorited: boolean;
+  isPinned?: boolean;
+  isArchived?: boolean;
   isPublic: boolean;
   createdAt: number;
   updatedAt: number;
@@ -103,13 +97,82 @@ function getDefaultStreakData(): StreakData {
   };
 }
 
+const JOURNAL_MOODS: JournalMood[] = [
+  "reflective",
+  "grounded",
+  "charged",
+  "anxious",
+  "custom",
+];
+
+function isJournalMood(value: unknown): value is JournalMood {
+  return typeof value === "string" && JOURNAL_MOODS.includes(value as JournalMood);
+}
+
+function normalizeJournalEntry(raw: unknown): JournalEntry | null {
+  if (!raw || typeof raw !== "object") return null;
+  const entry = raw as Partial<JournalEntry> & Record<string, unknown>;
+
+  const body = typeof entry.body === "string" ? entry.body : "";
+  const tags = Array.isArray(entry.tags)
+    ? entry.tags.filter((tag): tag is string => typeof tag === "string")
+    : [];
+  const linkedItemIds = Array.isArray(entry.linkedItemIds)
+    ? entry.linkedItemIds.filter((id): id is string => typeof id === "string")
+    : [];
+
+  const createdAt = typeof entry.createdAt === "number"
+    ? entry.createdAt
+    : Date.now();
+  const updatedAt = typeof entry.updatedAt === "number"
+    ? entry.updatedAt
+    : createdAt;
+
+  return {
+    id: typeof entry.id === "string" && entry.id.length > 0
+      ? entry.id
+      : generateSafeId(),
+    body,
+    mood: isJournalMood(entry.mood) ? entry.mood : "reflective",
+    customMood: typeof entry.customMood === "string" ? entry.customMood : undefined,
+    tags,
+    linkedItemIds,
+    isFavorited: !!entry.isFavorited,
+    isPinned: typeof entry.isPinned === "boolean" ? entry.isPinned : false,
+    isArchived: typeof entry.isArchived === "boolean" ? entry.isArchived : false,
+    isPublic: typeof entry.isPublic === "boolean" ? entry.isPublic : false,
+    createdAt,
+    updatedAt,
+    wordCount: typeof entry.wordCount === "number"
+      ? entry.wordCount
+      : body.trim().split(/\s+/).filter(Boolean).length,
+    type: entry.type === "reflection" || entry.type === "synthesis"
+      ? entry.type
+      : undefined,
+    synthesis: typeof entry.synthesis === "object" && entry.synthesis !== null
+      ? entry.synthesis as SynthesisData
+      : undefined,
+    vault: typeof entry.vault === "object" && entry.vault !== null
+      ? entry.vault as VaultConfig
+      : undefined,
+    linkedArtifacts: Array.isArray(entry.linkedArtifacts)
+      ? entry.linkedArtifacts as LinkedArtifact[]
+      : undefined,
+    viewCount: typeof entry.viewCount === "number" ? entry.viewCount : undefined,
+  };
+}
+
 function loadJournal(): JournalEntry[] {
   if (typeof localStorage === "undefined") return [];
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored) as unknown;
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+          .map(normalizeJournalEntry)
+          .filter((entry): entry is JournalEntry => entry !== null);
       } catch {
         return [];
       }
@@ -137,7 +200,7 @@ function loadJournal(): JournalEntry[] {
       id: "j2",
       body:
         'Feeling a profound sense of clarity today. The signals from the "Zen" room are finally converging into a coherent thread.',
-      mood: "inspired",
+      mood: "grounded",
       tags: ["clarity", "zen", "synthesis"],
       linkedItemIds: ["i3"],
       isFavorited: false,
@@ -173,14 +236,24 @@ if (typeof localStorage !== "undefined") {
 
 export const dailyWordGoalSignal = signal(500);
 
+// Safe ID generator that works even if crypto.randomUUID is not available (e.g. over local HTTP)
+function generateSafeId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
+}
+
 export function addEntry(body = "", isPublic = false): JournalEntry {
   const newEntry: JournalEntry = {
-    id: crypto.randomUUID(),
+    id: generateSafeId(),
     body,
     mood: "reflective",
     tags: [],
     linkedItemIds: [],
     isFavorited: false,
+    isPinned: false,
+    isArchived: false,
     isPublic,
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -218,6 +291,18 @@ export function deleteJournalEntry(id: string) {
 export function toggleFavoriteJournal(id: string) {
   journalSignal.value = journalSignal.value.map((e: JournalEntry) =>
     e.id === id ? { ...e, isFavorited: !e.isFavorited } : e
+  );
+}
+
+export function togglePinJournal(id: string) {
+  journalSignal.value = journalSignal.value.map((e: JournalEntry) =>
+    e.id === id ? { ...e, isPinned: !e.isPinned } : e
+  );
+}
+
+export function toggleArchiveJournal(id: string) {
+  journalSignal.value = journalSignal.value.map((e: JournalEntry) =>
+    e.id === id ? { ...e, isArchived: !e.isArchived } : e
   );
 }
 
@@ -446,7 +531,7 @@ export function createSynthesisEntry(
   const newEntry: JournalEntry = {
     id: crypto.randomUUID(),
     body,
-    mood: "inspired",
+    mood: "reflective",
     tags: ["synthesis"],
     linkedItemIds: [],
     isFavorited: false,
@@ -520,16 +605,8 @@ export function getMoodDistribution(
     const mood of [
       "reflective",
       "grounded",
-      "anxious",
-      "grateful",
-      "melancholic",
       "charged",
-      "empty",
-      "alive",
-      "inspired",
-      "nostalgic",
-      "focused",
-      "tender",
+      "anxious",
       "custom",
     ]
   ) {

@@ -32,15 +32,15 @@ export default function StreakCard(
   const levelColor = useMemo(() => {
     switch (currentLevel) {
       case "Spark":
-        return "from-yellow-400 to-yellow-500";
+        return "#f59e0b"; // amber (subtle)
       case "Flame":
-        return "from-orange-400 to-red-500";
+        return "#fb923c"; // orange
       case "Inferno":
-        return "from-red-500 to-rose-600";
+        return "#ef4444"; // red
       case "Phoenix":
-        return "from-yellow-300 via-rose-400 to-purple-600";
+        return "#c084fc"; // violet
       default:
-        return "from-yellow-400 to-yellow-500";
+        return "#f59e0b";
     }
   }, [currentLevel]);
 
@@ -51,29 +51,36 @@ export default function StreakCard(
     }
   };
 
+  const hex = levelColor;
+  // Use app accent CSS variable for subtle glow to respect theme
+  const glowStyle = {
+    boxShadow: `0 20px 60px rgba(var(--muse-accent-rgb), 0.12)`,
+    borderColor: `rgba(var(--muse-accent-rgb), 0.14)`,
+    background: `linear-gradient(135deg, rgba(var(--muse-accent-rgb), 0.035), transparent)`,
+  } as Record<string, string>;
+
   return (
     <div className="flex flex-col gap-4">
-      {/* Main Streak Card */}
+      {/* Main Streak Card - subdued surface to match rooms/threads */}
       <div
-        className={`relative overflow-hidden rounded-3xl p-8 shadow-2xl transition-all hover:scale-105 hover:shadow-2xl group cursor-default bg-gradient-to-br ${levelColor}`}
+        className={`relative overflow-hidden rounded-3xl p-6 transition-all group cursor-default border bg-[var(--muse-surface-soft)]`}
+        style={glowStyle}
       >
-        <div className="absolute inset-0 opacity-10 bg-black pointer-events-none" />
-
-        <div className="relative z-10 flex items-center gap-6">
-          {/* Fire Emoji */}
-          <div className="text-6xl animate-bounce group-hover:scale-125 transition-transform duration-300">
+        <div className="relative z-10 flex items-center gap-4">
+          {/* Subtle level emoji */}
+          <div className="text-3xl transition-transform duration-200" style={{ color: hex }}>
             {levelEmoji}
           </div>
 
           {/* Stats */}
           <div className="flex-1">
-            <div className="text-5xl font-bold text-white leading-none">
+            <div className="text-3xl font-bold text-[var(--muse-text)] leading-none">
               {currentStreak}
             </div>
-            <p className="text-xs uppercase tracking-widest text-white/80 font-semibold mt-2">
+            <p className="text-xs uppercase tracking-widest text-[var(--muse-muted)] font-semibold mt-2">
               Day Streak
             </p>
-            <p className="text-xs uppercase tracking-widest text-white/60 mt-1">
+            <p className="text-xs uppercase tracking-widest text-[var(--muse-muted)] mt-1">
               Level: {currentLevel}
             </p>
           </div>
@@ -81,14 +88,14 @@ export default function StreakCard(
           {/* Info */}
           <div className="flex flex-col gap-2 text-right">
             <div className="flex items-center gap-2 justify-end">
-              <Icons.TrendingUp size={16} className="text-white/80" />
-              <span className="text-sm font-bold text-white/80">
+              <Icons.TrendingUp size={16} className="text-[var(--muse-muted)]" />
+              <span className="text-sm font-bold text-[var(--muse-muted)]">
                 {longestStreak} best
               </span>
             </div>
-            <div className="flex items-center gap-1 justify-end bg-white/10 rounded-full px-3 py-1.5 backdrop-blur">
-              <Icons.Zap size={14} className="text-yellow-300" />
-              <span className="text-xs font-bold text-white">
+            <div className="flex items-center gap-1 justify-end bg-white/5 rounded-full px-3 py-1.5 backdrop-blur">
+              <Icons.Zap size={14} className="text-[var(--muse-muted)]" />
+              <span className="text-xs font-semibold text-[var(--muse-muted)]">
                 {freezeCount} freezes
               </span>
             </div>
@@ -101,7 +108,7 @@ export default function StreakCard(
         <button
           onClick={handleFreeze}
           type="button"
-          className="w-full px-4 py-3 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/60 text-blue-300 hover:text-blue-100 font-semibold uppercase text-xs tracking-widest transition-all hover:bg-blue-500/20 cursor-pointer"
+          className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-[var(--muse-border)] hover:border-white/20 text-[var(--muse-text)] font-semibold uppercase text-xs tracking-widest transition-all cursor-pointer"
         >
           <Icons.Wind size={16} className="inline mr-2" />
           Use Freeze to Skip Today ({freezeCount} left)
@@ -110,7 +117,7 @@ export default function StreakCard(
 
       {freezeCount === 0 && (
         <div className="text-center px-4 py-3 rounded-2xl bg-white/5 border border-white/10">
-          <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold">
+          <p className="text-xs text-[var(--muse-muted)] uppercase tracking-widest font-semibold">
             Freezes reset next month
           </p>
         </div>

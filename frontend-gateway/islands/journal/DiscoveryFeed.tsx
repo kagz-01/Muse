@@ -86,8 +86,7 @@ export function DiscoveryFeed({ maxItems = 20 }: DiscoveryFeedProps) {
   return (
     <div class="space-y-8">
       {/* Hero Section */}
-      <div class="relative rounded-3xl overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-600/20" />
+      <div class="relative rounded-3xl overflow-hidden" style={{ background: 'var(--muse-surface)', border: '1px solid var(--muse-border)', boxShadow: '0 10px 30px rgba(var(--muse-accent-rgb),0.04)'}}>
         <div class="relative p-8 md:p-12">
           <div class="flex items-start justify-between mb-6">
             <div>
@@ -110,7 +109,7 @@ export function DiscoveryFeed({ maxItems = 20 }: DiscoveryFeedProps) {
           </div>
 
           {/* Stats */}
-          <div class="grid grid-cols-3 md:grid-cols-3 gap-4 pt-6 border-t border-white/10">
+          <div class="grid grid-cols-3 md:grid-cols-3 gap-4 pt-6 border-t" style={{ borderColor: 'var(--muse-border)' }}>
             <div>
               <p class="text-white/60 text-sm mb-1">Recommendations</p>
               <p class="text-2xl font-bold text-cyan-400">

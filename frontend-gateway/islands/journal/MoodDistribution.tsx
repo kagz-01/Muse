@@ -1,7 +1,6 @@
-import type { JournalMood } from "../../signals/journal.ts";
 
 interface MoodStat {
-  mood: JournalMood;
+  mood: string;
   label: string;
   emoji: string;
   color: string;
@@ -10,8 +9,8 @@ interface MoodStat {
 
 interface MoodDistributionProps {
   moodStats: MoodStat[];
-  onMoodClick?: (mood: JournalMood | "all") => void;
-  activeMood?: JournalMood | "all";
+  onMoodClick?: (mood: string | "all") => void;
+  activeMood?: string | "all";
 }
 
 export default function MoodDistribution({

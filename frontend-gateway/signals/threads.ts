@@ -26,6 +26,9 @@ export interface Thread {
   itemIds: string[];
   sourceRoomIds: string[];
   isPublic: boolean;
+  isFavorited?: boolean;
+  isPinned?: boolean;
+  isArchived?: boolean;
   updatedAt: string;
   coverImage?: string;
   thesis?: string;
@@ -192,4 +195,28 @@ export function removeItemFromThread(threadId: string, itemId: string) {
 
 export function resetThreads() {
   threadsSignal.value = [];
+}
+
+export function toggleFavoriteThread(id: string) {
+  threadsSignal.value = threadsSignal.value.map((thread) =>
+    thread.id === id
+      ? { ...thread, isFavorited: !thread.isFavorited }
+      : thread
+  );
+}
+
+export function togglePinThread(id: string) {
+  threadsSignal.value = threadsSignal.value.map((thread) =>
+    thread.id === id
+      ? { ...thread, isPinned: !thread.isPinned }
+      : thread
+  );
+}
+
+export function toggleArchiveThread(id: string) {
+  threadsSignal.value = threadsSignal.value.map((thread) =>
+    thread.id === id
+      ? { ...thread, isArchived: !thread.isArchived }
+      : thread
+  );
 }

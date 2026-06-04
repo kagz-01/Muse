@@ -39,6 +39,8 @@ import {
   setTheme,
 } from "../../signals/ui.ts";
 
+import EmojiInput from "../../components/ui/EmojiInput.tsx";
+
 type SettingsTab =
   | "profile"
   | "appearance"
@@ -763,7 +765,6 @@ export default function Settings() {
                     Full Name(s)
                   </label>
                   <input
-                    type="text"
                     value={user.name}
                     onInput={(event) =>
                       handleProfileUpdate({
@@ -776,13 +777,9 @@ export default function Settings() {
                   <label className="text-xs text-gray-400 block mb-1">
                     Username
                   </label>
-                  <input
-                    type="text"
-                    value={user.username}
-                    onInput={(event) =>
-                      handleProfileUpdate({
-                        username: (event.target as HTMLInputElement).value,
-                      })}
+                  <EmojiInput
+                    value={user.username || ""}
+                    onInput={(val: string) => handleProfileUpdate({ username: val })}
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
                   />
                 </div>
@@ -806,7 +803,6 @@ export default function Settings() {
                   </label>
                   <div className="flex gap-2">
                     <input
-                      type="text"
                       value={user.location || ""}
                       onInput={(event) =>
                         handleProfileUpdate({
@@ -846,12 +842,10 @@ export default function Settings() {
                   <label className="text-xs text-gray-400 block mb-1">
                     Bio
                   </label>
-                  <textarea
+                  <EmojiInput
                     value={user.bio || ""}
-                    onInput={(event) =>
-                      handleProfileUpdate({
-                        bio: (event.target as HTMLTextAreaElement).value,
-                      })}
+                    onInput={(val: string) => handleProfileUpdate({ bio: val })}
+                    multiline
                     rows={3}
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40 resize-none"
                   />
