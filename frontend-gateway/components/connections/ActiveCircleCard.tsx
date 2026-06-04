@@ -1,4 +1,6 @@
+import { useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
+import ActiveCircleGatewayModal from "./ActiveCircleGatewayModal.tsx";
 
 export interface ActiveCircle {
   id: string;
@@ -16,14 +18,15 @@ interface Props {
 }
 
 export default function ActiveCircleCard({ circle, onJoin }: Props) {
+  const [showGateway, setShowGateway] = useState(false);
+
   return (
-    <div
-      className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:border-indigo-500/30 shadow-2xl flex flex-col h-[400px] overflow-hidden cursor-pointer"
-      onClick={() => {
-        globalThis.location.href = `/threads/${circle.id}?type=circle`;
-      }}
-      style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
-    >
+    <>
+      <div
+        className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] p-8 transition-all duration-500 hover:border-indigo-500/30 shadow-2xl flex flex-col h-[400px] overflow-hidden cursor-pointer"
+        onClick={() => setShowGateway(true)}
+        style={{ boxShadow: `0 20px 60px rgba(99,102,241,0.12)` }}
+      >
       <div className="flex justify-between items-start gap-4 mb-6">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-4">
@@ -52,16 +55,16 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
             </span>
           </div>
 
-          {/* Join Button */}
+          {/* Enter Button */}
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onJoin?.();
+              setShowGateway(true);
             }}
             className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-500 hover:border-indigo-500 transition-all active:scale-90 shadow-lg cursor-pointer"
           >
-            <Icons.Plus size={22} />
+            <Icons.LogIn size={20} />
           </button>
         </div>
       </div>
@@ -140,6 +143,14 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
           />
         </div>
       </div>
-    </div>
+      </div>
+      
+      {showGateway && (
+        <ActiveCircleGatewayModal
+          circle={circle}
+          onClose={() => setShowGateway(false)}
+        />
+      )}
+    </>
   );
 }

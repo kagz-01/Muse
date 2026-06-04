@@ -11,18 +11,16 @@ import {
   ActiveCircleCard,
   CommunityPulseStrip,
   CommunityRoomCard,
-  SharedThemeCluster,
 } from "../../components/connections/index.ts";
 import ThoughtStream from "./ThoughtStream.tsx";
 import WisdomMap from "./WisdomMap.tsx";
 import AuraCard from "../../components/connections/AuraCard.tsx";
-import SyncStatus from "../../components/connections/SyncStatus.tsx";
 
 type Tab = "Stream" | "Wisdom" | "Circles" | "People";
 
 export default function ConnectionsHub() {
   const [activeTab, setActiveTab] = useState<Tab>("Stream");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [activeProfileFilter, setActiveProfileFilter] = useState<string>("All");
 
   const circles = circlesSignal.value;
   const collaborators = collaboratorsSignal.value;
@@ -47,112 +45,27 @@ export default function ConnectionsHub() {
           <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
 
           <div className="relative z-10">
-            <div className="mb-12">
-              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-400">
+            <div className="mb-10 max-w-4xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                The Collective Protocol 3.1
+                Community Pulse
               </div>
-              <h1 className="mt-10 text-6xl md:text-8xl font-bold tracking-tight leading-[0.85] text-white">
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight text-white">
                 Resonate with the{" "}
-                <span className="italic font-serif text-gray-700">
-                  communal pulse.
+                <span className="italic font-serif text-gray-400">
+                  collective.
                 </span>
               </h1>
-              <p className="mt-10 max-w-2xl text-gray-500 text-xl md:text-2xl leading-relaxed font-serif italic border-l-4 border-canvas-primary/20 pl-8">
-                "Immutable, sovereign, and real-time. Witness the evolution of
-                shared intelligence."
+              <p className="mt-8 max-w-2xl text-gray-500 text-lg md:text-xl leading-relaxed font-serif italic border-l-4 border-canvas-primary/20 pl-6">
+                You have entered the public ledger. This is not a feed for consumption;
+                it is a live stream of raw intellectual synthesis. Discover emerging
+                patterns, trace the lineage of ideas, and connect with nodes
+                operating at your frequency.
               </p>
             </div>
 
-            {/* Four Action Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-              <button
-                type="button"
-                onClick={() => setActiveTab("Circles")}
-                className="group relative p-6 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-transparent border border-indigo-500/30 hover:border-indigo-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] text-left overflow-hidden cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/10 to-indigo-500/0 group-hover:translate-x-full transition-transform duration-700 -z-10" />
-                <div className="flex items-start gap-3 relative z-10">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                    <Icons.Users size={18} className="text-indigo-400" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-white text-sm uppercase tracking-wide">
-                      Join a Circle
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Connect with thinkers who share your resonance
-                    </p>
-                  </div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab("Stream")}
-                className="group relative p-6 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] text-left overflow-hidden cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 group-hover:translate-x-full transition-transform duration-700 -z-10" />
-                <div className="flex items-start gap-3 relative z-10">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                    <Icons.Zap size={18} className="text-emerald-400" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-white text-sm uppercase tracking-wide">
-                      Share a Thought
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Contribute immutable insights to the collective
-                    </p>
-                  </div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab("Wisdom")}
-                className="group relative p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 hover:border-amber-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(245,158,11,0.3)] text-left overflow-hidden cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/10 to-amber-500/0 group-hover:translate-x-full transition-transform duration-700 -z-10" />
-                <div className="flex items-start gap-3 relative z-10">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-                    <Icons.Compass size={18} className="text-amber-400" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-white text-sm uppercase tracking-wide">
-                      Explore Wisdom Map
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      See patterns and connections forming in real-time
-                    </p>
-                  </div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab("People")}
-                className="group relative p-6 rounded-2xl bg-gradient-to-br from-rose-500/10 to-transparent border border-rose-500/30 hover:border-rose-500/60 transition-all duration-300 hover:shadow-[0_0_30px_rgba(244,63,94,0.3)] text-left overflow-hidden cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-rose-500/0 via-rose-500/10 to-rose-500/0 group-hover:translate-x-full transition-transform duration-700 -z-10" />
-                <div className="flex items-start gap-3 relative z-10">
-                  <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center flex-shrink-0">
-                    <Icons.Heart size={18} className="text-rose-400" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-white text-sm uppercase tracking-wide">
-                      Find Collaborators
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Meet minds aligned with your vision
-                    </p>
-                  </div>
-                </div>
-              </button>
-            </div>
-
             {/* Tab Navigation */}
-            <div className="flex flex-wrap items-center gap-3 p-1.5 bg-white/5 border border-white/10 rounded-[2.5rem]">
+            <div className="flex flex-wrap items-center gap-3 p-1.5 bg-white/5 border border-white/10 rounded-[2.5rem] w-fit">
               {tabs.map((tab) => (
                 <button
                   type="button"
@@ -162,8 +75,8 @@ export default function ConnectionsHub() {
                       flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 cursor-pointer
                       ${
                     activeTab === tab.id
-                      ? "bg-white text-black shadow-2xl scale-105"
-                      : "text-gray-500 hover:text-white hover:bg-white/5"
+                      ? "bg-white text-black shadow-xl scale-105"
+                      : "text-gray-500 hover:text-white hover:bg-white/10"
                   }
                     `}
                 >
@@ -223,7 +136,7 @@ export default function ConnectionsHub() {
               </div>
             )
             : (
-              <div className="grid gap-16 xl:grid-cols-[1.15fr_0.85fr] items-start animate-in fade-in slide-in-from-bottom-8 duration-700">
+              <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700">
                 <div className="min-w-0">
                   {activeTab === "Stream" && <ThoughtStream />}
 
@@ -271,101 +184,50 @@ export default function ConnectionsHub() {
                   )}
 
                   {activeTab === "People" && (
-                    <div className="space-y-10">
-                      <div className="flex items-center justify-between">
-                        <div className="relative flex-1 max-w-xl">
-                          <Icons.Search
-                            className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-600"
-                            size={20}
-                          />
-                          <input
-                            type="text"
-                            placeholder="Search sovereign collaborators..."
-                            className="w-full bg-white/5 border border-white/10 rounded-3xl py-5 pl-16 pr-8 text-white focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.08] transition-all font-serif italic text-lg outline-none"
-                            value={searchQuery}
-                            onInput={(e) =>
-                              setSearchQuery(
-                                (e.target as HTMLInputElement).value,
-                              )}
-                          />
+                    <div className="space-y-10 animate-in fade-in duration-500">
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div>
+                          <h2 className="text-3xl font-bold text-white flex items-center gap-4 tracking-tight">
+                            <Icons.Network size={32} className="text-emerald-500" />
+                            {" "}
+                            Cognitive Match Grid
+                          </h2>
+                          <p className="text-gray-500 font-serif italic mt-2">
+                            Sorted by Resonance Alignment with your staked thoughts.
+                          </p>
+                        </div>
+                        
+                        <div className="flex bg-white/5 p-1.5 rounded-full border border-white/10">
+                          {["All", "Architect", "Synthesizer", "Challenger"].map(profile => (
+                            <button
+                              key={profile}
+                              type="button"
+                              onClick={() => setActiveProfileFilter(profile)}
+                              className={`px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
+                                activeProfileFilter === profile
+                                ? "bg-emerald-500 text-black shadow-lg"
+                                : "text-gray-500 hover:text-white"
+                              }`}
+                            >
+                              {profile}
+                            </button>
+                          ))}
                         </div>
                       </div>
 
-                      <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                        {collaborators
-                          .filter((c) =>
-                            c.name.toLowerCase().includes(
-                              searchQuery.toLowerCase(),
-                            )
-                          )
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {[...collaborators]
+                          .filter(c => activeProfileFilter === "All" || c.intelligenceProfile === activeProfileFilter)
+                          .sort((a, b) => b.matchPercentage - a.matchPercentage)
                           .map((collaborator) => (
-                            <div
+                            <AuraCard
                               key={collaborator.id}
-                              className="w-[320px] flex-shrink-0"
-                            >
-                              <AuraCard
-                                collaborator={collaborator}
-                              />
-                            </div>
+                              collaborator={collaborator}
+                            />
                           ))}
                       </div>
                     </div>
                   )}
-                </div>
-
-                {/* Right Rail: Themes & Pulse */}
-                <div className="space-y-12 min-w-0">
-                  <SyncStatus />
-
-                  <div className="bg-white/2 border border-white/5 rounded-[3rem] p-10 backdrop-blur-3xl sticky top-24">
-                    <div className="flex items-center justify-between mb-10">
-                      <h3 className="text-2xl font-bold text-white tracking-tight">
-                        Pattern Clusters
-                      </h3>
-                      <Icons.Aperture
-                        size={24}
-                        className="text-canvas-primary"
-                      />
-                    </div>
-
-                    <SharedThemeCluster />
-
-                    <div className="mt-12 space-y-8">
-                      <div className="p-8 bg-canvas-primary/5 border border-canvas-primary/20 rounded-[2.5rem]">
-                        <div className="flex items-start gap-4 mb-4">
-                          <Icons.Zap
-                            size={24}
-                            className="text-canvas-primary shrink-0 mt-1"
-                          />
-                          <div>
-                            <p className="text-lg font-bold text-white leading-tight">
-                              Emerging: 'Digital Voids'
-                            </p>
-                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">
-                              Circle Forming
-                            </p>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-500 leading-relaxed mb-6 font-serif italic">
-                          David Chen and 5 others are currently synthesizing
-                          ideas around digital emptiness.
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            globalThis.location.href =
-                              "/threads/c1?type=circle"}
-                          className="w-full py-4 bg-canvas-primary text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group cursor-pointer shadow-xl"
-                        >
-                          Enter Dialogue{" "}
-                          <Icons.ChevronRight
-                            size={16}
-                            className="group-hover:translate-x-1 transition-transform"
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}

@@ -20,6 +20,8 @@ export interface Collaborator {
   sharedThemes: string[];
   aura: string;
   intelligenceProfile: string;
+  matchPercentage: number;
+  topCitedNode: string;
 }
 
 export interface CommunityRoom {
@@ -45,6 +47,8 @@ export interface Perspective {
   txId?: string; // Ledger Transaction ID
   encryptionStatus?: "Secure" | "End-to-End" | "Standard";
   isAnalyzing?: boolean; // Parallel Analysis state
+  alignCount: number;
+  challengeCount: number;
 }
 
 export interface WisdomNode {
@@ -106,6 +110,38 @@ export const collaboratorsSignal = signal<Collaborator[]>([
     sharedThemes: ["Brutalism", "Silence"],
     aura: "cyan",
     intelligenceProfile: "Architect",
+    matchPercentage: 92,
+    topCitedNode: "The friction of raw concrete is the point.",
+  },
+  {
+    id: "p2",
+    name: "Marcus Thorne",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+    role: "System Designer",
+    status: "Online",
+    bio:
+      "I build systems that force friction. If it's too easy, it's not worth doing.",
+    sharedThemes: ["Digital Sovereignty", "Stoicism"],
+    aura: "purple",
+    intelligenceProfile: "Challenger",
+    matchPercentage: 78,
+    topCitedNode: "Friction is the only metric of value in a hyper-optimized world.",
+  },
+  {
+    id: "p3",
+    name: "Elena V.",
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+    role: "Protocol Researcher",
+    status: "Reflecting",
+    bio:
+      "Tracing the lineage of thoughts to their origin. Synthesizing disparate patterns.",
+    sharedThemes: ["Collective Intelligence", "Open Source Ethics"],
+    aura: "emerald",
+    intelligenceProfile: "Synthesizer",
+    matchPercentage: 85,
+    topCitedNode: "We don't need more information. We need better routing.",
   },
 ]);
 
@@ -160,6 +196,8 @@ export const perspectivesSignal = signal<Perspective[]>([
     source: "Journal",
     txId: "0x8f...3a2",
     encryptionStatus: "End-to-End",
+    alignCount: 87,
+    challengeCount: 12,
   },
   {
     id: "per2",
@@ -172,6 +210,8 @@ export const perspectivesSignal = signal<Perspective[]>([
     source: "Vault",
     txId: "0x4c...9b1",
     encryptionStatus: "End-to-End",
+    alignCount: 42,
+    challengeCount: 3,
   },
 ]);
 
@@ -201,6 +241,8 @@ export function submitPerspective(
     txId,
     encryptionStatus: "End-to-End",
     isAnalyzing: true,
+    alignCount: 1,
+    challengeCount: 0,
   };
 
   perspectivesSignal.value = [newPerspective, ...perspectivesSignal.value];
@@ -211,6 +253,28 @@ export function submitPerspective(
       p.id === newId ? { ...p, isAnalyzing: false } : p
     );
   }, 2000);
+}
+
+export function alignWithPerspective(id: string) {
+  perspectivesSignal.value = perspectivesSignal.value.map((p) => {
+    if (p.id === id) {
+      return { ...p, alignCount: p.alignCount + 1 };
+    }
+    return p;
+  });
+}
+
+export function challengePerspective(id: string) {
+  perspectivesSignal.value = perspectivesSignal.value.map((p) => {
+    if (p.id === id) {
+      return { ...p, challengeCount: p.challengeCount + 1 };
+    }
+    return p;
+  });
+}
+
+export function synthesizePerspective(content: string, targetId: string) {
+  submitPerspective(content, targetId, "Journal Synthesis");
 }
 
 export const insightsSignal = signal<string[]>([
@@ -227,3 +291,10 @@ export const activeThemesSignal = signal<string[]>([
   "Collective Intelligence",
   "Open Source Ethics",
 ]);
+
+// Map Selection State
+export const activeWisdomFocusSignal = signal<string | null>(null);
+
+export function setActiveWisdomFocus(nodeId: string | null) {
+  activeWisdomFocusSignal.value = nodeId;
+}
