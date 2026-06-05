@@ -9,6 +9,7 @@ import {
   setAccentColor,
   setCustomAccentHex,
 } from "../../signals/ui.ts";
+import { resonanceModeSignal } from "../../signals/resonance.ts";
 import * as Icons from "lucide-preact";
 import { userSignal } from "../../signals/user.ts";
 import NotificationContainer from "../../components/notifications/NotificationContainer.tsx";
@@ -74,11 +75,13 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
   ];
 
   const liveCustomHex = hslToHex(customHue, customSaturation, customLightness);
+  const resonanceMode = resonanceModeSignal.value;
+  const isHidden = resonanceMode === "deep" || resonanceMode === "cinematic";
 
   return (
     <>
       {/* UNIVERSAL BOTTOM NAVIGATION (Cycle Bar) */}
-      <nav className="fixed bottom-0 left-0 w-full bg-[var(--muse-surface)]/90 backdrop-blur-3xl border-t border-[var(--muse-border)] flex justify-around items-center h-20 px-4 md:px-32 z-[60] pb-safe transition-all duration-300">
+      <nav className={`fixed bottom-0 left-0 w-full bg-[var(--muse-surface)]/90 backdrop-blur-3xl border-t border-[var(--muse-border)] flex justify-around items-center h-20 px-4 md:px-32 z-[60] pb-safe transition-all duration-700 ease-in-out ${isHidden ? "translate-y-full opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}>
         {cycleNav.map((item) => (
           <a
             key={item.label}

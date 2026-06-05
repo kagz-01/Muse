@@ -223,51 +223,25 @@ function RoomCard({
               "A curated space for your digital consciousness."}
           </p>
           <div className="mt-6 flex items-center justify-between border-t border-[var(--muse-border)] pt-5">
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col">
-                <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-0.5">
-                  Artifacts
-                </span>
-                <span className="text-xs font-bold text-[var(--muse-text)]">
-                  {room.count}
-                </span>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-1.5 text-[var(--muse-muted)]" title="Artifacts">
+                 <Icons.Layers size={14} />
+                 <span className="text-xs font-bold">{room.count}</span>
               </div>
-              <div className="w-px h-6 bg-[var(--muse-border)]" />
-              <div className="flex flex-col">
-                <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-0.5">
-                  Theme
-                </span>
-                <span
-                  className={`text-xs font-bold uppercase`}
-                  style={{ color: room.customThemeHex || undefined }}
-                >
-                  {room.customThemeHex ? "Custom" : room.themeColor}
-                </span>
+              
+              <div className="w-1 h-1 rounded-full bg-[var(--muse-border)]" />
+              
+              <div className="flex items-center gap-1.5 text-[var(--muse-muted)]" title={`Theme: ${room.themeColor}`}>
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: room.customThemeHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo }} />
+                {room.mood && (
+                  <span className="text-xs font-bold capitalize">{room.mood}</span>
+                )}
               </div>
-              {room.mood && (
-                <>
-                  <div className="w-px h-6 bg-[var(--muse-border)]" />
-                  <div className="flex flex-col">
-                    <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-0.5">
-                      Mood
-                    </span>
-                    <span className="text-xs font-bold capitalize text-[var(--muse-text)]">
-                      {room.mood}
-                    </span>
-                  </div>
-                </>
-              )}
+              
               {room.size && (
                 <>
-                  <div className="w-px h-6 bg-[var(--muse-border)]" />
-                  <div className="flex flex-col">
-                    <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-0.5">
-                      Size
-                    </span>
-                    <span className="text-xs font-bold capitalize text-[var(--muse-text)]">
-                      {room.size}
-                    </span>
-                  </div>
+                  <div className="w-1 h-1 rounded-full bg-[var(--muse-border)]" />
+                  <span className="text-xs font-bold text-[var(--muse-muted)] capitalize" title="Size">{room.size}</span>
                 </>
               )}
             </div>
@@ -489,9 +463,9 @@ export default function RoomsGallery() {
             </div>
           </div>
 
-          <div className="relative z-10 mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className={`rounded-[1.75rem] ${softSurfaceClass} p-5`}>
-              <div className="flex flex-wrap items-center gap-2">
+          <div className="relative z-10 mt-8 flex flex-col lg:flex-row gap-6 lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-2 bg-[var(--muse-surface-soft)] p-1.5 rounded-full border border-[var(--muse-border)] w-fit backdrop-blur-md">
                 {tabConfig.map((tab) => (
                   <button
                     key={tab.id}
@@ -503,41 +477,38 @@ export default function RoomsGallery() {
                         setActiveTab(tab.id);
                       }
                     }}
-                    className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    className={`rounded-full px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
                       activeTab === tab.id
-                        ? "border-canvas-primary/40 bg-canvas-primary/15 text-canvas-primary"
-                        : "border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-muted)] hover:border-canvas-primary/25 hover:text-[var(--muse-text)]"
+                        ? "bg-[var(--muse-text)] text-[var(--muse-bg)] shadow-md"
+                        : "text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
                     }`}
                   >
                     {tab.label}
                   </button>
                 ))}
               </div>
-              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)] ml-2">
                 {tabConfig.find((tab) => tab.id === activeTab)?.helper}
               </p>
             </div>
 
-            <div className={`rounded-[1.75rem] ${softSurfaceClass} p-5`}>
-              <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-2 bg-[var(--muse-surface-soft)] p-1.5 rounded-full border border-[var(--muse-border)] w-fit backdrop-blur-md ml-auto lg:ml-0">
                 {sortOptions.map((option) => (
                   <button
                     key={option.id}
                     type="button"
                     onClick={() => setSortBy(option.id)}
-                    className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    className={`rounded-full px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
                       sortBy === option.id
-                        ? "border-canvas-primary/30 bg-canvas-primary text-[var(--muse-bg)]"
-                        : "border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-muted)] hover:border-canvas-primary/25 hover:text-[var(--muse-text)]"
+                        ? "bg-[var(--muse-text)] text-[var(--muse-bg)] shadow-md"
+                        : "text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
                     }`}
                   >
                     {option.label}
                   </button>
                 ))}
               </div>
-              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)]">
-                Compact carousel view: 5-6 rooms across, scroll horizontally.
-              </p>
             </div>
           </div>
         </section>

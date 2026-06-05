@@ -47,12 +47,13 @@ export default function CreateRoomModal({ onClose }: Props) {
 
   // Convert HSL to Hex
   const hslToHex = (h: number, s: number, l: number): string => {
-    const a = (s * Math.min(l, 100 - l)) / 100;
+    const sNorm = s / 100;
+    const lNorm = l / 100;
+    const a = sNorm * Math.min(lNorm, 1 - lNorm);
     const f = (n: number) => {
       const k = (n + h / 30) % 12;
-      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color)
-        .toString(16)
+      const color = lNorm - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * Math.max(0, Math.min(1, color))).toString(16)
         .padStart(2, "0");
     };
     return `#${f(0)}${f(8)}${f(4)}`;
@@ -88,7 +89,7 @@ export default function CreateRoomModal({ onClose }: Props) {
     ? { name: "custom", hex: currentColor, label: "Custom Color" }
     : paletteColors.find((c) => c.name === themeColor)!;
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!name.trim()) {
       setError("Give your room a name.");
       return;

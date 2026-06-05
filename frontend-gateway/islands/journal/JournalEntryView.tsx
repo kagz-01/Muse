@@ -21,36 +21,15 @@ import {
   storeJournalOnBlockchain,
 } from "../../utils/api.ts";
 import { userSignal } from "../../signals/user.ts";
-import EmojiInput from "../../components/ui/EmojiInput.tsx";
+import { ExportModal } from "./ExportModal.tsx";
+import { setResonanceMode, setAmbientGlow } from "../../signals/resonance.ts";
 
 const moods = Object.entries(moodConfig) as [
   JournalMood,
   typeof moodConfig[JournalMood],
 ][];
 
-const PROMPTS_BY_MOOD: Record<JournalMood, string[]> = {
-  reflective: [
-    "What have you been replaying in your mind lately?",
-    "What truth are you slowly coming to accept?",
-    "What pattern do you keep noticing in your life?",
-  ],
-  grounded: [
-    "Describe the physical space you're in right now, in detail.",
-    "What feels stable right now, and why?",
-    "Name three things anchoring you today.",
-  ],
-  charged: [
-    "What idea is consuming you right now?",
-    "Where is this energy trying to take you?",
-    "If you could act on one impulse right now, what would it be?",
-  ],
-  anxious: [
-    "Name the thing you're avoiding thinking about.",
-    "Write down every fear, no matter how irrational.",
-    "What would you tell a friend feeling exactly this way?",
-  ],
-  custom: ["What's on your mind?", "Start anywhere.", "Write freely."],
-};
+
 
 function formatDate(ts: number): string {
   return new Date(ts).toLocaleDateString("en-US", {
@@ -99,8 +78,8 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
   const [lastSavedTime, setLastSavedTime] = useState<number | null>(
     entry?.updatedAt ?? null,
   );
-  const [showPrompt, setShowPrompt] = useState(!entry?.body);
-  const [promptIdx, setPromptIdx] = useState(0);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const topAnchorRef = useRef<HTMLDivElement>(null);
 
   // Mark hydration complete so we can distinguish SSR "not found" from real "not found"
   useEffect(() => {
@@ -160,8 +139,31 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // if (!entry?.body) textareaRef.current?.focus();
-  }, []);
+    if (!isHydrated) return;
+    const currentMoodConfig = moodConfig[mood] || moodConfig["reflective"];
+    setAmbientGlow(currentMoodConfig.hex);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) {
+          setResonanceMode("deep");
+        } else {
+          setResonanceMode("light");
+        }
+      },
+      { threshold: 0 }
+    );
+
+    if (topAnchorRef.current) {
+      observer.observe(topAnchorRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+      setResonanceMode("light");
+      setAmbientGlow(null);
+    };
+  }, [isHydrated, mood]);
 
   const save = useCallback(() => {
     if (!entry) return;
@@ -214,11 +216,6 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
   }
 
   const cfg = moodConfig[mood] || moodConfig["reflective"];
-  const prompts = PROMPTS_BY_MOOD[mood] || PROMPTS_BY_MOOD["reflective"];
-  const currentPrompt = prompts[promptIdx % prompts.length];
-  const wordCount = body.trim().split(/\s+/).filter(Boolean).length;
-  const charCount = body.length;
-  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
   const handleAddTag = (e: KeyboardEvent) => {
     if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
@@ -250,8 +247,11 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
   const linkedItems = allItems.filter((i) => linkedItemIds.includes(i.id));
   const unlinkable = allItems.filter((i) => !linkedItemIds.includes(i.id));
 
+  const isNewEntry = !entry.body.trim() && entry.linkedItemIds.length === 0 && entry.tags.length === 0;
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0a] relative">
+      <div ref={topAnchorRef} className="absolute top-0 w-full h-32 pointer-events-none" />
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.1] transition-colors duration-1000"
         style={{
@@ -280,7 +280,6 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 color: cfg.color,
               }}
             >
-              <span className="text-lg leading-none">{cfg.emoji}</span>
               {mood === "custom" && customMoodText ? customMoodText : cfg.label}
               <Icons.ChevronDown size={14} className="opacity-50" />
             </button>
@@ -299,7 +298,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                         setMood(m as JournalMood);
                         setShowMoodPicker(false);
                       }}
-                      className={`min-w-[140px] flex-shrink-0 snap-start flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold cursor-pointer transition-all text-left ${
+                      className={`min-w-[120px] flex-shrink-0 snap-start flex items-center justify-center px-4 py-3 rounded-2xl text-[10px] uppercase tracking-widest font-bold cursor-pointer transition-all text-center ${
                         mood === m
                           ? "text-white"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -312,8 +311,6 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                         }
                         : {}}
                     >
-                      <span className="text-xl leading-none">{c.emoji}</span>
-                      {" "}
                       {c.label}
                     </button>
                   ))}
@@ -325,13 +322,12 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                       setMood("custom");
                       setShowMoodPicker(false);
                     }}
-                    className={`min-w-[140px] flex-shrink-0 snap-start flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold cursor-pointer transition-all text-left ${
+                    className={`min-w-[120px] flex-shrink-0 snap-start flex items-center justify-center px-4 py-3 rounded-2xl text-[10px] uppercase tracking-widest font-bold cursor-pointer transition-all text-center ${
                       mood === "custom"
                         ? "text-white bg-white/10 border border-white/20"
                         : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
                     }`}
                   >
-                    <span className="text-xl leading-none">✨</span>
                     Custom
                   </button>
                 </div>
@@ -339,9 +335,10 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.25em] mb-3 px-1">
                     Custom Mood Details
                   </p>
-                  <EmojiInput
+                  <input
+                    type="text"
                     value={customMoodText}
-                    onInput={setCustomMoodText}
+                    onInput={(e) => setCustomMoodText((e.target as HTMLInputElement).value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && customMoodText.trim()) {
                         setMood("custom");
@@ -349,7 +346,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                       }
                     }}
                     placeholder="Wistful, electric..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-700 text-xs focus:outline-none focus:border-white/30 transition-all shadow-inner"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-700 text-[10px] uppercase tracking-widest font-bold focus:outline-none focus:border-white/30 transition-all shadow-inner"
                   />
                 </div>
               </div>
@@ -378,64 +375,78 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
             ))}
           </div>
 
-          <button
-            onClick={() => toggleFavoriteJournal(entry.id)}
-            type="button"
-            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
-              entry.isFavorited
-                ? "border-amber-500/40 bg-amber-500/10 text-amber-500"
-                : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <Icons.Star
-              size={20}
-              fill={entry.isFavorited ? "currentColor" : "transparent"}
-            />
-          </button>
+          {!isNewEntry && (
+            <>
+              <button
+                onClick={() => toggleFavoriteJournal(entry.id)}
+                type="button"
+                className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
+                  entry.isFavorited
+                    ? "border-amber-500/40 bg-amber-500/10 text-amber-500"
+                    : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <Icons.Star
+                  size={20}
+                  fill={entry.isFavorited ? "currentColor" : "transparent"}
+                />
+              </button>
 
-          <button
-            onClick={() => togglePinJournal(entry.id)}
-            type="button"
-            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
-              entry.isPinned
-                ? "border-blue-500/40 bg-blue-500/10 text-blue-500"
-                : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <Icons.Pin
-              size={20}
-              fill={entry.isPinned ? "currentColor" : "transparent"}
-            />
-          </button>
+              <button
+                onClick={() => togglePinJournal(entry.id)}
+                type="button"
+                className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
+                  entry.isPinned
+                    ? "border-blue-500/40 bg-blue-500/10 text-blue-500"
+                    : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <Icons.Pin
+                  size={20}
+                  fill={entry.isPinned ? "currentColor" : "transparent"}
+                />
+              </button>
 
-          <button
-            onClick={() => toggleArchiveJournal(entry.id)}
-            type="button"
-            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
-              entry.isArchived
-                ? "border-gray-500/40 bg-gray-500/10 text-gray-400"
-                : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <Icons.Archive size={20} />
-          </button>
+              <button
+                onClick={() => toggleArchiveJournal(entry.id)}
+                type="button"
+                className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg ${
+                  entry.isArchived
+                    ? "border-gray-500/40 bg-gray-500/10 text-gray-400"
+                    : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <Icons.Archive size={20} />
+              </button>
 
-          <button
-            onClick={() => setIsPublic(!isPublic)}
-            type="button"
-            className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg group relative ${
-              isPublic
-                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
-                : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            {isPublic ? <Icons.Globe size={20} /> : <Icons.Lock size={20} />}
-            
-            {/* Tooltip */}
-            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[#1a1a1a] border border-white/10 rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-              {isPublic ? "Published to Community" : "Private Entry"}
-            </div>
-          </button>
+              <button
+                onClick={() => setIsPublic(!isPublic)}
+                type="button"
+                className={`w-11 h-11 rounded-2xl border flex items-center justify-center transition-all cursor-pointer shadow-lg group relative ${
+                  isPublic
+                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
+                    : "border-white/10 text-gray-600 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {isPublic ? <Icons.Globe size={20} /> : <Icons.Lock size={20} />}
+                
+                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[#1a1a1a] border border-white/10 rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  {isPublic ? "Published to Community" : "Private Entry"}
+                </div>
+              </button>
+
+              <button
+                onClick={() => setShowExportModal(true)}
+                type="button"
+                className="w-11 h-11 rounded-2xl border border-white/10 flex items-center justify-center text-gray-600 hover:text-white hover:bg-white/5 transition-all cursor-pointer shadow-lg group relative"
+              >
+                <Icons.Download size={20} />
+                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[#1a1a1a] border border-white/10 rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  Export Entry
+                </div>
+              </button>
+            </>
+          )}
 
           <div className="w-px h-8 bg-white/10 mx-2" />
 
@@ -492,9 +503,9 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
       )}
 
       <main className="flex-1 flex flex-col w-full max-w-none px-6 md:px-10 py-16 relative z-10">
-        <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="mb-10 flex flex-col md:flex-row md:items-start justify-between gap-8">
           <div>
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3">
               <Icons.Calendar size={14} className="opacity-40" />
               <p
                 className="text-[12px] font-bold uppercase tracking-[0.4em] text-white"
@@ -503,10 +514,6 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 {formatDate(entry.createdAt)}
               </p>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white/90">
-              Contemplation{" "}
-              <span className="text-gray-700">#{entryId.slice(0, 4)}</span>
-            </h2>
           </div>
           <div className="flex items-center gap-4">
             <button
@@ -526,17 +533,6 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                   : "group-hover:rotate-12 transition-transform text-indigo-400"}
               />
               {isProcessing ? "Analyzing Mind..." : "Secure & Analyze"}
-            </button>
-            <button
-              onClick={() => setShowPrompt(!showPrompt)}
-              type="button"
-              className="flex items-center gap-3 group text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-all cursor-pointer shadow-xl px-6 py-3.5 rounded-2xl border border-white/10 hover:bg-white/5"
-            >
-              <Icons.Book
-                size={16}
-                className="group-hover:rotate-12 transition-transform text-violet-400"
-              />
-              Prompt Engine
             </button>
           </div>
         </div>
@@ -595,59 +591,34 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
           </div>
         )}
 
-        {showPrompt && (
-          <div
-            className="mb-10 flex items-start gap-5 bg-white/[0.03] border rounded-4xl p-7 animate-in fade-in slide-in-from-top-4 duration-500 backdrop-blur-sm"
-            style={{ borderColor: cfg.color + "25" }}
-          >
-            <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
-              style={{ backgroundColor: cfg.color + "20" }}
-            >
-              <Icons.Aperture size={18} style={{ color: cfg.color }} />
-            </div>
-            <div className="flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-2">
-                Contemplation Seed
-              </p>
-              <h5 className="text-white font-serif italic text-[17px] leading-relaxed">
-                "{currentPrompt}"
-              </h5>
-            </div>
-            <button
-              onClick={() => setPromptIdx((p) => p + 1)}
-              type="button"
-              className="px-4 py-2 rounded-full border border-white/10 text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
-            >
-              Next
-            </button>
-          </div>
-        )}
-
-        <EmojiInput
+        <textarea
           value={body}
-          onInput={setBody}
+          onInput={(e) => {
+            const target = e.target as HTMLTextAreaElement;
+            setBody(target.value);
+            target.style.height = 'auto';
+            target.style.height = target.scrollHeight + 'px';
+          }}
           placeholder="Start writing..."
-          multiline
-          className={`flex-1 w-full min-h-[60vh] bg-transparent text-white/95 resize-none outline-none font-serif leading-[2.1] placeholder-gray-800 transition-all tracking-wide ${
+          className={`flex-1 w-full bg-transparent text-white/95 resize-none outline-none font-serif leading-[2.1] placeholder-gray-800 transition-all tracking-wide ${
             fontSizes[fontSize].class
-          } custom-scrollbar`}
+          } custom-scrollbar overflow-hidden min-h-[20vh]`}
           style={{ caretColor: cfg.color }}
         />
 
-        <div className="mt-16 pt-12 border-t border-white/5 space-y-12">
+        <div className="mt-16 pt-12 border-t border-white/5 space-y-12 pb-32">
           <div>
             <div className="flex items-center justify-between mb-6">
               <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 flex items-center gap-2.5">
                 <Icons.Link2 size={13} className="text-violet-400" />{" "}
-                Inspiration Artifacts
+                Linked Context
               </label>
               <button
                 onClick={() => setShowLinkArtifacts(!showLinkArtifacts)}
                 type="button"
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
               >
-                <Icons.Plus size={11} /> Link From Rooms
+                <Icons.Plus size={11} /> Link Network
               </button>
             </div>
 
@@ -738,32 +709,27 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                     </button>
                   </span>
                 ))}
-                <EmojiInput
+                <input
+                  type="text"
                   value={tagInput}
-                  onInput={setTagInput}
+                  onInput={(e) => setTagInput((e.target as HTMLInputElement).value)}
                   onKeyDown={handleAddTag}
                   placeholder="New tag..."
-                  className="bg-transparent text-[11px] font-bold text-gray-500 placeholder-gray-800 outline-none w-24 py-2"
+                  className="bg-transparent border border-white/10 rounded-full px-4 py-2 text-[11px] font-bold text-gray-300 placeholder-gray-700 outline-none w-32 focus:border-white/30 transition-all uppercase tracking-widest"
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-[10px] font-bold font-mono tracking-widest text-gray-700 pt-8 border-t border-white/5">
-            <div className="flex gap-8">
-              <span>W:{wordCount.toLocaleString()}</span>
-              <span>C:{charCount.toLocaleString()}</span>
-              <span>R:{readingTime}M</span>
-            </div>
-            <div
-              className="flex items-center gap-2 uppercase tracking-widest"
-              style={{ color: cfg.color }}
-            >
-              {mood === "custom" && customMoodText ? customMoodText : cfg.label}
-            </div>
-          </div>
         </div>
       </main>
+
+      {showExportModal && entry && (
+        <ExportModal
+          entries={[entry]}
+          onClose={() => setShowExportModal(false)}
+        />
+      )}
     </div>
   );
 }

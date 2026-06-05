@@ -6,6 +6,7 @@ import {
   toggleSoloMode,
   userSignal,
 } from "../../signals/user.ts";
+import { resonanceModeSignal } from "../../signals/resonance.ts";
 import {
   AppNotification,
   appThemeSignal,
@@ -60,13 +61,15 @@ export default function AppHeader(
   const user = userSignal.value;
   const isSoloMode = soloModeSignal.value;
   const isDemo = user?.email === "demo@muse.app";
+  const resonanceMode = resonanceModeSignal.value;
+  const isHidden = resonanceMode === "deep" || resonanceMode === "cinematic";
 
   return (
     <>
     <header
-      className={`fixed top-0 left-0 w-full z-50 bg-[var(--muse-overlay)] backdrop-blur-3xl border-b border-[var(--muse-border)] transition-all duration-500 ${
+      className={`fixed top-0 left-0 w-full z-50 bg-[var(--muse-overlay)] backdrop-blur-3xl border-b border-[var(--muse-border)] transition-all duration-700 ease-in-out ${
         isDemo ? "pt-8" : ""
-      }`}
+      } ${isHidden ? "-translate-y-full opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}
     >
       {isDemo && (
         <div className="absolute top-0 left-0 w-full h-8 bg-canvas-primary/10 border-b border-canvas-primary/20 flex items-center justify-center gap-4 px-6 overflow-hidden">

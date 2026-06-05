@@ -2,9 +2,6 @@ import { useMemo, useState, useEffect } from "preact/hooks";
 import {
   addEntry,
   getJournalTitle,
-  getMilestoneUnlocked,
-  getStreakData,
-  getTodayWordCount,
   type JournalEntry,
   type JournalMood,
   journalSignal,
@@ -14,7 +11,8 @@ import {
 } from "../../signals/journal.ts";
 import * as Icons from "lucide-preact";
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
-import { ExportModal } from "./ExportModal.tsx";
+
+
 
 export const moodConfig: Record<
   JournalMood,
@@ -70,8 +68,7 @@ export default function JournalGallery() {
   >("all");
   const [showFavorites, setShowFavorites] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
+  const [customFilterInput, setCustomFilterInput] = useState("");
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
@@ -112,8 +109,10 @@ export default function JournalGallery() {
     try {
       const entry = addEntry();
       globalThis.location.assign(`/journal/${entry.id}`);
-    } catch (e: any) {
-      alert("Error creating entry: " + e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        alert("Error creating entry: " + e.message);
+      }
     }
   };
 
@@ -151,31 +150,30 @@ export default function JournalGallery() {
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col pb-32 md:pb-10 space-y-12">
       {/* Hero Section */}
       <div className="w-full px-6 md:px-10">
-        <section className="relative overflow-hidden rounded-[2rem] border border-[var(--muse-border)] bg-[var(--muse-surface)] p-8 md:p-12 shadow-xl">
-          <div className="absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l from-violet-500/10 to-transparent blur-3xl pointer-events-none" />
-          <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden rounded-[4rem] border border-white/5 bg-[#0d0d0d] p-12 md:p-20 shadow-2xl">
+          <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-violet-500/10 to-transparent blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col items-center text-center justify-center gap-6 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400" style={{ background: 'var(--muse-surface-soft)', borderColor: 'var(--muse-border)'}}>
-              <div className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
-              Contemplation Layer
+          <div className="relative z-10">
+            <div className="mb-10 max-w-4xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-violet-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                Contemplation Layer
+              </div>
+              <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight text-white">
+                Quiet Your{" "}
+                <span className="italic font-serif text-gray-400">
+                  Mental Noise.
+                </span>
+              </h1>
+              <p className="mt-8 max-w-2xl text-gray-500 text-lg md:text-xl leading-relaxed font-serif italic border-l-4 border-violet-500/20 pl-6">
+                Your Journal is the sanctuary for raw thought. This is where patterns from your collection are tested against your intuition before they become creation.
+              </p>
             </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-[var(--muse-text)]">
-              Quiet Your
-              <span className="inline-block italic font-serif text-violet-400 bg-gradient-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent px-3">
-                Mental Noise.
-              </span>
-            </h1>
-            
-            <p className="text-[var(--muse-muted)] text-base md:text-lg leading-relaxed font-serif italic mb-4">
-              Your Journal is the sanctuary for raw thought. This is where patterns from your collection are tested against your intuition before they become creation.
-            </p>
 
             <button
               onClick={handleNewEntry}
               type="button"
-              className="inline-flex items-center justify-center gap-3 rounded-full px-10 py-4 text-[13px] font-bold uppercase tracking-[0.15em] text-[var(--muse-bg)] bg-[var(--muse-text)] transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:-translate-y-1 active:scale-95 cursor-pointer"
+              className="inline-flex items-center justify-center gap-3 rounded-full px-10 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-black bg-white transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:-translate-y-1 active:scale-95 cursor-pointer"
             >
               <Icons.Plus size={18} /> New Journal Entry
             </button>
@@ -186,33 +184,14 @@ export default function JournalGallery() {
       {/* Search & Filters */}
       <div className="px-6 md:px-10 space-y-6">
         {/* Search Bar */}
-        <div className="relative group">
-          <div className="absolute inset-0 rounded-4xl bg-violet-600/10 blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700 pointer-events-none" />
-          <div className="relative flex items-center border border-white/10 group-focus-within:border-violet-500/40 bg-white/[0.03] group-focus-within:bg-white/5 rounded-4xl p-2 transition-all duration-500 overflow-hidden">
-            <div className="absolute left-8 text-gray-500 group-focus-within:text-violet-400 transition-colors">
-              <Icons.Search size={20} />
-            </div>
-            <EmojiInput
-              value={search}
-              onInput={setSearch}
-              placeholder="Search raw thoughts, patterns, depths…"
-              className="w-full bg-transparent pl-20 pr-10 py-6 text-white text-lg font-bold tracking-tight placeholder-gray-700 focus:outline-none"
-            />
-            <div className="absolute right-8 flex items-center gap-3">
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  type="button"
-                  className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors cursor-pointer"
-                >
-                  Clear
-                </button>
-              )}
-              <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-600 text-xs font-bold font-mono">
-                {filtered.length}
-              </div>
-            </div>
-          </div>
+        <div className="relative max-w-2xl">
+          <EmojiInput
+            value={search}
+            onInput={setSearch}
+            placeholder="Search raw thoughts, patterns, depths..."
+            iconLeft={<Icons.Search className="text-gray-600" size={20} />}
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-6 text-lg text-white placeholder-gray-700 focus:outline-none focus:border-violet-500/40 focus:bg-white/[0.05] transition-all font-serif italic"
+          />
         </div>
 
         {/* Filters */}
@@ -281,31 +260,6 @@ export default function JournalGallery() {
             <Icons.BarChart3 size={12} /> Heatmap
           </button>
 
-          <button
-            onClick={() => {
-              if (isSyncing) return;
-              setIsSyncing(true);
-              setTimeout(() => setIsSyncing(false), 2000);
-            }}
-            type="button"
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
-              isSyncing
-                ? "bg-blue-500/20 border-blue-500/40 text-blue-400"
-                : "bg-white/5 border-white/10 text-gray-500 hover:border-white/25"
-            }`}
-          >
-            <Icons.RefreshCw size={12} className={isSyncing ? "animate-spin" : ""} /> 
-            {isSyncing ? "Syncing..." : "Data Sync"}
-          </button>
-
-          <button
-            onClick={() => setShowExportModal(true)}
-            type="button"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border bg-white/5 border-white/10 text-gray-500 hover:border-white/25 transition-all cursor-pointer"
-          >
-            <Icons.Download size={12} /> Export
-          </button>
-
           <div className="w-px h-6 bg-white/5" />
 
           {/* Entry Type Filter */}
@@ -344,10 +298,10 @@ export default function JournalGallery() {
         <button
           onClick={() => setFilterMood("all")}
           type="button"
-          className={`px-3 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
             filterMood === "all"
-              ? "bg-canvas-primary/12 border-canvas-primary/40 text-canvas-primary"
-              : "bg-[var(--muse-surface)] border-[var(--muse-border)] text-[var(--muse-muted)] hover:border-white/20"
+              ? "bg-white text-black border-white"
+              : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20"
           }`}
         >
           All Moods
@@ -362,20 +316,12 @@ export default function JournalGallery() {
               key={mood}
               onClick={() => setFilterMood(filterMood === mood ? "all" : mood)}
               type="button"
-              className={`flex items-center gap-2 px-3 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
                 filterMood === mood
-                  ? "border-opacity-100 text-opacity-100"
-                  : "opacity-80 hover:opacity-100"
+                  ? "bg-white text-black border-white"
+                  : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20 hover:text-white"
               }`}
-              style={filterMood === mood
-                ? {
-                  backgroundColor: cfg.hex + "18",
-                  borderColor: cfg.hex + "44",
-                  color: cfg.hex,
-                }
-                : undefined}
             >
-              <span>{cfg.emoji}</span>
               {cfg.label}
             </button>
           ))}
@@ -384,16 +330,31 @@ export default function JournalGallery() {
               key={customMood}
               onClick={() => setFilterMood(filterMood === customMood ? "all" : customMood)}
               type="button"
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
                 filterMood === customMood
-                  ? "border-opacity-100 text-opacity-100 bg-[#6b7280]/20 border-[#6b7280] text-[#6b7280]"
-                  : "opacity-60 hover:opacity-100 bg-white/5 border-white/10 text-gray-500 hover:border-white/25"
+                  ? "bg-white text-black border-white"
+                  : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20 hover:text-white"
               }`}
             >
-              <span>✨</span>
               {customMood}
             </button>
           ))}
+          <div className="relative w-48">
+            <EmojiInput
+              value={customFilterInput}
+              onInput={(val) => {
+                setCustomFilterInput(val);
+                if (val.trim() !== "") {
+                  setFilterMood(val);
+                } else {
+                  setFilterMood("all");
+                }
+              }}
+              placeholder="Custom mood..."
+              iconLeft={<Icons.Sparkles className="text-violet-400/60" size={14} />}
+              className="w-full bg-white/[0.05] border border-white/10 rounded-full py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all font-mono"
+            />
+          </div>
       </div>
 
       {/* Entry Gallery */}
@@ -415,7 +376,6 @@ export default function JournalGallery() {
               {filtered.map((entry: JournalEntry) => {
                 const isCustom = entry.mood === "custom" && entry.customMood;
                 const cfg = moodConfig[entry.mood as JournalMood] || moodConfig["reflective"];
-                const emoji = isCustom ? "✨" : cfg.emoji;
                 const label = isCustom ? entry.customMood : cfg.label;
                 const title = getJournalTitle(entry);
                 return (
@@ -443,19 +403,19 @@ export default function JournalGallery() {
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <span className="text-3xl animate-pulse">
-                            {emoji}
-                          </span>
                           <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">
                               {label}
                             </p>
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-                              {entry.isPublic ? "👁️ Public" : "🔒 Private"}
-                            </p>
-                            <p className="text-[9px] font-mono text-gray-500">
-                              {timeFormat(entry.updatedAt)}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-60">
+                                {entry.isPublic ? "Public" : "Private"}
+                              </p>
+                              <span className="text-gray-600">•</span>
+                              <p className="text-[9px] font-mono text-gray-500">
+                                {timeFormat(entry.updatedAt)}
+                              </p>
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-1 z-20">
@@ -549,13 +509,8 @@ export default function JournalGallery() {
               })}
             </div>
           )}
+
       </main>
-      {showExportModal && (
-        <ExportModal
-          entries={entries}
-          onClose={() => setShowExportModal(false)}
-        />
-      )}
     </div>
   );
 }

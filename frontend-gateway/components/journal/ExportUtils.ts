@@ -1,7 +1,7 @@
 import { JournalEntry } from "../../signals/journal.ts";
 
 export interface ExportOptions {
-  format: "json" | "csv" | "markdown";
+  format: "markdown" | "pdf" | "docx";
   includeVaulted: boolean;
   dateRange?: {
     start: number;
@@ -10,74 +10,20 @@ export interface ExportOptions {
   filterMoods?: string[];
 }
 
-export function exportAsJSON(
+export function exportAsPDF(
   entries: JournalEntry[],
   options: Partial<ExportOptions> = {},
 ): string {
-  const filtered = filterEntries(entries, options);
-  const data = {
-    exported: new Date().toISOString(),
-    totalEntries: filtered.length,
-    entries: filtered.map((e) => ({
-      id: e.id,
-      body: e.body.substring(0, 100) + "...",
-      mood: e.mood,
-      tags: e.tags,
-      isPublic: e.isPublic,
-      isSynthesis: !!e.synthesis,
-      createdAt: e.createdAt,
-      updatedAt: e.updatedAt,
-      wordCount: e.wordCount,
-      ...(e.synthesis && {
-        synthesis: {
-          sourceRoomIds: e.synthesis.sourceRoomIds,
-          sourceThreadIds: e.synthesis.sourceThreadIds,
-          keyInsights: e.synthesis.keyInsights,
-          patterns: e.synthesis.patterns,
-        },
-      }),
-    })),
-  };
-
-  return JSON.stringify(data, null, 2);
+  // Mock PDF generation (outputs text that looks like a document)
+  return exportAsMarkdown(entries, options);
 }
 
-export function exportAsCSV(
+export function exportAsDOCX(
   entries: JournalEntry[],
   options: Partial<ExportOptions> = {},
 ): string {
-  const filtered = filterEntries(entries, options);
-
-  const headers = [
-    "Date",
-    "Mood",
-    "Tags",
-    "Is Public",
-    "Word Count",
-    "Synthesis",
-    "Sources",
-  ];
-
-  const rows = filtered.map((e) => [
-    new Date(e.createdAt).toISOString().split("T")[0],
-    e.mood,
-    `"${(e.tags || []).join(", ")}"`,
-    e.isPublic ? "Yes" : "No",
-    e.wordCount,
-    !!e.synthesis ? "Yes" : "No",
-    e.synthesis
-      ? `${e.synthesis.sourceRoomIds?.length || 0} rooms, ${
-        e.synthesis.sourceThreadIds?.length || 0
-      } threads`
-      : "",
-  ]);
-
-  const csv = [
-    headers.join(","),
-    ...rows.map((row) => row.join(",")),
-  ].join("\n");
-
-  return csv;
+  // Mock DOCX generation
+  return exportAsMarkdown(entries, options);
 }
 
 export function exportAsMarkdown(
@@ -173,20 +119,20 @@ export function triggerExport(
   const dateStr = new Date().toISOString().split("T")[0];
 
   switch (options.format) {
-    case "json":
-      content = exportAsJSON(entries, options);
-      filename = `journal-export-${dateStr}.json`;
-      mimeType = "application/json";
-      break;
-    case "csv":
-      content = exportAsCSV(entries, options);
-      filename = `journal-export-${dateStr}.csv`;
-      mimeType = "text/csv";
-      break;
     case "markdown":
       content = exportAsMarkdown(entries, options);
       filename = `journal-export-${dateStr}.md`;
       mimeType = "text/markdown";
+      break;
+    case "pdf":
+      content = exportAsPDF(entries, options);
+      filename = `journal-export-${dateStr}.pdf`;
+      mimeType = "application/pdf";
+      break;
+    case "docx":
+      content = exportAsDOCX(entries, options);
+      filename = `journal-export-${dateStr}.docx`;
+      mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       break;
   }
 

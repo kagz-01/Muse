@@ -81,6 +81,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     "collection",
   );
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [showRoomDetails, setShowRoomDetails] = useState(false);
   const [showExtractor, setShowExtractor] = useState(false);
   const [mismatchAlert, setMismatchAlert] = useState<
     { active: boolean; meta: { title: string; summary: string } } | null
@@ -488,7 +489,18 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-3 shrink-0 flex-wrap">
+                  <button
+                    onClick={() => setShowRoomDetails(!showRoomDetails)}
+                    type="button"
+                    className={`px-4 py-3 rounded-2xl flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer shadow-xl ${
+                      showRoomDetails
+                        ? "bg-[var(--muse-text)] text-[var(--muse-bg)]"
+                        : "bg-[var(--muse-bg)]/50 backdrop-blur-lg border border-[var(--muse-text)]/10 text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-text)]/10"
+                    }`}
+                  >
+                    <Icons.Activity size={15} /> Intelligence
+                  </button>
                   <button
                     onClick={() => setIsEditOpen(true)}
                     type="button"
@@ -511,71 +523,13 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        </header>
 
-        <main className="p-6 md:p-10 w-full max-w-none relative z-10 -mt-4">
-          {/* TAB NAVIGATION */}
-          <div className="flex items-center gap-6 mb-12">
-            <button
-              type="button"
-              onClick={() => setActiveTab("collection")}
-              className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
-                activeTab === "collection"
-                  ? "bg-[var(--muse-text)] text-[var(--muse-bg)] shadow-2xl scale-105"
-                  : "bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
-              }`}
-            >
-              <Icons.Layers size={16} /> Collection Phase
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("dialogue")}
-              className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
-                activeTab === "dialogue"
-                  ? "bg-[var(--muse-text)] text-[var(--muse-bg)] shadow-2xl scale-105"
-                  : "bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 text-[var(--muse-muted)] hover:text-[var(--muse-text)]"
-              }`}
-            >
-              <Icons.MessageSquare size={16} /> Contemplation Pulse
-            </button>
-          </div>
-
-          {activeTab === "collection"
-            ? (
-              <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <section className="mb-8">
-                  <div className="rounded-[2rem] border border-[var(--muse-text)]/5 bg-[var(--muse-text)]/[0.03] p-6 md:p-8 backdrop-blur-sm">
-                    {/* Room label + emoji */}
-                    <div className="flex items-center gap-3 mb-5">
-                      {room.emoji && (
-                        <span className="text-3xl">{room.emoji}</span>
-                      )}
-                      <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--muse-muted)]">
-                        <span className="rounded-full border border-[var(--muse-text)]/10 bg-[var(--muse-text)]/5 px-2.5 py-1 text-[var(--muse-text)]">
-                          {room.category || "Workspace"}
-                        </span>
-                        <span>Room Detail</span>
-                      </div>
-                    </div>
-
-                    {/* Room name + description */}
-                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--muse-text)] mb-3">
-                      {room.name}
-                    </h2>
-                    <p className="max-w-3xl text-[var(--muse-muted)] font-serif italic leading-relaxed">
-                      {room.description ||
-                        "This room is where consumed content gets collected, refined, and held until it is ready to become a pattern."}
-                    </p>
-
-                    {/* Integrated stats row */}
-                    <div className="mt-6 pt-5 border-t border-[var(--muse-text)]/5 flex flex-wrap items-center gap-4">
+              {/* ROOM INTELLIGENCE TOGGLE */}
+              {showRoomDetails && (
+                <div className="mt-8 pt-6 border-t border-[var(--muse-text)]/10 animate-in slide-in-from-top-4 fade-in duration-300">
+                    <div className="flex flex-wrap items-center gap-6">
                       <div className="flex items-center gap-2">
-                        <Icons.Layers
-                          size={13}
-                          className="text-[var(--muse-muted)]"
-                        />
+                        <Icons.Layers size={14} className="text-[var(--muse-muted)]" />
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           Artifacts
                         </span>
@@ -585,19 +539,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       </div>
                       <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                       <div className="flex items-center gap-2">
-                        {room.isPublic
-                          ? (
-                            <Icons.Globe
-                              size={13}
-                              className="text-[var(--muse-muted)]"
-                            />
-                          )
-                          : (
-                            <Icons.Lock
-                              size={13}
-                              className="text-[var(--muse-muted)]"
-                            />
-                          )}
+                        {room.isPublic ? <Icons.Globe size={14} className="text-[var(--muse-muted)]" /> : <Icons.Lock size={14} className="text-[var(--muse-muted)]" />}
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           Access
                         </span>
@@ -607,45 +549,29 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       </div>
                       <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                       <div className="flex items-center gap-2">
-                        <span
-                          className="w-3 h-3 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: customHex || hex }}
-                        />
+                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: customHex || hex }} />
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           Theme
                         </span>
-                        <span
-                          className="text-sm font-bold ml-1"
-                          style={{ color: customHex || undefined }}
-                        >
+                        <span className="text-sm font-bold ml-1 uppercase" style={{ color: customHex || undefined }}>
                           {customHex ? "Custom" : room.themeColor}
                         </span>
                       </div>
                       <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                       <div className="flex items-center gap-2">
-                        <Icons.Activity
-                          size={13}
-                          className="text-[var(--muse-muted)]"
-                        />
+                        <Icons.Activity size={14} className="text-[var(--muse-muted)]" />
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                           Mood
                         </span>
-                        <span className="text-sm font-bold text-[var(--muse-text)] ml-1">
-                          {MOOD_OPTIONS.find((m) => m.id === room.mood)
-                            ?.emoji || "🎯"}{" "}
-                          <span className="capitalize">
-                            {room.mood || "Focus"}
-                          </span>
+                        <span className="text-sm font-bold text-[var(--muse-text)] ml-1 flex items-center gap-2">
+                          {MOOD_OPTIONS.find((m) => m.id === room.mood)?.emoji || "🎯"} <span className="capitalize">{room.mood || "Focus"}</span>
                         </span>
                       </div>
                       {room.category && (
                         <>
                           <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                           <div className="flex items-center gap-2">
-                            <Icons.FolderOpen
-                              size={13}
-                              className="text-[var(--muse-muted)]"
-                            />
+                            <Icons.FolderOpen size={14} className="text-[var(--muse-muted)]" />
                             <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                               Category
                             </span>
@@ -659,10 +585,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                         <>
                           <div className="w-px h-4 bg-[var(--muse-text)]/10" />
                           <div className="flex items-center gap-2">
-                            <Icons.LayoutGrid
-                              size={13}
-                              className="text-[var(--muse-muted)]"
-                            />
+                            <Icons.LayoutGrid size={14} className="text-[var(--muse-muted)]" />
                             <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
                               Size
                             </span>
@@ -672,29 +595,58 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                           </div>
                         </>
                       )}
-                      {room.tags && room.tags.length > 0 && (
-                        <>
-                          <div className="w-px h-4 bg-[var(--muse-text)]/10" />
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            {room.tags.slice(0, 4).map((tag) => (
-                              <span
-                                key={tag}
-                                className="px-2.5 py-0.5 rounded-full border border-[var(--muse-text)]/8 bg-[var(--muse-text)]/[0.04] text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)]"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {room.tags.length > 4 && (
-                              <span className="text-[9px] text-[var(--muse-muted)] font-bold">
-                                +{room.tags.length - 4}
-                              </span>
-                            )}
-                          </div>
-                        </>
-                      )}
                     </div>
-                  </div>
-                </section>
+
+                    {room.tags && room.tags.length > 0 && (
+                      <div className="mt-4 flex flex-wrap items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mr-2">
+                          Tags:
+                        </span>
+                        {room.tags.map((tag) => (
+                          <span key={tag} className="px-3 py-1 rounded-full border border-[var(--muse-text)]/10 bg-[var(--muse-text)]/[0.05] text-[10px] font-bold uppercase tracking-widest text-[var(--muse-text)]">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+
+        <main className="p-6 md:p-10 w-full max-w-none relative z-10 -mt-4">
+          {/* TAB NAVIGATION */}
+          <div className="flex justify-center mb-12">
+            <div className="flex flex-col md:flex-row items-center gap-2 bg-[var(--muse-bg)]/40 p-1.5 rounded-3xl md:rounded-full border border-[var(--muse-text)]/5 backdrop-blur-xl shadow-2xl w-full md:w-auto">
+              <button
+                type="button"
+                onClick={() => setActiveTab("collection")}
+                className={`w-full md:w-auto flex items-center justify-center gap-3 px-8 py-3.5 rounded-2xl md:rounded-full text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
+                  activeTab === "collection"
+                    ? "bg-[var(--muse-text)] text-[var(--muse-bg)] shadow-md"
+                    : "text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-text)]/5"
+                }`}
+              >
+                <Icons.Layers size={16} /> Collection Phase
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("dialogue")}
+                className={`w-full md:w-auto flex items-center justify-center gap-3 px-8 py-3.5 rounded-2xl md:rounded-full text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
+                  activeTab === "dialogue"
+                    ? "bg-[var(--muse-text)] text-[var(--muse-bg)] shadow-md"
+                    : "text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-text)]/5"
+                }`}
+              >
+                <Icons.MessageSquare size={16} /> Contemplation Pulse
+              </button>
+            </div>
+          </div>
+
+          {activeTab === "collection"
+            ? (
+              <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-bold text-[var(--muse-text)] tracking-tight flex items-center gap-4">
