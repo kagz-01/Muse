@@ -18,6 +18,7 @@ import * as $_app_profile_userId_ from "./routes/(app)/profile/[userId].tsx";
 import * as $_app_rooms_id_ from "./routes/(app)/rooms/[id].tsx";
 import * as $_app_rooms_index from "./routes/(app)/rooms/index.tsx";
 import * as $_app_settings from "./routes/(app)/settings.tsx";
+import * as $_app_streaks from "./routes/(app)/streaks.tsx";
 import * as $_app_threads_id_ from "./routes/(app)/threads/[id].tsx";
 import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
@@ -107,6 +108,7 @@ import * as $rooms_index from "./islands/rooms/index.ts";
 import * as $settings_PrivacyManager from "./islands/settings/PrivacyManager.tsx";
 import * as $settings_Settings from "./islands/settings/Settings.tsx";
 import * as $settings_index from "./islands/settings/index.ts";
+import * as $streaks_StreakHub from "./islands/streaks/StreakHub.tsx";
 import * as $threads_ThreadInside from "./islands/threads/ThreadInside.tsx";
 import * as $threads_ThreadsGallery from "./islands/threads/ThreadsGallery.tsx";
 import * as $threads_index from "./islands/threads/index.ts";
@@ -130,6 +132,7 @@ const manifest = {
     "./routes/(app)/rooms/[id].tsx": $_app_rooms_id_,
     "./routes/(app)/rooms/index.tsx": $_app_rooms_index,
     "./routes/(app)/settings.tsx": $_app_settings,
+    "./routes/(app)/streaks.tsx": $_app_streaks,
     "./routes/(app)/threads/[id].tsx": $_app_threads_id_,
     "./routes/(app)/threads/index.tsx": $_app_threads_index,
     "./routes/_404.tsx": $_404,
@@ -224,6 +227,7 @@ const manifest = {
     "./islands/settings/PrivacyManager.tsx": $settings_PrivacyManager,
     "./islands/settings/Settings.tsx": $settings_Settings,
     "./islands/settings/index.ts": $settings_index,
+    "./islands/streaks/StreakHub.tsx": $streaks_StreakHub,
     "./islands/threads/ThreadInside.tsx": $threads_ThreadInside,
     "./islands/threads/ThreadsGallery.tsx": $threads_ThreadsGallery,
     "./islands/threads/index.ts": $threads_index,
