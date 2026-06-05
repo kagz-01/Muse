@@ -55,6 +55,12 @@ export default function AppMenu({ currentPath }: AppMenuProps) {
       desc: "Contemplate",
     },
     {
+      label: "Community",
+      path: "/connections",
+      icon: <Icons.Users size={24} />,
+      desc: "Collective",
+    },
+    {
       label: "Links",
       path: "/streaks",
       icon: <Icons.Link2 size={24} />,
