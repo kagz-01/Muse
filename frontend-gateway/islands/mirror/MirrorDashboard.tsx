@@ -3,6 +3,7 @@ import * as Icons from "lucide-preact";
 import { loadMirrorStats, mirrorSignal } from "../../signals/mirror.ts";
 import { getActivityHeatmap, getStreakData, journalSignal } from "../../signals/journal.ts";
 import { activeThemesSignal } from "../../signals/connections.ts";
+import { streaksSignal, getStreakState as getSocialStreakState } from "../../signals/streaks.ts";
 import ActivityTimeline from "../../components/mirror/ActivityTimeline.tsx";
 import { LineChart, PieChart } from "../../components/mirror/MirrorCharts.tsx";
 import StreakCard from "./StreakCard.tsx";
@@ -18,7 +19,8 @@ export default function MirrorDashboard() {
   const stats = mirrorSignal.value;
   const streakData = getStreakData();
   const entries = journalSignal.value;
-  const topThemes = activeThemesSignal.value.slice(0, 8); // Top 8 themes
+  const topThemes = activeThemesSignal.value.slice(0, 8);
+  const socialStreaks = streaksSignal.value.filter((s) => getSocialStreakState(s) !== "broken");
 
   const heatmap = useMemo(() => {
     return getActivityHeatmap();
@@ -173,8 +175,52 @@ export default function MirrorDashboard() {
                     <Icons.Zap size={14} className="text-orange-400" />
                     Synthesis Chain
                    </h2>
-                   <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-6 md:p-10 shadow-xl">
+                   <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-6 md:p-10 shadow-xl space-y-6">
                       <StreakCard streakData={streakData} />
+
+                      {/* Social streaks summary bridging to Streak Hub */}
+                      <div className="border-t border-white/5 pt-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
+                            <Icons.Link2 size={14} className="text-indigo-400" />
+                            Active Cognitive Links
+                          </h3>
+                          <a href="/streaks" className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary hover:text-white transition-colors">
+                            View All →
+                          </a>
+                        </div>
+
+                        {socialStreaks.length > 0 ? (
+                          <div className="space-y-2">
+                            {socialStreaks.slice(0, 3).map((s) => {
+                              const state = getSocialStreakState(s);
+                              const isFading = state === "fading";
+                              return (
+                                <a 
+                                  key={s.id} 
+                                  href="/streaks"
+                                  className={`flex items-center justify-between p-3 rounded-2xl transition-all hover:bg-white/[0.04] ${isFading ? "bg-rose-500/5 border border-rose-500/10" : "bg-white/[0.02]"}`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold text-gray-300">
+                                      {s.partnerName.charAt(0)}
+                                    </div>
+                                    <span className="text-sm font-bold text-gray-300">{s.partnerName}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`text-lg font-mono font-bold ${isFading ? "text-rose-400 animate-pulse" : "text-emerald-400"}`}>
+                                      {s.count}
+                                    </span>
+                                    <span className="text-[9px] uppercase tracking-widest text-gray-600">days</span>
+                                  </div>
+                                </a>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="text-sm italic font-serif text-gray-600">No active cognitive links yet.</p>
+                        )}
+                      </div>
                    </div>
                  </div>
                </div>
