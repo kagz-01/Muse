@@ -11,6 +11,7 @@ import { threadsSignal } from "../../signals/threads.ts";
 import { activeThemesSignal } from "../../signals/connections.ts";
 import { itemsSignal } from "../../signals/items.ts";
 import { setAmbientGlow } from "../../signals/resonance.ts";
+import { streaksSignal, getStreakState } from "../../signals/streaks.ts";
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -170,6 +171,29 @@ export default function PulseHome() {
           </div>
         </section>
 
+        {/* FADING STREAKS ALERT */}
+        {streaksSignal.value.filter((s) => getStreakState(s) === "fading").length > 0 && (
+          <section className="px-4 md:px-8 w-full">
+            <a
+              href="/streaks"
+              className="flex items-center justify-between p-4 rounded-[2rem] bg-rose-500/5 border border-rose-500/15 hover:bg-rose-500/10 transition-all cursor-pointer group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center animate-pulse">
+                  <Icons.Link2 size={18} className="text-rose-400" />
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-rose-400">
+                    {streaksSignal.value.filter((s) => getStreakState(s) === "fading").length} link{streaksSignal.value.filter((s) => getStreakState(s) === "fading").length > 1 ? "s" : ""} fading
+                  </span>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Extend a thought before they expire</p>
+                </div>
+              </div>
+              <Icons.ArrowRight size={16} className="text-gray-600 group-hover:text-rose-400 transition-colors" />
+            </a>
+          </section>
+        )}
+
         {/* QUICK MIRROR WIDGET (INLINE STRIP) */}
         <section className="flex flex-wrap items-center gap-4 p-2 bg-white/[0.02] border-y md:border border-white/5 md:rounded-full backdrop-blur-3xl shadow-2xl w-full">
           <div className="flex-1 flex items-center justify-between px-6 py-4 border-r border-white/5">
@@ -194,6 +218,14 @@ export default function PulseHome() {
               <span className="text-2xl font-bold text-white font-mono">{topThemes.length}</span>
             </div>
             <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Active Themes</span>
+          </div>
+
+          <div className="flex-1 flex items-center justify-between px-6 py-4 border-l border-white/5">
+            <div className="flex items-center gap-3">
+              <Icons.Link2 size={18} className="text-indigo-400" />
+              <span className="text-2xl font-bold text-white font-mono">{streaksSignal.value.filter((s) => getStreakState(s) !== "broken").length}</span>
+            </div>
+            <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Active Links</span>
           </div>
         </section>
 
@@ -228,6 +260,7 @@ export default function PulseHome() {
             </h2>
             <div className="flex flex-col gap-3">
               <button
+                type="button"
                 onClick={() => globalThis.location.href = "/journal"}
                 className="group flex items-center justify-between p-4 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
               >
@@ -241,6 +274,7 @@ export default function PulseHome() {
               </button>
 
               <button
+                type="button"
                 onClick={() => globalThis.location.href = "/rooms"}
                 className="group flex items-center justify-between p-4 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
               >
