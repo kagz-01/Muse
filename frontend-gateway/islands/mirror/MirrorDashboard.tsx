@@ -30,14 +30,30 @@ export default function MirrorDashboard() {
       <div className="w-full space-y-16">
         
         {/* HERO */}
-        <section className="text-center md:text-left space-y-8 px-4 md:px-8">
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-white">
-            The Mirror.<br />
-            <span className="italic font-serif text-gray-400 font-light">Your cognitive reflection.</span>
-          </h1>
-          <p className="max-w-2xl text-gray-500 text-lg md:text-xl leading-relaxed font-serif italic opacity-90">
-            A precise analysis of your thematic trends, neural connections, and how the network resonates with your thought patterns.
-          </p>
+        <section className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-4 md:px-8">
+          <div className="space-y-4">
+            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-white">
+              The Mirror.<br />
+              <span className="italic font-serif text-gray-400 font-light">Your cognitive reflection.</span>
+            </h1>
+            <p className="max-w-2xl text-gray-500 text-lg md:text-xl leading-relaxed font-serif italic opacity-90">
+              A precise analysis of your thematic trends, neural connections, and how the network resonates with your thought patterns.
+            </p>
+          </div>
+
+          <a 
+            href="/streaks"
+            className="group flex items-center gap-4 p-4 md:p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/20 transition-all cursor-pointer shadow-xl self-start md:self-auto"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
+              <Icons.Link2 size={24} className="text-indigo-400 group-hover:scale-110 transition-transform" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white tracking-wide uppercase">Active Links</h3>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">View Cognitive Streaks</p>
+            </div>
+            <Icons.ArrowRight size={20} className="text-gray-600 group-hover:text-white transition-colors ml-2 md:ml-6" />
+          </a>
         </section>
 
         {/* LOADING / ERROR */}
