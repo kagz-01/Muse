@@ -10,6 +10,7 @@ import {
 import { threadsSignal } from "../../signals/threads.ts";
 import { activeThemesSignal } from "../../signals/connections.ts";
 import { itemsSignal } from "../../signals/items.ts";
+import { setAmbientGlow } from "../../signals/resonance.ts";
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -28,11 +29,15 @@ interface ServiceHealthResponse {
   };
 }
 
-function timeOfDayGreeting() {
+function getTimeContext() {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
+  if (hour >= 5 && hour < 12) {
+    return { greeting: "Good morning", hex: "#f59e0b" }; // Amber
+  }
+  if (hour >= 12 && hour < 18) {
+    return { greeting: "Good afternoon", hex: "#0ea5e9" }; // Sky Blue
+  }
+  return { greeting: "Good evening", hex: "#6366f1" }; // Indigo
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -58,15 +63,16 @@ export default function PulseHome() {
   const journalEntries = journalSignal.value;
   const threads = threadsSignal.value;
   const items = itemsSignal.value;
-  const [greeting, setGreeting] = useState("Good morning");
-  const [serviceHealth, setServiceHealth] = useState<
-    ServiceHealthResponse | null
-  >(
-    null,
-  );
+  
+  const [timeContext, setTimeContext] = useState(getTimeContext());
+  const [serviceHealth, setServiceHealth] = useState<ServiceHealthResponse | null>(null);
 
   useEffect(() => {
-    setGreeting(timeOfDayGreeting());
+    const ctx = getTimeContext();
+    setTimeContext(ctx);
+    setAmbientGlow(ctx.hex);
+    
+    return () => setAmbientGlow(null); // Clean up on dismount
   }, []);
 
   useEffect(() => {
@@ -106,305 +112,213 @@ export default function PulseHome() {
     acc[i.roomId] = (acc[i.roomId] || 0) + 1;
     return acc;
   }, {});
-  const topRoomId =
-    Object.keys(roomCounts).sort((a, b) => roomCounts[b] - roomCounts[a])[0];
+  const topRoomId = Object.keys(roomCounts).sort((a, b) => roomCounts[b] - roomCounts[a])[0];
   const topRoom = rooms.find((r) => r.id === topRoomId);
 
   const streak = getJournalStreak();
-  const topThemes = activeThemesSignal.value.slice(0, 4);
+  const topThemes = activeThemesSignal.value.slice(0, 5);
 
   const latestEntry = journalEntries[0];
   const latestThread = threads[0];
   const latestRoom = rooms[0];
 
-  const mirrorStats = [
-    {
-      label: "Artifacts",
-      value: weekItems.length,
-      icon: Icons.Layers,
-      color: "text-canvas-primary",
-    },
-    {
-      label: "Reflections",
-      value: weekEntries.length,
-      icon: Icons.BookOpen,
-      color: "text-emerald-400",
-    },
-    {
-      label: "Rooms Active",
-      value: new Set(weekItems.map((i) => i.roomId)).size,
-      icon: Icons.BarChart2,
-      color: "text-amber-400",
-    },
-  ];
+  const name = user?.username?.split(" ")[0] || "Creator";
+  const sysStatus = serviceHealth?.status === "healthy" ? "Online" : "Degraded";
+  const sysColor = sysStatus === "Online" ? "text-emerald-400" : "text-rose-400";
 
   return (
-    <div className="w-full max-w-none px-6 md:px-10 pt-8 pb-32 space-y-10 animate-in fade-in duration-1000">
-      {/* HERO SECTION: THE MONOLITH GREETER */}
-      <section className="relative overflow-hidden rounded-[3rem] border border-[var(--muse-text)]/5 bg-linear-to-br from-white/[0.04] via-transparent to-transparent p-10 md:p-16 shadow-3xl">
-        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-canvas-primary/10 blur-[120px] animate-pulse" />
-        <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-[var(--muse-text)]/5 blur-[120px]" />
-
-        <div className="relative z-10 grid gap-12 xl:grid-cols-[1.15fr_0.85fr] items-center">
-          <div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.95] text-[var(--muse-text)]">
-              {greeting},{" "}
-              <span className="text-[var(--muse-muted)] italic font-serif">
-                {user?.username?.split(" ")[0] || "Creator"}
-              </span>.
-              <span className="block mt-4 bg-gradient-to-r from-[var(--muse-text)] via-[var(--muse-text)] to-[var(--muse-muted)] bg-clip-text text-transparent">
-                Your resonance is stable.
-              </span>
-            </h1>
-
-            <p className="mt-8 max-w-xl text-[var(--muse-muted)] text-lg md:text-xl leading-relaxed font-serif italic opacity-90">
-              The platform is reflecting your semantic patterns. You have
-              maintained a{" "}
-              <span className="text-[var(--muse-text)] font-sans font-bold not-italic">
-                {streak} day
-              </span>{" "}
-              reflection streak.
-            </p>
-
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <button
-                type="button"
-                onClick={() => globalThis.location.href = "/journal"}
-                className="inline-flex items-center gap-3 rounded-full bg-[var(--muse-text)] px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-[var(--muse-bg)] shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-1 hover:shadow-white/20 active:scale-95 cursor-pointer"
-              >
-                Sync Journal <Icons.ArrowRight size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={() => globalThis.location.href = "/rooms"}
-                className="inline-flex items-center gap-3 rounded-full border border-[var(--muse-text)]/10 bg-[var(--muse-text)]/5 px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-[var(--muse-text)] transition-all hover:bg-[var(--muse-text)]/10 hover:border-[var(--muse-text)]/20 active:scale-95 cursor-pointer"
-              >
-                Enter Rooms <Icons.FolderOpen size={16} />
-              </button>
-            </div>
-          </div>
-
-          {/* QUICK MIRROR WIDGET */}
-          <div className="bg-[var(--muse-bg)]/40 backdrop-blur-2xl rounded-[2.5rem] border border-[var(--muse-text)]/10 p-8 space-y-8">
-            <div className="flex items-center justify-between border-b border-[var(--muse-text)]/5 pb-6">
-              <div className="flex items-center gap-3">
-                <Icons.Aperture size={20} className="text-canvas-primary" />
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--muse-text)]">
-                  Mirror Insights
-                </span>
-              </div>
-              <a
-                href="/mirror"
-                className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors"
-              >
-                History
-              </a>
-            </div>
-
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {mirrorStats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="min-w-[140px] flex-shrink-0 text-center snap-start"
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <stat.icon size={18} className={stat.color} />
-                    <span className="text-2xl font-bold text-[var(--muse-text)] font-mono">
-                      {stat.value}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-[8px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-6 rounded-3xl bg-[var(--muse-text)]/[0.03] border border-[var(--muse-text)]/5">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-canvas-primary mb-3">
-                Pattern Detected
-              </p>
-              <p className="text-sm text-[var(--muse-muted)] leading-relaxed font-serif italic">
-                {topRoom
-                  ? `Your focus on "${topRoom.name}" has intensified this week with ${
-                    roomCounts[topRoomId]
-                  } new artifacts.`
-                  : "Start collecting to see your primary cognitive patterns here."}
-              </p>
-            </div>
-          </div>
+    <div className="w-full pt-4 pb-32 flex flex-col items-center animate-in fade-in duration-1000">
+      
+      {/* SYSTEM STATUS PILL */}
+      <div className="w-full flex justify-end mb-8 px-4 md:px-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] backdrop-blur-md">
+          <div className={`w-1.5 h-1.5 rounded-full bg-current ${sysColor} animate-pulse`} />
+          <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500">
+            System {sysStatus}
+          </span>
         </div>
-      </section>
+      </div>
 
-      {/* SECONDARY GRID: ACTIVITY & THEMES */}
-      <section className="grid gap-10 xl:grid-cols-[1.2fr_0.8fr] items-start">
-        {/* RECENT RESONANCE */}
-        <div className="space-y-6 min-w-0">
-          <div className="flex items-center justify-between px-2">
-            <h2 className="text-2xl font-bold tracking-tight text-[var(--muse-text)] flex items-center gap-3">
-              Recent Resonance{" "}
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </h2>
-            <p className="text-xs text-[var(--muse-muted)] uppercase tracking-widest">
-              Latest Actions
-            </p>
+      <div className="w-full space-y-16">
+        
+        {/* HERO: THE TEMPORAL MONOLITH */}
+        <section className="text-center md:text-left space-y-8 px-4 md:px-8">
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-white">
+            {timeContext.greeting},<br />
+            <span className="italic font-serif text-gray-400 font-light">{name}.</span>
+          </h1>
+
+          <div className="flex flex-col md:flex-row items-center gap-6 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
+            <span className="flex items-center gap-2">
+              <Icons.Flame size={14} className="text-orange-400" />
+              {streak} Day Streak
+            </span>
+            <div className="hidden md:block w-1 h-1 rounded-full bg-white/20" />
+            <span className="flex items-center gap-2 text-indigo-400">
+              <Icons.Zap size={14} />
+              Resonance Stable
+            </span>
+            {topRoom && (
+              <>
+                <div className="hidden md:block w-1 h-1 rounded-full bg-white/20" />
+                <span className="flex items-center gap-2 text-emerald-400">
+                  <Icons.Focus size={14} />
+                  Anchored to "{topRoom.name}"
+                </span>
+              </>
+            )}
+          </div>
+        </section>
+
+        {/* QUICK MIRROR WIDGET (INLINE STRIP) */}
+        <section className="flex flex-wrap items-center gap-4 p-2 bg-white/[0.02] border-y md:border border-white/5 md:rounded-full backdrop-blur-3xl shadow-2xl w-full">
+          <div className="flex-1 flex items-center justify-between px-6 py-4 border-r border-white/5">
+            <div className="flex items-center gap-3">
+              <Icons.Layers size={18} className="text-canvas-primary" />
+              <span className="text-2xl font-bold text-white font-mono">{weekItems.length}</span>
+            </div>
+            <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Artifacts (Week)</span>
+          </div>
+          
+          <div className="flex-1 flex items-center justify-between px-6 py-4 border-r border-white/5">
+            <div className="flex items-center gap-3">
+              <Icons.BookOpen size={18} className="text-emerald-400" />
+              <span className="text-2xl font-bold text-white font-mono">{weekEntries.length}</span>
+            </div>
+            <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Reflections (Week)</span>
           </div>
 
-          <div className="grid gap-4">
+          <div className="flex-1 flex items-center justify-between px-6 py-4">
+            <div className="flex items-center gap-3">
+              <Icons.Hash size={18} className="text-amber-400" />
+              <span className="text-2xl font-bold text-white font-mono">{topThemes.length}</span>
+            </div>
+            <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Active Themes</span>
+          </div>
+        </section>
+
+        {/* SECONDARY GRID */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-12 px-4 md:px-8 w-full">
+          
+          {/* THEMES CLOUD */}
+          <div className="space-y-6">
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
+              <Icons.Brain size={14} className="text-canvas-primary" />
+              Trending Consciousness
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {topThemes.length > 0 ? topThemes.map((theme) => (
+                <span
+                  key={theme}
+                  className="px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-xs font-medium text-gray-300 hover:text-white hover:border-canvas-primary/50 hover:bg-canvas-primary/10 transition-all cursor-default"
+                >
+                  #{theme}
+                </span>
+              )) : (
+                <span className="text-sm italic font-serif text-gray-500">No established themes yet.</span>
+              )}
+            </div>
+          </div>
+
+          {/* LAUNCHPAD (QUICK ACTIONS) */}
+          <div className="space-y-6">
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
+              <Icons.Rocket size={14} className="text-blue-400" />
+              Launchpad
+            </h2>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => globalThis.location.href = "/journal"}
+                className="group flex items-center justify-between p-4 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                    <Icons.PenTool size={18} className="text-emerald-400" />
+                  </div>
+                  <span className="text-sm font-bold text-white group-hover:pl-1 transition-all">New Journal Entry</span>
+                </div>
+                <Icons.ArrowRight size={16} className="text-gray-500 group-hover:text-white" />
+              </button>
+
+              <button
+                onClick={() => globalThis.location.href = "/rooms"}
+                className="group flex items-center justify-between p-4 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                    <Icons.FolderPlus size={18} className="text-blue-400" />
+                  </div>
+                  <span className="text-sm font-bold text-white group-hover:pl-1 transition-all">Create New Room</span>
+                </div>
+                <Icons.ArrowRight size={16} className="text-gray-500 group-hover:text-white" />
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+        {/* RECENT RESONANCE (MINIMALIST LIST) */}
+        <section className="space-y-6 pt-8 border-t border-white/5 px-4 md:px-8 w-full">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
+              <Icons.Activity size={14} className="text-rose-400" />
+              Recent Resonance
+            </h2>
+            <a href="/mirror" className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+              View History
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 divide-y divide-white/5">
             {[
               {
-                title: latestEntry ? getJournalTitle(latestEntry) : "Journal",
-                detail: latestEntry
-                  ? `${latestEntry.wordCount} words`
-                  : "No entries",
-                time: latestEntry
-                  ? formatRelativeTime(latestEntry.createdAt)
-                  : "",
-                icon: Icons.BookOpen,
+                title: latestEntry ? getJournalTitle(latestEntry) : "Journaling Context",
+                detail: latestEntry ? `${latestEntry.wordCount} words` : "Empty",
+                time: latestEntry ? formatRelativeTime(latestEntry.createdAt) : "",
+                type: "Reflection",
                 href: "/journal",
               },
               {
-                title: latestThread ? latestThread.title : "Threads",
-                detail: latestThread
-                  ? `${latestThread.itemIds.length} items`
-                  : "No threads",
-                time: latestThread
-                  ? formatRelativeTime(toMillis(latestThread.updatedAt))
-                  : "",
-                icon: Icons.MessageSquare,
+                title: latestThread ? latestThread.title : "Community Thread",
+                detail: latestThread ? `${latestThread.itemIds.length} artifacts` : "Empty",
+                time: latestThread ? formatRelativeTime(toMillis(latestThread.updatedAt)) : "",
+                type: "Thread",
                 href: "/threads",
               },
               {
-                title: latestRoom ? latestRoom.name : "Rooms",
-                detail: latestRoom ? `${latestRoom.count} total` : "No rooms",
-                time: latestRoom
-                  ? formatRelativeTime(toMillis(latestRoom.updatedAt))
-                  : "",
-                icon: Icons.FolderOpen,
+                title: latestRoom ? latestRoom.name : "Active Room",
+                detail: latestRoom ? `${latestRoom.count} items` : "Empty",
+                time: latestRoom ? formatRelativeTime(toMillis(latestRoom.updatedAt)) : "",
+                type: "Room",
                 href: "/rooms",
               },
-            ].map((item) => (
+            ].map((item, i) => (
               <a
-                key={item.title}
+                key={i}
                 href={item.href}
-                className="group flex items-center justify-between p-6 rounded-[2rem] bg-[var(--muse-text)]/[0.02] border border-[var(--muse-text)]/5 hover:bg-[var(--muse-text)]/[0.05] hover:border-[var(--muse-text)]/10 transition-all"
+                className="group flex flex-col md:flex-row md:items-center justify-between py-5 hover:bg-white/[0.02] px-4 -mx-4 rounded-2xl transition-all cursor-pointer"
               >
-                <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl bg-[var(--muse-text)]/5 flex items-center justify-center text-canvas-primary group-hover:scale-110 transition-transform">
-                    <item.icon size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-[var(--muse-text)] tracking-tight">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs text-[var(--muse-muted)] mt-1">
-                      {item.detail} • {item.time}
-                    </p>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-300 group-hover:text-white transition-colors font-serif italic tracking-tight line-clamp-1">
+                    "{item.title}"
+                  </h3>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="text-[9px] uppercase tracking-widest font-bold text-gray-600">{item.type}</span>
+                    <div className="w-1 h-1 rounded-full bg-white/10" />
+                    <span className="text-[9px] uppercase tracking-widest font-bold text-gray-500">{item.time || "No data"}</span>
                   </div>
                 </div>
-                <Icons.ChevronRight
-                  size={20}
-                  className="text-[var(--muse-muted)] group-hover:text-[var(--muse-text)] transition-colors"
-                />
+                <div className="mt-4 md:mt-0 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity">
+                  <span className="text-xs font-mono text-gray-500 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                    {item.detail}
+                  </span>
+                </div>
               </a>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* TRENDING CONSCIOUSNESS */}
-        <div className="space-y-8 min-w-0">
-          <div className="bg-[var(--muse-text)]/[0.02] rounded-[2.5rem] border border-[var(--muse-text)]/5 p-8 min-w-0">
-            <h3 className="text-xl font-bold text-[var(--muse-text)] mb-6 flex items-center gap-3">
-              <Icons.TrendingUp size={20} className="text-canvas-primary" />
-              {" "}
-              Active Themes
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {topThemes.map((theme) => (
-                <span
-                  key={theme}
-                  className="px-4 py-2 rounded-full bg-[var(--muse-text)]/5 border border-[var(--muse-text)]/10 text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:border-canvas-primary/50 transition-colors"
-                >
-                  {theme}
-                </span>
-              ))}
-            </div>
-            <div className="mt-8 p-6 rounded-3xl bg-[var(--muse-bg)]/20 border border-[var(--muse-text)]/5">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-2">
-                Soul Signal
-              </p>
-              <p className="text-sm text-[var(--muse-muted)] font-serif italic leading-relaxed">
-                Your current focus suggests a high degree of pattern density in
-                {" "}
-                {topThemes[0] || "emergent topics"}.
-              </p>
-            </div>
-          </div>
-
-          {/* STATS STRIP */}
-          <div className="bg-[var(--muse-text)]/[0.02] rounded-[2.5rem] border border-[var(--muse-text)]/5 p-8 min-w-0">
-            <div className="flex items-center justify-between mb-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)]">
-                Service Health
-              </p>
-              <div className="text-[9px] uppercase tracking-widest text-[var(--muse-muted)]">
-                {serviceHealth?.checkedAt
-                  ? formatRelativeTime(toMillis(serviceHealth.checkedAt))
-                  : "No signal"}
-              </div>
-            </div>
-
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-              {[
-                {
-                  key: "ai",
-                  label: "AI Engine",
-                  state: serviceHealth?.services.ai.status,
-                  code: serviceHealth?.services.ai.statusCode,
-                },
-                {
-                  key: "blockchain",
-                  label: "Ledger Node",
-                  state: serviceHealth?.services.blockchain.status,
-                  code: serviceHealth?.services.blockchain.statusCode,
-                },
-              ].map((service) => (
-                <div
-                  key={service.key}
-                  className="rounded-2xl border border-[var(--muse-text)]/10 bg-[var(--muse-bg)]/20 p-4 min-w-[180px] flex-shrink-0"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[9px] uppercase tracking-widest text-[var(--muse-muted)] font-bold">
-                      {service.label}
-                    </span>
-                    {service.state === "up"
-                      ? <Icons.Wifi size={14} className="text-emerald-400" />
-                      : <Icons.WifiOff size={14} className="text-rose-400" />}
-                  </div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muse-text)]">
-                    {service.state === "up" ? "Online" : "Offline"}
-                  </p>
-                  <p className="text-[9px] text-[var(--muse-muted)] mt-1">
-                    HTTP {service.code ?? "-"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-canvas-primary/10 rounded-[2.5rem] border border-canvas-primary/20 p-8 text-center min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-canvas-primary mb-2">
-              Total Synthesis
-            </p>
-            <p className="text-4xl font-bold text-[var(--muse-text)] mb-2">
-              {rooms.reduce((s, r) => s + r.count, 0)}
-            </p>
-            <p className="text-xs text-[var(--muse-muted)] uppercase tracking-widest">
-              Anchored Artifacts
-            </p>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

@@ -1,13 +1,12 @@
 import { useMemo, useEffect } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import { loadMirrorStats, mirrorSignal } from "../../signals/mirror.ts";
-import { getMoodStats, getActivityHeatmap, getStreakData, journalSignal } from "../../signals/journal.ts";
-import EngagementCard from "../../components/mirror/EngagementCard.tsx";
+import { getActivityHeatmap, getStreakData, journalSignal } from "../../signals/journal.ts";
+import { activeThemesSignal } from "../../signals/connections.ts";
 import ActivityTimeline from "../../components/mirror/ActivityTimeline.tsx";
 import { LineChart, PieChart } from "../../components/mirror/MirrorCharts.tsx";
 import StreakCard from "./StreakCard.tsx";
 import ActivityHeatmap from "./ActivityHeatmap.tsx";
-import MoodDistribution from "./MoodDistribution.tsx";
 
 export default function MirrorDashboard() {
   const currentUserId = "user-123";
@@ -19,183 +18,180 @@ export default function MirrorDashboard() {
   const stats = mirrorSignal.value;
   const streakData = getStreakData();
   const entries = journalSignal.value;
-
-  const moodStats = useMemo(() => {
-    return getMoodStats();
-  }, [entries]);
+  const topThemes = activeThemesSignal.value.slice(0, 8); // Top 8 themes
 
   const heatmap = useMemo(() => {
     return getActivityHeatmap();
   }, [entries]);
 
   return (
-    <div className="min-h-screen bg-[var(--muse-background)] pb-32 md:pb-28">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-6 md:pt-8">
-        {/* Hero Section */}
-        <div className="mb-10">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[var(--muse-accent)] to-[var(--muse-accent-dark)] flex items-center justify-center">
-              <Icons.Gauge size={40} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-[var(--muse-text)]">
-                Your Mirror
-              </h1>
-              <p className="text-[var(--muse-text-muted)] mt-2">
-                See how the community resonates with your thoughts and
-                contributions
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#0a0a0a] pt-4 pb-32 flex flex-col items-center animate-in fade-in duration-1000">
+      
+      <div className="w-full space-y-16">
+        
+        {/* HERO */}
+        <section className="text-center md:text-left space-y-8 px-4 md:px-8">
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-white">
+            The Mirror.<br />
+            <span className="italic font-serif text-gray-400 font-light">Your cognitive reflection.</span>
+          </h1>
+          <p className="max-w-2xl text-gray-500 text-lg md:text-xl leading-relaxed font-serif italic opacity-90">
+            A precise analysis of your thematic trends, neural connections, and how the network resonates with your thought patterns.
+          </p>
+        </section>
 
-        {/* Loading State */}
+        {/* LOADING / ERROR */}
         {stats.isLoading && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-12 h-12 rounded-full border-4 border-[var(--muse-border-light)] border-t-[var(--muse-accent)] animate-spin" />
-            <p className="mt-4 text-[var(--muse-text-muted)]">
-              Loading your analytics...
-            </p>
+          <div className="flex flex-col items-center justify-center py-20 w-full">
+            <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+            <p className="mt-4 text-[10px] uppercase tracking-widest text-gray-500 font-bold">Calibrating Resonance...</p>
           </div>
         )}
 
-        {/* Error State */}
         {stats.error && (
-          <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
-            <Icons.AlertCircle size={20} className="text-red-500" />
-            <p className="text-red-600">{stats.error}</p>
+          <div className="px-4 md:px-8 w-full">
+             <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center gap-3">
+               <Icons.AlertCircle size={20} className="text-rose-500" />
+               <p className="text-rose-400 text-sm font-bold">{stats.error}</p>
+             </div>
           </div>
         )}
 
-        {!stats.isLoading && (
+        {!stats.isLoading && !stats.error && (
           <>
-            {/* Engagement Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-              <EngagementCard
-                label="Views"
-                value={stats.stats.views}
-                icon={Icons.Eye}
-                trend={{ direction: "up", percentage: 12 }}
-              />
-              <EngagementCard
-                label="Likes"
-                value={stats.stats.likes}
-                icon={Icons.Heart}
-                trend={{ direction: "up", percentage: 8 }}
-              />
-              <EngagementCard
-                label="Comments"
-                value={stats.stats.comments}
-                icon={Icons.MessageCircle}
-                trend={{ direction: "up", percentage: 5 }}
-              />
-              <EngagementCard
-                label="Collaborations"
-                value={stats.stats.collaborations}
-                icon={Icons.Zap}
-                trend={{ direction: "up", percentage: 15 }}
-              />
-              <EngagementCard
-                label="New Followers"
-                value={stats.stats.follows}
-                icon={Icons.UserPlus}
-                trend={{ direction: "up", percentage: 18 }}
-              />
-              <EngagementCard
-                label="Circle Joins"
-                value={stats.stats.circleJoins}
-                icon={Icons.Users}
-                trend={{ direction: "up", percentage: 10 }}
-              />
-            </div>
-
-            {/* Follower Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-              <div className="bg-[var(--muse-surface-bright)] rounded-2xl p-6 border border-[var(--muse-border-light)]">
-                <p className="text-sm text-[var(--muse-text-muted)] mb-2">
-                  Followers
-                </p>
-                <p className="text-3xl font-bold text-[var(--muse-text)]">
-                  {stats.followerCount}
-                </p>
-                <p className="text-xs text-[var(--muse-success)] mt-2">
-                  +12 this week
-                </p>
+            {/* THE RESONANCE METRICS STRIP (Replacing Engagement Cards) */}
+            <section className="flex flex-wrap items-center gap-4 p-2 bg-white/[0.02] border-y md:border border-white/5 md:rounded-full backdrop-blur-3xl shadow-2xl w-full">
+              
+              <div className="flex-1 flex items-center justify-between px-6 py-4 border-r border-white/5">
+                <div className="flex items-center gap-3">
+                  <Icons.ArrowUpCircle size={18} className="text-emerald-400" />
+                  <span className="text-2xl font-bold text-white font-mono">{stats.stats.likes}</span>
+                </div>
+                <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Upvotes / Resonance</span>
+              </div>
+              
+              <div className="flex-1 flex items-center justify-between px-6 py-4 border-r border-white/5">
+                <div className="flex items-center gap-3">
+                  <Icons.Eye size={18} className="text-canvas-primary" />
+                  <span className="text-2xl font-bold text-white font-mono">{stats.stats.views}</span>
+                </div>
+                <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Impressions</span>
               </div>
 
-              <div className="bg-[var(--muse-surface-bright)] rounded-2xl p-6 border border-[var(--muse-border-light)]">
-                <p className="text-sm text-[var(--muse-text-muted)] mb-2">
-                  Following
-                </p>
-                <p className="text-3xl font-bold text-[var(--muse-text)]">
-                  {stats.followingCount}
-                </p>
-                <p className="text-xs text-[var(--muse-text-muted)] mt-2">
-                  Active connections
-                </p>
+              <div className="flex-1 flex items-center justify-between px-6 py-4 border-r border-white/5">
+                <div className="flex items-center gap-3">
+                  <Icons.MessageSquare size={18} className="text-amber-400" />
+                  <span className="text-2xl font-bold text-white font-mono">{stats.stats.comments}</span>
+                </div>
+                <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Extensions</span>
               </div>
 
-              <div className="bg-[var(--muse-surface-bright)] rounded-2xl p-6 border border-[var(--muse-border-light)]">
-                <p className="text-sm text-[var(--muse-text-muted)] mb-2">
-                  Engagement Rate
-                </p>
-                <p className="text-3xl font-bold text-[var(--muse-text)]">
-                  {Math.round(
-                    ((stats.stats.likes + stats.stats.comments) /
-                      stats.stats.views) *
-                      100,
-                  )}%
-                </p>
-                <p className="text-xs text-[var(--muse-success)] mt-2">
-                  +2% from last week
-                </p>
-              </div>
-            </div>
-
-            {/* Streak & Momentum */}
-            <div className="mb-10">
-              <h2 className="text-xl font-semibold text-[var(--muse-text)] mb-6">
-                Synthesis Chain
-              </h2>
-              <StreakCard streakData={streakData} />
-            </div>
-
-            {/* Visualizations Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-              <ActivityHeatmap data={heatmap} />
-              <MoodDistribution
-                moodStats={moodStats}
-                onMoodClick={() => {}}
-                activeMood="all"
-              />
-            </div>
-
-            {/* Growth Chart and Activity Timeline */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-              <div className="flex flex-col gap-6">
-                <LineChart 
-                  data={stats.followerHistory.map(h => h.count)} 
-                  title="Audience Momentum" 
-                  color="#8b5cf6" 
-                />
-                <PieChart
-                  data={[
-                    { label: "Reflections", value: entries.length, color: "#60a5fa" },
-                    { label: "Syntheses", value: mirrorSignal.value.stats.collaborations, color: "#a78bfa" },
-                    { label: "Public Broadcasts", value: entries.filter(e => e.isPublic).length, color: "#f472b6" }
-                  ]}
-                  title="Content Synthesis Distribution"
-                />
+              <div className="flex-1 flex items-center justify-between px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <Icons.Network size={18} className="text-violet-400" />
+                  <span className="text-2xl font-bold text-white font-mono">{stats.followerCount}</span>
+                </div>
+                <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">Network Size</span>
               </div>
 
-              <div className="bg-[#0d0d0d] rounded-[2rem] p-8 border border-white/5 shadow-xl">
-                <h2 className="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--muse-muted)] mb-6">
-                  Live Activity Feed
+            </section>
+
+            {/* THEME & CONNECTION TRENDS */}
+            <section className="px-4 md:px-8 w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 pt-8">
+              
+              <div className="space-y-6">
+                <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
+                  <Icons.Brain size={14} className="text-canvas-primary" />
+                  Theme Trends
                 </h2>
-                <ActivityTimeline activities={stats.activity.slice(0, 6)} />
+                <div className="flex flex-wrap gap-3">
+                  {topThemes.length > 0 ? topThemes.map((theme, i) => (
+                    <div
+                      key={theme}
+                      className="group flex items-center gap-3 px-5 py-4 rounded-[2rem] bg-white/[0.02] border border-white/5 text-sm font-bold text-gray-300 transition-all hover:bg-white/[0.05] hover:border-white/20 hover:scale-105 hover:shadow-2xl cursor-default"
+                    >
+                      <span className="text-xs font-mono text-gray-500/50">{(i+1).toString().padStart(2, '0')}</span>
+                      #{theme}
+                      <Icons.TrendingUp size={14} className="text-emerald-400 opacity-20 group-hover:opacity-100 transition-opacity ml-2" />
+                    </div>
+                  )) : (
+                    <span className="text-sm italic font-serif text-gray-500">Not enough data to analyze themes.</span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 font-serif italic mt-6 border-l-2 border-white/10 pl-4 leading-relaxed max-w-xl">
+                  These concepts form the core of your current semantic network. They represent areas of high pattern density where you spend the most cognitive effort.
+                </p>
               </div>
-            </div>
 
+              <div className="space-y-8">
+                 <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
+                  <Icons.GitMerge size={14} className="text-indigo-400" />
+                  Network Momentum
+                </h2>
+                <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 shadow-xl">
+                  <LineChart 
+                    data={stats.followerHistory.map(h => h.count)} 
+                    title="" 
+                    color="#818cf8" 
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* COGNITIVE ACTIVITY & HEATMAP */}
+            <section className="px-4 md:px-8 w-full pt-16 border-t border-white/5 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12">
+               
+               <div className="space-y-12">
+                 <div>
+                   <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2 mb-6">
+                    <Icons.Activity size={14} className="text-amber-400" />
+                    Cognitive Density (Heatmap)
+                   </h2>
+                   <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-6 md:p-10 shadow-xl overflow-x-auto">
+                     <ActivityHeatmap data={heatmap} />
+                   </div>
+                 </div>
+                 
+                 <div>
+                   <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2 mb-6">
+                    <Icons.Zap size={14} className="text-orange-400" />
+                    Synthesis Chain
+                   </h2>
+                   <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-6 md:p-10 shadow-xl">
+                      <StreakCard streakData={streakData} />
+                   </div>
+                 </div>
+               </div>
+
+               <div className="space-y-12">
+                 <div>
+                   <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2 mb-6">
+                    <Icons.PieChart size={14} className="text-blue-400" />
+                    Content Synthesis Distribution
+                   </h2>
+                   <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-6 md:p-10 shadow-xl">
+                     <PieChart
+                        data={[
+                          { label: "Reflections", value: entries.length, color: "#60a5fa" },
+                          { label: "Syntheses", value: stats.stats.collaborations, color: "#a78bfa" },
+                          { label: "Public Broadcasts", value: entries.filter(e => e.isPublic).length, color: "#f472b6" }
+                        ]}
+                        title=""
+                      />
+                   </div>
+                 </div>
+
+                 <div>
+                   <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2 mb-6">
+                    <Icons.Clock size={14} className="text-rose-400" />
+                    Live Event Stream
+                   </h2>
+                   <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-6 md:p-8 shadow-xl">
+                     <ActivityTimeline activities={stats.activity.slice(0, 6)} />
+                   </div>
+                 </div>
+               </div>
+            </section>
 
           </>
         )}
