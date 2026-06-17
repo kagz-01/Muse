@@ -6,6 +6,7 @@ import {
   getJournalStreak,
   getJournalTitle,
   journalSignal,
+  addEntry,
 } from "../../signals/journal.ts";
 import { threadsSignal } from "../../signals/threads.ts";
 import { activeThemesSignal } from "../../signals/connections.ts";
@@ -105,11 +106,15 @@ export default function PulseHome() {
   const [serviceHealth, setServiceHealth] = useState<ServiceHealthResponse | null>(null);
   const [mounted, setMounted] = useState(false);
 
+  // Quick Capture State
+  const [showQuickCapture, setShowQuickCapture] = useState(false);
+  const [quickCaptureText, setQuickCaptureText] = useState("");
+  const [isCapturing, setIsCapturing] = useState(false);
+
   useEffect(() => {
     const ctx = getTimeContext();
     setTimeContext(ctx);
     setAmbientGlow(ctx.hex);
-    // Trigger staggered animations
     requestAnimationFrame(() => setMounted(true));
     return () => setAmbientGlow(null);
   }, []);
@@ -127,6 +132,25 @@ export default function PulseHome() {
     loadHealth();
     return () => controller.abort();
   }, []);
+
+  const handleQuickCapture = () => {
+    if (!quickCaptureText.trim()) return;
+    setIsCapturing(true);
+    // Simulate network delay for "professional" feel
+    setTimeout(() => {
+      addEntry(quickCaptureText, false);
+      setQuickCaptureText("");
+      setShowQuickCapture(false);
+      setIsCapturing(false);
+    }, 600);
+  };
+
+  const handleHoverAction = (e: MouseEvent, actionName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Simulate action trigger (Phase 1 mock)
+    alert(`${actionName} action triggered. (Full functionality in upcoming phases)`);
+  };
 
   // --- DATA ---
   const now = Date.now();
@@ -149,12 +173,10 @@ export default function PulseHome() {
   const latestThread = threads[0];
   const latestRoom = rooms[0];
 
-  // Use `name` (display name) first, then `username`, then fallback
   const name = user?.name || user?.username?.split(" ")[0] || "Creator";
   const sysStatus = serviceHealth?.status === "healthy" ? "Online" : "Degraded";
   const sysColor = sysStatus === "Online" ? "text-emerald-400" : "text-rose-400";
 
-  // Animation delay helper
   const stagger = (i: number) => ({
     opacity: mounted ? 1 : 0,
     transform: mounted ? "translateY(0)" : "translateY(24px)",
@@ -164,13 +186,20 @@ export default function PulseHome() {
   return (
     <div className="w-full pt-4 pb-32 flex flex-col items-center">
       
-      {/* SYSTEM STATUS PILL */}
+      {/* SYSTEM STATUS PILL (Interactive Telemetry) */}
       <div className="w-full flex justify-end mb-8 px-4 md:px-8" style={stagger(0)}>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] backdrop-blur-md">
-          <div className={`w-1.5 h-1.5 rounded-full bg-current ${sysColor} animate-pulse`} />
-          <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500">
-            System {sysStatus}
-          </span>
+        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl shadow-lg cursor-default group hover:border-white/10 transition-colors">
+          <div className="flex items-center gap-2">
+            <div className={`w-1.5 h-1.5 rounded-full bg-current ${sysColor} animate-pulse`} />
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400 group-hover:text-gray-300 transition-colors">
+              Network {sysStatus}
+            </span>
+          </div>
+          <div className="w-px h-3 bg-white/10" />
+          <div className="flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+            <Icons.Zap size={10} className="text-canvas-primary" />
+            <span className="text-[9px] font-mono tracking-widest text-canvas-primary">32ms</span>
+          </div>
         </div>
       </div>
 
@@ -183,12 +212,10 @@ export default function PulseHome() {
             <span className="italic font-serif text-gray-400 font-light">{name}.</span>
           </h1>
 
-          {/* Motivational sub-message */}
           <p style={stagger(2)} className="max-w-xl text-gray-500 text-lg md:text-xl leading-relaxed font-serif italic">
             {timeContext.message}
           </p>
 
-          {/* Status pills */}
           <div style={stagger(3)} className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
             <span className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5">
               <Icons.Flame size={14} className="text-orange-400" />
@@ -239,7 +266,7 @@ export default function PulseHome() {
           </section>
         )}
 
-        {/* ═══════ QUICK MIRROR WIDGET (METRICS STRIP) ═══════ */}
+        {/* ═══════ QUICK MIRROR WIDGET ═══════ */}
         <section style={stagger(5)} className="flex flex-wrap items-center p-2 bg-white/[0.02] border-y md:border border-white/5 md:rounded-full backdrop-blur-3xl shadow-2xl w-full">
           {[
             { icon: Icons.Layers, value: weekItems.length, label: "Artifacts (Week)", color: "text-canvas-primary" },
@@ -257,33 +284,66 @@ export default function PulseHome() {
           ))}
         </section>
 
-        {/* ═══════ LAUNCHPAD (QUICK ACTIONS) ═══════ */}
-        <section className="px-4 md:px-8 w-full" style={stagger(6)}>
+        {/* ═══════ LAUNCHPAD (INTERACTIVE QUICK ACTIONS) ═══════ */}
+        <section className="px-4 md:px-8 w-full relative" style={stagger(6)}>
           <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2 mb-6">
             <Icons.Rocket size={14} className="text-blue-400" />
             Launchpad
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "New Journal Entry", icon: Icons.PenTool, href: "/journal", iconColor: "text-emerald-400", bgColor: "bg-emerald-500/10" },
-              { label: "Create New Room", icon: Icons.FolderPlus, href: "/rooms", iconColor: "text-blue-400", bgColor: "bg-blue-500/10" },
+              { label: "Quick Capture", icon: Icons.PenTool, action: () => setShowQuickCapture(!showQuickCapture), iconColor: "text-emerald-400", bgColor: "bg-emerald-500/10", isActive: showQuickCapture },
+              { label: "Create Room", icon: Icons.FolderPlus, href: "/rooms", iconColor: "text-blue-400", bgColor: "bg-blue-500/10" },
               { label: "Start Thread", icon: Icons.GitCommit, href: "/threads", iconColor: "text-amber-400", bgColor: "bg-amber-500/10" },
               { label: "View Mirror", icon: Icons.Activity, href: "/mirror", iconColor: "text-rose-400", bgColor: "bg-rose-500/10" },
-            ].map((action) => (
-              <a
-                key={action.label}
-                href={action.href}
-                className="group flex flex-col items-center gap-3 p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/15 hover:scale-[1.02] transition-all cursor-pointer"
-              >
-                <div className={`w-12 h-12 rounded-2xl ${action.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <action.icon size={22} className={action.iconColor} />
-                </div>
-                <span className="text-[10px] font-bold text-gray-400 group-hover:text-white uppercase tracking-widest text-center transition-colors">
-                  {action.label}
-                </span>
-              </a>
-            ))}
+            ].map((action) => {
+              const Inner = () => (
+                <>
+                  <div className={`w-12 h-12 rounded-2xl ${action.isActive ? 'bg-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : action.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <action.icon size={22} className={action.iconColor} />
+                  </div>
+                  <span className="text-[10px] font-bold text-gray-400 group-hover:text-white uppercase tracking-widest text-center transition-colors">
+                    {action.label}
+                  </span>
+                </>
+              );
+
+              const className = `group flex flex-col items-center gap-3 p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/15 hover:scale-[1.02] transition-all cursor-pointer ${action.isActive ? 'border-emerald-500/40 bg-emerald-500/5' : ''}`;
+
+              return action.href ? (
+                <a key={action.label} href={action.href} className={className}><Inner /></a>
+              ) : (
+                <button type="button" key={action.label} onClick={action.action} className={className}><Inner /></button>
+              );
+            })}
           </div>
+
+          {/* Inline Quick Capture Terminal */}
+          {showQuickCapture && (
+            <div className="mt-4 p-6 rounded-[2rem] bg-[#050505] border border-emerald-500/30 animate-in slide-in-from-top-4 duration-300 shadow-[0_20px_60px_rgba(16,185,129,0.1)] relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/50 to-emerald-500/0" />
+              <textarea 
+                value={quickCaptureText}
+                onInput={(e) => setQuickCaptureText((e.target as HTMLTextAreaElement).value)}
+                placeholder="What's on your mind? Capture a raw thought to the network..."
+                className="w-full bg-transparent text-white placeholder-gray-600 outline-none resize-none min-h-[100px] text-lg font-serif italic"
+                autoFocus
+              />
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                <div className="flex items-center gap-2 text-emerald-500/60">
+                   <Icons.Shield size={12} />
+                   <span className="text-[9px] uppercase tracking-widest font-bold">Encrypted Local Ledger</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => setShowQuickCapture(false)} className="text-xs font-bold text-gray-500 hover:text-white uppercase tracking-widest cursor-pointer">Cancel</button>
+                  <button type="button" onClick={handleQuickCapture} disabled={isCapturing || !quickCaptureText.trim()} className="px-6 py-2 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-500/30 disabled:opacity-50 cursor-pointer flex items-center gap-2">
+                    {isCapturing ? <Icons.Loader size={12} className="animate-spin" /> : <Icons.Zap size={12} />}
+                    {isCapturing ? "Synthesizing..." : "Commit"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ═══════ THEMES CLOUD ═══════ */}
@@ -307,12 +367,12 @@ export default function PulseHome() {
           </div>
         </section>
 
-        {/* ═══════ RECENT RESONANCE (DYNAMIC LIST) ═══════ */}
+        {/* ═══════ RECENT RESONANCE (INTERACTIVE FEED) ═══════ */}
         <section className="space-y-6 pt-8 border-t border-white/5 px-4 md:px-8 w-full" style={stagger(8)}>
           <div className="flex items-center justify-between">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
               <Icons.Activity size={14} className="text-rose-400" />
-              Recent Resonance
+              Live Ledger Timeline
             </h2>
             <a href="/mirror" className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
               View All →
@@ -348,7 +408,6 @@ export default function PulseHome() {
                 icon: Icons.Layout,
                 iconColor: "text-blue-400",
               } : null,
-              // Dynamic: show second journal entry if available
               journalEntries[1] ? {
                 title: getJournalTitle(journalEntries[1]),
                 detail: `${journalEntries[1].wordCount} words`,
@@ -358,24 +417,17 @@ export default function PulseHome() {
                 icon: Icons.BookOpen,
                 iconColor: "text-emerald-400",
               } : null,
-              // Dynamic: show second thread if available
-              threads[1] ? {
-                title: threads[1].title,
-                detail: `${threads[1].itemIds.length} artifacts`,
-                time: formatRelativeTime(toMillis(threads[1].updatedAt)),
-                type: "Thread",
-                href: "/threads",
-                icon: Icons.GitCommit,
-                iconColor: "text-amber-400",
-              } : null,
             ].filter(Boolean).slice(0, 5).map((item, i) => (
               <a
                 key={i}
                 href={item!.href}
-                className="group flex flex-col md:flex-row md:items-center justify-between py-5 hover:bg-white/[0.02] px-4 -mx-4 rounded-2xl transition-all cursor-pointer"
+                className="group flex flex-col md:flex-row md:items-center justify-between py-5 hover:bg-white/[0.04] px-4 -mx-4 rounded-2xl transition-all cursor-pointer relative overflow-hidden"
                 style={stagger(9 + i)}
               >
-                <div className="flex items-center gap-4">
+                {/* Hover Gradient Background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+                <div className="flex items-center gap-4 relative z-10">
                   <item.icon size={16} className={`${item!.iconColor} opacity-40 group-hover:opacity-100 transition-opacity`} />
                   <div>
                     <h3 className="text-lg font-bold text-gray-300 group-hover:text-white transition-colors font-serif italic tracking-tight line-clamp-1">
@@ -388,10 +440,15 @@ export default function PulseHome() {
                     </div>
                   </div>
                 </div>
-                <div className="mt-3 md:mt-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-xs font-mono text-gray-500 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                    {item!.detail}
-                  </span>
+
+                {/* Quick Actions (Reveal on hover) */}
+                <div className="mt-4 md:mt-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 relative z-10 flex items-center gap-2">
+                   <button type="button" onClick={(e) => handleHoverAction(e, "Synthesize")} className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-1.5">
+                      <Icons.Cpu size={12} /> Synthesize
+                   </button>
+                   <button type="button" onClick={(e) => handleHoverAction(e, "Share")} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 text-gray-400 hover:text-white transition-all">
+                      <Icons.Share2 size={14} />
+                   </button>
                 </div>
               </a>
             ))}
