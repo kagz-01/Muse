@@ -2,8 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import AuthModal from "../modals/AuthModal.tsx";
 import SpectralHero from "./SpectralHero.tsx";
 import SystemBento from "./SystemBento.tsx";
-import AboutSection from "./AboutSection.tsx";
-import LedgerSection from "./LedgerSection.tsx";
+import InteractivePlaygrounds from "./InteractivePlaygrounds.tsx";
 import LandingFooter from "./LandingFooter.tsx";
 import DemoVideo from "./DemoVideo.tsx";
 import BrandModal from "./BrandModal.tsx";
@@ -154,17 +153,9 @@ export default function LandingPage() {
           onGuestEntry={handleGuestEntry}
         />
 
-        <AboutSection />
-
-        <div id="ecosystem">
+        <div id="ecosystem" className="pt-12">
+          <InteractivePlaygrounds />
           <SystemBento />
-        </div>
-
-        <div id="ledger">
-          <LedgerSection
-            onCTA={() => setAuthMode("signup")}
-            onGuestEntry={handleGuestEntry}
-          />
         </div>
 
         <LandingFooter />
