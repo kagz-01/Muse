@@ -4,6 +4,8 @@ import { getSessionUser } from "../../../utils/auth.ts";
 import { queryDB } from "../../../utils/db.ts";
 import DashboardLayout from "../../../islands/dashboard/DashboardLayout.tsx";
 import ArtifactUploader from "../../../islands/rooms/ArtifactUploader.tsx";
+import SynthesisTrigger from "../../../islands/rooms/SynthesisTrigger.tsx";
+import ThreadCard, { ThreadData } from "../../../components/rooms/ThreadCard.tsx";
 import * as Icons from "lucide-preact";
 
 interface ArtifactData {
@@ -26,6 +28,7 @@ interface RoomInteriorData {
     tags: string[];
   };
   artifacts: ArtifactData[];
+  threads: ThreadData[];
 }
 
 export const handler: Handlers<RoomInteriorData> = {
@@ -60,6 +63,19 @@ export const handler: Handlers<RoomInteriorData> = {
       created_at: a.created_at.toISOString(),
     }));
 
+    // Fetch Threads (AI Blueprints)
+    const threadsRaw = await queryDB(
+      "SELECT id, artifact_ids, ai_blueprint, created_at FROM threads WHERE room_id = $1 ORDER BY created_at DESC",
+      roomId
+    );
+
+    const threads: ThreadData[] = threadsRaw.map((t: any) => ({
+      id: t.id,
+      artifact_ids: t.artifact_ids || [],
+      blueprint: t.ai_blueprint,
+      created_at: t.created_at.toISOString(),
+    }));
+
     return ctx.render({
       user: { username: userRow.username, email: userRow.email },
       room: {
@@ -70,6 +86,7 @@ export const handler: Handlers<RoomInteriorData> = {
         tags: roomRow.tags || [],
       },
       artifacts,
+      threads,
     });
   },
 };
@@ -87,7 +104,7 @@ function getTypeIcon(type: string) {
 }
 
 export default function RoomInterior({ data }: PageProps<RoomInteriorData>) {
-  const { user, room, artifacts } = data;
+  const { user, room, artifacts, threads } = data;
 
   return (
     <>
@@ -95,7 +112,7 @@ export default function RoomInterior({ data }: PageProps<RoomInteriorData>) {
         <title>{room.title} | Muse</title>
       </Head>
       <DashboardLayout user={user}>
-        <div className="max-w-4xl mx-auto pb-20 animate-in fade-in duration-500">
+        <div className="max-w-5xl mx-auto pb-20 animate-in fade-in duration-500">
           
           {/* Back button & Header */}
           <div className="mb-8">
@@ -129,58 +146,96 @@ export default function RoomInterior({ data }: PageProps<RoomInteriorData>) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* LEFT COL: Ingestion */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-8">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-4">
-                  Ingest Artifacts
-                </h2>
-                <ArtifactUploader roomId={room.id} themeColor={room.theme_color} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            {/* LEFT COL: Ingestion & Triggers (3 Cols wide) */}
+            <div className="lg:col-span-4">
+              <div className="sticky top-8 space-y-12">
+                
+                {/* Uploader */}
+                <div>
+                  <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-4">
+                    Ingest Artifacts
+                  </h2>
+                  <ArtifactUploader roomId={room.id} themeColor={room.theme_color} />
+                </div>
+
+                {/* Synthesis Trigger */}
+                {artifacts.length > 0 && (
+                  <div>
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-4">
+                      AI Synthesis Engine
+                    </h2>
+                    <SynthesisTrigger roomId={room.id} themeColor={room.theme_color} />
+                  </div>
+                )}
+                
               </div>
             </div>
 
-            {/* RIGHT COL: Artifact Ledger */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                  Cognitive Ledger
-                </h2>
-                <span className="text-xs font-medium text-[var(--muse-muted)] bg-[var(--muse-surface)] px-2 py-1 rounded-md border border-[var(--muse-border)]">
-                  {artifacts.length} Artifacts
-                </span>
-              </div>
-
-              {artifacts.length === 0 ? (
-                <div className="p-8 text-center bg-[var(--muse-surface)] border border-[var(--muse-border)] border-dashed rounded-2xl">
-                  <Icons.Ghost size={32} className="mx-auto text-[var(--muse-muted)] mb-3 opacity-50" />
-                  <h3 className="text-[var(--muse-text)] font-medium mb-1">The Ledger is Empty</h3>
-                  <p className="text-xs text-[var(--muse-muted)]">Upload a document or paste a link to begin synthesis.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {artifacts.map(artifact => (
-                    <div key={artifact.id} className="group p-4 bg-[var(--muse-surface)] hover:bg-white/[0.02] border border-[var(--muse-border)] hover:border-white/10 rounded-2xl flex items-center justify-between transition-all cursor-pointer">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[var(--muse-bg)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] group-hover:text-canvas-primary transition-colors">
-                          {getTypeIcon(artifact.type)}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-[var(--muse-text)] max-w-sm truncate">
-                            {artifact.source_url}
-                          </p>
-                          <p className="text-xs text-[var(--muse-muted)] uppercase tracking-wider mt-1">
-                            {artifact.type}
-                          </p>
-                        </div>
-                      </div>
-                      <button className="text-[var(--muse-muted)] opacity-0 group-hover:opacity-100 hover:text-[var(--muse-text)] transition-all">
-                        <Icons.ArrowUpRight size={16} />
-                      </button>
-                    </div>
-                  ))}
+            {/* RIGHT COL: Ledger & Threads (8 Cols wide) */}
+            <div className="lg:col-span-8">
+              
+              {/* Threads Section */}
+              {threads.length > 0 && (
+                <div className="mb-16">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Icons.Network size={20} className="text-[var(--muse-text)]" />
+                    <h2 className="text-xl font-bold tracking-tight text-[var(--muse-text)]">
+                      Synthesized Threads
+                    </h2>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    {threads.map(thread => (
+                      <ThreadCard key={thread.id} thread={thread} themeColor={room.theme_color} />
+                    ))}
+                  </div>
                 </div>
               )}
+
+              {/* Cognitive Ledger (Raw Artifacts) */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                    Cognitive Ledger (Raw Data)
+                  </h2>
+                  <span className="text-xs font-medium text-[var(--muse-muted)] bg-[var(--muse-surface)] px-2 py-1 rounded-md border border-[var(--muse-border)]">
+                    {artifacts.length} Artifacts
+                  </span>
+                </div>
+
+                {artifacts.length === 0 ? (
+                  <div className="p-8 text-center bg-[var(--muse-surface)] border border-[var(--muse-border)] border-dashed rounded-2xl">
+                    <Icons.Ghost size={32} className="mx-auto text-[var(--muse-muted)] mb-3 opacity-50" />
+                    <h3 className="text-[var(--muse-text)] font-medium mb-1">The Ledger is Empty</h3>
+                    <p className="text-xs text-[var(--muse-muted)]">Upload a document or paste a link to begin synthesis.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {artifacts.map(artifact => (
+                      <div key={artifact.id} className="group p-4 bg-[var(--muse-surface)] hover:bg-white/[0.02] border border-[var(--muse-border)] hover:border-white/10 rounded-2xl flex items-center justify-between transition-all cursor-pointer">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-[var(--muse-bg)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] group-hover:text-canvas-primary transition-colors">
+                            {getTypeIcon(artifact.type)}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-[var(--muse-text)] max-w-sm truncate">
+                              {artifact.source_url}
+                            </p>
+                            <p className="text-xs text-[var(--muse-muted)] uppercase tracking-wider mt-1">
+                              {artifact.type}
+                            </p>
+                          </div>
+                        </div>
+                        <button className="text-[var(--muse-muted)] opacity-0 group-hover:opacity-100 hover:text-[var(--muse-text)] transition-all">
+                          <Icons.ArrowUpRight size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
             </div>
           </div>
 

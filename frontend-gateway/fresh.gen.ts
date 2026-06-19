@@ -42,6 +42,7 @@ import * as $api_mirror from "./routes/api/mirror.ts";
 import * as $api_rooms_create from "./routes/api/rooms/create.ts";
 import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
+import * as $api_threads_synthesize from "./routes/api/threads/synthesize.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $dashboard_index from "./routes/dashboard/index.tsx";
 import * as $dashboard_rooms_id_ from "./routes/dashboard/rooms/[id].tsx";
@@ -114,6 +115,7 @@ import * as $profile_index from "./islands/profile/index.ts";
 import * as $rooms_ArtifactUploader from "./islands/rooms/ArtifactUploader.tsx";
 import * as $rooms_RoomInside from "./islands/rooms/RoomInside.tsx";
 import * as $rooms_RoomsGallery from "./islands/rooms/RoomsGallery.tsx";
+import * as $rooms_SynthesisTrigger from "./islands/rooms/SynthesisTrigger.tsx";
 import * as $rooms_index from "./islands/rooms/index.ts";
 import * as $settings_PrivacyManager from "./islands/settings/PrivacyManager.tsx";
 import * as $settings_Settings from "./islands/settings/Settings.tsx";
@@ -166,6 +168,7 @@ const manifest = {
     "./routes/api/rooms/create.ts": $api_rooms_create,
     "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
+    "./routes/api/threads/synthesize.ts": $api_threads_synthesize,
     "./routes/auth.tsx": $auth,
     "./routes/dashboard/index.tsx": $dashboard_index,
     "./routes/dashboard/rooms/[id].tsx": $dashboard_rooms_id_,
@@ -245,6 +248,7 @@ const manifest = {
     "./islands/rooms/ArtifactUploader.tsx": $rooms_ArtifactUploader,
     "./islands/rooms/RoomInside.tsx": $rooms_RoomInside,
     "./islands/rooms/RoomsGallery.tsx": $rooms_RoomsGallery,
+    "./islands/rooms/SynthesisTrigger.tsx": $rooms_SynthesisTrigger,
     "./islands/rooms/index.ts": $rooms_index,
     "./islands/settings/PrivacyManager.tsx": $settings_PrivacyManager,
     "./islands/settings/Settings.tsx": $settings_Settings,
