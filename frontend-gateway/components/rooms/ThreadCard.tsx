@@ -20,9 +20,10 @@ export interface ThreadData {
 interface ThreadCardProps {
   thread: ThreadData;
   themeColor: string;
+  onQuestionClick?: (threadId: string, question: string) => void;
 }
 
-export default function ThreadCard({ thread, themeColor }: ThreadCardProps) {
+export default function ThreadCard({ thread, themeColor, onQuestionClick }: ThreadCardProps) {
   const { theme, summary, socratic_questions } = thread.blueprint;
 
   return (
@@ -56,6 +57,7 @@ export default function ThreadCard({ thread, themeColor }: ThreadCardProps) {
             {socratic_questions.map((q, idx) => (
               <button 
                 key={idx}
+                onClick={() => onQuestionClick && onQuestionClick(thread.id, q.question)}
                 className="text-left p-4 rounded-xl bg-[var(--muse-bg)] border border-[var(--muse-border)] hover:border-white/20 transition-colors group/btn flex items-start gap-3"
               >
                 <div className="mt-0.5 text-[var(--muse-muted)] group-hover/btn:text-canvas-primary transition-colors">

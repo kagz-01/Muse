@@ -38,6 +38,7 @@ import * as $api_followers_status from "./routes/api/followers/status.ts";
 import * as $api_followers_unfollow from "./routes/api/followers/unfollow.ts";
 import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_joke from "./routes/api/joke.ts";
+import * as $api_journal_capture from "./routes/api/journal/capture.ts";
 import * as $api_mirror from "./routes/api/mirror.ts";
 import * as $api_rooms_create from "./routes/api/rooms/create.ts";
 import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
@@ -113,6 +114,8 @@ import * as $profile_ProfileOverlay from "./islands/profile/ProfileOverlay.tsx";
 import * as $profile_ProfilePage from "./islands/profile/ProfilePage.tsx";
 import * as $profile_index from "./islands/profile/index.ts";
 import * as $rooms_ArtifactUploader from "./islands/rooms/ArtifactUploader.tsx";
+import * as $rooms_JournalModal from "./islands/rooms/JournalModal.tsx";
+import * as $rooms_RoomClientManager from "./islands/rooms/RoomClientManager.tsx";
 import * as $rooms_RoomInside from "./islands/rooms/RoomInside.tsx";
 import * as $rooms_RoomsGallery from "./islands/rooms/RoomsGallery.tsx";
 import * as $rooms_SynthesisTrigger from "./islands/rooms/SynthesisTrigger.tsx";
@@ -164,6 +167,7 @@ const manifest = {
     "./routes/api/followers/unfollow.ts": $api_followers_unfollow,
     "./routes/api/health/services.ts": $api_health_services,
     "./routes/api/joke.ts": $api_joke,
+    "./routes/api/journal/capture.ts": $api_journal_capture,
     "./routes/api/mirror.ts": $api_mirror,
     "./routes/api/rooms/create.ts": $api_rooms_create,
     "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
@@ -246,6 +250,8 @@ const manifest = {
     "./islands/profile/ProfilePage.tsx": $profile_ProfilePage,
     "./islands/profile/index.ts": $profile_index,
     "./islands/rooms/ArtifactUploader.tsx": $rooms_ArtifactUploader,
+    "./islands/rooms/JournalModal.tsx": $rooms_JournalModal,
+    "./islands/rooms/RoomClientManager.tsx": $rooms_RoomClientManager,
     "./islands/rooms/RoomInside.tsx": $rooms_RoomInside,
     "./islands/rooms/RoomsGallery.tsx": $rooms_RoomsGallery,
     "./islands/rooms/SynthesisTrigger.tsx": $rooms_SynthesisTrigger,
