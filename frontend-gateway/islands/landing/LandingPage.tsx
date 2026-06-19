@@ -66,85 +66,103 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-radial from-canvas-primary/20 to-transparent animate-slow-pulse blur-[150px]" />
       </div>
 
-      {/* Header */}
-      <header className="fixed top-0 left-0 w-full px-6 md:px-12 py-8 flex justify-between items-center z-[100] backdrop-blur-3xl bg-[var(--muse-overlay)] border-b border-[var(--muse-border)] transition-colors duration-300">
-        <div
-          className="flex items-center gap-3 group cursor-pointer"
-          onClick={() => setIsBrandOpen(true)}
-        >
-          <div className="h-10 w-10 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-all duration-300">
-            <Icons.Infinity size={24} strokeWidth={2.5} />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tighter text-[var(--muse-text)] leading-none transition-colors duration-300">
-              MUSE
-            </span>
-            <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-canvas-primary mt-1 leading-none">
-              Intelligence
-            </span>
-          </div>
-        </div>
+      {/* Header: The Command Bar */}
+      <div className="fixed top-0 left-0 w-full px-4 md:px-8 py-6 z-[100] flex justify-center pointer-events-none">
+        <header className="w-full max-w-6xl px-6 py-4 flex justify-between items-center backdrop-blur-3xl bg-[var(--muse-bg)]/80 border border-[var(--muse-border)] rounded-[3rem] shadow-[0_20px_40px_rgba(0,0,0,0.2)] pointer-events-auto transition-colors duration-300 relative overflow-hidden group/header">
+          {/* Subtle hover gradient inside header */}
+          <div className="absolute inset-0 bg-gradient-to-r from-canvas-primary/5 via-transparent to-indigo-500/5 opacity-0 group-hover/header:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-        <nav className="hidden md:flex items-center gap-10">
-          {[
-            { label: "About", href: "#about" },
-            { label: "Ecosystem", href: "#ecosystem" },
-            { label: "Ledger", href: "#ledger" },
-          ].map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById(link.href.slice(1));
-                if (el) {
-                  el.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  });
-                }
-              }}
-              className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors duration-300"
+          <div
+            className="flex items-center gap-4 group cursor-pointer relative z-10"
+            onClick={() => setIsBrandOpen(true)}
+          >
+            <div className="relative">
+              <div className="h-10 w-10 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <Icons.Infinity size={24} strokeWidth={2.5} />
+              </div>
+              {/* Live Protocol Status Indicator */}
+              <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-[var(--muse-bg)] flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold tracking-tighter text-[var(--muse-text)] leading-none transition-colors duration-300">
+                MUSE
+              </span>
+              <div className="flex items-center gap-1.5 mt-1">
+                <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-canvas-primary leading-none">
+                  Protocol
+                </span>
+                <span className="text-[7px] font-mono text-emerald-500/80 uppercase tracking-widest hidden sm:block animate-pulse">
+                  Syncing
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <nav className="hidden md:flex items-center gap-8 relative z-10">
+            {[
+              { label: "Manifesto", href: "#about" },
+              { label: "Ecosystem", href: "#ecosystem" },
+              { label: "Live Ledger", href: "#ledger" },
+            ].map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById(link.href.slice(1));
+                  if (el) {
+                    el.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }
+                }}
+                className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors duration-300"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-4 sm:gap-6 relative z-10">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 flex items-center justify-center transition-all text-[var(--muse-muted)] hover:text-[var(--muse-text)] duration-300"
+              title={`Switch to next theme (Current: ${currentTheme})`}
             >
-              {link.label}
-            </a>
-          ))}
-        </nav>
+              {currentTheme === "dark" && <Icons.Moon size={16} />}
+              {currentTheme === "dim" && (
+                <Icons.Circle size={14} fill="currentColor" />
+              )}
+              {currentTheme === "tint" && <Icons.CloudSun size={16} />}
+              {currentTheme === "light" && (
+                <Icons.Sun size={16} fill="currentColor" />
+              )}
+            </button>
 
-        <div className="flex items-center gap-6">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 flex items-center justify-center transition-all text-[var(--muse-muted)] hover:text-[var(--muse-text)] duration-300"
-            title={`Switch to next theme (Current: ${currentTheme})`}
-          >
-            {currentTheme === "dark" && <Icons.Moon size={16} />}
-            {currentTheme === "dim" && (
-              <Icons.Circle size={14} fill="currentColor" />
-            )}
-            {currentTheme === "tint" && <Icons.CloudSun size={16} />}
-            {currentTheme === "light" && (
-              <Icons.Sun size={16} fill="currentColor" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setAuthMode("login")}
-            className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors hidden sm:block duration-300"
-          >
-            Login
-          </button>
-          <button
-            type="button"
-            onClick={() => setAuthMode("signup")}
-            className="group relative px-6 py-3 rounded-full bg-[var(--muse-text)] text-[var(--muse-bg)] text-[10px] font-bold uppercase tracking-widest shadow-2xl hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer overflow-hidden duration-300"
-          >
-            <div className="absolute inset-0 bg-canvas-primary/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
-            <span className="relative z-10">Get Started</span>
-          </button>
-        </div>
-      </header>
+            <button
+              type="button"
+              onClick={() => setAuthMode("login")}
+              className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors hidden sm:block duration-300"
+            >
+              Auth
+            </button>
+            <button
+              type="button"
+              onClick={() => setAuthMode("signup")}
+              className="group relative px-6 py-3 rounded-full bg-[var(--muse-text)] text-[var(--muse-bg)] text-[10px] font-bold uppercase tracking-widest shadow-[0_0_20px_var(--muse-text)]/10 hover:shadow-[0_0_30px_var(--muse-text)]/30 hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer overflow-hidden duration-300 border border-transparent hover:border-white/20"
+            >
+              <div className="absolute inset-0 bg-canvas-primary/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+              <span className="relative z-10 flex items-center gap-2">
+                Init Sequence <Icons.ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+              </span>
+            </button>
+          </div>
+        </header>
+      </div>
 
       <main className="relative z-10 pt-20">
         <SpectralHero

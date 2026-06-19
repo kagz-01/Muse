@@ -45,86 +45,120 @@ export default function LandingFooter() {
   ];
 
   return (
-    <footer className="relative bg-[var(--muse-bg)] border-t border-[var(--muse-border)] pt-8 pb-5 overflow-hidden">
-      <div className="w-full max-w-[1800px] mx-auto px-6 md:px-16">
+    <footer className="relative bg-[#050505] border-t border-[var(--muse-border)] pt-12 pb-6 overflow-hidden">
+      {/* Background terminal grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+      
+      <div className="w-full max-w-[1800px] mx-auto px-6 md:px-16 relative z-10">
         {/* MAIN ROW */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6">
-          {/* LEFT: Logo + Slogan */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2.5">
-              <div className="h-7 w-7 bg-[var(--muse-text)] rounded-lg flex items-center justify-center text-[var(--muse-bg)] shadow-md shrink-0">
-                <Icons.Infinity size={15} strokeWidth={2.5} />
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-12 md:gap-6 pb-12">
+          {/* LEFT: Logo + Protocol Vibe */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 bg-white rounded-xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(255,255,255,0.2)] shrink-0 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-black/20" />
+                <Icons.Infinity size={18} strokeWidth={3} className="relative z-10" />
               </div>
               <div className="flex flex-col leading-none">
-                <span className="text-sm font-bold tracking-tighter text-[var(--muse-text)]">
+                <span className="text-lg font-bold tracking-tighter text-white">
                   MUSE
                 </span>
-                <span className="text-[7px] font-bold uppercase tracking-[0.5em] text-canvas-primary">
-                  Intelligence
+                <span className="text-[8px] font-bold uppercase tracking-[0.5em] text-canvas-primary mt-1">
+                  Protocol Network
                 </span>
               </div>
             </div>
-            <p className="text-xs font-bold text-[var(--muse-text)] max-w-xs leading-snug">
+            <p className="text-xs font-bold text-gray-300 max-w-xs leading-snug">
               Turn your consumption into creation.
             </p>
-            <p className="text-xs font-serif italic text-[var(--muse-muted)] max-w-xs leading-relaxed">
-              "The bridge between consumption and consciousness. Every artifact
-              captured is a neuron in your digital soul."
-            </p>
+            <div className="pl-4 border-l-2 border-white/10">
+              <p className="text-xs font-serif italic text-gray-500 max-w-xs leading-relaxed">
+                "The bridge between consumption and consciousness. Every artifact captured is a neuron in your digital soul."
+              </p>
+            </div>
           </div>
 
-          {/* RIGHT: Social + Legal */}
-          <div className="flex flex-col items-start md:items-end gap-4">
-            {/* Social Links */}
-            <div className="flex items-center gap-2">
-              {socialLinks.map(({ svg, label }, i) => (
-                <div key={i} className="relative group/social">
-                  <a
-                    href="#"
-                    aria-label={label}
-                    title={label}
-                    className="w-7 h-7 rounded-full border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] bg-transparent group-hover/social:opacity-0 transition-all duration-300"
-                  >
-                    {svg}
-                  </a>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/social:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    <span className="text-[7px] font-bold uppercase tracking-widest text-[var(--muse-text)] whitespace-nowrap">
-                      Soon
-                    </span>
+          {/* RIGHT: Broadcasting + Governance */}
+          <div className="flex flex-col items-start md:items-end gap-8 w-full md:w-auto">
+            
+            {/* Broadcasting Channels */}
+            <div className="w-full md:w-auto">
+              <h4 className="text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 mb-4 md:text-right">Broadcasting Channels</h4>
+              <div className="flex flex-wrap items-center gap-3">
+                {socialLinks.map(({ svg, label }, i) => (
+                  <div key={i} className="relative group/social">
+                    <a
+                      href="#"
+                      aria-label={label}
+                      title={label}
+                      className="w-10 h-10 rounded-[1rem] border border-white/10 flex items-center justify-center text-gray-500 bg-white/[0.02] hover:border-canvas-primary/50 hover:bg-canvas-primary/10 transition-all duration-300 relative overflow-hidden"
+                    >
+                      {/* Cybernetic scanning animation on hover */}
+                      <div className="absolute inset-0 -translate-x-full group-hover/social:animate-[scan_1s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-canvas-primary/30 to-transparent w-1/2 h-full skew-x-12" />
+                      <div className="relative z-10 group-hover/social:text-white transition-colors duration-300">
+                        {svg}
+                      </div>
+                    </a>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* Legal Links */}
-            <div className="flex items-center gap-4">
-              {[
-                { label: "Privacy Policy", href: "#" },
-                { label: "Terms of Service", href: "#" },
-                { label: "Open Source", href: "#" },
-              ].map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="text-[10px] text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors duration-300"
-                >
-                  {link.label}
-                </a>
-              ))}
+            {/* Governance Links */}
+            <div className="w-full md:w-auto">
+              <h4 className="text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 mb-4 md:text-right">Governance & Protocol</h4>
+              <div className="flex flex-wrap items-center gap-4 md:gap-6">
+                {[
+                  { label: "Manifesto", href: "#" },
+                  { label: "Data Sovereignty", href: "#" },
+                  { label: "Protocol Rules", href: "#" },
+                  { label: "Open Source", href: "#" },
+                ].map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="group flex items-center gap-2 text-[10px] text-gray-400 hover:text-white font-bold tracking-widest uppercase transition-colors duration-300"
+                  >
+                    <Icons.Terminal size={10} className="text-gray-600 group-hover:text-canvas-primary transition-colors" />
+                    {link.label}
+                  </a>
+                ))}
+              </div>
             </div>
+
           </div>
         </div>
 
-        {/* BOTTOM BAR */}
-        <div className="pt-4 border-t border-[var(--muse-border)] flex items-center justify-between">
-          <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] opacity-50">
-            © 2026 Muse Protocol · Built on Sovereignty
-          </span>
-          <span className="text-[9px] text-[var(--muse-muted)] opacity-40 font-serif italic">
-            v2.1.0
-          </span>
+        {/* BOTTOM BAR: Live Telemetry Ticker */}
+        <div className="pt-5 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-gray-500">
+              © 2026 Muse Protocol
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-6 px-4 py-2 rounded-lg bg-white/5 border border-white/5 overflow-hidden">
+            <span className="text-[9px] text-emerald-400/80 font-mono flex items-center gap-2">
+              <Icons.Activity size={10} /> LATENCY: 12ms
+            </span>
+            <div className="w-px h-3 bg-white/10" />
+            <span className="text-[9px] text-canvas-primary/80 font-mono flex items-center gap-2">
+              <Icons.Database size={10} /> BLK: 0x98b4f2
+            </span>
+            <div className="w-px h-3 bg-white/10" />
+            <span className="text-[9px] text-gray-500 font-mono hidden sm:flex items-center gap-2">
+              <Icons.Users size={10} /> NODES: 3,402
+            </span>
+          </div>
         </div>
       </div>
+      <style>{`
+        @keyframes scan {
+          0% { transform: translateX(-200%) skewX(12deg); }
+          100% { transform: translateX(200%) skewX(12deg); }
+        }
+      `}</style>
     </footer>
   );
 }
