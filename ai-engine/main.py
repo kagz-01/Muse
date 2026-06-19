@@ -1,6 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
-from scrapers import scrape_webpage, scrape_youtube_transcript, scrape_social_media
+from scrapers import scrape_webpage, scrape_youtube_transcript, scrape_social_media, parse_document
 
 app = FastAPI(title="Muse AI Engine", version="1.0.0")
 
@@ -40,6 +40,26 @@ def scrape_url(request: ScrapeRequest):
     else:
         result = scrape_webpage(url)
 
+    if result.get("status") == "error":
+        raise HTTPException(status_code=400, detail=result.get("message"))
+        
+    return result
+
+@app.post("/api/upload-document")
+async def upload_document(file: UploadFile = File(...)):
+    """
+    Accepts a multipart/form-data file upload (PDF, DOCX, XLSX, TXT)
+    and routes it to the Universal Document Parser.
+    """
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No filename provided")
+        
+    # Read the bytes into memory
+    file_bytes = await file.read()
+    
+    # Pass to the unstructured parser
+    result = parse_document(file_bytes, file.filename)
+    
     if result.get("status") == "error":
         raise HTTPException(status_code=400, detail=result.get("message"))
         
