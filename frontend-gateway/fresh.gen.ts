@@ -37,9 +37,11 @@ import * as $api_followers_unfollow from "./routes/api/followers/unfollow.ts";
 import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $api_mirror from "./routes/api/mirror.ts";
+import * as $api_rooms_create from "./routes/api/rooms/create.ts";
 import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
 import * as $auth from "./routes/auth.tsx";
+import * as $dashboard_index from "./routes/dashboard/index.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
 import * as $Error404 from "./islands/Error404.tsx";
@@ -52,10 +54,13 @@ import * as $connections_WisdomMap from "./islands/connections/WisdomMap.tsx";
 import * as $connections_index from "./islands/connections/index.ts";
 import * as $create_CreateHub from "./islands/create/CreateHub.tsx";
 import * as $create_index from "./islands/create/index.ts";
+import * as $dashboard_CreateRoomModal from "./islands/dashboard/CreateRoomModal.tsx";
+import * as $dashboard_DashboardLayout from "./islands/dashboard/DashboardLayout.tsx";
 import * as $dashboard_DashboardRooms from "./islands/dashboard/DashboardRooms.tsx";
 import * as $dashboard_HomeOverview from "./islands/dashboard/HomeOverview.tsx";
 import * as $dashboard_PulseHome from "./islands/dashboard/PulseHome.tsx";
-import * as $dashboard_index from "./islands/dashboard/index.ts";
+import * as $dashboard_RoomCard from "./islands/dashboard/RoomCard.tsx";
+import * as $dashboard_index_1 from "./islands/dashboard/index.ts";
 import * as $journal_CommunityCard from "./islands/journal/CommunityCard.tsx";
 import * as $journal_DiscoveryFeed from "./islands/journal/DiscoveryFeed.tsx";
 import * as $journal_EntryDetail from "./islands/journal/EntryDetail.tsx";
@@ -151,9 +156,11 @@ const manifest = {
     "./routes/api/health/services.ts": $api_health_services,
     "./routes/api/joke.ts": $api_joke,
     "./routes/api/mirror.ts": $api_mirror,
+    "./routes/api/rooms/create.ts": $api_rooms_create,
     "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
     "./routes/auth.tsx": $auth,
+    "./routes/dashboard/index.tsx": $dashboard_index,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
   },
@@ -170,10 +177,13 @@ const manifest = {
     "./islands/connections/index.ts": $connections_index,
     "./islands/create/CreateHub.tsx": $create_CreateHub,
     "./islands/create/index.ts": $create_index,
+    "./islands/dashboard/CreateRoomModal.tsx": $dashboard_CreateRoomModal,
+    "./islands/dashboard/DashboardLayout.tsx": $dashboard_DashboardLayout,
     "./islands/dashboard/DashboardRooms.tsx": $dashboard_DashboardRooms,
     "./islands/dashboard/HomeOverview.tsx": $dashboard_HomeOverview,
     "./islands/dashboard/PulseHome.tsx": $dashboard_PulseHome,
-    "./islands/dashboard/index.ts": $dashboard_index,
+    "./islands/dashboard/RoomCard.tsx": $dashboard_RoomCard,
+    "./islands/dashboard/index.ts": $dashboard_index_1,
     "./islands/journal/CommunityCard.tsx": $journal_CommunityCard,
     "./islands/journal/DiscoveryFeed.tsx": $journal_DiscoveryFeed,
     "./islands/journal/EntryDetail.tsx": $journal_EntryDetail,
