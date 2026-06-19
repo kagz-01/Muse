@@ -28,6 +28,8 @@ CREATE TABLE rooms (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     description TEXT,
+    theme_color VARCHAR(50) DEFAULT '#ffffff', -- UI Customization
+    tags VARCHAR(255)[], -- e.g. {'stoicism', 'philosophy'}
     is_public BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

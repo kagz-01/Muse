@@ -11,22 +11,45 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
   const [localMode, setLocalMode] = useState(initialMode);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: Event) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
     setIsSyncing(true);
+    setErrorMsg("");
 
-    // Cinematic sync effect
-    setTimeout(() => {
+    const endpoint = localMode === "signup" ? "/api/auth/register" : "/api/auth/login";
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+    if (localMode === "signup") formData.append("username", name);
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+        redirect: "manual", // We handle redirect so we can show success state
+      });
+
+      if (!response.ok && response.type !== "opaqueredirect") {
+        const text = await response.text();
+        setErrorMsg(text || "Authentication failed");
+        setIsSyncing(false);
+        return;
+      }
+
+      // Cinematic sync effect on success
       setIsSyncing(false);
       setIsSuccess(true);
       setTimeout(() => {
         login(email);
         globalThis.location.href = "/dashboard";
       }, 1000);
-    }, 1500);
+    } catch (err) {
+      setErrorMsg("Network error connecting to Vault.");
+      setIsSyncing(false);
+    }
   };
 
   const handleDemoEntry = () => {
@@ -82,6 +105,12 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
               </div>
             </div>
 
+            {errorMsg && (
+              <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono rounded-lg animate-in fade-in duration-300">
+                [ERROR]: {errorMsg}
+              </div>
+            )}
+
             {isSuccess
               ? (
                 <div className="py-20 text-center space-y-6 animate-in zoom-in-95 duration-500">
@@ -134,6 +163,9 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                     <input
                       type="password"
                       required
+                      value={password}
+                      onChange={(e) =>
+                        setPassword((e.target as HTMLInputElement).value)}
                       placeholder="••••••••"
                       className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-5 py-4 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono"
                     />

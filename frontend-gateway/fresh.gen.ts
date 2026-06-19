@@ -23,6 +23,8 @@ import * as $_app_threads_id_ from "./routes/(app)/threads/[id].tsx";
 import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $api_auth_login from "./routes/api/auth/login.ts";
+import * as $api_auth_register from "./routes/api/auth/register.ts";
 import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
 import * as $api_circles_id_membership from "./routes/api/circles/[id]/membership.ts";
 import * as $api_circles_join from "./routes/api/circles/join.ts";
@@ -135,6 +137,8 @@ const manifest = {
     "./routes/(app)/threads/index.tsx": $_app_threads_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/api/auth/login.ts": $api_auth_login,
+    "./routes/api/auth/register.ts": $api_auth_register,
     "./routes/api/circles/[id]/members.ts": $api_circles_id_members,
     "./routes/api/circles/[id]/membership.ts": $api_circles_id_membership,
     "./routes/api/circles/join.ts": $api_circles_join,
