@@ -1,8 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import AuthModal from "../modals/AuthModal.tsx";
 import SpectralHero from "./SpectralHero.tsx";
-import SystemBento from "./SystemBento.tsx";
-import InteractivePlaygrounds from "./InteractivePlaygrounds.tsx";
+import LiveDashboardSimulation from "./LiveDashboardSimulation.tsx";
 import LandingFooter from "./LandingFooter.tsx";
 import DemoVideo from "./DemoVideo.tsx";
 import BrandModal from "./BrandModal.tsx";
@@ -171,10 +170,7 @@ export default function LandingPage() {
           onGuestEntry={handleGuestEntry}
         />
 
-        <div id="ecosystem" className="pt-12">
-          <InteractivePlaygrounds />
-          <SystemBento />
-        </div>
+        <LiveDashboardSimulation />
 
         <LandingFooter />
       </main>
