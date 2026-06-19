@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from scrapers import scrape_webpage, scrape_youtube_transcript
 
 app = FastAPI(title="Muse AI Engine", version="1.0.0")
 
@@ -8,6 +9,8 @@ class AnalysisRequest(BaseModel):
     text: str | None = None
     user_id: str | None = None
 
+class ScrapeRequest(BaseModel):
+    url: str
 
 def _resolve_content(request: AnalysisRequest) -> str:
     return (request.content or request.text or "").strip()
@@ -15,6 +18,28 @@ def _resolve_content(request: AnalysisRequest) -> str:
 @app.get("/")
 def read_root():
     return {"status": "AI Engine is running"}
+
+@app.post("/api/scrape")
+def scrape_url(request: ScrapeRequest):
+    """
+    Intelligently determines the type of URL and routes it to the correct scraper.
+    """
+    url = request.url.strip()
+    if not url:
+        raise HTTPException(status_code=400, detail="Missing URL")
+
+    # Route: YouTube Video
+    if "youtube.com" in url or "youtu.be" in url:
+        result = scrape_youtube_transcript(url)
+    
+    # Route: Standard Web Article (Fallback)
+    else:
+        result = scrape_webpage(url)
+
+    if result.get("status") == "error":
+        raise HTTPException(status_code=400, detail=result.get("message"))
+        
+    return result
 
 @app.post("/api/analyze")
 def analyze_content(request: AnalysisRequest):
@@ -33,7 +58,6 @@ def analyze_content(request: AnalysisRequest):
         "sentiment": "neutral",
         "keywords": content.split()[:5]
     }
-
 
 @app.post("/analyze")
 def analyze_content_legacy(request: AnalysisRequest):
