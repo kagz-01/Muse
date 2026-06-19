@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from scrapers import scrape_webpage, scrape_youtube_transcript, scrape_social_media, parse_document
+from database import get_room_artifacts, save_threads
+from synthesizer import synthesize_artifacts
 
 app = FastAPI(title="Muse AI Engine", version="1.0.0")
 
@@ -11,6 +13,9 @@ class AnalysisRequest(BaseModel):
 
 class ScrapeRequest(BaseModel):
     url: str
+
+class SynthesizeRequest(BaseModel):
+    room_id: str
 
 def _resolve_content(request: AnalysisRequest) -> str:
     return (request.content or request.text or "").strip()
@@ -64,6 +69,30 @@ async def upload_document(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=result.get("message"))
         
     return result
+
+@app.post("/api/synthesize")
+def synthesize_room(request: SynthesizeRequest):
+    """
+    Pulls all artifacts for a room from the database, runs the LangChain Synthesis Engine, 
+    and saves the resulting structured Threads back to the database.
+    """
+    try:
+        # 1. Fetch artifacts from DB
+        artifacts = get_room_artifacts(request.room_id)
+        if not artifacts:
+            return {"status": "success", "message": "No artifacts found to synthesize.", "threads_generated": 0}
+
+        # 2. Run LangChain Synthesis Engine
+        db_threads = synthesize_artifacts(artifacts)
+
+        # 3. Save Threads back to DB
+        if db_threads:
+            save_threads(request.room_id, db_threads)
+
+        return {"status": "success", "threads_generated": len(db_threads)}
+    except Exception as e:
+        print(f"Synthesis Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/analyze")
 def analyze_content(request: AnalysisRequest):

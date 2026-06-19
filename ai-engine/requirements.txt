@@ -9,3 +9,6 @@ beautifulsoup4==4.12.3
 playwright==1.42.0
 unstructured[all-docs]==0.12.5
 python-multipart==0.0.9
+langchain
+langchain-openai
+psycopg2-binary
