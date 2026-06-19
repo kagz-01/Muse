@@ -69,12 +69,11 @@ import * as $journal_VaultModal from "./islands/journal/VaultModal.tsx";
 import * as $journal_index from "./islands/journal/index.ts";
 import * as $landing_BrandModal from "./islands/landing/BrandModal.tsx";
 import * as $landing_DemoVideo from "./islands/landing/DemoVideo.tsx";
-import * as $landing_InteractivePlaygrounds from "./islands/landing/InteractivePlaygrounds.tsx";
 import * as $landing_LandingFooter from "./islands/landing/LandingFooter.tsx";
 import * as $landing_LandingIsland from "./islands/landing/LandingIsland.tsx";
 import * as $landing_LandingPage from "./islands/landing/LandingPage.tsx";
+import * as $landing_LiveDashboardSimulation from "./islands/landing/LiveDashboardSimulation.tsx";
 import * as $landing_SpectralHero from "./islands/landing/SpectralHero.tsx";
-import * as $landing_SystemBento from "./islands/landing/SystemBento.tsx";
 import * as $landing_index from "./islands/landing/index.ts";
 import * as $layout_AppHeader from "./islands/layout/AppHeader.tsx";
 import * as $layout_AppLayoutWrapper from "./islands/layout/AppLayoutWrapper.tsx";
@@ -187,13 +186,12 @@ const manifest = {
     "./islands/journal/index.ts": $journal_index,
     "./islands/landing/BrandModal.tsx": $landing_BrandModal,
     "./islands/landing/DemoVideo.tsx": $landing_DemoVideo,
-    "./islands/landing/InteractivePlaygrounds.tsx":
-      $landing_InteractivePlaygrounds,
     "./islands/landing/LandingFooter.tsx": $landing_LandingFooter,
     "./islands/landing/LandingIsland.tsx": $landing_LandingIsland,
     "./islands/landing/LandingPage.tsx": $landing_LandingPage,
+    "./islands/landing/LiveDashboardSimulation.tsx":
+      $landing_LiveDashboardSimulation,
     "./islands/landing/SpectralHero.tsx": $landing_SpectralHero,
-    "./islands/landing/SystemBento.tsx": $landing_SystemBento,
     "./islands/landing/index.ts": $landing_index,
     "./islands/layout/AppHeader.tsx": $layout_AppHeader,
     "./islands/layout/AppLayoutWrapper.tsx": $layout_AppLayoutWrapper,

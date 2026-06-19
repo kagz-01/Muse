@@ -1,51 +1,73 @@
 import { useState, useEffect } from "preact/hooks";
 import * as Icons from "lucide-preact";
 
-const features = [
-  { 
-    id: "capture", 
-    label: "Capture Engine", 
-    icon: Icons.Zap, 
-    desc: "Instantly digitize raw thoughts before they fade.",
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/30"
-  },
-  { 
-    id: "vault", 
-    label: "Vault Architecture", 
-    icon: Icons.Aperture, 
-    desc: "Cryptographically seal your intellectual property.",
-    color: "text-cyan-400",
-    bg: "bg-cyan-500/10",
-    border: "border-cyan-500/30"
-  },
-  { 
-    id: "mirror", 
-    label: "Mirror Synthesis", 
-    icon: Icons.Activity, 
-    desc: "Watch AI connect your scattered ideas into patterns.",
-    color: "text-indigo-400",
-    bg: "bg-indigo-500/10",
-    border: "border-indigo-500/30"
-  },
-];
-
 export default function DemoVideo(
   { isOpen, onClose }: { isOpen: boolean; onClose: () => void },
 ) {
-  const [activeFeature, setActiveFeature] = useState(0);
+  const [step, setStep] = useState(0); // 0: Capture, 1: Synthesize, 2: Mirror, 3: Broadcast, 4: Done
+  
+  // Step 1 State
+  const [captureText, setCaptureText] = useState("");
+  const [isCapturing, setIsCapturing] = useState(false);
+  
+  // Step 2 State
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
+  
+  // Step 3 State
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
+  // Step 4 State
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
 
-  // Auto-rotate features if user isn't hovering
+  // Reset state when opened
   useEffect(() => {
-    if (!isOpen) return;
-    const interval = setInterval(() => {
-      setActiveFeature((prev) => (prev + 1) % features.length);
-    }, 4000);
-    return () => clearInterval(interval);
+    if (isOpen) {
+      setStep(0);
+      setCaptureText("");
+      setIsCapturing(false);
+      setIsSynthesizing(false);
+      setIsAnalyzing(false);
+      setIsBroadcasting(false);
+    }
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const handleCapture = () => {
+    if (!captureText.trim() || isCapturing) return;
+    setIsCapturing(true);
+    setTimeout(() => {
+      setStep(1);
+    }, 1000);
+  };
+
+  const handleSynthesize = () => {
+    setIsSynthesizing(true);
+    setTimeout(() => {
+      setStep(2);
+    }, 1500);
+  };
+
+  const handleAnalyze = () => {
+    setIsAnalyzing(true);
+    setTimeout(() => {
+      setStep(3);
+    }, 1500);
+  };
+
+  const handleBroadcast = () => {
+    setIsBroadcasting(true);
+    setTimeout(() => {
+      setStep(4);
+    }, 1500);
+  };
+
+  const steps = [
+    { title: "Capture", icon: Icons.Zap, color: "text-amber-400" },
+    { title: "Synthesize", icon: Icons.GitBranch, color: "text-cyan-400" },
+    { title: "Reflect", icon: Icons.ScanFace, color: "text-purple-400" },
+    { title: "Broadcast", icon: Icons.Radio, color: "text-emerald-400" },
+  ];
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 animate-in fade-in duration-500">
@@ -58,119 +80,226 @@ export default function DemoVideo(
       <div className="relative w-full max-w-6xl aspect-[4/3] md:aspect-video bg-[#050505] border border-white/10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-700 flex flex-col">
         
         {/* Dynamic Background */}
-        <div className="absolute inset-0 z-0 opacity-30 transition-colors duration-1000" 
-             style={{ background: `radial-gradient(circle at center, ${features[activeFeature].color.replace('text-', '').replace('-400', '')} 0%, transparent 70%)` }} 
+        <div className="absolute inset-0 z-0 opacity-20 transition-colors duration-1000" 
+             style={{ 
+               background: `radial-gradient(circle at center, ${
+                 step === 0 ? '#f59e0b' : 
+                 step === 1 ? '#22d3ee' : 
+                 step === 2 ? '#a855f7' : 
+                 step === 3 ? '#10b981' : '#3b82f6'
+               } 0%, transparent 70%)` 
+             }} 
         />
 
         {/* TOP BAR */}
         <div className="relative z-20 flex items-center justify-between p-6 md:p-8">
            <div className="flex items-center gap-3">
              <div className="w-3 h-3 rounded-full bg-rose-500 animate-pulse" />
-             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400">Live Simulation</span>
+             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400">Interactive Simulation</span>
            </div>
+           
+           {/* Step Progress indicator */}
+           <div className="hidden md:flex items-center gap-4">
+             {steps.map((s, i) => (
+               <div key={i} className="flex items-center gap-2">
+                 <div className={`w-6 h-6 rounded-full flex items-center justify-center border transition-all duration-500 ${step >= i ? `border-${s.color.split('-')[1]}-500/50 bg-${s.color.split('-')[1]}-500/20 ${s.color}` : 'border-white/10 text-gray-600'}`}>
+                   <s.icon size={10} />
+                 </div>
+                 {i < steps.length - 1 && <div className={`w-8 h-px ${step > i ? `bg-${s.color.split('-')[1]}-500/50` : 'bg-white/10'}`} />}
+               </div>
+             ))}
+           </div>
+
            <button
             type="button"
             onClick={onClose}
-            className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all cursor-pointer z-50 hover:rotate-90"
+            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all cursor-pointer z-50 hover:rotate-90"
           >
-            <Icons.X size={20} />
+            <Icons.X size={16} />
           </button>
         </div>
 
         {/* MAIN CONTENT AREA */}
-        <div className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-8 gap-12">
+        <div className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-8 gap-12 overflow-y-auto">
            
-           {/* Visualizer Side */}
-           <div className="flex-1 flex items-center justify-center w-full min-h-[250px]">
-              <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
-                 {/* 1. Capture Engine Visual */}
-                 <div className={`absolute inset-0 transition-all duration-700 ${activeFeature === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
-                    <div className="w-full h-full rounded-full border border-amber-500/20 flex items-center justify-center animate-[spin-slow_10s_linear_infinite]">
-                       <div className="w-3/4 h-3/4 rounded-full border border-dashed border-amber-500/40 flex items-center justify-center animate-[spin-reverse_8s_linear_infinite]">
-                          <div className="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.3)] animate-pulse">
-                             <Icons.Zap size={24} className="text-amber-400" />
-                          </div>
-                       </div>
+           {/* Interactive Visualizer Side */}
+           <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[300px]">
+              
+              {/* STEP 0: CAPTURE */}
+              {step === 0 && (
+                <div className="w-full max-w-md space-y-6 animate-in slide-in-from-bottom-8 duration-500">
+                  <div className="text-center space-y-2 mb-8">
+                    <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4 text-amber-400">
+                      <Icons.Zap size={32} />
                     </div>
-                 </div>
+                    <h3 className="text-2xl font-bold text-white">Capture a Thought</h3>
+                    <p className="text-gray-400 font-serif italic text-sm">Type a quick insight below and press Enter to save it to your Sovereign Room.</p>
+                  </div>
+                  
+                  <div className={`relative transition-all duration-500 ${isCapturing ? 'scale-95 opacity-50 blur-sm' : ''}`}>
+                    <textarea 
+                      value={captureText}
+                      onInput={(e) => setCaptureText((e.target as HTMLTextAreaElement).value)}
+                      placeholder="e.g. The attention economy drains our vitality..."
+                      className="w-full bg-[#0a0a0a] border border-amber-500/30 rounded-2xl p-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-amber-400 resize-none h-32"
+                    />
+                    <button 
+                      type="button"
+                      onClick={handleCapture}
+                      disabled={!captureText.trim() || isCapturing}
+                      className="absolute bottom-4 right-4 px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-xl text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      {isCapturing ? <><Icons.Loader2 size={14} className="animate-spin" /> Saving...</> : "Commit"}
+                    </button>
+                  </div>
+                </div>
+              )}
 
-                 {/* 2. Vault Architecture Visual */}
-                 <div className={`absolute inset-0 transition-all duration-700 ${activeFeature === 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
-                    <div className="w-full h-full grid grid-cols-3 gap-2 p-8">
-                       {[...Array(9)].map((_, i) => (
-                         <div key={i} className={`bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-center transition-all duration-500 ${i === 4 ? 'bg-cyan-500/30 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)] scale-110' : ''}`}>
-                            {i === 4 ? <Icons.Lock size={24} className="text-cyan-400" /> : <Icons.Hash size={16} className="text-cyan-500/30" />}
-                         </div>
-                       ))}
+              {/* STEP 1: SYNTHESIZE */}
+              {step === 1 && (
+                <div className="w-full max-w-md space-y-6 animate-in slide-in-from-bottom-8 duration-500">
+                  <div className="text-center space-y-2 mb-8">
+                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-4 text-cyan-400">
+                      <Icons.GitBranch size={32} />
                     </div>
-                 </div>
+                    <h3 className="text-2xl font-bold text-white">Synthesize Context</h3>
+                    <p className="text-gray-400 font-serif italic text-sm">The AI has analyzed your input. Click to weave it into a Synthesis Thread.</p>
+                  </div>
 
-                 {/* 3. Mirror Synthesis Visual */}
-                 <div className={`absolute inset-0 transition-all duration-700 ${activeFeature === 2 ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
-                    <div className="w-full h-full flex items-center justify-center">
-                       <div className="absolute w-full h-px bg-indigo-500/20" />
-                       <div className="absolute h-full w-px bg-indigo-500/20" />
-                       <div className="relative w-48 h-48 border border-indigo-500/30 rotate-45 flex items-center justify-center shadow-[0_0_40px_rgba(99,102,241,0.2)]">
-                          <div className="absolute w-32 h-32 border border-indigo-400/50 bg-indigo-500/10 animate-pulse" />
-                          <Icons.Network size={32} className="text-indigo-400 -rotate-45" />
-                       </div>
+                  <div className="bg-[#0a0a0a] border border-cyan-500/30 rounded-2xl p-6 relative overflow-hidden">
+                    <div className={`absolute inset-0 bg-cyan-500/10 transition-opacity duration-1000 ${isSynthesizing ? 'opacity-100' : 'opacity-0'}`} />
+                    
+                    <div className="flex items-start gap-4 relative z-10">
+                      <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center shrink-0">
+                        <Icons.Sparkles size={14} className="text-cyan-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-cyan-400 font-bold uppercase tracking-widest mb-2">AI Socratic Prompt</p>
+                        <p className="text-white text-sm font-serif italic mb-4">"You mentioned the attention economy. How does this connect to your previous thoughts on digital sovereignty?"</p>
+                        
+                        <button 
+                          type="button"
+                          onClick={handleSynthesize}
+                          disabled={isSynthesizing}
+                          className="px-6 py-3 w-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/30 rounded-xl text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 transition-all cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          {isSynthesizing ? <><Icons.Loader2 size={14} className="animate-spin" /> Threading...</> : "Generate Thread"}
+                        </button>
+                      </div>
                     </div>
-                 </div>
-              </div>
-           </div>
+                  </div>
+                </div>
+              )}
 
-           {/* Interactive Text/Controls Side */}
-           <div className="flex-1 space-y-8 w-full">
-              <div>
-                <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter uppercase mb-4">
-                  Experience <br/> <span className="text-gray-500 italic font-serif lowercase">the system</span>
-                </h2>
-                <p className="text-gray-400 font-serif italic text-sm md:text-base max-w-md">
-                  Hover over the modules below to see how Muse processes cognitive data in real-time.
-                </p>
-              </div>
+              {/* STEP 2: MIRROR */}
+              {step === 2 && (
+                <div className="w-full max-w-md space-y-6 animate-in slide-in-from-bottom-8 duration-500">
+                  <div className="text-center space-y-2 mb-8">
+                    <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto mb-4 text-purple-400">
+                      <Icons.ScanFace size={32} />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white">Cognitive Mirror</h3>
+                    <p className="text-gray-400 font-serif italic text-sm">Your intellectual footprint has expanded. Update your resonance.</p>
+                  </div>
 
-              <div className="space-y-3">
-                {features.map((feature, idx) => (
-                  <button
-                    key={feature.id}
+                  <div className="flex flex-col items-center justify-center py-8 relative">
+                    <div className={`absolute w-64 h-64 rounded-full blur-3xl transition-all duration-1000 ${isAnalyzing ? 'bg-gradient-to-tr from-fuchsia-500/60 via-purple-500/60 to-indigo-500/60 scale-125' : 'bg-gray-800/40 scale-100'}`} />
+                    
+                    <div className="relative z-10 w-32 h-32 rounded-full border border-white/10 bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center shadow-2xl mb-8">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Resonance</span>
+                      <span className={`text-4xl font-bold tracking-tighter transition-colors duration-1000 ${isAnalyzing ? 'text-white' : 'text-gray-400'}`}>
+                        {isAnalyzing ? '94%' : '88%'}
+                      </span>
+                    </div>
+
+                    <button 
+                      type="button"
+                      onClick={handleAnalyze}
+                      disabled={isAnalyzing}
+                      className="relative z-10 px-8 py-4 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-xl text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      {isAnalyzing ? <><Icons.Loader2 size={14} className="animate-spin" /> Recalculating...</> : "Update Mirror"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: BROADCAST */}
+              {step === 3 && (
+                <div className="w-full max-w-md space-y-6 animate-in slide-in-from-bottom-8 duration-500">
+                  <div className="text-center space-y-2 mb-8">
+                    <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4 text-emerald-400">
+                      <Icons.Radio size={32} />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white">Broadcast</h3>
+                    <p className="text-gray-400 font-serif italic text-sm">Don't let your insight die in isolation. Send it to the network.</p>
+                  </div>
+
+                  <div className="relative h-48 border border-emerald-500/20 bg-emerald-500/5 rounded-2xl flex items-center justify-center overflow-hidden">
+                    {/* Fake nodes */}
+                    <div className="absolute top-1/4 left-1/4 w-2 h-2 rounded-full bg-emerald-500/30" />
+                    <div className="absolute bottom-1/4 right-1/4 w-2 h-2 rounded-full bg-emerald-500/30" />
+                    <div className="absolute top-1/3 right-1/3 w-2 h-2 rounded-full bg-emerald-500/30" />
+
+                    {/* Central User Node */}
+                    <div className={`relative z-10 w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center transition-all duration-1000 ${isBroadcasting ? 'scale-150 border-emerald-400' : ''}`}>
+                       <Icons.User size={16} className="text-emerald-400" />
+                       
+                       {/* Broadcasting ripples */}
+                       {isBroadcasting && (
+                         <>
+                          <div className="absolute inset-0 rounded-full border border-emerald-400 animate-[ripple_1s_ease-out_infinite]" />
+                          <div className="absolute inset-0 rounded-full border border-emerald-400 animate-[ripple_1s_ease-out_0.3s_infinite]" />
+                         </>
+                       )}
+                    </div>
+                  </div>
+
+                  <button 
                     type="button"
-                    onMouseEnter={() => setActiveFeature(idx)}
-                    onClick={() => setActiveFeature(idx)}
-                    className={`w-full text-left p-4 rounded-2xl border transition-all duration-300 flex items-start gap-4 cursor-pointer ${
-                      activeFeature === idx 
-                      ? `${feature.bg} ${feature.border} scale-[1.02]` 
-                      : 'bg-white/5 border-white/10 hover:bg-white/10 opacity-60 hover:opacity-100'
-                    }`}
+                    onClick={handleBroadcast}
+                    disabled={isBroadcasting}
+                    className="w-full px-8 py-4 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 rounded-xl text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 transition-all cursor-pointer flex items-center justify-center gap-2"
                   >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${activeFeature === idx ? feature.color : 'text-gray-500'}`}>
-                      <feature.icon size={20} />
-                    </div>
-                    <div>
-                      <h4 className={`font-bold uppercase tracking-widest text-[10px] mb-1 ${activeFeature === idx ? feature.color : 'text-gray-400'}`}>
-                        {feature.label}
-                      </h4>
-                      <p className="text-gray-400 font-serif italic text-xs">
-                        {feature.desc}
-                      </p>
-                    </div>
+                    {isBroadcasting ? <><Icons.Loader2 size={14} className="animate-spin" /> Broadcasting to Ledger...</> : "Commit to Network"}
                   </button>
-                ))}
-              </div>
-           </div>
-        </div>
+                </div>
+              )}
 
+              {/* STEP 4: COMPLETE */}
+              {step === 4 && (
+                <div className="w-full max-w-md space-y-6 text-center animate-in zoom-in-95 duration-700">
+                  <div className="w-24 h-24 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center mx-auto mb-6">
+                    <Icons.Check size={40} className="text-blue-400" />
+                  </div>
+                  <h3 className="text-4xl font-bold text-white tracking-tight">Loop Complete.</h3>
+                  <p className="text-gray-400 font-serif italic text-lg leading-relaxed">
+                    You have successfully captured, synthesized, reflected, and broadcasted your first artifact.
+                  </p>
+                  <div className="pt-8">
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        globalThis.location.href = "/dashboard?demo=1";
+                      }}
+                      className="px-8 py-4 bg-white text-black rounded-full text-[11px] font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                    >
+                      Enter The Real System
+                    </button>
+                  </div>
+                </div>
+              )}
+           </div>
+
+        </div>
       </div>
 
       <style>
         {`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes spin-reverse {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
+        @keyframes ripple {
+          0% { transform: scale(1); opacity: 1; }
+          100% { transform: scale(4); opacity: 0; }
         }
       `}
       </style>
