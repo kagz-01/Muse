@@ -678,7 +678,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                   </div>
                 )}
 
-                {items.length === 0
+                  {items.length === 0
                   ? (
                     <div className="flex flex-col items-center justify-center py-32 bg-[#111318]/50 backdrop-blur-md rounded-[3rem] border border-[var(--muse-text)]/5">
                       <div
@@ -697,75 +697,91 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     </div>
                   )
                   : (
-                    <div className={getGridClass(room.size)}>
-                      {items.map((item) => (
-                        <div
-                          key={item.id}
-                          className={`bg-[#111] rounded-[2.5rem] border border-[var(--muse-text)]/5 overflow-hidden group transition-all duration-500 ${
-                            room.size === "small" || room.size === "large"
-                              ? "w-full"
-                              : "min-w-[320px] flex-shrink-0"
-                          }`}
-                          style={glowStyle}
-                        >
+                    <div className="flex flex-wrap gap-6 items-start justify-center pt-10 pb-20 relative">
+                      {/* Simulated Spatial Canvas Grid */}
+                      {items.map((item, index) => {
+                        // Stagger the layout to feel more spatial/masonry
+                        const mt = index % 3 === 1 ? 'mt-16' : index % 3 === 2 ? 'mt-8' : 'mt-0';
+                        
+                        return (
                           <div
-                            className="h-40 relative overflow-hidden"
-                            style={{
-                              background: customHex
-                                ? `linear-gradient(135deg, ${customHex}40, transparent)`
-                                : undefined,
-                            }}
+                            key={item.id}
+                            className={`bg-[#111] rounded-[2.5rem] border border-[var(--muse-text)]/5 overflow-visible group transition-all duration-500 w-[320px] sm:w-[380px] flex-shrink-0 ${mt} hover:scale-[1.02] hover:z-20`}
+                            style={glowStyle}
                           >
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
-                              <Icons.ExternalLink
-                                size={40}
-                                className={theme.text}
-                              />
+                            <div className="relative">
+                               <div
+                                 className="h-40 relative overflow-hidden rounded-t-[2.5rem]"
+                                 style={{
+                                   background: customHex
+                                     ? `linear-gradient(135deg, ${customHex}40, transparent)`
+                                     : undefined,
+                                 }}
+                               >
+                                 <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
+                                 <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                                   <Icons.ExternalLink
+                                     size={40}
+                                     className={theme.text}
+                                   />
+                                 </div>
+                                 <a
+                                   href={item.sourceUrl}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[var(--muse-bg)]/60 backdrop-blur-md flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-xl"
+                                 >
+                                   <Icons.ExternalLink size={14} />
+                                 </a>
+                               </div>
+
+                               {/* Hover UI: Connect/Thread simulation */}
+                               <div className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-30">
+                                  <button type="button" className="w-12 h-12 rounded-full bg-canvas-primary/20 backdrop-blur-xl border border-canvas-primary/50 text-canvas-primary flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4)] hover:bg-canvas-primary/40 transition-colors cursor-pointer" title="Weave into Thread">
+                                    <Icons.GitMerge size={20} />
+                                  </button>
+                               </div>
+                               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-30">
+                                  <button type="button" className="px-4 py-2 rounded-full bg-indigo-500/20 backdrop-blur-xl border border-indigo-500/50 text-indigo-400 font-bold uppercase tracking-widest text-[9px] flex items-center gap-2 shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                                    <Icons.Link2 size={12} /> Connect Node
+                                  </button>
+                               </div>
+
+                               <div className="p-7">
+                                 <div className="flex flex-col gap-1 mb-4">
+                                   <span
+                                     className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}
+                                   >
+                                     Artifact
+                                   </span>
+                                   <h4 className="font-bold text-lg leading-tight text-[var(--muse-text)]/90 group-hover:text-[var(--muse-text)] transition-colors line-clamp-2">
+                                     {item.title}
+                                   </h4>
+                                 </div>
+
+                                 {item.note && (
+                                   <p className="text-sm text-[var(--muse-muted)] line-clamp-2 mb-6 font-serif italic border-l-2 border-[var(--muse-text)]/10 pl-4 py-1 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+                                     "{item.note}"
+                                   </p>
+                                 )}
+
+                                 <div className="flex items-center justify-between mt-auto pt-5 border-t border-[var(--muse-text)]/5">
+                                   <span className="text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-[var(--muse-muted)]">
+                                     Sourced from collective
+                                   </span>
+                                   <button
+                                     onClick={() => deleteItem(item.id)}
+                                     type="button"
+                                     className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--muse-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
+                                   >
+                                     <Icons.Trash2 size={14} />
+                                   </button>
+                                 </div>
+                               </div>
                             </div>
-                            <a
-                              href={item.sourceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[var(--muse-bg)]/60 backdrop-blur-md flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-xl"
-                            >
-                              <Icons.ExternalLink size={14} />
-                            </a>
                           </div>
-
-                          <div className="p-7">
-                            <div className="flex flex-col gap-1 mb-4">
-                              <span
-                                className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}
-                              >
-                                Artifact
-                              </span>
-                              <h4 className="font-bold text-lg leading-tight text-[var(--muse-text)]/90 group-hover:text-[var(--muse-text)] transition-colors line-clamp-2">
-                                {item.title}
-                              </h4>
-                            </div>
-
-                            {item.note && (
-                              <p className="text-sm text-[var(--muse-muted)] line-clamp-2 mb-6 font-serif italic border-l-2 border-[var(--muse-text)]/10 pl-4 py-1 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
-                                "{item.note}"
-                              </p>
-                            )}
-
-                            <div className="flex items-center justify-between mt-auto pt-5 border-t border-[var(--muse-text)]/5">
-                              <span className="text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-[var(--muse-muted)]">
-                                Sourced from collective
-                              </span>
-                              <button
-                                onClick={() => deleteItem(item.id)}
-                                type="button"
-                                className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--muse-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
-                              >
-                                <Icons.Trash2 size={14} />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
               </div>
