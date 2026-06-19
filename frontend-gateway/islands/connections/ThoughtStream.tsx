@@ -242,9 +242,13 @@ export default function ThoughtStream() {
               className={`relative animate-in fade-in slide-in-from-bottom-4 duration-500`}
               style={{ animationDelay: `${i * 100}ms` }}
             >
+              {/* Network Timeline Connector */}
+              <div className="absolute left-[-24px] md:left-[-32px] top-1/2 w-8 md:w-12 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent -z-10" />
+              <div className="absolute left-[-26px] md:left-[-34px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#0d0d0d] border border-indigo-500/50 z-10 shadow-[0_0_10px_rgba(99,102,241,0.3)] animate-pulse" />
+
               <div
                 onClick={() => setFocusNodeId(pers.id)}
-                className={`group cursor-pointer relative bg-white/[0.03] border border-white/5 rounded-[3rem] p-8 md:p-10 transition-all hover:bg-white/[0.05] hover:border-canvas-primary/30 hover:shadow-[0_0_40px_rgba(99,102,241,0.05)] ${
+                className={`group cursor-pointer relative bg-white/[0.03] border border-white/5 rounded-[3rem] p-8 md:p-10 transition-all duration-500 hover:bg-white/[0.05] hover:border-indigo-500/40 hover:shadow-[0_0_50px_rgba(99,102,241,0.15)] hover:-translate-y-1 ${
                   pers.relationship === "Challenging" ? "border-amber-500/20" : ""
                 }`}
               >
