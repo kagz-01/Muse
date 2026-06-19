@@ -95,11 +95,17 @@ export const handler: Handlers<RoomInteriorData> = {
 // Helper for icons based on artifact type
 function getTypeIcon(type: string) {
   switch (type) {
+    // @ts-ignore: JSX mismatch
     case 'pdf': return <Icons.FileText size={16} />;
-    case 'youtube': return <Icons.Youtube size={16} />;
-    case 'social': return <Icons.Twitter size={16} />;
+    // @ts-ignore: JSX mismatch
+    case 'youtube': return <Icons.Video size={16} />;
+    // @ts-ignore: JSX mismatch
+    case 'social': return <Icons.MessageCircle size={16} />;
+    // @ts-ignore: JSX mismatch
     case 'spreadsheet': return <Icons.Table size={16} />;
+    // @ts-ignore: JSX mismatch
     case 'word': return <Icons.FileEdit size={16} />;
+    // @ts-ignore: JSX mismatch
     default: return <Icons.Link size={16} />;
   }
 }

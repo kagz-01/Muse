@@ -32,11 +32,17 @@ export default function RoomClientManager({ room, threads, artifacts }: RoomClie
 
   const getTypeIcon = (type: string) => {
     switch (type) {
+      // @ts-ignore: Lucide JSX mismatch
       case 'pdf': return <Icons.FileText size={16} />;
-      case 'youtube': return <Icons.Youtube size={16} />;
-      case 'social': return <Icons.Twitter size={16} />;
+      // @ts-ignore: Lucide JSX mismatch
+      case 'youtube': return <Icons.Video size={16} />;
+      // @ts-ignore: Lucide JSX mismatch
+      case 'social': return <Icons.MessageCircle size={16} />;
+      // @ts-ignore: Lucide JSX mismatch
       case 'spreadsheet': return <Icons.Table size={16} />;
+      // @ts-ignore: Lucide JSX mismatch
       case 'word': return <Icons.FileEdit size={16} />;
+      // @ts-ignore: Lucide JSX mismatch
       default: return <Icons.Link size={16} />;
     }
   };

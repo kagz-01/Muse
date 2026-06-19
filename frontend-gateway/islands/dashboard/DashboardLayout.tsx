@@ -1,6 +1,6 @@
 import { ComponentChildren } from "preact";
 import * as Icons from "lucide-preact";
-import { appThemeSignal, toggleTheme } from "../../../signals/ui.ts";
+import { appThemeSignal, toggleTheme } from "../../signals/ui.ts";
 
 interface DashboardLayoutProps {
   children: ComponentChildren;

@@ -1663,7 +1663,7 @@ export default function Settings() {
                   return (
                     <div
                       key={option.key}
-                      className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
+                      className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10 opacity-60"
                     >
                       <div className="pr-4">
                         <div className="flex items-center gap-2">
@@ -1674,6 +1674,9 @@ export default function Settings() {
                           />
                           <span className="text-sm text-gray-300">
                             {option.label}
+                          </span>
+                          <span className="text-[8px] font-bold uppercase tracking-widest bg-white/10 text-gray-400 px-1.5 py-0.5 rounded-md">
+                            Soon
                           </span>
                         </div>
                         <p className="text-[10px] text-gray-500 mt-1">
