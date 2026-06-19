@@ -11,8 +11,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Structured data representing identity and global metrics.
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    wallet_address VARCHAR(255) UNIQUE NOT NULL, -- Web3 DID
-    username VARCHAR(255),
+    email VARCHAR(255) UNIQUE NOT NULL, -- Standard Web2 Email Login
+    google_id VARCHAR(255) UNIQUE,      -- For Google OAuth Login
+    password_hash VARCHAR(255),         -- Nullable if they use Google
+    username VARCHAR(255) UNIQUE NOT NULL,
+    wallet_address VARCHAR(255) UNIQUE, -- Added later when we attach the blockchain
     resonance_score INTEGER DEFAULT 0,
     current_streak INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
