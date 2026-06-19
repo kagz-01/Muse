@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from scrapers import scrape_webpage, scrape_youtube_transcript
+from scrapers import scrape_webpage, scrape_youtube_transcript, scrape_social_media
 
 app = FastAPI(title="Muse AI Engine", version="1.0.0")
 
@@ -32,6 +32,10 @@ def scrape_url(request: ScrapeRequest):
     if "youtube.com" in url or "youtu.be" in url:
         result = scrape_youtube_transcript(url)
     
+    # Route: Heavy JS Social Media Platforms
+    elif any(domain in url for domain in ["twitter.com", "x.com", "reddit.com", "linkedin.com", "instagram.com"]):
+        result = scrape_social_media(url)
+        
     # Route: Standard Web Article (Fallback)
     else:
         result = scrape_webpage(url)
