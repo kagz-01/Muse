@@ -23,6 +23,8 @@ import * as $_app_threads_id_ from "./routes/(app)/threads/[id].tsx";
 import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $api_artifacts_ingest_url from "./routes/api/artifacts/ingest-url.ts";
+import * as $api_artifacts_upload_document from "./routes/api/artifacts/upload-document.ts";
 import * as $api_auth_login from "./routes/api/auth/login.ts";
 import * as $api_auth_register from "./routes/api/auth/register.ts";
 import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
@@ -42,6 +44,7 @@ import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-a
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $dashboard_index from "./routes/dashboard/index.tsx";
+import * as $dashboard_rooms_id_ from "./routes/dashboard/rooms/[id].tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
 import * as $Error404 from "./islands/Error404.tsx";
@@ -55,6 +58,7 @@ import * as $connections_index from "./islands/connections/index.ts";
 import * as $create_CreateHub from "./islands/create/CreateHub.tsx";
 import * as $create_index from "./islands/create/index.ts";
 import * as $dashboard_CreateRoomModal from "./islands/dashboard/CreateRoomModal.tsx";
+import * as $dashboard_DashboardClientManager from "./islands/dashboard/DashboardClientManager.tsx";
 import * as $dashboard_DashboardLayout from "./islands/dashboard/DashboardLayout.tsx";
 import * as $dashboard_DashboardRooms from "./islands/dashboard/DashboardRooms.tsx";
 import * as $dashboard_HomeOverview from "./islands/dashboard/HomeOverview.tsx";
@@ -107,6 +111,7 @@ import * as $profile_CollectiveProfile from "./islands/profile/CollectiveProfile
 import * as $profile_ProfileOverlay from "./islands/profile/ProfileOverlay.tsx";
 import * as $profile_ProfilePage from "./islands/profile/ProfilePage.tsx";
 import * as $profile_index from "./islands/profile/index.ts";
+import * as $rooms_ArtifactUploader from "./islands/rooms/ArtifactUploader.tsx";
 import * as $rooms_RoomInside from "./islands/rooms/RoomInside.tsx";
 import * as $rooms_RoomsGallery from "./islands/rooms/RoomsGallery.tsx";
 import * as $rooms_index from "./islands/rooms/index.ts";
@@ -142,6 +147,8 @@ const manifest = {
     "./routes/(app)/threads/index.tsx": $_app_threads_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/api/artifacts/ingest-url.ts": $api_artifacts_ingest_url,
+    "./routes/api/artifacts/upload-document.ts": $api_artifacts_upload_document,
     "./routes/api/auth/login.ts": $api_auth_login,
     "./routes/api/auth/register.ts": $api_auth_register,
     "./routes/api/circles/[id]/members.ts": $api_circles_id_members,
@@ -161,6 +168,7 @@ const manifest = {
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
     "./routes/auth.tsx": $auth,
     "./routes/dashboard/index.tsx": $dashboard_index,
+    "./routes/dashboard/rooms/[id].tsx": $dashboard_rooms_id_,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
   },
@@ -178,6 +186,8 @@ const manifest = {
     "./islands/create/CreateHub.tsx": $create_CreateHub,
     "./islands/create/index.ts": $create_index,
     "./islands/dashboard/CreateRoomModal.tsx": $dashboard_CreateRoomModal,
+    "./islands/dashboard/DashboardClientManager.tsx":
+      $dashboard_DashboardClientManager,
     "./islands/dashboard/DashboardLayout.tsx": $dashboard_DashboardLayout,
     "./islands/dashboard/DashboardRooms.tsx": $dashboard_DashboardRooms,
     "./islands/dashboard/HomeOverview.tsx": $dashboard_HomeOverview,
@@ -232,6 +242,7 @@ const manifest = {
     "./islands/profile/ProfileOverlay.tsx": $profile_ProfileOverlay,
     "./islands/profile/ProfilePage.tsx": $profile_ProfilePage,
     "./islands/profile/index.ts": $profile_index,
+    "./islands/rooms/ArtifactUploader.tsx": $rooms_ArtifactUploader,
     "./islands/rooms/RoomInside.tsx": $rooms_RoomInside,
     "./islands/rooms/RoomsGallery.tsx": $rooms_RoomsGallery,
     "./islands/rooms/index.ts": $rooms_index,
