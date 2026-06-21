@@ -59,20 +59,18 @@ const STORAGE_KEY = "muse_threads_v1";
 const INITIAL_THREADS: Thread[] = [
   {
     id: "t1",
-    title: "The Honesty of Raw Materials",
-    description:
-      "Synthesizing brutalist architecture with digital sovereignty.",
+    title: "The Impact of Local Elections",
+    description: "Analyzing how municipal votes shape daily life more than national ones.",
     mood: "focus",
-    format: "manifesto",
-    depth: "deep",
+    format: "essay",
+    depth: "50",
     itemIds: ["i1", "i2"],
-    sourceRoomIds: ["r1", "r2"],
+    sourceRoomIds: ["r1"],
     isPublic: true,
     updatedAt: new Date().toISOString(),
     coverImage:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-    thesis:
-      "If digital interfaces reflect the honesty of raw concrete, we can achieve true sovereignty.",
+      "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=1200&q=80",
+    thesis: "Local elections have more direct impact on our communities, yet they suffer the lowest turnout.",
     synthesisScore: 88,
     resonanceMetrics: { views: 1240, connections: 86 },
     dialogueLayers: [
@@ -81,7 +79,7 @@ const INITIAL_THREADS: Thread[] = [
         userId: "u2",
         userName: "Elena",
         content:
-          'This resonance between architecture and data is striking. Have you considered the material cost of digital storage as a form of "rawness"?',
+          'This is so true. Our city council just passed a zoning law that completely changed my neighborhood, and only 15% of people voted on it.',
         type: "insight",
         resonanceScore: 42,
         timestamp: new Date().toISOString(),
@@ -91,15 +89,44 @@ const INITIAL_THREADS: Thread[] = [
       auraGradients: ["#6366f1", "#10b981"],
     },
     synthesis: {
-      patterns: ["authenticity", "sovereignty", "structure"],
-      tensions: ["minimal vs complex - balancing opposite forces"],
+      patterns: ["local engagement", "policy impact", "voter apathy"],
+      tensions: ["national media focus vs local reality"],
       coherenceScore: 85,
       recommendations: [
-        'Explore the theme of "authenticity" more deeply across your rooms',
-        "Address the tension: minimal vs complex - balancing opposite forces",
-        "Consider how these patterns interconnect: authenticity, sovereignty, structure",
+        'Explore ways to make local election information more accessible',
       ],
     },
+    isVault: false,
+  },
+  {
+    id: "t2",
+    title: "The Evolution of Modern Dating",
+    description: "How dating apps and social media have shifted human connection.",
+    mood: "melancholy",
+    format: "manifesto",
+    depth: "80",
+    itemIds: ["i3"],
+    sourceRoomIds: ["r2"],
+    isPublic: true,
+    updatedAt: new Date().toISOString(),
+    coverImage:
+      "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1200&q=80",
+    thesis: "Modern dating apps have fundamentally shifted human connection from serendipitous moments to gamified transactions.",
+    synthesisScore: 75,
+    resonanceMetrics: { views: 890, connections: 45 },
+    dialogueLayers: [],
+    customStyling: {
+      auraGradients: ["#f43f5e", "#fbbf24"],
+    },
+    synthesis: {
+      patterns: ["gamification", "choice paralysis", "digital romance"],
+      tensions: ["efficiency vs authentic connection"],
+      coherenceScore: 78,
+      recommendations: [
+        'Look into the psychological effects of endless swiping',
+      ],
+    },
+    isVault: false,
   },
 ];
 

@@ -206,28 +206,28 @@ function loadJournal(): JournalEntry[] {
     {
       id: "j1",
       body:
-        "The intersection of brutalist architecture and digital sovereignty is a recursive pattern. We seek stability in the raw, unrefined forms of the past to build the immutable structures of the future.",
+        "I was reading about the new zoning policies proposed today. It makes me wonder about how much our daily lives are shaped by local decisions we barely pay attention to, compared to the national politics that consume our news feeds.",
       mood: "reflective",
-      tags: ["brutalism", "sovereignty", "philosophy"],
+      tags: ["politics", "local", "thoughts"],
       linkedItemIds: ["i1", "i2"],
       isFavorited: true,
       isPublic: false,
       createdAt: Date.now() - 86400000,
       updatedAt: Date.now() - 86400000,
-      wordCount: 32,
+      wordCount: 40,
     },
     {
       id: "j2",
       body:
-        'Feeling a profound sense of clarity today. The signals from the "Zen" room are finally converging into a coherent thread.',
+        "Reflecting on my relationship today, I realized how important acts of service are to me. When they made me coffee this morning, it meant more than any grand romantic gesture could have.",
       mood: "grounded",
-      tags: ["clarity", "zen", "synthesis"],
+      tags: ["romance", "love languages", "gratitude"],
       linkedItemIds: ["i3"],
       isFavorited: false,
       isPublic: true,
       createdAt: Date.now() - 43200000,
       updatedAt: Date.now() - 43200000,
-      wordCount: 18,
+      wordCount: 32,
     },
   ];
 }
