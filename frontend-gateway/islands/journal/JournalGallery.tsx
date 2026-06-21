@@ -12,6 +12,7 @@ import {
 } from "../../signals/journal.ts";
 import * as Icons from "lucide-preact";
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
+import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.tsx";
 
 
 
@@ -71,7 +72,7 @@ export default function JournalGallery() {
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [customFilterInput, setCustomFilterInput] = useState("");
   const [isHydrated, setIsHydrated] = useState(false);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -470,35 +471,18 @@ export default function JournalGallery() {
                             <Icons.Archive size={14} />
                           </button>
 
-                          {/* Delete — two-step confirm */}
-                          {confirmDeleteId === entry.id ? (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteJournalEntry(entry.id);
-                                setConfirmDeleteId(null);
-                              }}
-                              className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/20 text-red-400 hover:bg-red-500/40 transition-all cursor-pointer animate-in zoom-in-75 duration-200"
-                              title="Tap again to confirm delete"
-                            >
-                              <Icons.Trash2 size={14} />
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setConfirmDeleteId(entry.id);
-                                // Auto-cancel confirm after 3s
-                                setTimeout(() => setConfirmDeleteId((cur) => cur === entry.id ? null : cur), 3000);
-                              }}
-                              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
-                              title="Delete entry"
-                            >
-                              <Icons.Trash2 size={14} />
-                            </button>
-                          )}
+                          {/* Delete button */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPendingDeleteId(entry.id);
+                            }}
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
+                            title="Delete entry"
+                          >
+                            <Icons.Trash2 size={14} />
+                          </button>
                         </div>
                       </div>
 
@@ -543,6 +527,16 @@ export default function JournalGallery() {
           )}
 
       </main>
+
+      <ConfirmDeleteModal
+        isOpen={pendingDeleteId !== null}
+        title="Delete Journal Entry?"
+        description="This entry will be permanently removed from your vault. This action cannot be undone."
+        onConfirm={() => {
+          if (pendingDeleteId) deleteJournalEntry(pendingDeleteId);
+        }}
+        onCancel={() => setPendingDeleteId(null)}
+      />
     </div>
   );
 }

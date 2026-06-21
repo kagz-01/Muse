@@ -105,6 +105,7 @@ import * as $mirror_StreakCard from "./islands/mirror/StreakCard.tsx";
 import * as $mirror_index from "./islands/mirror/index.ts";
 import * as $modals_AuthModal from "./islands/modals/AuthModal.tsx";
 import * as $modals_CaptureModal from "./islands/modals/CaptureModal.tsx";
+import * as $modals_ConfirmDeleteModal from "./islands/modals/ConfirmDeleteModal.tsx";
 import * as $modals_CreateRoomModal from "./islands/modals/CreateRoomModal.tsx";
 import * as $modals_CreateThreadModal from "./islands/modals/CreateThreadModal.tsx";
 import * as $modals_EditRoomModal from "./islands/modals/EditRoomModal.tsx";
@@ -244,6 +245,7 @@ const manifest = {
     "./islands/mirror/index.ts": $mirror_index,
     "./islands/modals/AuthModal.tsx": $modals_AuthModal,
     "./islands/modals/CaptureModal.tsx": $modals_CaptureModal,
+    "./islands/modals/ConfirmDeleteModal.tsx": $modals_ConfirmDeleteModal,
     "./islands/modals/CreateRoomModal.tsx": $modals_CreateRoomModal,
     "./islands/modals/CreateThreadModal.tsx": $modals_CreateThreadModal,
     "./islands/modals/EditRoomModal.tsx": $modals_EditRoomModal,
