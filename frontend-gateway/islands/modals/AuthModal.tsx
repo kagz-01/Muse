@@ -13,6 +13,8 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -46,7 +48,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
         login(email);
         globalThis.location.href = "/dashboard";
       }, 1000);
-    } catch (err) {
+    } catch (_err) {
       setErrorMsg("Network error connecting to Vault.");
       setIsSyncing(false);
     }
@@ -200,7 +202,20 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
               )}
 
             {!isSuccess && (
-              <div className="mt-8 pt-6 border-t border-white/5 flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-[600ms]">
+              <div className="mt-8 pt-6 border-t border-white/5 flex flex-col items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-[600ms]">
+                <p className="text-[10px] text-gray-600 font-mono">
+                  {localMode === "signup"
+                    ? "Already have an account?"
+                    : "Don't have an account yet?"}
+                  {" "}
+                  <button
+                    type="button"
+                    onClick={() => setLocalMode(localMode === "signup" ? "login" : "signup")}
+                    className="text-canvas-primary hover:underline font-bold transition-colors"
+                  >
+                    {localMode === "signup" ? "Log in" : "Sign up"}
+                  </button>
+                </p>
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
                   <Icons.Shield size={12} className="text-gray-600" />
                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500">
