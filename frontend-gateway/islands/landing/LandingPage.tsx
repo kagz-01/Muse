@@ -84,19 +84,9 @@ export default function LandingPage() {
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
               </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold tracking-tighter text-[var(--muse-text)] leading-none transition-colors duration-300">
-                MUSE
-              </span>
-              <div className="flex items-center gap-1.5 mt-1">
-                <span className="text-[8px] font-bold uppercase tracking-[0.4em] text-canvas-primary leading-none">
-                  Protocol
-                </span>
-                <span className="text-[7px] font-mono text-emerald-500/80 uppercase tracking-widest hidden sm:block animate-pulse">
-                  Syncing
-                </span>
-              </div>
-            </div>
+            <span className="text-xl font-bold tracking-tighter text-[var(--muse-text)] leading-none transition-colors duration-300">
+              MUSE
+            </span>
           </div>
 
           <nav className="hidden md:flex items-center gap-8 relative z-10">

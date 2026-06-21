@@ -103,14 +103,9 @@ export default function AppHeader(
                 className="w-full h-full object-contain relative z-10"
               />
             </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold tracking-tight text-[var(--muse-text)] leading-none transition-colors duration-300">
-                Muse
-              </span>
-              <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-canvas-primary mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                Network
-              </span>
-            </div>
+            <span className="text-xl font-bold tracking-tight text-[var(--muse-text)] leading-none transition-colors duration-300">
+              Muse
+            </span>
           </button>
         </div>
 
