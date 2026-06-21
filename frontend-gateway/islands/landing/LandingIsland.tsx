@@ -129,11 +129,9 @@ export default function LandingIsland() {
       {/* FIXED HEADER */}
       <header className="fixed top-0 left-0 w-full px-6 md:px-12 py-5 flex justify-between items-center z-[100] animate-in slide-in-from-top duration-500">
         <div className="flex items-center gap-3">
-          <img
-            src="/assets/muse-logo.png"
-            alt="Muse"
-            className="h-9 w-9 object-contain rounded-xl"
-          />
+          <div className="h-9 w-9 bg-white/10 rounded-xl flex items-center justify-center text-white">
+            <Icons.Infinity size={20} strokeWidth={2.5} />
+          </div>
           <span className="text-lg font-bold tracking-tight">Muse</span>
         </div>
 
@@ -184,11 +182,9 @@ export default function LandingIsland() {
 
           <div className="mb-8 relative animate-in slide-in-from-bottom-5 duration-700">
             <div className="absolute inset-0 bg-canvas-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
-            <img
-              src="/assets/muse-logo.png"
-              alt="Muse"
-              className="relative w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-[0_0_60px_rgba(99,102,241,0.5)]"
-            />
+            <div className="relative w-32 h-32 md:w-40 md:h-40 bg-white/10 rounded-[3rem] flex items-center justify-center shadow-[0_0_60px_rgba(99,102,241,0.4)]">
+              <Icons.Infinity size={72} strokeWidth={1.5} className="text-white" />
+            </div>
           </div>
 
           <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight leading-none mb-6 animate-in slide-in-from-bottom-5 duration-700 delay-150">
@@ -367,11 +363,9 @@ export default function LandingIsland() {
         <section className="min-h-[80vh] flex flex-col items-center justify-center text-center px-6 py-32 z-10 relative">
           <div className="mb-10 relative">
             <div className="absolute inset-0 bg-canvas-primary/20 blur-3xl scale-150 animate-pulse" />
-            <img
-              src="/assets/muse-logo.png"
-              alt="Muse"
-              className="relative w-40 h-40 object-contain drop-shadow-[0_0_80px_rgba(99,102,241,0.6)]"
-            />
+            <div className="relative w-40 h-40 bg-white/10 rounded-[4rem] flex items-center justify-center shadow-[0_0_80px_rgba(99,102,241,0.5)]">
+              <Icons.Infinity size={88} strokeWidth={1.5} className="text-white" />
+            </div>
           </div>
 
           <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-none">
@@ -406,11 +400,9 @@ export default function LandingIsland() {
         {/* Footer */}
         <footer className="border-t border-white/5 py-10 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-600 text-[11px] font-bold uppercase tracking-widest z-10 relative">
           <div className="flex items-center gap-2">
-            <img
-              src="/assets/muse-logo.png"
-              alt="Muse"
-              className="h-6 w-6 object-contain rounded-lg opacity-60"
-            />
+            <div className="h-6 w-6 bg-white/10 rounded-lg flex items-center justify-center opacity-60">
+              <Icons.Infinity size={14} strokeWidth={2} className="text-white" />
+            </div>
             <span>Muse © 2025</span>
           </div>
           <span className="font-serif italic normal-case text-gray-700 text-xs">
