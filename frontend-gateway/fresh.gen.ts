@@ -25,6 +25,7 @@ import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $api_artifacts_ingest_url from "./routes/api/artifacts/ingest-url.ts";
 import * as $api_artifacts_upload_document from "./routes/api/artifacts/upload-document.ts";
+import * as $api_auth_2fa from "./routes/api/auth/2fa.ts";
 import * as $api_auth_login from "./routes/api/auth/login.ts";
 import * as $api_auth_register from "./routes/api/auth/register.ts";
 import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
@@ -106,6 +107,7 @@ import * as $modals_CaptureModal from "./islands/modals/CaptureModal.tsx";
 import * as $modals_CreateRoomModal from "./islands/modals/CreateRoomModal.tsx";
 import * as $modals_CreateThreadModal from "./islands/modals/CreateThreadModal.tsx";
 import * as $modals_EditRoomModal from "./islands/modals/EditRoomModal.tsx";
+import * as $modals_TwoFactorModal from "./islands/modals/TwoFactorModal.tsx";
 import * as $modals_VaultGateModal from "./islands/modals/VaultGateModal.tsx";
 import * as $modals_index from "./islands/modals/index.ts";
 import * as $navigation_SynthesisEngine from "./islands/navigation/SynthesisEngine.tsx";
@@ -154,6 +156,7 @@ const manifest = {
     "./routes/_app.tsx": $_app,
     "./routes/api/artifacts/ingest-url.ts": $api_artifacts_ingest_url,
     "./routes/api/artifacts/upload-document.ts": $api_artifacts_upload_document,
+    "./routes/api/auth/2fa.ts": $api_auth_2fa,
     "./routes/api/auth/login.ts": $api_auth_login,
     "./routes/api/auth/register.ts": $api_auth_register,
     "./routes/api/circles/[id]/members.ts": $api_circles_id_members,
@@ -242,6 +245,7 @@ const manifest = {
     "./islands/modals/CreateRoomModal.tsx": $modals_CreateRoomModal,
     "./islands/modals/CreateThreadModal.tsx": $modals_CreateThreadModal,
     "./islands/modals/EditRoomModal.tsx": $modals_EditRoomModal,
+    "./islands/modals/TwoFactorModal.tsx": $modals_TwoFactorModal,
     "./islands/modals/VaultGateModal.tsx": $modals_VaultGateModal,
     "./islands/modals/index.ts": $modals_index,
     "./islands/navigation/SynthesisEngine.tsx": $navigation_SynthesisEngine,

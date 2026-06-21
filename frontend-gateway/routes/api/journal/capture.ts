@@ -1,15 +1,7 @@
 import { Handlers } from "$fresh/server.ts";
-import { executeDB } from "../../../utils/db.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
-
-// Helper to generate SHA-256 hash using Web Crypto API
-async function generateHash(text: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
+import { queryDB } from "../../../utils/db.ts";
+import { generateBlockchainHash } from "../../../utils/crypto.ts";
 
 export const handler: Handlers = {
   async POST(req) {
@@ -20,32 +12,55 @@ export const handler: Handlers = {
       }
 
       const body = await req.json();
-      const { threadId, rawThought } = body;
+      const { rawThought, threadId } = body;
 
-      if (!threadId || !rawThought) {
-        return new Response("Thread ID and Raw Thought are required", { status: 400 });
+      if (!rawThought || rawThought.trim() === "") {
+        return new Response("Journal entry content is required", { status: 400 });
       }
 
-      // Generate the cryptographic hash for future blockchain anchoring
-      const blockchainHash = await generateHash(rawThought);
+      // Generate the cryptographic hash for Web3 proof of thought
+      const blockchainHash = await generateBlockchainHash(rawThought);
 
-      // Insert into CockroachDB
-      await executeDB(
-        "INSERT INTO journal_entries (user_id, thread_id, raw_thought, blockchain_hash) VALUES ($1, $2, $3, $4)",
-        userId, threadId, rawThought, blockchainHash
-      );
+      let insertQuery = `
+        INSERT INTO journal_entries (user_id, raw_thought, blockchain_hash) 
+        VALUES ($1, $2, $3) RETURNING *
+      `;
+      let queryArgs: any[] = [userId, rawThought, blockchainHash];
 
-      return new Response(JSON.stringify({ 
-        success: true, 
-        hash: blockchainHash 
+      // If a threadId is provided, link the journal entry to the synthesized context
+      if (threadId) {
+        // First verify the thread belongs to a room the user owns
+        const threadCheck = await queryDB(`
+          SELECT t.id 
+          FROM threads t
+          JOIN rooms r ON t.room_id = r.id
+          WHERE t.id = $1 AND r.user_id = $2
+        `, threadId, userId);
+
+        if (threadCheck.length === 0) {
+          return new Response("Thread not found or unauthorized", { status: 404 });
+        }
+
+        insertQuery = `
+          INSERT INTO journal_entries (user_id, thread_id, raw_thought, blockchain_hash) 
+          VALUES ($1, $2, $3, $4) RETURNING *
+        `;
+        queryArgs = [userId, threadId, rawThought, blockchainHash];
+      }
+
+      const insertResult = await queryDB(insertQuery, ...queryArgs);
+
+      return new Response(JSON.stringify({
+        success: true,
+        entry: insertResult[0],
       }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
 
     } catch (e) {
-      console.error("Error capturing thought:", e);
-      return new Response("Internal Server Error", { status: 500 });
+      console.error("Error creating journal entry:", e);
+      return new Response(`Internal Server Error: ${(e as Error).message}`, { status: 500 });
     }
   },
 };

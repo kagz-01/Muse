@@ -40,6 +40,7 @@ import {
 } from "../../signals/ui.ts";
 
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
+import TwoFactorModal from "../modals/TwoFactorModal.tsx";
 
 type SettingsTab =
   | "profile"
@@ -378,6 +379,7 @@ export default function Settings() {
   const [customHue, setCustomHueState] = useState(200);
   const [customSat, setCustomSatState] = useState(100);
   const [customLight, setCustomLightState] = useState(60);
+  const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
 
   const hasInitialized = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1824,9 +1826,6 @@ export default function Settings() {
                     className="text-gray-400"
                   />{" "}
                   Two-Factor Authentication
-                  <span className="text-[8px] font-bold uppercase tracking-widest bg-white/10 text-gray-400 px-1.5 py-0.5 rounded-md">
-                    Soon
-                  </span>
                 </p>
                 <p className="text-[10px] text-gray-500">
                   Add an extra layer of security
@@ -1834,14 +1833,19 @@ export default function Settings() {
               </div>
               <button
                 type="button"
-                onClick={() =>
-                  updatePrivacySecurity({
-                    twoFactorEnabled: !user.privacySecurity.twoFactorEnabled,
-                  })}
+                onClick={() => {
+                  if (user.privacySecurity.twoFactorEnabled) {
+                    // Turn it off directly
+                    updatePrivacySecurity({ twoFactorEnabled: false });
+                  } else {
+                    // Open setup modal
+                    setIsTwoFactorModalOpen(true);
+                  }
+                }}
                 className={`px-3 py-1 text-xs rounded-lg transition ${
                   user.privacySecurity.twoFactorEnabled
                     ? "bg-emerald-600 text-white"
-                    : "bg-white/10 text-white"
+                    : "bg-white/10 text-white hover:bg-white/20"
                 }`}
               >
                 {user.privacySecurity.twoFactorEnabled ? "Enabled" : "Enable"}
@@ -1992,6 +1996,16 @@ export default function Settings() {
           </section>
         )}
       </div>
+
+      <TwoFactorModal 
+        isOpen={isTwoFactorModalOpen} 
+        onClose={() => setIsTwoFactorModalOpen(false)} 
+        onSuccess={() => {
+          setIsTwoFactorModalOpen(false);
+          updatePrivacySecurity({ twoFactorEnabled: true });
+        }}
+        themeColor={appearance.customAccentHex}
+      />
     </div>
   );
 }

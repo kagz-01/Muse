@@ -13,6 +13,7 @@
   "lint": { "rules": { "tags": ["fresh", "recommended"] } },
   "exclude": ["**/_fresh/*"],
   "imports": {
+    "qrcode": "npm:qrcode@1.5.3",
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "lucide-preact": "https://esm.sh/lucide-preact@0.469.0?alias=react:preact/compat,react-dom:preact/compat-render&deps=preact@10.22.0",
     "preact": "https://esm.sh/preact@10.22.0",
