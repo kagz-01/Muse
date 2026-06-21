@@ -186,44 +186,63 @@ export default function CreateThreadModal({ onClose }: Props) {
 
           {/* Cover */}
           <div className="mb-6">
-            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-              Cover Image
-            </label>
-            <div
-              onClick={() => fileRef.current?.click()}
-              className="relative w-full h-32 rounded-2xl border-2 border-dashed border-white/10 hover:border-white/25 transition-all cursor-pointer overflow-hidden group"
-            >
-              {coverPreview
-                ? (
-                  <img
-                    src={coverPreview}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    alt=""
-                  />
-                )
-                : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-gray-300 transition-colors">
-                    <Icons.ImagePlus size={22} />
-                    <span className="text-xs font-bold uppercase tracking-widest">
-                      Upload Cover
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
+                Cover Image
+              </label>
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Local or Web URL</span>
+            </div>
+            
+            <div className="space-y-3">
+              <div
+                onClick={() => fileRef.current?.click()}
+                className="relative w-full h-32 rounded-2xl border-2 border-dashed border-white/10 hover:border-white/25 transition-all cursor-pointer overflow-hidden group bg-white/[0.02]"
+              >
+                {coverPreview
+                  ? (
+                    <img
+                      src={coverPreview}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      alt=""
+                    />
+                  )
+                  : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-gray-300 transition-colors">
+                      <Icons.UploadCloud size={22} />
+                      <span className="text-xs font-bold uppercase tracking-widest">
+                        Upload Local Cover
+                      </span>
+                    </div>
+                  )}
+                {coverPreview && (
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                      <Icons.UploadCloud size={14} /> Upload New
                     </span>
                   </div>
                 )}
-              {coverPreview && (
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="text-white text-xs font-bold uppercase tracking-widest">
-                    Change Image
-                  </span>
+              </div>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImagePick}
+                className="hidden"
+              />
+              
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                  <Icons.Link2 size={14} />
                 </div>
-              )}
+                <input
+                  type="url"
+                  placeholder="Or paste an image URL from the web..."
+                  value={coverPreview && coverPreview.startsWith('http') ? coverPreview : ''}
+                  onChange={(e) => setCoverPreview((e.target as HTMLInputElement).value)}
+                  className="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-canvas-primary/50 transition-colors"
+                />
+              </div>
             </div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImagePick}
-              className="hidden"
-            />
           </div>
 
           {/* Title */}
