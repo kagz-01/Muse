@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "preact/hooks";
 import {
   addEntry,
+  deleteJournalEntry,
   getJournalTitle,
   type JournalEntry,
   type JournalMood,
@@ -70,6 +71,7 @@ export default function JournalGallery() {
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [customFilterInput, setCustomFilterInput] = useState("");
   const [isHydrated, setIsHydrated] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -467,6 +469,36 @@ export default function JournalGallery() {
                           >
                             <Icons.Archive size={14} />
                           </button>
+
+                          {/* Delete — two-step confirm */}
+                          {confirmDeleteId === entry.id ? (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteJournalEntry(entry.id);
+                                setConfirmDeleteId(null);
+                              }}
+                              className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/20 text-red-400 hover:bg-red-500/40 transition-all cursor-pointer animate-in zoom-in-75 duration-200"
+                              title="Tap again to confirm delete"
+                            >
+                              <Icons.Trash2 size={14} />
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setConfirmDeleteId(entry.id);
+                                // Auto-cancel confirm after 3s
+                                setTimeout(() => setConfirmDeleteId((cur) => cur === entry.id ? null : cur), 3000);
+                              }}
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
+                              title="Delete entry"
+                            >
+                              <Icons.Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       </div>
 
