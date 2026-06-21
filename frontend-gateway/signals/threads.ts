@@ -220,3 +220,7 @@ export function toggleArchiveThread(id: string) {
       : thread
   );
 }
+
+export function deleteThread(id: string) {
+  threadsSignal.value = threadsSignal.value.filter((t) => t.id !== id);
+}

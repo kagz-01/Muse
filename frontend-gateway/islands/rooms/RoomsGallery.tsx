@@ -1,7 +1,7 @@
 // Use a simple record type for inline style objects
 import { useMemo, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
-import { type Room, roomsSignal, type RoomTheme } from "../../signals/rooms.ts";
+import { type Room, roomsSignal, deleteRoom, type RoomTheme } from "../../signals/rooms.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 import VaultGateModal from "../modals/VaultGateModal.tsx";
 import { isVaultUnlockedSignal } from "../../signals/vault.ts";
@@ -104,19 +104,25 @@ function RoomCard({
   pinned,
   starred,
   archived,
+  confirmDelete,
   onOpen,
   onPin,
   onStar,
   onArchive,
+  onDeleteRequest,
+  onDeleteConfirm,
 }: {
   room: Room;
   pinned: boolean;
   starred: boolean;
   archived: boolean;
+  confirmDelete: boolean;
   onOpen: () => void;
   onPin: () => void;
   onStar: () => void;
   onArchive: () => void;
+  onDeleteRequest: () => void;
+  onDeleteConfirm: () => void;
 }) {
   const baseHexMap: Record<RoomTheme, string> = {
     indigo: "#6366f1",
@@ -214,6 +220,34 @@ function RoomCard({
               onClick={onPin}
               tooltipSide="left"
             />
+            {/* Delete — two-step confirm */}
+            {confirmDelete ? (
+              <button
+                type="button"
+                aria-label="Confirm delete"
+                onClick={(e) => { e.stopPropagation(); onDeleteConfirm(); }}
+                className="group/action relative flex h-8 w-8 items-center justify-center rounded-full border border-red-500/40 bg-red-500/20 text-red-400 hover:bg-red-500/40 transition-all animate-in zoom-in-75 duration-200"
+                title="Tap again to confirm delete"
+              >
+                <Icons.Trash2 size={12} />
+                <span className="absolute right-full mr-2 px-2 py-1 rounded bg-black/90 text-white text-[10px] font-bold uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/action:opacity-100 pointer-events-none transition-opacity duration-200 border border-white/10 z-20 shadow-lg">
+                  Confirm
+                </span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                aria-label="Delete room"
+                onClick={(e) => { e.stopPropagation(); onDeleteRequest(); }}
+                className="group/action relative flex h-8 w-8 items-center justify-center rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-muted)] hover:border-red-500/30 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                title="Delete room"
+              >
+                <Icons.Trash2 size={12} />
+                <span className="absolute right-full mr-2 px-2 py-1 rounded bg-black/90 text-white text-[10px] font-bold uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/action:opacity-100 pointer-events-none transition-opacity duration-200 border border-white/10 z-20 shadow-lg">
+                  Delete
+                </span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -265,6 +299,20 @@ export default function RoomsGallery() {
   );
   const [starredIds, setStarredIds] = useState<string[]>([]);
   const [archivedIds, setArchivedIds] = useState<string[]>([]);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const requestDelete = (id: string) => {
+    setConfirmDeleteId(id);
+    setTimeout(() => setConfirmDeleteId((cur) => cur === id ? null : cur), 3000);
+  };
+
+  const confirmDeleteRoom = (id: string) => {
+    deleteRoom(id);
+    setConfirmDeleteId(null);
+    setPinnedIds((p) => p.filter((x) => x !== id));
+    setStarredIds((s) => s.filter((x) => x !== id));
+    setArchivedIds((a) => a.filter((x) => x !== id));
+  };
 
   const roomOrder = useMemo(
     () => new Map(rooms.map((room, index) => [room.id, index])),
@@ -537,12 +585,13 @@ export default function RoomsGallery() {
                     pinned
                     starred={starredIds.includes(room.id)}
                     archived={archivedIds.includes(room.id)}
-                    onOpen={() =>
-                      openRoom(room.id)}
-                    onPin={() =>
-                      togglePin(room.id)}
+                    confirmDelete={confirmDeleteId === room.id}
+                    onOpen={() => openRoom(room.id)}
+                    onPin={() => togglePin(room.id)}
                     onStar={() => toggleStar(room.id)}
                     onArchive={() => toggleArchive(room.id)}
+                    onDeleteRequest={() => requestDelete(room.id)}
+                    onDeleteConfirm={() => confirmDeleteRoom(room.id)}
                   />
                 </div>
               ))}
@@ -618,12 +667,13 @@ export default function RoomsGallery() {
                       pinned={pinnedIds.includes(room.id)}
                       starred={starredIds.includes(room.id)}
                       archived={archivedIds.includes(room.id)}
-                      onOpen={() =>
-                        openRoom(room.id)}
-                      onPin={() =>
-                        togglePin(room.id)}
+                      confirmDelete={confirmDeleteId === room.id}
+                      onOpen={() => openRoom(room.id)}
+                      onPin={() => togglePin(room.id)}
                       onStar={() => toggleStar(room.id)}
                       onArchive={() => toggleArchive(room.id)}
+                      onDeleteRequest={() => requestDelete(room.id)}
+                      onDeleteConfirm={() => confirmDeleteRoom(room.id)}
                     />
                   </div>
                 ))}
@@ -674,12 +724,13 @@ export default function RoomsGallery() {
                       pinned={pinnedIds.includes(room.id)}
                       starred={starredIds.includes(room.id)}
                       archived={archivedIds.includes(room.id)}
-                      onOpen={() =>
-                        openRoom(room.id)}
-                      onPin={() =>
-                        togglePin(room.id)}
+                      confirmDelete={confirmDeleteId === room.id}
+                      onOpen={() => openRoom(room.id)}
+                      onPin={() => togglePin(room.id)}
                       onStar={() => toggleStar(room.id)}
                       onArchive={() => toggleArchive(room.id)}
+                      onDeleteRequest={() => requestDelete(room.id)}
+                      onDeleteConfirm={() => confirmDeleteRoom(room.id)}
                     />
                   </div>
                 ))}

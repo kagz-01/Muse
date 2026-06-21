@@ -4,6 +4,7 @@ import {
   type Thread,
   type ThreadMood,
   threadsSignal,
+  deleteThread,
   toggleFavoriteThread,
   togglePinThread,
   toggleArchiveThread,
@@ -56,6 +57,7 @@ export default function ThreadsGallery() {
   const [generatedThreadCount, _setGeneratedThreadCount] = useState(0);
   const [zoomingThreadId, setZoomingThreadId] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -462,6 +464,35 @@ export default function ThreadsGallery() {
                               >
                                 <Icons.Archive size={14} />
                               </button>
+
+                              {/* Delete — two-step confirm */}
+                              {confirmDeleteId === thread.id ? (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteThread(thread.id);
+                                    setConfirmDeleteId(null);
+                                  }}
+                                  className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/20 text-red-400 hover:bg-red-500/40 transition-all cursor-pointer animate-in zoom-in-75 duration-200"
+                                  title="Tap again to confirm delete"
+                                >
+                                  <Icons.Trash2 size={14} />
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setConfirmDeleteId(thread.id);
+                                    setTimeout(() => setConfirmDeleteId((cur) => cur === thread.id ? null : cur), 3000);
+                                  }}
+                                  className="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
+                                  title="Delete thread"
+                                >
+                                  <Icons.Trash2 size={14} />
+                                </button>
+                              )}
                             </div>
                           </div>
 
