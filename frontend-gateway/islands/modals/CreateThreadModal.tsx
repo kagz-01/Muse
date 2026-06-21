@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
-import {
-  addThread,
-} from "../../signals/threads.ts";
+import { addThread } from "../../signals/threads.ts";
+import { useDraft } from "../../hooks/useDraft.ts";
 
 const CORE_MOODS = [
   { id: "focus", label: "Focus", emoji: "🧠" },
@@ -33,6 +32,12 @@ const moodColors: Record<string, string> = {
 };
 
 export default function CreateThreadModal({ onClose }: Props) {
+  const { draft, hasDraft, updateDraft, clearDraft } = useDraft<{
+    title: string; description: string; thesis: string;
+    mood: string; format: string; depth: string; theme: string; isPublic: boolean;
+  }>("muse_thread_draft");
+
+  const [showResumeBanner, setShowResumeBanner] = useState(hasDraft);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [thesis, setThesis] = useState("");
@@ -43,6 +48,19 @@ export default function CreateThreadModal({ onClose }: Props) {
   const [coverPreview, setCoverPreview] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState("");
+
+  const applyDraft = () => {
+    if (!draft) return;
+    if (draft.title) setTitle(draft.title);
+    if (draft.description) setDescription(draft.description);
+    if (draft.thesis) setThesis(draft.thesis);
+    if (draft.mood) setMood(draft.mood);
+    if (draft.format) setFormat(draft.format);
+    if (draft.depth) setDepth(draft.depth);
+    if (draft.theme) setTheme(draft.theme);
+    if (typeof draft.isPublic === "boolean") setIsPublic(draft.isPublic);
+    setShowResumeBanner(false);
+  };
 
   const titleRef = useRef<HTMLInputElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -93,12 +111,20 @@ export default function CreateThreadModal({ onClose }: Props) {
       isPublic,
       itemIds: [],
       sourceRoomIds: [],
-      isVault: !isPublic, // Links to global vault
+      isVault: !isPublic,
     });
 
+    clearDraft(); // ✅ wipe draft on success
     onClose();
     globalThis.location.href = `/threads/${newId}`;
   };
+
+  // Auto-save draft on every meaningful change
+  useEffect(() => {
+    if (title || description || thesis || theme) {
+      updateDraft({ title, description, thesis, mood, format, depth, theme, isPublic });
+    }
+  }, [title, description, thesis, mood, format, depth, theme, isPublic]);
 
   return (
     <div
@@ -113,6 +139,32 @@ export default function CreateThreadModal({ onClose }: Props) {
         />
 
         <div className="relative z-10 p-8">
+          {/* Resume Draft Banner */}
+          {showResumeBanner && (
+            <div className="mb-6 flex items-center gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 animate-in slide-in-from-top-2 duration-300">
+              <Icons.FileText size={18} className="text-amber-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">Unsaved Draft Found</p>
+                <p className="text-xs text-amber-400/80 font-serif italic mt-0.5 truncate">
+                  {draft?.title ? `"${draft.title}"` : "A thread you started is waiting"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={applyDraft}
+                className="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-500/30 transition-all shrink-0"
+              >
+                Resume
+              </button>
+              <button
+                type="button"
+                onClick={() => { clearDraft(); setShowResumeBanner(false); }}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-amber-500/60 hover:text-amber-400 transition-colors shrink-0"
+              >
+                <Icons.X size={14} />
+              </button>
+            </div>
+          )}
           {/* Header */}
           <div className="flex items-center justify-between mb-7">
             <div>
@@ -382,7 +434,7 @@ export default function CreateThreadModal({ onClose }: Props) {
           {/* Actions */}
           <div className="flex items-center gap-3 mt-4">
             <button
-              onClick={onClose}
+              onClick={() => { clearDraft(); onClose(); }}
               type="button"
               className="flex-1 py-4 rounded-2xl border border-white/10 text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
             >

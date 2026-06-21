@@ -440,7 +440,14 @@ export default function JournalGallery() {
                               />
                             </div>
                           )}
-                          
+
+                          {/* Draft indicator — shown when entry body is empty */}
+                          {!entry.body?.trim() && (
+                            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/15 border border-amber-500/25 animate-in fade-in duration-300">
+                              <Icons.FileText size={10} className="text-amber-400" />
+                              <span className="text-[8px] font-bold uppercase tracking-widest text-amber-400">Draft</span>
+                            </div>
+                          )}
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); toggleFavoriteJournal(entry.id); }}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
+import { useDraft } from "../../hooks/useDraft.ts";
 import {
   addRoom,
   MOOD_OPTIONS,
@@ -24,6 +25,13 @@ const paletteColors: { name: RoomTheme; hex: string; label: string }[] = [
 ];
 
 export default function CreateRoomModal({ onClose }: Props) {
+  const { draft, hasDraft, updateDraft, clearDraft } = useDraft<{
+    name: string; description: string; emoji: string;
+    category: string; size: string; mood: string;
+    tags: string[]; themeColor: string; isPublic: boolean;
+  }>("muse_room_draft");
+
+  const [showResumeBanner, setShowResumeBanner] = useState(hasDraft);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [emoji, setEmoji] = useState("");
@@ -38,9 +46,24 @@ export default function CreateRoomModal({ onClose }: Props) {
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState("");
   const [useCustomColor, setUseCustomColor] = useState(false);
-  const [customHue, setCustomHue] = useState(270); // indigo hue
+  const [customHue, setCustomHue] = useState(270);
   const [customSaturation, setCustomSaturation] = useState(100);
   const [customLightness, setCustomLightness] = useState(60);
+
+  // Helper: apply a saved draft into local state
+  const applyDraft = () => {
+    if (!draft) return;
+    if (draft.name) setName(draft.name);
+    if (draft.description) setDescription(draft.description);
+    if (draft.emoji) setEmoji(draft.emoji);
+    if (draft.category) setCategory(draft.category as RoomCategory);
+    if (draft.size) setSize(draft.size as RoomSize);
+    if (draft.mood) setMood(draft.mood as RoomMood);
+    if (draft.tags?.length) setTags(draft.tags);
+    if (draft.themeColor) setThemeColor(draft.themeColor as RoomTheme);
+    if (typeof draft.isPublic === "boolean") setIsPublic(draft.isPublic);
+    setShowResumeBanner(false);
+  };
 
   const fileRef = useRef<HTMLInputElement | null>(null);
   const _colorCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -111,12 +134,20 @@ export default function CreateRoomModal({ onClose }: Props) {
         isPublic,
         isVault: !isPublic,
       });
+      clearDraft(); // ✅ wipe draft on success
       onClose();
       globalThis.location.href = `/rooms/${newRoomId}`;
     } catch (_err) {
       setError("Failed to establish room identity.");
     }
   };
+
+  // Auto-save draft on every meaningful change
+  useEffect(() => {
+    if (name || description || emoji || tags.length) {
+      updateDraft({ name, description, emoji, category, size, mood, tags, themeColor, isPublic });
+    }
+  }, [name, description, emoji, category, size, mood, tags, themeColor, isPublic]);
 
   return (
     <div
@@ -131,6 +162,32 @@ export default function CreateRoomModal({ onClose }: Props) {
         />
 
         <div className="relative z-10 p-8">
+          {/* Resume Draft Banner */}
+          {showResumeBanner && (
+            <div className="mb-6 flex items-center gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 animate-in slide-in-from-top-2 duration-300">
+              <Icons.FileText size={18} className="text-amber-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">Unsaved Draft Found</p>
+                <p className="text-xs text-amber-400/80 font-serif italic mt-0.5 truncate">
+                  {draft?.name ? `"${draft.name}"` : "A room you started is waiting"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={applyDraft}
+                className="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-500/30 transition-all shrink-0"
+              >
+                Resume
+              </button>
+              <button
+                type="button"
+                onClick={() => { clearDraft(); setShowResumeBanner(false); }}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-amber-500/60 hover:text-amber-400 transition-colors shrink-0"
+              >
+                <Icons.X size={14} />
+              </button>
+            </div>
+          )}
           {/* Header */}
           <div className="flex items-center justify-between mb-7">
             <div>
@@ -624,7 +681,7 @@ export default function CreateRoomModal({ onClose }: Props) {
           {/* Actions */}
           <div className="flex items-center gap-3">
             <button
-              onClick={onClose}
+              onClick={() => { clearDraft(); onClose(); }}
               type="button"
               className="flex-1 py-4 rounded-2xl border border-white/10 text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
             >
