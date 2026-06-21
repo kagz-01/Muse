@@ -107,6 +107,56 @@ export const userSignal = signal<User>({
 
 export const soloModeSignal = signal(false);
 
+// Tracks whether the user has dismissed the setup banner in this session
+export const setupBannerDismissedSignal = signal(
+  globalThis.localStorage?.getItem("muse-setup-dismissed") === "true",
+);
+
+export function dismissSetupBanner() {
+  try { globalThis.localStorage?.setItem("muse-setup-dismissed", "true"); } catch { /* noop */ }
+  setupBannerDismissedSignal.value = true;
+}
+
+export interface SetupStep {
+  id: string;
+  label: string;
+  done: boolean;
+  href: string;
+}
+
+export function getSetupSteps(user: User): SetupStep[] {
+  return [
+    {
+      id: "name",
+      label: "Add your name",
+      done: Boolean(user.name && user.name !== "Guest"),
+      href: "/settings",
+    },
+    {
+      id: "avatar",
+      label: "Upload a photo",
+      done: Boolean(user.avatarUrl),
+      href: "/settings",
+    },
+    {
+      id: "bio",
+      label: "Write your bio",
+      done: Boolean(user.bio && user.bio.length > 0),
+      href: "/settings",
+    },
+    {
+      id: "room",
+      label: "Create your first Room",
+      done: user.synthesisLineage.totalRooms > 0,
+      href: "/rooms",
+    },
+  ];
+}
+
+export function isProfileComplete(user: User): boolean {
+  return getSetupSteps(user).every((s) => s.done);
+}
+
 export function toggleSoloMode() {
   soloModeSignal.value = !soloModeSignal.value;
 }

@@ -67,8 +67,8 @@ export default function TwoFactorModal({ isOpen, onClose, onSuccess, themeColor 
       }
 
       onSuccess();
-    } catch (err: any) {
-      setError(err.message || "Invalid code");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Invalid code");
       setIsVerifying(false);
     }
   };
@@ -100,7 +100,8 @@ export default function TwoFactorModal({ isOpen, onClose, onSuccess, themeColor 
             </div>
             <h2 className="text-lg font-bold text-[var(--muse-text)] tracking-tight">Enable 2FA</h2>
           </div>
-          <button 
+          <button
+            type="button"
             onClick={onClose}
             className="p-2 text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface)] rounded-full transition-colors"
           >
@@ -137,13 +138,14 @@ export default function TwoFactorModal({ isOpen, onClose, onSuccess, themeColor 
                     placeholder="Enter 6-digit code"
                     maxLength={6}
                     className="w-full bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-xl py-3 pl-12 pr-4 text-[var(--muse-text)] focus:outline-none focus:border-[var(--theme-color)] transition-colors text-center tracking-[0.5em] font-mono text-lg"
-                    style={{ '--theme-color': themeColor } as any}
+                    style={{ "--theme-color": themeColor } as Record<string, string>}
                   />
                 </div>
 
                 {error && <p className="text-red-400 text-xs font-mono text-center">{error}</p>}
 
                 <button
+                  type="button"
                   onClick={handleVerify}
                   disabled={isVerifying || token.length < 6}
                   className="w-full py-3 rounded-xl bg-[var(--muse-text)] text-[var(--muse-bg)] text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
