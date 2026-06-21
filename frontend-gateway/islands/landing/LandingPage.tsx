@@ -76,17 +76,8 @@ export default function LandingPage() {
             onClick={() => setIsBrandOpen(true)}
           >
             <div className="relative">
-              <div className="w-10 h-10 bg-[var(--muse-surface)] rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] border border-[var(--muse-border)] overflow-hidden p-1.5 relative">
-                <div className="absolute inset-0 bg-canvas-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <img
-                  src="/assets/muse-logo.png"
-                  alt="Muse Logo"
-                  className="w-full h-full object-contain relative z-10"
-                />
-              </div>
-              {/* Live Status Indicator */}
-              <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-[var(--muse-bg)] flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+              <div className="h-10 w-10 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <Icons.Infinity size={24} strokeWidth={2.5} />
               </div>
             </div>
             <span className="text-xl font-bold tracking-tighter text-[var(--muse-text)] leading-none transition-colors duration-300">

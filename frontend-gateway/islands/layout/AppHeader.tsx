@@ -94,14 +94,8 @@ export default function AppHeader(
             onClick={() => setShowLogoModal(true)}
             className="cursor-pointer flex items-center gap-3 group text-left"
           >
-            <div className="w-10 h-10 bg-[var(--muse-surface)] rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-all duration-500 shadow-2xl border border-[var(--muse-border)] overflow-hidden p-1.5 relative">
-              <div className="absolute inset-0 bg-canvas-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              </div>
-              <img
-                src="/assets/muse-logo.png"
-                alt="Muse Logo"
-                className="w-full h-full object-contain relative z-10"
-              />
+            <div className="w-10 h-10 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold group-hover:rotate-12 transition-all duration-500 shadow-2xl">
+              <Icons.Infinity size={22} strokeWidth={2.5} />
             </div>
             <span className="text-xl font-bold tracking-tight text-[var(--muse-text)] leading-none transition-colors duration-300">
               Muse
