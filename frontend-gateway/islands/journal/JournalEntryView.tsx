@@ -44,14 +44,7 @@ function formatTime(ts: number): string {
   });
 }
 
-// Simulated AI Questions for immersion
-const SOCRATIC_QUESTIONS = [
-  "How does this challenge your previous assumptions?",
-  "What is the underlying fear or desire driving this thought?",
-  "If this is true, what else must be true?",
-  "What context might you be missing here?",
-  "How does this connect to your broader goals?",
-];
+// Static questions are gone; we now use dynamic Groq-powered Socratic AI.
 
 export default function JournalEntryView({ entryId }: { entryId: string }) {
   const entries = journalSignal.value;
@@ -136,26 +129,55 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
     };
   }, [body, mood, customMoodText, tags, linkedItemIds, isPublic, save]);
 
-  const handleCommitThought = () => {
+  const handleCommitThought = async () => {
     if (!currentInput.trim()) return;
     
     // Append to body
-    const newBody = body.trim() ? `${body}\n\n${currentInput.trim()}` : currentInput.trim();
+    const thought = currentInput.trim();
+    const newBody = body.trim() ? `${body}\n\n${thought}` : thought;
     setBody(newBody);
     setCurrentInput("");
     
-    // Simulate AI thinking and responding
+    // Trigger AI thinking state
     setIsAiTyping(true);
-    setTimeout(() => {
-      const q = SOCRATIC_QUESTIONS[Math.floor(Math.random() * SOCRATIC_QUESTIONS.length)];
-      setAiResponses(prev => ({ ...prev, [newBody.split("\n\n").length - 1]: q }));
-      setIsAiTyping(false);
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 1500);
+    const blockIndex = newBody.split("\n\n").length - 1;
 
     setTimeout(() => {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
+
+    try {
+      // Prepare context from floatingContext (which is reactive to what the user just typed)
+      const contextItems = floatingContext.map(item => ({
+        title: item.title,
+        note: item.note || item.content
+      }));
+
+      // Fetch dynamic Socratic question
+      const res = await fetch("/api/ai/socratic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userName: userSignal.value?.username || "Traveler",
+          recentText: thought,
+          contextItems
+        }),
+      });
+
+      if (!res.ok) throw new Error("API failed");
+      const data = await res.json();
+      
+      setAiResponses(prev => ({ ...prev, [blockIndex]: data.question || "What comes next?" }));
+    } catch (err) {
+      console.error("Failed to generate Socratic question:", err);
+      // Fallback
+      setAiResponses(prev => ({ ...prev, [blockIndex]: "What is the underlying fear or desire driving this thought?" }));
+    } finally {
+      setIsAiTyping(false);
+      setTimeout(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
   };
 
   const handleDelete = () => {

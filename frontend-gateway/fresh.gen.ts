@@ -23,6 +23,7 @@ import * as $_app_threads_id_ from "./routes/(app)/threads/[id].tsx";
 import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $api_ai_socratic from "./routes/api/ai/socratic.ts";
 import * as $api_artifacts_ingest_url from "./routes/api/artifacts/ingest-url.ts";
 import * as $api_artifacts_upload_document from "./routes/api/artifacts/upload-document.ts";
 import * as $api_auth_2fa from "./routes/api/auth/2fa.ts";
@@ -156,6 +157,7 @@ const manifest = {
     "./routes/(app)/threads/index.tsx": $_app_threads_index,
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/api/ai/socratic.ts": $api_ai_socratic,
     "./routes/api/artifacts/ingest-url.ts": $api_artifacts_ingest_url,
     "./routes/api/artifacts/upload-document.ts": $api_artifacts_upload_document,
     "./routes/api/auth/2fa.ts": $api_auth_2fa,
