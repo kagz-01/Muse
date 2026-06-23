@@ -120,8 +120,7 @@ export const collaboratorsSignal = signal<Collaborator[]>([
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
     role: "Relationship Coach",
     status: "Online",
-    bio:
-      "Understanding attachment styles is the key to lasting connection.",
+    bio: "Understanding attachment styles is the key to lasting connection.",
     sharedThemes: ["Relationships", "Psychology"],
     aura: "purple",
     intelligenceProfile: "Challenger",
@@ -149,8 +148,7 @@ export const communityRoomsSignal = signal<CommunityRoom[]>([
   {
     id: "cr1",
     name: "The Civic Square",
-    description:
-      "Public archive of local policies and their societal impact.",
+    description: "Public archive of local policies and their societal impact.",
     memberCount: 412,
     coverImage:
       "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=1200&q=80",
@@ -182,7 +180,14 @@ export const wisdomNodesSignal = signal<WisdomNode[]>([
     radius: 50,
     connectedTo: ["w1"],
   },
-  { id: "w4", topic: "Voter Turnout", x: 600, y: 200, radius: 40, connectedTo: [] },
+  {
+    id: "w4",
+    topic: "Voter Turnout",
+    x: 600,
+    y: 200,
+    radius: 40,
+    connectedTo: [],
+  },
 ]);
 
 export const perspectivesSignal = signal<Perspective[]>([

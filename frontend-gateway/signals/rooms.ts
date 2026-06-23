@@ -147,7 +147,8 @@ const INITIAL_ROOMS: Room[] = [
   {
     id: "r1",
     name: "World Politics Debate",
-    description: "A space to discuss and analyze global political movements and local elections.",
+    description:
+      "A space to discuss and analyze global political movements and local elections.",
     emoji: "🗳️",
     category: "brainstorm",
     size: "medium",
@@ -165,7 +166,8 @@ const INITIAL_ROOMS: Room[] = [
   {
     id: "r2",
     name: "Love & Relationships",
-    description: "Reflections on modern romance, connection, and the five love languages.",
+    description:
+      "Reflections on modern romance, connection, and the five love languages.",
     emoji: "❤️",
     category: "journal",
     size: "small",

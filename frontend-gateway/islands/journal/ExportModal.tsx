@@ -49,8 +49,8 @@ export function ExportModal({ entries, onClose }: ExportModalProps) {
                 {entries.length === 1 ? "Export Entry" : "Export Journal"}
               </h2>
               <p class="text-sm text-white/60">
-                {entries.length === 1 
-                  ? "Save this entry to your device" 
+                {entries.length === 1
+                  ? "Save this entry to your device"
                   : "Save your entries to your device"}
               </p>
             </div>
@@ -136,7 +136,9 @@ export function ExportModal({ entries, onClose }: ExportModalProps) {
               </div>
               <div>
                 <p class="text-white/80">Synthesis</p>
-                <p class="text-xl font-bold text-white">{stats.synthesisCount}</p>
+                <p class="text-xl font-bold text-white">
+                  {stats.synthesisCount}
+                </p>
               </div>
               <div>
                 <p class="text-white/80">Public</p>

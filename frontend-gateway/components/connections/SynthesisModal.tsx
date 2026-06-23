@@ -87,17 +87,19 @@ export default function SynthesisModal({
                 disabled={isSynthesizing || !synthesisText.trim()}
                 className="px-8 py-4 bg-canvas-primary text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 cursor-pointer shadow-xl"
               >
-                {isSynthesizing ? (
-                  <>
-                    <Icons.RefreshCcw size={14} className="animate-spin" />
-                    Committing to Ledger...
-                  </>
-                ) : (
-                  <>
-                    <Icons.GitBranch size={14} />
-                    Branch into Journal
-                  </>
-                )}
+                {isSynthesizing
+                  ? (
+                    <>
+                      <Icons.RefreshCcw size={14} className="animate-spin" />
+                      Committing to Ledger...
+                    </>
+                  )
+                  : (
+                    <>
+                      <Icons.GitBranch size={14} />
+                      Branch into Journal
+                    </>
+                  )}
               </button>
             </div>
           </form>

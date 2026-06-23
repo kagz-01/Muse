@@ -45,8 +45,11 @@ export default function SpectralHero(
               height: `${(i % 5) * 12 + 16}px`,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              transform: `translate(${mousePos.x * (i % 3 + 1)}px, ${mousePos.y * (i % 4 + 1)}px)`,
-              background: `radial-gradient(circle at top left, var(--muse-text) 0%, transparent 80%)`,
+              transform: `translate(${mousePos.x * (i % 3 + 1)}px, ${
+                mousePos.y * (i % 4 + 1)
+              }px)`,
+              background:
+                `radial-gradient(circle at top left, var(--muse-text) 0%, transparent 80%)`,
               opacity: 0.04 + (i % 3) * 0.03,
             }}
           />
@@ -55,11 +58,16 @@ export default function SpectralHero(
 
       <div className="relative z-10 w-full max-w-3xl flex flex-col items-center gap-10">
         {/* THE 3D ORBITAL LOGO / GYROSCOPE */}
-        <div className="relative w-48 h-48 flex items-center justify-center [perspective:1200px]" style={stagger(0)}>
+        <div
+          className="relative w-48 h-48 flex items-center justify-center [perspective:1200px]"
+          style={stagger(0)}
+        >
           <div
             className="absolute inset-0 flex items-center justify-center [transform-style:preserve-3d] transition-transform duration-200 ease-out"
             style={{
-              transform: `rotateX(${-mousePos.y * 0.6}deg) rotateY(${mousePos.x * 0.6}deg)`,
+              transform: `rotateX(${-mousePos.y * 0.6}deg) rotateY(${
+                mousePos.x * 0.6
+              }deg)`,
             }}
           >
             {/* Inner Glow */}
@@ -102,7 +110,10 @@ export default function SpectralHero(
         </div>
 
         {/* CTA BUTTONS */}
-        <div className="flex flex-col sm:flex-row items-center gap-4" style={stagger(2)}>
+        <div
+          className="flex flex-col sm:flex-row items-center gap-4"
+          style={stagger(2)}
+        >
           <button
             type="button"
             onClick={() => onOpenAuth("signup")}
@@ -111,7 +122,10 @@ export default function SpectralHero(
             <div className="absolute inset-0 bg-canvas-primary/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
             <span className="relative z-10 flex items-center gap-2">
               Begin Your Loop
-              <Icons.ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              <Icons.ArrowRight
+                size={14}
+                className="group-hover:translate-x-1 transition-transform"
+              />
             </span>
           </button>
 
@@ -142,8 +156,12 @@ export default function SpectralHero(
             { value: "∞", label: "Potential" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="text-lg md:text-xl font-bold font-mono text-[var(--muse-text)]">{stat.value}</p>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">{stat.label}</p>
+              <p className="text-lg md:text-xl font-bold font-mono text-[var(--muse-text)]">
+                {stat.value}
+              </p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                {stat.label}
+              </p>
             </div>
           ))}
         </div>

@@ -25,7 +25,8 @@ const blueprintSchema = z.object({
 const parser = StructuredOutputParser.fromZodSchema(blueprintSchema);
 
 const synthesisPrompt = new PromptTemplate({
-  template: `You are the Muse AI Synthesis Engine. Your purpose is to analyze a collection of unstructured artifacts (notes, web clips, concepts) and extract a cohesive "Thread Blueprint."
+  template:
+    `You are the Muse AI Synthesis Engine. Your purpose is to analyze a collection of unstructured artifacts (notes, web clips, concepts) and extract a cohesive "Thread Blueprint."
 
 Find the hidden connections, underlying themes, and profound questions hidden within this chaos.
 
@@ -38,7 +39,9 @@ Artifacts:
   partialVariables: { format_instructions: parser.getFormatInstructions() },
 });
 
-export async function synthesizeArtifacts(artifacts: Record<string, unknown>[]) {
+export async function synthesizeArtifacts(
+  artifacts: Record<string, unknown>[],
+) {
   if (!GROQ_API_KEY) {
     throw new Error("GROQ_API_KEY is not configured in the environment.");
   }
@@ -54,7 +57,9 @@ export async function synthesizeArtifacts(artifacts: Record<string, unknown>[]) 
     })
     .join("\n\n");
 
-  const promptValue = await synthesisPrompt.format({ artifacts_text: artifactsText });
+  const promptValue = await synthesisPrompt.format({
+    artifacts_text: artifactsText,
+  });
 
   // Call Groq via LangChain
   const response = await model.invoke(promptValue);
@@ -91,14 +96,16 @@ Generate ONE powerful, thought-provoking Socratic question that:
 export async function generateDynamicSocraticQuestion(
   userName: string,
   recentText: string,
-  contextItems: { title: string; note?: string }[]
+  contextItems: { title: string; note?: string }[],
 ): Promise<string> {
   if (!GROQ_API_KEY) {
     throw new Error("GROQ_API_KEY is not configured in the environment.");
   }
 
   const contextText = contextItems.length > 0
-    ? contextItems.map(item => `- ${item.title}: ${item.note || ""}`).join("\n")
+    ? contextItems.map((item) => `- ${item.title}: ${item.note || ""}`).join(
+      "\n",
+    )
     : "No relevant context found.";
 
   const promptValue = await socraticPrompt.format({
@@ -109,7 +116,7 @@ export async function generateDynamicSocraticQuestion(
 
   const response = await model.invoke(promptValue);
   let question = response.content.toString().trim();
-  
+
   // Clean up any stray quotes if the AI included them
   if (question.startsWith('"') && question.endsWith('"')) {
     question = question.slice(1, -1);

@@ -1,6 +1,10 @@
 import { Handlers } from "$fresh/server.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
-import { hashPassword, createSession, setSessionCookie } from "../../../utils/auth.ts";
+import {
+  createSession,
+  hashPassword,
+  setSessionCookie,
+} from "../../../utils/auth.ts";
 
 export const handler: Handlers = {
   async POST(req) {
@@ -15,7 +19,11 @@ export const handler: Handlers = {
       }
 
       // Check if user already exists
-      const existing = await queryDB("SELECT id FROM users WHERE email = $1 OR username = $2", email, username);
+      const existing = await queryDB(
+        "SELECT id FROM users WHERE email = $1 OR username = $2",
+        email,
+        username,
+      );
       if (existing.length > 0) {
         return new Response("Email or Username already taken", { status: 409 });
       }
@@ -26,7 +34,9 @@ export const handler: Handlers = {
       // Insert new user
       const result = await executeDB(
         "INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3) RETURNING id",
-        email, username, hashedPassword
+        email,
+        username,
+        hashedPassword,
       );
 
       const row = result.rows[0] as Record<string, unknown>;
@@ -44,7 +54,6 @@ export const handler: Handlers = {
         status: 303, // See Other (Redirect)
         headers,
       });
-
     } catch (e) {
       console.error(e);
       return new Response("Internal Server Error", { status: 500 });

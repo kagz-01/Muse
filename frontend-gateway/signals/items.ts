@@ -27,7 +27,8 @@ const INITIAL_ITEMS: Item[] = [
     roomId: "r1",
     title: "Voter Turnout Statistics 2024",
     sourceUrl: "https://politics.news/voter-turnout",
-    note: "The lowest engagement we've seen in a decade for municipal elections.",
+    note:
+      "The lowest engagement we've seen in a decade for municipal elections.",
     isPublic: true,
     createdAt: new Date().toISOString(),
     dataProvenance: {
@@ -55,7 +56,8 @@ const INITIAL_ITEMS: Item[] = [
     roomId: "r2",
     title: "The 5 Love Languages Explained",
     sourceUrl: "https://psychology.com/love-languages",
-    note: "Fascinating how acts of service can be misinterpreted if your partner values words of affirmation.",
+    note:
+      "Fascinating how acts of service can be misinterpreted if your partner values words of affirmation.",
     isPublic: false,
     createdAt: new Date().toISOString(),
     dataProvenance: {

@@ -114,14 +114,17 @@ export const loadMirrorStats = (userId: string) => {
     const followerHistory = [...Array(7)].map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
-      return { date: d.toLocaleDateString('en-US', {weekday: 'short'}), count: 120 + i * 5 + Math.floor(Math.random() * 10) };
+      return {
+        date: d.toLocaleDateString("en-US", { weekday: "short" }),
+        count: 120 + i * 5 + Math.floor(Math.random() * 10),
+      };
     });
 
     mirrorSignal.value = {
       ...initialState,
       stats: {
         views: journals.length * 15 + threads.length * 20,
-        likes: journals.filter(j => j.isFavorited).length * 5,
+        likes: journals.filter((j) => j.isFavorited).length * 5,
         comments: threads.length * 3,
         collaborations: rooms.length * 2,
         follows: 156,

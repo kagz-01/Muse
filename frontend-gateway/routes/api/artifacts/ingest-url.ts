@@ -28,27 +28,33 @@ export const handler: Handlers = {
 
       if (!aiResponse.ok) {
         const errText = await aiResponse.text();
-        return new Response(`AI Engine Error: ${errText}`, { status: aiResponse.status });
+        return new Response(`AI Engine Error: ${errText}`, {
+          status: aiResponse.status,
+        });
       }
 
       const scrapedData = await aiResponse.json();
 
       // Determine type roughly based on the response
-      const type = scrapedData.source === "youtube" ? "youtube" 
-                 : scrapedData.source === "social" ? "social" 
-                 : "url";
+      const type = scrapedData.source === "youtube"
+        ? "youtube"
+        : scrapedData.source === "social"
+        ? "social"
+        : "url";
 
       // 2. Insert the scraped JSON directly into the CockroachDB JSONB column
       await executeDB(
         "INSERT INTO artifacts (room_id, type, source_url, unstructured_data) VALUES ($1, $2, $3, $4)",
-        roomId, type, url, JSON.stringify(scrapedData)
+        roomId,
+        type,
+        url,
+        JSON.stringify(scrapedData),
       );
 
       return new Response(JSON.stringify({ success: true, type }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-
     } catch (e) {
       console.error("Error ingesting URL:", e);
       return new Response("Internal Server Error", { status: 500 });

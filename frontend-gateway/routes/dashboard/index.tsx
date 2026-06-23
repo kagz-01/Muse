@@ -7,7 +7,7 @@ import RoomCard, { RoomData } from "../../islands/dashboard/RoomCard.tsx";
 import CreateRoomModal from "../../islands/dashboard/CreateRoomModal.tsx";
 import { Head } from "$fresh/runtime.ts";
 
-// Because fresh islands can't export state easily to the parent route, 
+// Because fresh islands can't export state easily to the parent route,
 // we'll wrap the inner content in a small island that holds the modal state
 import DashboardClientManager from "../../islands/dashboard/DashboardClientManager.tsx";
 
@@ -32,15 +32,21 @@ export const handler: Handlers<DashboardData> = {
     }
 
     // 2. Fetch User Data
-    const users = await queryDB("SELECT username, email FROM users WHERE id = $1", userId);
+    const users = await queryDB(
+      "SELECT username, email FROM users WHERE id = $1",
+      userId,
+    );
     if (users.length === 0) {
       return new Response("", { status: 303, headers: { location: "/" } });
     }
     const userRow = users[0] as Record<string, string>;
 
     // 3. Fetch Rooms
-    const rawRooms = await queryDB("SELECT id, title, description, theme_color, tags, created_at FROM rooms WHERE user_id = $1 ORDER BY created_at DESC", userId);
-    
+    const rawRooms = await queryDB(
+      "SELECT id, title, description, theme_color, tags, created_at FROM rooms WHERE user_id = $1 ORDER BY created_at DESC",
+      userId,
+    );
+
     // Format dates and tags properly for the UI
     const rooms: RoomData[] = rawRooms.map((r: any) => ({
       id: r.id,

@@ -1,7 +1,12 @@
 // Use a simple record type for inline style objects
 import { useMemo, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
-import { type Room, roomsSignal, deleteRoom, type RoomTheme } from "../../signals/rooms.ts";
+import {
+  deleteRoom,
+  type Room,
+  roomsSignal,
+  type RoomTheme,
+} from "../../signals/rooms.ts";
 import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 import VaultGateModal from "../modals/VaultGateModal.tsx";
 import { isVaultUnlockedSignal } from "../../signals/vault.ts";
@@ -221,7 +226,10 @@ function RoomCard({
             <button
               type="button"
               aria-label="Delete room"
-              onClick={(e) => { e.stopPropagation(); onDeleteRequest(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteRequest();
+              }}
               className="group/action relative flex h-8 w-8 items-center justify-center rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface)] text-[var(--muse-muted)] hover:border-red-500/30 hover:text-red-400 hover:bg-red-500/10 transition-all"
               title="Delete room"
             >
@@ -240,24 +248,44 @@ function RoomCard({
           </p>
           <div className="mt-6 flex items-center justify-between border-t border-[var(--muse-border)] pt-5">
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-1.5 text-[var(--muse-muted)]" title="Artifacts">
-                 <Icons.Layers size={14} />
-                 <span className="text-xs font-bold">{room.count}</span>
+              <div
+                className="flex items-center gap-1.5 text-[var(--muse-muted)]"
+                title="Artifacts"
+              >
+                <Icons.Layers size={14} />
+                <span className="text-xs font-bold">{room.count}</span>
               </div>
-              
+
               <div className="w-1 h-1 rounded-full bg-[var(--muse-border)]" />
-              
-              <div className="flex items-center gap-1.5 text-[var(--muse-muted)]" title={`Theme: ${room.themeColor}`}>
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: room.customThemeHex || baseHexMap[room.themeColor as RoomTheme] || baseHexMap.indigo }} />
+
+              <div
+                className="flex items-center gap-1.5 text-[var(--muse-muted)]"
+                title={`Theme: ${room.themeColor}`}
+              >
+                <span
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{
+                    backgroundColor: room.customThemeHex ||
+                      baseHexMap[room.themeColor as RoomTheme] ||
+                      baseHexMap.indigo,
+                  }}
+                />
                 {room.mood && (
-                  <span className="text-xs font-bold capitalize">{room.mood}</span>
+                  <span className="text-xs font-bold capitalize">
+                    {room.mood}
+                  </span>
                 )}
               </div>
-              
+
               {room.size && (
                 <>
                   <div className="w-1 h-1 rounded-full bg-[var(--muse-border)]" />
-                  <span className="text-xs font-bold text-[var(--muse-muted)] capitalize" title="Size">{room.size}</span>
+                  <span
+                    className="text-xs font-bold text-[var(--muse-muted)] capitalize"
+                    title="Size"
+                  >
+                    {room.size}
+                  </span>
                 </>
               )}
             </div>
@@ -564,8 +592,10 @@ export default function RoomsGallery() {
                     pinned
                     starred={starredIds.includes(room.id)}
                     archived={archivedIds.includes(room.id)}
-                    onOpen={() => openRoom(room.id)}
-                    onPin={() => togglePin(room.id)}
+                    onOpen={() =>
+                      openRoom(room.id)}
+                    onPin={() =>
+                      togglePin(room.id)}
                     onStar={() => toggleStar(room.id)}
                     onArchive={() => toggleArchive(room.id)}
                     onDeleteRequest={() => requestDelete(room.id)}
@@ -644,8 +674,10 @@ export default function RoomsGallery() {
                       pinned={pinnedIds.includes(room.id)}
                       starred={starredIds.includes(room.id)}
                       archived={archivedIds.includes(room.id)}
-                      onOpen={() => openRoom(room.id)}
-                      onPin={() => togglePin(room.id)}
+                      onOpen={() =>
+                        openRoom(room.id)}
+                      onPin={() =>
+                        togglePin(room.id)}
                       onStar={() => toggleStar(room.id)}
                       onArchive={() => toggleArchive(room.id)}
                       onDeleteRequest={() => requestDelete(room.id)}
@@ -699,8 +731,10 @@ export default function RoomsGallery() {
                       pinned={pinnedIds.includes(room.id)}
                       starred={starredIds.includes(room.id)}
                       archived={archivedIds.includes(room.id)}
-                      onOpen={() => openRoom(room.id)}
-                      onPin={() => togglePin(room.id)}
+                      onOpen={() =>
+                        openRoom(room.id)}
+                      onPin={() =>
+                        togglePin(room.id)}
                       onStar={() => toggleStar(room.id)}
                       onArchive={() => toggleArchive(room.id)}
                       onDeleteRequest={() => requestDelete(room.id)}

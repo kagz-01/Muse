@@ -42,19 +42,30 @@ export const handler: Handlers<RoomInteriorData> = {
     const roomId = ctx.params.id;
 
     // Fetch User Data
-    const users = await queryDB("SELECT username, email FROM users WHERE id = $1", userId);
-    if (users.length === 0) return new Response("", { status: 303, headers: { location: "/" } });
+    const users = await queryDB(
+      "SELECT username, email FROM users WHERE id = $1",
+      userId,
+    );
+    if (users.length === 0) {
+      return new Response("", { status: 303, headers: { location: "/" } });
+    }
     const userRow = users[0] as Record<string, string>;
 
     // Fetch Room Data
-    const rooms = await queryDB("SELECT id, title, description, theme_color, tags FROM rooms WHERE id = $1 AND user_id = $2", roomId, userId);
-    if (rooms.length === 0) return new Response("Room not found", { status: 404 });
+    const rooms = await queryDB(
+      "SELECT id, title, description, theme_color, tags FROM rooms WHERE id = $1 AND user_id = $2",
+      roomId,
+      userId,
+    );
+    if (rooms.length === 0) {
+      return new Response("Room not found", { status: 404 });
+    }
     const roomRow = rooms[0] as any;
 
     // Fetch Artifacts
     const artifactsRaw = await queryDB(
-      "SELECT id, type, source_url, created_at FROM artifacts WHERE room_id = $1 ORDER BY created_at DESC", 
-      roomId
+      "SELECT id, type, source_url, created_at FROM artifacts WHERE room_id = $1 ORDER BY created_at DESC",
+      roomId,
     );
 
     const artifacts: ArtifactData[] = artifactsRaw.map((a: any) => ({
@@ -67,7 +78,7 @@ export const handler: Handlers<RoomInteriorData> = {
     // Fetch Threads (AI Blueprints)
     const threadsRaw = await queryDB(
       "SELECT id, artifact_ids, ai_blueprint, created_at FROM threads WHERE room_id = $1 ORDER BY created_at DESC",
-      roomId
+      roomId,
     );
 
     const threads: ThreadData[] = threadsRaw.map((t: any) => ({
@@ -96,17 +107,23 @@ export const handler: Handlers<RoomInteriorData> = {
 function getTypeIcon(type: string) {
   switch (type) {
     // @ts-ignore: JSX mismatch
-    case 'pdf': return <Icons.FileText size={16} />;
+    case "pdf":
+      return <Icons.FileText size={16} />;
     // @ts-ignore: JSX mismatch
-    case 'youtube': return <Icons.Video size={16} />;
+    case "youtube":
+      return <Icons.Video size={16} />;
     // @ts-ignore: JSX mismatch
-    case 'social': return <Icons.MessageCircle size={16} />;
+    case "social":
+      return <Icons.MessageCircle size={16} />;
     // @ts-ignore: JSX mismatch
-    case 'spreadsheet': return <Icons.Table size={16} />;
+    case "spreadsheet":
+      return <Icons.Table size={16} />;
     // @ts-ignore: JSX mismatch
-    case 'word': return <Icons.FileEdit size={16} />;
+    case "word":
+      return <Icons.FileEdit size={16} />;
     // @ts-ignore: JSX mismatch
-    default: return <Icons.Link size={16} />;
+    default:
+      return <Icons.Link size={16} />;
   }
 }
 
@@ -120,31 +137,39 @@ export default function RoomInterior({ data }: PageProps<RoomInteriorData>) {
       </Head>
       <DashboardLayout user={user}>
         <div className="max-w-5xl mx-auto pb-20 animate-in fade-in duration-500">
-          
           {/* Back button & Header */}
           <div className="mb-8">
-            <a href="/dashboard" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors mb-6">
+            <a
+              href="/dashboard"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors mb-6"
+            >
               <Icons.ArrowLeft size={14} /> Back to Ecosystem
             </a>
-            
+
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-4xl font-bold tracking-tight text-[var(--muse-text)] mb-3" style={{ textShadow: `0 0 40px ${room.theme_color}40` }}>
+                <h1
+                  className="text-4xl font-bold tracking-tight text-[var(--muse-text)] mb-3"
+                  style={{ textShadow: `0 0 40px ${room.theme_color}40` }}
+                >
                   {room.title}
                 </h1>
                 <p className="text-[var(--muse-muted)] text-lg max-w-2xl font-serif italic mb-4">
                   {room.description || "Synthesizing new patterns."}
                 </p>
                 <div className="flex gap-2">
-                  {room.tags.map(tag => (
-                    <span key={tag} className="px-3 py-1 rounded-md bg-[var(--muse-surface)] border border-[var(--muse-border)] text-xs font-bold uppercase tracking-wider text-[var(--muse-muted)]">
+                  {room.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 rounded-md bg-[var(--muse-surface)] border border-[var(--muse-border)] text-xs font-bold uppercase tracking-wider text-[var(--muse-muted)]"
+                    >
                       {tag}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div 
+              <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center bg-[var(--muse-surface)] border border-[var(--muse-border)] shadow-2xl rotate-3"
                 style={{ color: room.theme_color }}
               >
@@ -157,13 +182,15 @@ export default function RoomInterior({ data }: PageProps<RoomInteriorData>) {
             {/* LEFT COL: Ingestion & Triggers (3 Cols wide) */}
             <div className="lg:col-span-4">
               <div className="sticky top-8 space-y-12">
-                
                 {/* Uploader */}
                 <div>
                   <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-4">
                     Ingest Artifacts
                   </h2>
-                  <ArtifactUploader roomId={room.id} themeColor={room.theme_color} />
+                  <ArtifactUploader
+                    roomId={room.id}
+                    themeColor={room.theme_color}
+                  />
                 </div>
 
                 {/* Synthesis Trigger */}
@@ -172,23 +199,24 @@ export default function RoomInterior({ data }: PageProps<RoomInteriorData>) {
                     <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-4">
                       AI Synthesis Engine
                     </h2>
-                    <SynthesisTrigger roomId={room.id} themeColor={room.theme_color} />
+                    <SynthesisTrigger
+                      roomId={room.id}
+                      themeColor={room.theme_color}
+                    />
                   </div>
                 )}
-                
               </div>
             </div>
 
             {/* RIGHT COL: Ledger & Threads (8 Cols wide) */}
             <div className="lg:col-span-8">
-              <RoomClientManager 
+              <RoomClientManager
                 room={{ id: room.id, theme_color: room.theme_color }}
                 threads={threads}
                 artifacts={artifacts}
               />
             </div>
           </div>
-
         </div>
       </DashboardLayout>
     </>

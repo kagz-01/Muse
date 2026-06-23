@@ -16,7 +16,9 @@ const THEME_COLORS = [
   "#71717a", // Zinc (Neutral)
 ];
 
-export default function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
+export default function CreateRoomModal(
+  { isOpen, onClose }: CreateRoomModalProps,
+) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [themeColor, setThemeColor] = useState(THEME_COLORS[0]);
@@ -61,10 +63,12 @@ export default function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProp
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
-      
+      <div
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
       <div className="relative w-full max-w-lg bg-[var(--muse-bg)] border border-[var(--muse-border)] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-        
         {/* Header */}
         <div className="px-6 py-5 border-b border-[var(--muse-border)] flex items-center justify-between bg-[var(--muse-surface)]">
           <div className="flex items-center gap-3">
@@ -73,7 +77,10 @@ export default function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProp
             </div>
             <h2 className="text-lg font-bold">Initialize Room</h2>
           </div>
-          <button onClick={onClose} className="p-2 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors rounded-full hover:bg-[var(--muse-bg)]">
+          <button
+            onClick={onClose}
+            className="p-2 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors rounded-full hover:bg-[var(--muse-bg)]"
+          >
             <Icons.X size={20} />
           </button>
         </div>
@@ -107,7 +114,8 @@ export default function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProp
               </label>
               <textarea
                 value={description}
-                onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+                onChange={(e) =>
+                  setDescription((e.target as HTMLTextAreaElement).value)}
                 placeholder="What knowledge will be synthesized here?"
                 rows={3}
                 className="w-full bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-xl px-4 py-3 text-[var(--muse-text)] placeholder-[var(--muse-muted)] focus:outline-none focus:border-canvas-primary/50 transition-colors resize-none text-sm"
@@ -132,15 +140,21 @@ export default function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProp
                 Theme Resonance
               </label>
               <div className="flex flex-wrap gap-3">
-                {THEME_COLORS.map(color => (
+                {THEME_COLORS.map((color) => (
                   <button
                     key={color}
                     type="button"
                     onClick={() => setThemeColor(color)}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${themeColor === color ? 'ring-2 ring-offset-2 ring-offset-[var(--muse-bg)]' : 'hover:scale-110'}`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                      themeColor === color
+                        ? "ring-2 ring-offset-2 ring-offset-[var(--muse-bg)]"
+                        : "hover:scale-110"
+                    }`}
                     style={{ backgroundColor: color, ringColor: color }}
                   >
-                    {themeColor === color && <Icons.Check size={14} className="text-white" />}
+                    {themeColor === color && (
+                      <Icons.Check size={14} className="text-white" />
+                    )}
                   </button>
                 ))}
               </div>

@@ -28,7 +28,6 @@ export default function ConfirmDeleteModal({
       {/* Modal */}
       <div className="relative w-full max-w-sm animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         <div className="bg-[#0d0d0d] border border-white/10 rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
-
           {/* Red warning stripe */}
           <div className="h-1 w-full bg-gradient-to-r from-red-600 via-red-400 to-red-600" />
 

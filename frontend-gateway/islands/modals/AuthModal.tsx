@@ -21,7 +21,9 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
     setIsSyncing(true);
     setErrorMsg("");
 
-    const endpoint = localMode === "signup" ? "/api/auth/register" : "/api/auth/login";
+    const endpoint = localMode === "signup"
+      ? "/api/auth/register"
+      : "/api/auth/login";
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
@@ -206,11 +208,11 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                 <p className="text-[10px] text-gray-600 font-mono">
                   {localMode === "signup"
                     ? "Already have an account?"
-                    : "Don't have an account yet?"}
-                  {" "}
+                    : "Don't have an account yet?"}{" "}
                   <button
                     type="button"
-                    onClick={() => setLocalMode(localMode === "signup" ? "login" : "signup")}
+                    onClick={() =>
+                      setLocalMode(localMode === "signup" ? "login" : "signup")}
                     className="text-canvas-primary hover:underline font-bold transition-colors"
                   >
                     {localMode === "signup" ? "Log in" : "Sign up"}

@@ -56,7 +56,8 @@ export default function StreakCard(
   const glowStyle = {
     boxShadow: `0 20px 60px rgba(var(--muse-accent-rgb), 0.12)`,
     borderColor: `rgba(var(--muse-accent-rgb), 0.14)`,
-    background: `linear-gradient(135deg, rgba(var(--muse-accent-rgb), 0.035), transparent)`,
+    background:
+      `linear-gradient(135deg, rgba(var(--muse-accent-rgb), 0.035), transparent)`,
   } as Record<string, string>;
 
   return (
@@ -68,7 +69,10 @@ export default function StreakCard(
       >
         <div className="relative z-10 flex items-center gap-4">
           {/* Subtle level emoji */}
-          <div className="text-3xl transition-transform duration-200" style={{ color: hex }}>
+          <div
+            className="text-3xl transition-transform duration-200"
+            style={{ color: hex }}
+          >
             {levelEmoji}
           </div>
 
@@ -88,7 +92,10 @@ export default function StreakCard(
           {/* Info */}
           <div className="flex flex-col gap-2 text-right">
             <div className="flex items-center gap-2 justify-end">
-              <Icons.TrendingUp size={16} className="text-[var(--muse-muted)]" />
+              <Icons.TrendingUp
+                size={16}
+                className="text-[var(--muse-muted)]"
+              />
               <span className="text-sm font-bold text-[var(--muse-muted)]">
                 {longestStreak} best
               </span>

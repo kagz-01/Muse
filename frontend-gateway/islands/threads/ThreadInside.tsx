@@ -3,9 +3,9 @@ import * as Icons from "lucide-preact";
 import {
   removeItemFromThread,
   threadsSignal,
+  toggleArchiveThread,
   toggleFavoriteThread,
   togglePinThread,
-  toggleArchiveThread,
   toggleThreadPrivacy,
 } from "../../signals/threads.ts";
 import { MOOD_OPTIONS, roomsSignal } from "../../signals/rooms.ts";
@@ -186,7 +186,7 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                   {thread.sourceRoomIds.length} Rooms
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2 border-l border-white/10 pl-3 ml-1">
                 <button
                   onClick={() => toggleFavoriteThread(thread.id)}
@@ -197,7 +197,10 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                       : "bg-black/50 border-white/10 text-gray-400 hover:text-white"
                   }`}
                 >
-                  <Icons.Star size={14} fill={thread.isFavorited ? "currentColor" : "transparent"} />
+                  <Icons.Star
+                    size={14}
+                    fill={thread.isFavorited ? "currentColor" : "transparent"}
+                  />
                 </button>
 
                 <button
@@ -209,7 +212,10 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                       : "bg-black/50 border-white/10 text-gray-400 hover:text-white"
                   }`}
                 >
-                  <Icons.Pin size={14} fill={thread.isPinned ? "currentColor" : "transparent"} />
+                  <Icons.Pin
+                    size={14}
+                    fill={thread.isPinned ? "currentColor" : "transparent"}
+                  />
                 </button>
 
                 <button
@@ -361,25 +367,29 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
             <div className="relative py-12 animate-in fade-in slide-in-from-bottom-6 duration-700 max-w-4xl mx-auto">
               {/* The glowing thread line running down the middle */}
               <div className="absolute left-[39px] md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-white/20 to-transparent -translate-x-1/2" />
-              
+
               <div className="space-y-16">
                 {items.map((item, index) => (
                   <div
                     key={item.id}
-                    className={`relative flex items-center gap-8 md:gap-16 group ${index % 2 === 0 ? 'md:flex-row-reverse' : 'md:flex-row'} flex-row`}
+                    className={`relative flex items-center gap-8 md:gap-16 group ${
+                      index % 2 === 0 ? "md:flex-row-reverse" : "md:flex-row"
+                    } flex-row`}
                   >
                     {/* The timeline node */}
                     <div className="absolute left-[39px] md:left-1/2 w-4 h-4 rounded-full bg-[#0a0a0a] border-2 border-white/20 -translate-x-1/2 z-10 group-hover:scale-150 group-hover:border-white transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]" />
 
                     {/* Connecting line to the card */}
-                    <div className={`hidden md:block absolute top-1/2 w-8 h-[1px] bg-white/20 z-0 ${index % 2 === 0 ? 'right-1/2 mr-2' : 'left-1/2 ml-2'}`} />
+                    <div
+                      className={`hidden md:block absolute top-1/2 w-8 h-[1px] bg-white/20 z-0 ${
+                        index % 2 === 0 ? "right-1/2 mr-2" : "left-1/2 ml-2"
+                      }`}
+                    />
 
                     <div className="flex-1" />
-                    
+
                     <div className="flex-1 w-full pl-24 md:pl-0 z-20">
-                      <div
-                        className="bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden hover:border-white/20 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl shadow-black/50"
-                      >
+                      <div className="bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden hover:border-white/20 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl shadow-black/50">
                         <div className="h-40 bg-white/5 relative overflow-hidden flex items-center justify-center">
                           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-700">
                             Artifact Node
@@ -400,7 +410,8 @@ export default function ThreadInside({ threadId }: { threadId: string }) {
                               Sovereign Data
                             </span>
                             <button
-                              onClick={() => removeItemFromThread(thread.id, item.id)}
+                              onClick={() =>
+                                removeItemFromThread(thread.id, item.id)}
                               type="button"
                               className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
                             >

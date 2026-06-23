@@ -43,7 +43,10 @@ export function CommunityCard({
   return (
     <div
       class={`group rounded-2xl overflow-hidden p-6 flex flex-col h-full transition-all duration-300 cursor-pointer`}
-      style={{ background: 'var(--muse-surface)', border: '1px solid var(--muse-border)' }}
+      style={{
+        background: "var(--muse-surface)",
+        border: "1px solid var(--muse-border)",
+      }}
       onClick={onView}
     >
       {/* Author Info */}
@@ -148,7 +151,10 @@ export function CommunityCard({
               : "bg-white/10 text-white/60 hover:bg-white/20"
           }`}
         >
-          <Icons.Heart size={14} class={entry.isFavorited ? "fill-current" : ""} />
+          <Icons.Heart
+            size={14}
+            class={entry.isFavorited ? "fill-current" : ""}
+          />
           <span class="text-xs font-medium">Like</span>
         </button>
         <button

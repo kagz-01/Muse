@@ -781,7 +781,8 @@ export default function Settings() {
                   </label>
                   <EmojiInput
                     value={user.username || ""}
-                    onInput={(val: string) => handleProfileUpdate({ username: val })}
+                    onInput={(val: string) =>
+                      handleProfileUpdate({ username: val })}
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-white/40"
                   />
                 </div>
@@ -1997,9 +1998,9 @@ export default function Settings() {
         )}
       </div>
 
-      <TwoFactorModal 
-        isOpen={isTwoFactorModalOpen} 
-        onClose={() => setIsTwoFactorModalOpen(false)} 
+      <TwoFactorModal
+        isOpen={isTwoFactorModalOpen}
+        onClose={() => setIsTwoFactorModalOpen(false)}
         onSuccess={() => {
           setIsTwoFactorModalOpen(false);
           updatePrivacySecurity({ twoFactorEnabled: true });

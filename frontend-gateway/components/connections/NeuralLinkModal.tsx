@@ -61,78 +61,103 @@ export default function NeuralLinkModal({ collaborator, onClose }: Props) {
             </div>
           </div>
 
-          {!isSuccess ? (
-            <form onSubmit={handleEstablishLink}>
-              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 mb-8">
-                <div className="flex items-start gap-4 mb-6">
-                  <Icons.AlertTriangle size={20} className="text-amber-500 shrink-0 mt-1" />
-                  <div>
-                    <h3 className="text-sm font-bold text-white mb-2">
-                      Friction Protocol Active
-                    </h3>
-                    <p className="text-xs text-gray-400 leading-relaxed font-serif italic">
-                      Blank connections are rejected by the network. To establish a neural link with {collaborator.name}, you must cite a specific thought or pattern from the ledger that aligns with their frequency.
-                    </p>
+          {!isSuccess
+            ? (
+              <form onSubmit={handleEstablishLink}>
+                <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 mb-8">
+                  <div className="flex items-start gap-4 mb-6">
+                    <Icons.AlertTriangle
+                      size={20}
+                      className="text-amber-500 shrink-0 mt-1"
+                    />
+                    <div>
+                      <h3 className="text-sm font-bold text-white mb-2">
+                        Friction Protocol Active
+                      </h3>
+                      <p className="text-xs text-gray-400 leading-relaxed font-serif italic">
+                        Blank connections are rejected by the network. To
+                        establish a neural link with{" "}
+                        {collaborator.name}, you must cite a specific thought or
+                        pattern from the ledger that aligns with their
+                        frequency.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                        Cite Ledger Node
+                      </label>
+                      <span className="text-[10px] font-bold text-emerald-400">
+                        {collaborator.matchPercentage}% Alignment Detected
+                      </span>
+                    </div>
+                    <textarea
+                      value={citation}
+                      onInput={(e) =>
+                        setCitation((e.target as HTMLTextAreaElement).value)}
+                      placeholder={`e.g., "I resonated deeply with your synthesis on ${
+                        collaborator.sharedThemes[0]
+                      }..."`}
+                      className="w-full bg-black/50 border border-white/10 rounded-2xl p-5 text-white text-sm font-serif italic focus:outline-none focus:border-canvas-primary/50 transition-colors min-h-[100px]"
+                      disabled={isLinking}
+                    />
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                      Cite Ledger Node
-                    </label>
-                    <span className="text-[10px] font-bold text-emerald-400">
-                      {collaborator.matchPercentage}% Alignment Detected
-                    </span>
-                  </div>
-                  <textarea
-                    value={citation}
-                    onInput={(e) => setCitation((e.target as HTMLTextAreaElement).value)}
-                    placeholder={`e.g., "I resonated deeply with your synthesis on ${collaborator.sharedThemes[0]}..."`}
-                    className="w-full bg-black/50 border border-white/10 rounded-2xl p-5 text-white text-sm font-serif italic focus:outline-none focus:border-canvas-primary/50 transition-colors min-h-[100px]"
-                    disabled={isLinking}
-                  />
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={!citation.trim() || isLinking}
+                    className="px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-[0_0_20px_rgba(255,255,255,0.05)] cursor-pointer"
+                    style={{
+                      backgroundColor: isLinking
+                        ? "rgba(255,255,255,0.1)"
+                        : collaborator.aura,
+                      color: isLinking ? "#888" : "#000",
+                    }}
+                  >
+                    {isLinking
+                      ? (
+                        <>
+                          <Icons.RefreshCcw
+                            size={14}
+                            className="animate-spin"
+                          />
+                          Encrypting Link...
+                        </>
+                      )
+                      : (
+                        <>
+                          <Icons.Cpu size={14} />
+                          Transmit Link Request
+                        </>
+                      )}
+                  </button>
                 </div>
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={!citation.trim() || isLinking}
-                  className="px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-[0_0_20px_rgba(255,255,255,0.05)] cursor-pointer"
+              </form>
+            )
+            : (
+              <div className="flex flex-col items-center justify-center py-12 text-center animate-in zoom-in duration-500">
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_currentColor]"
                   style={{
-                    backgroundColor: isLinking ? 'rgba(255,255,255,0.1)' : collaborator.aura,
-                    color: isLinking ? '#888' : '#000',
+                    backgroundColor: `${collaborator.aura}20`,
+                    color: collaborator.aura,
                   }}
                 >
-                  {isLinking ? (
-                    <>
-                      <Icons.RefreshCcw size={14} className="animate-spin" />
-                      Encrypting Link...
-                    </>
-                  ) : (
-                    <>
-                      <Icons.Cpu size={14} />
-                      Transmit Link Request
-                    </>
-                  )}
-                </button>
+                  <Icons.Check size={40} />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  Neural Link Established
+                </h3>
+                <p className="text-gray-500 font-serif italic">
+                  Your citation has been encrypted and transmitted to{" "}
+                  {collaborator.name}.
+                </p>
               </div>
-            </form>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center animate-in zoom-in duration-500">
-              <div
-                className="w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_60px_currentColor]"
-                style={{ backgroundColor: `${collaborator.aura}20`, color: collaborator.aura }}
-              >
-                <Icons.Check size={40} />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Neural Link Established</h3>
-              <p className="text-gray-500 font-serif italic">
-                Your citation has been encrypted and transmitted to {collaborator.name}.
-              </p>
-            </div>
-          )}
+            )}
         </div>
       </div>
     </div>

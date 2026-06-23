@@ -205,9 +205,11 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
                 Cover Image
               </label>
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Local or Web URL</span>
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                Local or Web URL
+              </span>
             </div>
-            
+
             <div className="space-y-3">
               <div
                 onClick={() => fileRef.current?.click()}
@@ -244,7 +246,7 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                 onChange={handleImagePick}
                 className="hidden"
               />
-              
+
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                   <Icons.Link2 size={14} />
@@ -252,8 +254,11 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
                 <input
                   type="url"
                   placeholder="Or paste an image URL from the web..."
-                  value={coverImage && coverImage.startsWith('http') ? coverImage : ''}
-                  onChange={(e) => setCoverImage((e.target as HTMLInputElement).value)}
+                  value={coverImage && coverImage.startsWith("http")
+                    ? coverImage
+                    : ""}
+                  onChange={(e) =>
+                    setCoverImage((e.target as HTMLInputElement).value)}
                   className="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-canvas-primary/50 transition-colors"
                 />
               </div>

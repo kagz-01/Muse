@@ -15,7 +15,9 @@ interface RoomClientManagerProps {
   artifacts: ArtifactData[];
 }
 
-export default function RoomClientManager({ room, threads, artifacts }: RoomClientManagerProps) {
+export default function RoomClientManager(
+  { room, threads, artifacts }: RoomClientManagerProps,
+) {
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     threadId: string;
@@ -33,17 +35,23 @@ export default function RoomClientManager({ room, threads, artifacts }: RoomClie
   const getTypeIcon = (type: string) => {
     switch (type) {
       // @ts-ignore: Lucide JSX mismatch
-      case 'pdf': return <Icons.FileText size={16} />;
+      case "pdf":
+        return <Icons.FileText size={16} />;
       // @ts-ignore: Lucide JSX mismatch
-      case 'youtube': return <Icons.Video size={16} />;
+      case "youtube":
+        return <Icons.Video size={16} />;
       // @ts-ignore: Lucide JSX mismatch
-      case 'social': return <Icons.MessageCircle size={16} />;
+      case "social":
+        return <Icons.MessageCircle size={16} />;
       // @ts-ignore: Lucide JSX mismatch
-      case 'spreadsheet': return <Icons.Table size={16} />;
+      case "spreadsheet":
+        return <Icons.Table size={16} />;
       // @ts-ignore: Lucide JSX mismatch
-      case 'word': return <Icons.FileEdit size={16} />;
+      case "word":
+        return <Icons.FileEdit size={16} />;
       // @ts-ignore: Lucide JSX mismatch
-      default: return <Icons.Link size={16} />;
+      default:
+        return <Icons.Link size={16} />;
     }
   };
 
@@ -58,13 +66,13 @@ export default function RoomClientManager({ room, threads, artifacts }: RoomClie
               Synthesized Threads
             </h2>
           </div>
-          
+
           <div className="space-y-6">
-            {threads.map(thread => (
-              <ThreadCard 
-                key={thread.id} 
-                thread={thread} 
-                themeColor={room.theme_color} 
+            {threads.map((thread) => (
+              <ThreadCard
+                key={thread.id}
+                thread={thread}
+                themeColor={room.theme_color}
                 onQuestionClick={handleQuestionClick}
               />
             ))}
@@ -83,40 +91,52 @@ export default function RoomClientManager({ room, threads, artifacts }: RoomClie
           </span>
         </div>
 
-        {artifacts.length === 0 ? (
-          <div className="p-8 text-center bg-[var(--muse-surface)] border border-[var(--muse-border)] border-dashed rounded-2xl">
-            <Icons.Ghost size={32} className="mx-auto text-[var(--muse-muted)] mb-3 opacity-50" />
-            <h3 className="text-[var(--muse-text)] font-medium mb-1">The Ledger is Empty</h3>
-            <p className="text-xs text-[var(--muse-muted)]">Upload a document or paste a link to begin synthesis.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {artifacts.map(artifact => (
-              <div key={artifact.id} className="group p-4 bg-[var(--muse-surface)] hover:bg-white/[0.02] border border-[var(--muse-border)] hover:border-white/10 rounded-2xl flex items-center justify-between transition-all cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[var(--muse-bg)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] group-hover:text-canvas-primary transition-colors">
-                    {getTypeIcon(artifact.type)}
+        {artifacts.length === 0
+          ? (
+            <div className="p-8 text-center bg-[var(--muse-surface)] border border-[var(--muse-border)] border-dashed rounded-2xl">
+              <Icons.Ghost
+                size={32}
+                className="mx-auto text-[var(--muse-muted)] mb-3 opacity-50"
+              />
+              <h3 className="text-[var(--muse-text)] font-medium mb-1">
+                The Ledger is Empty
+              </h3>
+              <p className="text-xs text-[var(--muse-muted)]">
+                Upload a document or paste a link to begin synthesis.
+              </p>
+            </div>
+          )
+          : (
+            <div className="space-y-3">
+              {artifacts.map((artifact) => (
+                <div
+                  key={artifact.id}
+                  className="group p-4 bg-[var(--muse-surface)] hover:bg-white/[0.02] border border-[var(--muse-border)] hover:border-white/10 rounded-2xl flex items-center justify-between transition-all cursor-pointer"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-[var(--muse-bg)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] group-hover:text-canvas-primary transition-colors">
+                      {getTypeIcon(artifact.type)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-[var(--muse-text)] max-w-sm truncate">
+                        {artifact.source_url}
+                      </p>
+                      <p className="text-xs text-[var(--muse-muted)] uppercase tracking-wider mt-1">
+                        {artifact.type}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-[var(--muse-text)] max-w-sm truncate">
-                      {artifact.source_url}
-                    </p>
-                    <p className="text-xs text-[var(--muse-muted)] uppercase tracking-wider mt-1">
-                      {artifact.type}
-                    </p>
-                  </div>
+                  <button className="text-[var(--muse-muted)] opacity-0 group-hover:opacity-100 hover:text-[var(--muse-text)] transition-all">
+                    <Icons.ArrowUpRight size={16} />
+                  </button>
                 </div>
-                <button className="text-[var(--muse-muted)] opacity-0 group-hover:opacity-100 hover:text-[var(--muse-text)] transition-all">
-                  <Icons.ArrowUpRight size={16} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
       </div>
 
       {/* Journal Modal */}
-      <JournalModal 
+      <JournalModal
         isOpen={modalState.isOpen}
         onClose={() => setModalState({ ...modalState, isOpen: false })}
         threadId={modalState.threadId}

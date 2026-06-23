@@ -60,7 +60,8 @@ const INITIAL_THREADS: Thread[] = [
   {
     id: "t1",
     title: "The Impact of Local Elections",
-    description: "Analyzing how municipal votes shape daily life more than national ones.",
+    description:
+      "Analyzing how municipal votes shape daily life more than national ones.",
     mood: "focus",
     format: "essay",
     depth: "50",
@@ -70,7 +71,8 @@ const INITIAL_THREADS: Thread[] = [
     updatedAt: new Date().toISOString(),
     coverImage:
       "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=1200&q=80",
-    thesis: "Local elections have more direct impact on our communities, yet they suffer the lowest turnout.",
+    thesis:
+      "Local elections have more direct impact on our communities, yet they suffer the lowest turnout.",
     synthesisScore: 88,
     resonanceMetrics: { views: 1240, connections: 86 },
     dialogueLayers: [
@@ -79,7 +81,7 @@ const INITIAL_THREADS: Thread[] = [
         userId: "u2",
         userName: "Elena",
         content:
-          'This is so true. Our city council just passed a zoning law that completely changed my neighborhood, and only 15% of people voted on it.',
+          "This is so true. Our city council just passed a zoning law that completely changed my neighborhood, and only 15% of people voted on it.",
         type: "insight",
         resonanceScore: 42,
         timestamp: new Date().toISOString(),
@@ -93,7 +95,7 @@ const INITIAL_THREADS: Thread[] = [
       tensions: ["national media focus vs local reality"],
       coherenceScore: 85,
       recommendations: [
-        'Explore ways to make local election information more accessible',
+        "Explore ways to make local election information more accessible",
       ],
     },
     isVault: false,
@@ -101,7 +103,8 @@ const INITIAL_THREADS: Thread[] = [
   {
     id: "t2",
     title: "The Evolution of Modern Dating",
-    description: "How dating apps and social media have shifted human connection.",
+    description:
+      "How dating apps and social media have shifted human connection.",
     mood: "melancholy",
     format: "manifesto",
     depth: "80",
@@ -111,7 +114,8 @@ const INITIAL_THREADS: Thread[] = [
     updatedAt: new Date().toISOString(),
     coverImage:
       "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1200&q=80",
-    thesis: "Modern dating apps have fundamentally shifted human connection from serendipitous moments to gamified transactions.",
+    thesis:
+      "Modern dating apps have fundamentally shifted human connection from serendipitous moments to gamified transactions.",
     synthesisScore: 75,
     resonanceMetrics: { views: 890, connections: 45 },
     dialogueLayers: [],
@@ -123,7 +127,7 @@ const INITIAL_THREADS: Thread[] = [
       tensions: ["efficiency vs authentic connection"],
       coherenceScore: 78,
       recommendations: [
-        'Look into the psychological effects of endless swiping',
+        "Look into the psychological effects of endless swiping",
       ],
     },
     isVault: false,
@@ -226,25 +230,19 @@ export function resetThreads() {
 
 export function toggleFavoriteThread(id: string) {
   threadsSignal.value = threadsSignal.value.map((thread) =>
-    thread.id === id
-      ? { ...thread, isFavorited: !thread.isFavorited }
-      : thread
+    thread.id === id ? { ...thread, isFavorited: !thread.isFavorited } : thread
   );
 }
 
 export function togglePinThread(id: string) {
   threadsSignal.value = threadsSignal.value.map((thread) =>
-    thread.id === id
-      ? { ...thread, isPinned: !thread.isPinned }
-      : thread
+    thread.id === id ? { ...thread, isPinned: !thread.isPinned } : thread
   );
 }
 
 export function toggleArchiveThread(id: string) {
   threadsSignal.value = threadsSignal.value.map((thread) =>
-    thread.id === id
-      ? { ...thread, isArchived: !thread.isArchived }
-      : thread
+    thread.id === id ? { ...thread, isArchived: !thread.isArchived } : thread
   );
 }
 

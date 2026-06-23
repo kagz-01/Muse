@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import {
   addEntry,
   deleteJournalEntry,
@@ -6,15 +6,13 @@ import {
   type JournalEntry,
   type JournalMood,
   journalSignal,
+  toggleArchiveJournal,
   toggleFavoriteJournal,
   togglePinJournal,
-  toggleArchiveJournal,
 } from "../../signals/journal.ts";
 import * as Icons from "lucide-preact";
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.tsx";
-
-
 
 export const moodConfig: Record<
   JournalMood,
@@ -94,7 +92,8 @@ export default function JournalGallery() {
         const matchSearch = search === "" ||
           entry.body.toLowerCase().includes(search.toLowerCase()) ||
           getJournalTitle(entry).toLowerCase().includes(search.toLowerCase());
-        const matchMood = filterMood === "all" || entry.mood === filterMood || (entry.mood === "custom" && entry.customMood === filterMood);
+        const matchMood = filterMood === "all" || entry.mood === filterMood ||
+          (entry.mood === "custom" && entry.customMood === filterMood);
         const matchFav = !showFavorites || entry.isFavorited;
         const matchVisibility = filterVisibility === "all" ||
           (filterVisibility === "public" && entry.isPublic) ||
@@ -103,7 +102,8 @@ export default function JournalGallery() {
           (filterType === "synthesis" && entry.type === "synthesis") ||
           (filterType === "reflections" &&
             (!entry.type || entry.type === "reflection"));
-        return matchSearch && matchMood && matchFav && matchVisibility && matchType;
+        return matchSearch && matchMood && matchFav && matchVisibility &&
+          matchType;
       }),
     [entries, search, filterMood, showFavorites, filterVisibility, filterType],
   );
@@ -169,7 +169,9 @@ export default function JournalGallery() {
                 </span>
               </h1>
               <p className="mt-8 max-w-2xl text-gray-500 text-lg md:text-xl leading-relaxed font-serif italic border-l-4 border-violet-500/20 pl-6">
-                Your Journal is the sanctuary for raw thought. This is where patterns from your collection are tested against your intuition before they become creation.
+                Your Journal is the sanctuary for raw thought. This is where
+                patterns from your collection are tested against your intuition
+                before they become creation.
               </p>
             </div>
 
@@ -328,36 +330,39 @@ export default function JournalGallery() {
               {cfg.label}
             </button>
           ))}
-          {uniqueCustomMoods.map((customMood) => (
-            <button
-              key={customMood}
-              onClick={() => setFilterMood(filterMood === customMood ? "all" : customMood)}
-              type="button"
-              className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
-                filterMood === customMood
-                  ? "bg-white text-black border-white"
-                  : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20 hover:text-white"
-              }`}
-            >
-              {customMood}
-            </button>
-          ))}
-          <div className="relative w-48">
-            <EmojiInput
-              value={customFilterInput}
-              onInput={(val) => {
-                setCustomFilterInput(val);
-                if (val.trim() !== "") {
-                  setFilterMood(val);
-                } else {
-                  setFilterMood("all");
-                }
-              }}
-              placeholder="Custom mood..."
-              iconLeft={<Icons.Sparkles className="text-violet-400/60" size={14} />}
-              className="w-full bg-white/[0.05] border border-white/10 rounded-full py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all font-mono"
-            />
-          </div>
+        {uniqueCustomMoods.map((customMood) => (
+          <button
+            key={customMood}
+            onClick={() =>
+              setFilterMood(filterMood === customMood ? "all" : customMood)}
+            type="button"
+            className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer ${
+              filterMood === customMood
+                ? "bg-white text-black border-white"
+                : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20 hover:text-white"
+            }`}
+          >
+            {customMood}
+          </button>
+        ))}
+        <div className="relative w-48">
+          <EmojiInput
+            value={customFilterInput}
+            onInput={(val) => {
+              setCustomFilterInput(val);
+              if (val.trim() !== "") {
+                setFilterMood(val);
+              } else {
+                setFilterMood("all");
+              }
+            }}
+            placeholder="Custom mood..."
+            iconLeft={
+              <Icons.Sparkles className="text-violet-400/60" size={14} />
+            }
+            className="w-full bg-white/[0.05] border border-white/10 rounded-full py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all font-mono"
+          />
+        </div>
       </div>
 
       {/* Entry Gallery */}
@@ -378,13 +383,15 @@ export default function JournalGallery() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((entry: JournalEntry) => {
                 const isCustom = entry.mood === "custom" && entry.customMood;
-                const cfg = moodConfig[entry.mood as JournalMood] || moodConfig["reflective"];
+                const cfg = moodConfig[entry.mood as JournalMood] ||
+                  moodConfig["reflective"];
                 const label = isCustom ? entry.customMood : cfg.label;
                 const title = getJournalTitle(entry);
                 return (
                   <div
                     key={entry.id}
-                    onClick={() => globalThis.location.href = `/journal/${entry.id}`}
+                    onClick={() =>
+                      globalThis.location.href = `/journal/${entry.id}`}
                     className="group relative bg-gradient-to-br border rounded-[2.5rem] p-8 cursor-pointer transition-all duration-300 overflow-hidden shadow-xl hover:shadow-2xl hover:scale-105 h-full flex flex-col"
                     style={{
                       backgroundColor: cfg.hex + "15",
@@ -444,35 +451,65 @@ export default function JournalGallery() {
                           {/* Draft indicator — shown when entry body is empty */}
                           {!entry.body?.trim() && (
                             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/15 border border-amber-500/25 animate-in fade-in duration-300">
-                              <Icons.FileText size={10} className="text-amber-400" />
-                              <span className="text-[8px] font-bold uppercase tracking-widest text-amber-400">Draft</span>
+                              <Icons.FileText
+                                size={10}
+                                className="text-amber-400"
+                              />
+                              <span className="text-[8px] font-bold uppercase tracking-widest text-amber-400">
+                                Draft
+                              </span>
                             </div>
                           )}
                           <button
                             type="button"
-                            onClick={(e) => { e.stopPropagation(); toggleFavoriteJournal(entry.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavoriteJournal(entry.id);
+                            }}
                             className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-                              entry.isFavorited ? "bg-amber-500/10 text-amber-500" : "text-gray-500 hover:text-white hover:bg-white/10"
+                              entry.isFavorited
+                                ? "bg-amber-500/10 text-amber-500"
+                                : "text-gray-500 hover:text-white hover:bg-white/10"
                             }`}
                           >
-                            <Icons.Star size={14} fill={entry.isFavorited ? "currentColor" : "transparent"} />
-                          </button>
-                          
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); togglePinJournal(entry.id); }}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-                              entry.isPinned ? "bg-blue-500/10 text-blue-500" : "text-gray-500 hover:text-white hover:bg-white/10"
-                            }`}
-                          >
-                            <Icons.Pin size={14} fill={entry.isPinned ? "currentColor" : "transparent"} />
+                            <Icons.Star
+                              size={14}
+                              fill={entry.isFavorited
+                                ? "currentColor"
+                                : "transparent"}
+                            />
                           </button>
 
                           <button
                             type="button"
-                            onClick={(e) => { e.stopPropagation(); toggleArchiveJournal(entry.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              togglePinJournal(entry.id);
+                            }}
                             className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-                              entry.isArchived ? "bg-gray-500/20 text-gray-400" : "text-gray-500 hover:text-white hover:bg-white/10"
+                              entry.isPinned
+                                ? "bg-blue-500/10 text-blue-500"
+                                : "text-gray-500 hover:text-white hover:bg-white/10"
+                            }`}
+                          >
+                            <Icons.Pin
+                              size={14}
+                              fill={entry.isPinned
+                                ? "currentColor"
+                                : "transparent"}
+                            />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleArchiveJournal(entry.id);
+                            }}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                              entry.isArchived
+                                ? "bg-gray-500/20 text-gray-400"
+                                : "text-gray-500 hover:text-white hover:bg-white/10"
                             }`}
                           >
                             <Icons.Archive size={14} />
@@ -532,7 +569,6 @@ export default function JournalGallery() {
               })}
             </div>
           )}
-
       </main>
 
       <ConfirmDeleteModal

@@ -113,7 +113,9 @@ export const setupBannerDismissedSignal = signal(
 );
 
 export function dismissSetupBanner() {
-  try { globalThis.localStorage?.setItem("muse-setup-dismissed", "true"); } catch { /* noop */ }
+  try {
+    globalThis.localStorage?.setItem("muse-setup-dismissed", "true");
+  } catch { /* noop */ }
   setupBannerDismissedSignal.value = true;
 }
 

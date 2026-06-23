@@ -146,10 +146,17 @@ export default function HomeOverview() {
                   <Icons.UserPlus size={18} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-amber-200">Account Incomplete</p>
-                  <p className="text-xs text-amber-400/80 mt-0.5">Please set up your username and profile details.</p>
+                  <p className="text-sm font-bold text-amber-200">
+                    Account Incomplete
+                  </p>
+                  <p className="text-xs text-amber-400/80 mt-0.5">
+                    Please set up your username and profile details.
+                  </p>
                 </div>
-                <a href="/profile/edit" className="ml-4 rounded-full bg-amber-500/20 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-amber-300 hover:bg-amber-500/30 transition-colors">
+                <a
+                  href="/profile/edit"
+                  className="ml-4 rounded-full bg-amber-500/20 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-amber-300 hover:bg-amber-500/30 transition-colors"
+                >
                   Complete Profile
                 </a>
               </div>

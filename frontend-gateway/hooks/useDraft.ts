@@ -11,7 +11,9 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
  * - `updateDraft`  : call this with partial form state on every change
  * - `clearDraft`   : call on successful submit or manual discard
  */
-export function useDraft<T extends Record<string, unknown>>(storageKey: string) {
+export function useDraft<T extends Record<string, unknown>>(
+  storageKey: string,
+) {
   const [hasDraft, setHasDraft] = useState(false);
   const [draft, setDraft] = useState<T | null>(null);
   const saveTimer = useRef<number | null>(null);
@@ -24,9 +26,11 @@ export function useDraft<T extends Record<string, unknown>>(storageKey: string) 
         const parsed = JSON.parse(raw) as T;
         // Only count it as a "real" draft if at least one meaningful field is set
         const hasContent = Object.values(parsed).some((v) =>
-          typeof v === "string" ? v.trim().length > 0 :
-          Array.isArray(v) ? v.length > 0 :
-          false
+          typeof v === "string"
+            ? v.trim().length > 0
+            : Array.isArray(v)
+            ? v.length > 0
+            : false
         );
         if (hasContent) {
           setDraft(parsed);

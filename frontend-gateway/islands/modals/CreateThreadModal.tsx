@@ -33,8 +33,14 @@ const moodColors: Record<string, string> = {
 
 export default function CreateThreadModal({ onClose }: Props) {
   const { draft, hasDraft, updateDraft, clearDraft } = useDraft<{
-    title: string; description: string; thesis: string;
-    mood: string; format: string; depth: string; theme: string; isPublic: boolean;
+    title: string;
+    description: string;
+    thesis: string;
+    mood: string;
+    format: string;
+    depth: string;
+    theme: string;
+    isPublic: boolean;
   }>("muse_thread_draft");
 
   const [showResumeBanner, setShowResumeBanner] = useState(hasDraft);
@@ -91,7 +97,9 @@ export default function CreateThreadModal({ onClose }: Props) {
   };
 
   const selectedMoodOption = CORE_MOODS.find((m) => m.id === mood);
-  const moodColor = selectedMoodOption ? moodColors[selectedMoodOption.id] : "#a855f7"; // default to purple-ish if custom
+  const moodColor = selectedMoodOption
+    ? moodColors[selectedMoodOption.id]
+    : "#a855f7"; // default to purple-ish if custom
 
   const handleCreate = () => {
     if (!title.trim()) {
@@ -122,7 +130,16 @@ export default function CreateThreadModal({ onClose }: Props) {
   // Auto-save draft on every meaningful change
   useEffect(() => {
     if (title || description || thesis || theme) {
-      updateDraft({ title, description, thesis, mood, format, depth, theme, isPublic });
+      updateDraft({
+        title,
+        description,
+        thesis,
+        mood,
+        format,
+        depth,
+        theme,
+        isPublic,
+      });
     }
   }, [title, description, thesis, mood, format, depth, theme, isPublic]);
 
@@ -144,9 +161,13 @@ export default function CreateThreadModal({ onClose }: Props) {
             <div className="mb-6 flex items-center gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 animate-in slide-in-from-top-2 duration-300">
               <Icons.FileText size={18} className="text-amber-400 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">Unsaved Draft Found</p>
+                <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">
+                  Unsaved Draft Found
+                </p>
                 <p className="text-xs text-amber-400/80 font-serif italic mt-0.5 truncate">
-                  {draft?.title ? `"${draft.title}"` : "A thread you started is waiting"}
+                  {draft?.title
+                    ? `"${draft.title}"`
+                    : "A thread you started is waiting"}
                 </p>
               </div>
               <button
@@ -158,7 +179,10 @@ export default function CreateThreadModal({ onClose }: Props) {
               </button>
               <button
                 type="button"
-                onClick={() => { clearDraft(); setShowResumeBanner(false); }}
+                onClick={() => {
+                  clearDraft();
+                  setShowResumeBanner(false);
+                }}
                 className="w-6 h-6 rounded-full flex items-center justify-center text-amber-500/60 hover:text-amber-400 transition-colors shrink-0"
               >
                 <Icons.X size={14} />
@@ -190,9 +214,11 @@ export default function CreateThreadModal({ onClose }: Props) {
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
                 Cover Image
               </label>
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Local or Web URL</span>
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                Local or Web URL
+              </span>
             </div>
-            
+
             <div className="space-y-3">
               <div
                 onClick={() => fileRef.current?.click()}
@@ -229,7 +255,7 @@ export default function CreateThreadModal({ onClose }: Props) {
                 onChange={handleImagePick}
                 className="hidden"
               />
-              
+
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                   <Icons.Link2 size={14} />
@@ -237,8 +263,11 @@ export default function CreateThreadModal({ onClose }: Props) {
                 <input
                   type="url"
                   placeholder="Or paste an image URL from the web..."
-                  value={coverPreview && coverPreview.startsWith('http') ? coverPreview : ''}
-                  onChange={(e) => setCoverPreview((e.target as HTMLInputElement).value)}
+                  value={coverPreview && coverPreview.startsWith("http")
+                    ? coverPreview
+                    : ""}
+                  onChange={(e) =>
+                    setCoverPreview((e.target as HTMLInputElement).value)}
                   className="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-canvas-primary/50 transition-colors"
                 />
               </div>
@@ -313,7 +342,7 @@ export default function CreateThreadModal({ onClose }: Props) {
                 />
               </div>
               <div className="flex gap-2 mt-3 flex-wrap">
-                {["Essay", "Manifesto", "Blueprint", "Debate"].map(f => (
+                {["Essay", "Manifesto", "Blueprint", "Debate"].map((f) => (
                   <button
                     key={f}
                     type="button"
@@ -336,7 +365,8 @@ export default function CreateThreadModal({ onClose }: Props) {
                   min="0"
                   max="100"
                   value={depth}
-                  onInput={(e) => setDepth((e.target as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setDepth((e.target as HTMLInputElement).value)}
                   className="w-full accent-canvas-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
                 />
               </div>
@@ -347,20 +377,20 @@ export default function CreateThreadModal({ onClose }: Props) {
               </div>
             </div>
           </div>
-          
+
           {/* Theme */}
           <div className="mb-6">
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
               Aesthetic Theme (Optional)
             </label>
             <div className="relative">
-            <EmojiInput
-              value={theme}
-              onInput={setTheme}
-              placeholder="e.g. Cyberpunk, Minimalist, Brutalist"
-              iconLeft={<Icons.Palette size={14} className="text-gray-500" />}
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
-            />
+              <EmojiInput
+                value={theme}
+                onInput={setTheme}
+                placeholder="e.g. Cyberpunk, Minimalist, Brutalist"
+                iconLeft={<Icons.Palette size={14} className="text-gray-500" />}
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
+              />
             </div>
           </div>
 
@@ -376,7 +406,12 @@ export default function CreateThreadModal({ onClose }: Props) {
                 value={mood}
                 onInput={setMood}
                 placeholder="Type any mood..."
-                iconLeft={<Icons.Sparkles size={14} className="text-canvas-primary/60" />}
+                iconLeft={
+                  <Icons.Sparkles
+                    size={14}
+                    className="text-canvas-primary/60"
+                  />
+                }
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all"
               />
             </div>
@@ -453,7 +488,10 @@ export default function CreateThreadModal({ onClose }: Props) {
           {/* Actions */}
           <div className="flex items-center gap-3 mt-4">
             <button
-              onClick={() => { clearDraft(); onClose(); }}
+              onClick={() => {
+                clearDraft();
+                onClose();
+              }}
               type="button"
               className="flex-1 py-4 rounded-2xl border border-white/10 text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
             >

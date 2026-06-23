@@ -49,8 +49,15 @@ export default function MilestoneNotification(
     <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-50">
       {/* Notification Card - subtle */}
       <div className="animate-in fade-in duration-300 pointer-events-auto relative z-10 mx-4">
-        <div className="rounded-2xl p-6 border shadow-lg" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 20px 60px rgba(var(--muse-accent-rgb),0.06)'}}>
-          <div className="text-4xl mb-3" style={{ color: 'var(--muse-text)'}}>
+        <div
+          className="rounded-2xl p-6 border shadow-lg"
+          style={{
+            background: "var(--muse-surface)",
+            borderColor: "var(--muse-border)",
+            boxShadow: "0 20px 60px rgba(var(--muse-accent-rgb),0.06)",
+          }}
+        >
+          <div className="text-4xl mb-3" style={{ color: "var(--muse-text)" }}>
             {milestoneText.emoji}
           </div>
           <h2 className="text-xl font-bold mb-1 text-[var(--muse-text)]">

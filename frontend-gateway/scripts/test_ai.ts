@@ -31,7 +31,9 @@ console.log(`Using model: llama-3.3-70b-versatile`);
 console.log(`Artifacts: ${mockArtifacts.length}\n`);
 
 try {
-  const blueprint = await synthesizeArtifacts(mockArtifacts as Record<string, unknown>[]);
+  const blueprint = await synthesizeArtifacts(
+    mockArtifacts as Record<string, unknown>[],
+  );
   console.log("✅ Synthesis Successful!\n");
   console.log("═══════════════════════════════════════");
   console.log(`🎯 Theme:    ${blueprint.theme}`);

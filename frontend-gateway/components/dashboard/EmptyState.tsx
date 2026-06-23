@@ -13,14 +13,16 @@ export default function EmptyState({ onCreateClick }: EmptyStateProps) {
           <Icons.Inbox size={40} className="text-[var(--muse-muted)]" />
         </div>
       </div>
-      
+
       <h2 className="text-3xl font-bold tracking-tight text-[var(--muse-text)] mb-4">
         Your Canvas is Empty
       </h2>
       <p className="text-[var(--muse-muted)] text-lg mb-10 max-w-lg leading-relaxed font-serif italic">
         "The mind that is anxious about future events is miserable."
         <br />
-        <span className="text-sm font-sans not-italic block mt-4">— Seneca. Let's organize the chaos.</span>
+        <span className="text-sm font-sans not-italic block mt-4">
+          — Seneca. Let's organize the chaos.
+        </span>
       </p>
 
       <button
@@ -37,18 +39,30 @@ export default function EmptyState({ onCreateClick }: EmptyStateProps) {
       <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 text-left w-full">
         <div className="p-6 rounded-2xl bg-[var(--muse-surface)]/50 border border-[var(--muse-border)]/50">
           <Icons.Link size={20} className="text-canvas-primary mb-3" />
-          <h3 className="text-sm font-bold text-[var(--muse-text)] mb-2">Engulf the Web</h3>
-          <p className="text-xs text-[var(--muse-muted)] leading-relaxed">Paste links, tweets, and articles. We extract the raw thought.</p>
+          <h3 className="text-sm font-bold text-[var(--muse-text)] mb-2">
+            Engulf the Web
+          </h3>
+          <p className="text-xs text-[var(--muse-muted)] leading-relaxed">
+            Paste links, tweets, and articles. We extract the raw thought.
+          </p>
         </div>
         <div className="p-6 rounded-2xl bg-[var(--muse-surface)]/50 border border-[var(--muse-border)]/50">
           <Icons.FileText size={20} className="text-emerald-500 mb-3" />
-          <h3 className="text-sm font-bold text-[var(--muse-text)] mb-2">Upload Documents</h3>
-          <p className="text-xs text-[var(--muse-muted)] leading-relaxed">PDFs, Word docs, Excel sheets. The parser handles everything.</p>
+          <h3 className="text-sm font-bold text-[var(--muse-text)] mb-2">
+            Upload Documents
+          </h3>
+          <p className="text-xs text-[var(--muse-muted)] leading-relaxed">
+            PDFs, Word docs, Excel sheets. The parser handles everything.
+          </p>
         </div>
         <div className="p-6 rounded-2xl bg-[var(--muse-surface)]/50 border border-[var(--muse-border)]/50">
           <Icons.BrainCircuit size={20} className="text-purple-500 mb-3" />
-          <h3 className="text-sm font-bold text-[var(--muse-text)] mb-2">Synthesize</h3>
-          <p className="text-xs text-[var(--muse-muted)] leading-relaxed">AI automatically groups artifacts into cohesive threads.</p>
+          <h3 className="text-sm font-bold text-[var(--muse-text)] mb-2">
+            Synthesize
+          </h3>
+          <p className="text-xs text-[var(--muse-muted)] leading-relaxed">
+            AI automatically groups artifacts into cohesive threads.
+          </p>
         </div>
       </div>
     </div>

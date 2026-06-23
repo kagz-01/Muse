@@ -31,9 +31,24 @@ export const moodConfig: Record<
   JournalMood | "custom",
   { label: string; color: string; emoji: string; hex: string }
 > = {
-  reflective: { label: "Reflective", color: "blue-400", emoji: "💭", hex: "#60a5fa" },
-  grounded: { label: "Grounded", color: "emerald-400", emoji: "🌱", hex: "#34d399" },
-  charged: { label: "Charged", color: "amber-400", emoji: "⚡️", hex: "#fbbf24" },
+  reflective: {
+    label: "Reflective",
+    color: "blue-400",
+    emoji: "💭",
+    hex: "#60a5fa",
+  },
+  grounded: {
+    label: "Grounded",
+    color: "emerald-400",
+    emoji: "🌱",
+    hex: "#34d399",
+  },
+  charged: {
+    label: "Charged",
+    color: "amber-400",
+    emoji: "⚡️",
+    hex: "#fbbf24",
+  },
   anxious: { label: "Anxious", color: "rose-400", emoji: "🌪", hex: "#fb7185" },
   custom: { label: "Custom", color: "#6b7280", emoji: "✨", hex: "#6b7280" },
 };
@@ -126,7 +141,8 @@ const JOURNAL_MOODS: JournalMood[] = [
 ];
 
 function isJournalMood(value: unknown): value is JournalMood {
-  return typeof value === "string" && JOURNAL_MOODS.includes(value as JournalMood);
+  return typeof value === "string" &&
+    JOURNAL_MOODS.includes(value as JournalMood);
 }
 
 function normalizeJournalEntry(raw: unknown): JournalEntry | null {
@@ -154,12 +170,16 @@ function normalizeJournalEntry(raw: unknown): JournalEntry | null {
       : generateSafeId(),
     body,
     mood: isJournalMood(entry.mood) ? entry.mood : "reflective",
-    customMood: typeof entry.customMood === "string" ? entry.customMood : undefined,
+    customMood: typeof entry.customMood === "string"
+      ? entry.customMood
+      : undefined,
     tags,
     linkedItemIds,
     isFavorited: !!entry.isFavorited,
     isPinned: typeof entry.isPinned === "boolean" ? entry.isPinned : false,
-    isArchived: typeof entry.isArchived === "boolean" ? entry.isArchived : false,
+    isArchived: typeof entry.isArchived === "boolean"
+      ? entry.isArchived
+      : false,
     isPublic: typeof entry.isPublic === "boolean" ? entry.isPublic : false,
     createdAt,
     updatedAt,
@@ -178,7 +198,9 @@ function normalizeJournalEntry(raw: unknown): JournalEntry | null {
     linkedArtifacts: Array.isArray(entry.linkedArtifacts)
       ? entry.linkedArtifacts as LinkedArtifact[]
       : undefined,
-    viewCount: typeof entry.viewCount === "number" ? entry.viewCount : undefined,
+    viewCount: typeof entry.viewCount === "number"
+      ? entry.viewCount
+      : undefined,
   };
 }
 
@@ -258,7 +280,9 @@ export const dailyWordGoalSignal = signal(500);
 
 // Safe ID generator that works even if crypto.randomUUID is not available (e.g. over local HTTP)
 function generateSafeId(): string {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+  if (
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+  ) {
     return crypto.randomUUID();
   }
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
@@ -430,13 +454,17 @@ export function getMoodStats(): MoodStat[] {
   const entries = journalSignal.value;
   const stats: Record<string, number> = {};
   entries.forEach((entry: JournalEntry) => {
-    const m = entry.mood === "custom" && entry.customMood ? entry.customMood : entry.mood;
+    const m = entry.mood === "custom" && entry.customMood
+      ? entry.customMood
+      : entry.mood;
     stats[m] = (stats[m] || 0) + 1;
   });
   return Object.entries(stats)
     .map(([mood, count]) => {
       const isDefault = mood in moodConfig && mood !== "custom";
-      const cfg = isDefault ? moodConfig[mood as JournalMood] : moodConfig["custom"];
+      const cfg = isDefault
+        ? moodConfig[mood as JournalMood]
+        : moodConfig["custom"];
       return {
         mood,
         label: isDefault ? cfg.label : mood,

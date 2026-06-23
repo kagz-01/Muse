@@ -1,6 +1,9 @@
 import { ComponentChildren } from "preact";
 import { soloModeSignal } from "../../signals/user.ts";
-import { resonanceModeSignal, ambientGlowColorSignal } from "../../signals/resonance.ts";
+import {
+  ambientGlowColorSignal,
+  resonanceModeSignal,
+} from "../../signals/resonance.ts";
 import { CaptureModal } from "../modals/index.ts";
 import ProfileOverlay from "../profile/ProfileOverlay.tsx";
 import SynthesisEngine from "../navigation/SynthesisEngine.tsx";
@@ -27,9 +30,14 @@ export default function AppLayoutWrapper(
 
       {/* Ambient Resonance Glow */}
       {ambientGlow && (
-        <div 
-          className={`fixed inset-0 pointer-events-none z-0 transition-all duration-1000 ease-in-out ${resonanceMode === "cinematic" ? "opacity-40" : "opacity-15"}`}
-          style={{ background: `radial-gradient(circle at 50% 30%, ${ambientGlow}, transparent 70%)` }}
+        <div
+          className={`fixed inset-0 pointer-events-none z-0 transition-all duration-1000 ease-in-out ${
+            resonanceMode === "cinematic" ? "opacity-40" : "opacity-15"
+          }`}
+          style={{
+            background:
+              `radial-gradient(circle at 50% 30%, ${ambientGlow}, transparent 70%)`,
+          }}
         />
       )}
 

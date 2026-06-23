@@ -16,7 +16,7 @@ export const handler: Handlers = {
       const description = form.get("description")?.toString() || null;
       const themeColor = form.get("theme_color")?.toString() || "#ffffff";
       const tagsString = form.get("tags")?.toString() || "";
-      
+
       if (!title) {
         return new Response("Title is required", { status: 400 });
       }
@@ -24,24 +24,28 @@ export const handler: Handlers = {
       // Process tags into an array
       const tags = tagsString
         .split(",")
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0);
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
 
       // Insert into CockroachDB
       const result = await executeDB(
         "INSERT INTO rooms (user_id, title, description, theme_color, tags) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-        userId, title, description, themeColor, tags
+        userId,
+        title,
+        description,
+        themeColor,
+        tags,
       );
 
-      const newRoomId = (result.rows[0] as Record<string, unknown>).id as string;
+      const newRoomId = (result.rows[0] as Record<string, unknown>)
+        .id as string;
 
       // Successful creation, the frontend modal expects a 303 redirect or 200 OK.
       // Since it's doing a manual fetch, we can return 200 JSON.
       return new Response(JSON.stringify({ id: newRoomId }), {
         status: 200,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
-
     } catch (e) {
       console.error("Error creating room:", e);
       return new Response("Internal Server Error", { status: 500 });

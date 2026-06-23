@@ -142,7 +142,11 @@ export default function LandingPage() {
             >
               <div className="absolute inset-0 bg-canvas-primary/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
               <span className="relative z-10 flex items-center gap-2">
-                Init Sequence <Icons.ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                Init Sequence{" "}
+                <Icons.ArrowRight
+                  size={12}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
               </span>
             </button>
           </div>

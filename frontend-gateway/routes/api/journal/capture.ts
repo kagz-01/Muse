@@ -15,7 +15,9 @@ export const handler: Handlers = {
       const { rawThought, threadId } = body;
 
       if (!rawThought || rawThought.trim() === "") {
-        return new Response("Journal entry content is required", { status: 400 });
+        return new Response("Journal entry content is required", {
+          status: 400,
+        });
       }
 
       // Generate the cryptographic hash for Web3 proof of thought
@@ -30,15 +32,21 @@ export const handler: Handlers = {
       // If a threadId is provided, link the journal entry to the synthesized context
       if (threadId) {
         // First verify the thread belongs to a room the user owns
-        const threadCheck = await queryDB(`
+        const threadCheck = await queryDB(
+          `
           SELECT t.id 
           FROM threads t
           JOIN rooms r ON t.room_id = r.id
           WHERE t.id = $1 AND r.user_id = $2
-        `, threadId, userId);
+        `,
+          threadId,
+          userId,
+        );
 
         if (threadCheck.length === 0) {
-          return new Response("Thread not found or unauthorized", { status: 404 });
+          return new Response("Thread not found or unauthorized", {
+            status: 404,
+          });
         }
 
         insertQuery = `
@@ -50,17 +58,21 @@ export const handler: Handlers = {
 
       const insertResult = await queryDB(insertQuery, ...queryArgs);
 
-      return new Response(JSON.stringify({
-        success: true,
-        entry: insertResult[0],
-      }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-
+      return new Response(
+        JSON.stringify({
+          success: true,
+          entry: insertResult[0],
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     } catch (e) {
       console.error("Error creating journal entry:", e);
-      return new Response(`Internal Server Error: ${(e as Error).message}`, { status: 500 });
+      return new Response(`Internal Server Error: ${(e as Error).message}`, {
+        status: 500,
+      });
     }
   },
 };

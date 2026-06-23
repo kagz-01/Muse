@@ -1,4 +1,4 @@
-import { useState, useRef } from "preact/hooks";
+import { useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 
 interface ArtifactUploaderProps {
@@ -6,7 +6,9 @@ interface ArtifactUploaderProps {
   themeColor: string;
 }
 
-export default function ArtifactUploader({ roomId, themeColor }: ArtifactUploaderProps) {
+export default function ArtifactUploader(
+  { roomId, themeColor }: ArtifactUploaderProps,
+) {
   const [url, setUrl] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
@@ -16,7 +18,7 @@ export default function ArtifactUploader({ roomId, themeColor }: ArtifactUploade
   const handleUrlSubmit = async (e: Event) => {
     e.preventDefault();
     if (!url) return;
-    
+
     setIsProcessing(true);
     setError("");
 
@@ -92,8 +94,8 @@ export default function ArtifactUploader({ roomId, themeColor }: ArtifactUploade
 
       {/* URL Ingestion Form */}
       <form onSubmit={handleUrlSubmit} className="relative group">
-        <div 
-          className="absolute inset-0 bg-canvas-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
+        <div
+          className="absolute inset-0 bg-canvas-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
           style={{ backgroundColor: `${themeColor}20` }}
         />
         <div className="relative flex items-center bg-[var(--muse-surface)] border border-[var(--muse-border)] focus-within:border-white/20 rounded-2xl p-2 transition-all shadow-xl">
@@ -120,32 +122,34 @@ export default function ArtifactUploader({ roomId, themeColor }: ArtifactUploade
       </form>
 
       {/* Drag and Drop Zone */}
-      <div 
+      <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onClick={() => fileInputRef.current?.click()}
         className={`relative border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all ${
-          isDragging 
-            ? "bg-white/5 border-white/40 scale-[1.02]" 
+          isDragging
+            ? "bg-white/5 border-white/40 scale-[1.02]"
             : "border-[var(--muse-border)] hover:border-white/20 hover:bg-white/[0.02]"
         }`}
       >
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          className="hidden" 
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
           onChange={(e) => {
             const file = (e.target as HTMLInputElement).files?.[0];
             if (file) uploadFile(file);
           }}
           accept=".pdf,.docx,.xlsx,.csv,.txt"
         />
-        <div 
+        <div
           className="w-12 h-12 rounded-full flex items-center justify-center mb-3 bg-[var(--muse-surface)] border border-[var(--muse-border)] shadow-xl"
           style={{ color: themeColor }}
         >
-          {isProcessing ? <Icons.Loader2 size={20} className="animate-spin" /> : <Icons.Upload size={20} />}
+          {isProcessing
+            ? <Icons.Loader2 size={20} className="animate-spin" />
+            : <Icons.Upload size={20} />}
         </div>
         <p className="text-sm font-bold text-[var(--muse-text)] mb-1">
           {isProcessing ? "Synthesizing Document..." : "Drop Document Here"}

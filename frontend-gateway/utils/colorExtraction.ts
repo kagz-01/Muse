@@ -7,7 +7,9 @@
  * Extracts a dominant hex color from an image URL.
  * Under the hood, this uses an off-screen canvas to sample the center pixels.
  */
-export async function extractDominantColorFromImage(imageUrl: string): Promise<string | null> {
+export async function extractDominantColorFromImage(
+  imageUrl: string,
+): Promise<string | null> {
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = "Anonymous";
@@ -28,8 +30,13 @@ export async function extractDominantColorFromImage(imageUrl: string): Promise<s
         const sampleSize = 50;
         const startX = Math.max(0, Math.floor(img.width / 2 - sampleSize / 2));
         const startY = Math.max(0, Math.floor(img.height / 2 - sampleSize / 2));
-        
-        const imageData = ctx.getImageData(startX, startY, sampleSize, sampleSize);
+
+        const imageData = ctx.getImageData(
+          startX,
+          startY,
+          sampleSize,
+          sampleSize,
+        );
         const data = imageData.data;
 
         let r = 0, g = 0, b = 0;
@@ -53,14 +60,14 @@ export async function extractDominantColorFromImage(imageUrl: string): Promise<s
         resolve(null);
       }
     };
-    
+
     img.onerror = () => resolve(null);
     img.src = imageUrl;
   });
 }
 
 function rgbToHex(r: number, g: number, b: number): string {
-  return "#" + [r, g, b].map(x => {
+  return "#" + [r, g, b].map((x) => {
     const hex = x.toString(16);
     return hex.length === 1 ? "0" + hex : hex;
   }).join("");

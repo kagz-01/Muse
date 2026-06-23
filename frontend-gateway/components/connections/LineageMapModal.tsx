@@ -60,8 +60,16 @@ export default function LineageMapModal({
               x2="100%"
               y2="100%"
             >
-              <stop offset="0%" stop-color="var(--muse-accent-rgb)" stop-opacity="0.4" />
-              <stop offset="100%" stop-color="var(--muse-accent-rgb)" stop-opacity="0" />
+              <stop
+                offset="0%"
+                stop-color="var(--muse-accent-rgb)"
+                stop-opacity="0.4"
+              />
+              <stop
+                offset="100%"
+                stop-color="var(--muse-accent-rgb)"
+                stop-opacity="0"
+              />
             </linearGradient>
             <filter id="glow">
               <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -106,7 +114,11 @@ export default function LineageMapModal({
         </svg>
 
         {/* Nodes */}
-        <div className={`relative transition-all duration-1000 ${mounted ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}>
+        <div
+          className={`relative transition-all duration-1000 ${
+            mounted ? "scale-100 opacity-100" : "scale-50 opacity-0"
+          }`}
+        >
           {/* Target Node (Center) */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
             <div className="w-64 p-6 bg-black border border-canvas-primary/40 rounded-3xl shadow-[0_0_50px_rgba(99,102,241,0.15)] flex flex-col items-center text-center">
@@ -131,28 +143,28 @@ export default function LineageMapModal({
 
           {/* Parent Node 1 */}
           <div className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 z-10 opacity-60">
-             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                <Icons.GitBranch size={20} className="text-gray-500" />
-             </div>
+            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+              <Icons.GitBranch size={20} className="text-gray-500" />
+            </div>
           </div>
 
           {/* Parent Node 2 */}
           <div className="absolute top-[30%] left-[80%] -translate-x-1/2 -translate-y-1/2 z-10 opacity-60">
-             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                <Icons.GitBranch size={20} className="text-gray-500" />
-             </div>
+            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+              <Icons.GitBranch size={20} className="text-gray-500" />
+            </div>
           </div>
 
           {/* Child Node (Synthesis) */}
           <div className="absolute top-[80%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10">
-             <div className="w-48 p-4 bg-white/5 border border-emerald-500/30 rounded-2xl flex flex-col items-center text-center animate-pulse">
-               <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mb-1">
-                 Active Branch
-               </p>
-               <p className="text-xs font-serif italic text-gray-300">
-                 Currently being synthesized...
-               </p>
-             </div>
+            <div className="w-48 p-4 bg-white/5 border border-emerald-500/30 rounded-2xl flex flex-col items-center text-center animate-pulse">
+              <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mb-1">
+                Active Branch
+              </p>
+              <p className="text-xs font-serif italic text-gray-300">
+                Currently being synthesized...
+              </p>
+            </div>
           </div>
         </div>
       </div>

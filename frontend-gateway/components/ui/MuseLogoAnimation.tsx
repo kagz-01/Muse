@@ -1,6 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 
-export default function MuseLogoAnimation({ onClose }: { onClose: () => void }) {
+export default function MuseLogoAnimation(
+  { onClose }: { onClose: () => void },
+) {
   const [visible, setVisible] = useState(true);
 
   // The total animation takes ~4 seconds. Fade out and close at 4.2s.
@@ -33,28 +35,52 @@ export default function MuseLogoAnimation({ onClose }: { onClose: () => void }) 
           >
             {/* DEFINITIONS for gradients/glows */}
             <defs>
-              <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+              <filter
+                id="glow-cyan"
+                x="-20%"
+                y="-20%"
+                width="140%"
+                height="140%"
+              >
                 <feGaussianBlur stdDeviation="3" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
-              <filter id="glow-purple" x="-20%" y="-20%" width="140%" height="140%">
+              <filter
+                id="glow-purple"
+                x="-20%"
+                y="-20%"
+                width="140%"
+                height="140%"
+              >
                 <feGaussianBlur stdDeviation="3" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
-              <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
+              <filter
+                id="glow-emerald"
+                x="-20%"
+                y="-20%"
+                width="140%"
+                height="140%"
+              >
                 <feGaussianBlur stdDeviation="3" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
-              <filter id="glow-amber" x="-20%" y="-20%" width="140%" height="140%">
+              <filter
+                id="glow-amber"
+                x="-20%"
+                y="-20%"
+                width="140%"
+                height="140%"
+              >
                 <feGaussianBlur stdDeviation="3" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
@@ -119,7 +145,9 @@ export default function MuseLogoAnimation({ onClose }: { onClose: () => void }) 
 
         {/* Text Fade In/Out */}
         <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 flex flex-col items-center animate-text-reveal">
-          <span className="text-4xl md:text-6xl font-bold tracking-[0.2em] text-white">MUSE</span>
+          <span className="text-4xl md:text-6xl font-bold tracking-[0.2em] text-white">
+            MUSE
+          </span>
         </div>
       </div>
 

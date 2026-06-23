@@ -26,9 +26,15 @@ const paletteColors: { name: RoomTheme; hex: string; label: string }[] = [
 
 export default function CreateRoomModal({ onClose }: Props) {
   const { draft, hasDraft, updateDraft, clearDraft } = useDraft<{
-    name: string; description: string; emoji: string;
-    category: string; size: string; mood: string;
-    tags: string[]; themeColor: string; isPublic: boolean;
+    name: string;
+    description: string;
+    emoji: string;
+    category: string;
+    size: string;
+    mood: string;
+    tags: string[];
+    themeColor: string;
+    isPublic: boolean;
   }>("muse_room_draft");
 
   const [showResumeBanner, setShowResumeBanner] = useState(hasDraft);
@@ -145,9 +151,29 @@ export default function CreateRoomModal({ onClose }: Props) {
   // Auto-save draft on every meaningful change
   useEffect(() => {
     if (name || description || emoji || tags.length) {
-      updateDraft({ name, description, emoji, category, size, mood, tags, themeColor, isPublic });
+      updateDraft({
+        name,
+        description,
+        emoji,
+        category,
+        size,
+        mood,
+        tags,
+        themeColor,
+        isPublic,
+      });
     }
-  }, [name, description, emoji, category, size, mood, tags, themeColor, isPublic]);
+  }, [
+    name,
+    description,
+    emoji,
+    category,
+    size,
+    mood,
+    tags,
+    themeColor,
+    isPublic,
+  ]);
 
   return (
     <div
@@ -167,9 +193,13 @@ export default function CreateRoomModal({ onClose }: Props) {
             <div className="mb-6 flex items-center gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 animate-in slide-in-from-top-2 duration-300">
               <Icons.FileText size={18} className="text-amber-400 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">Unsaved Draft Found</p>
+                <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">
+                  Unsaved Draft Found
+                </p>
                 <p className="text-xs text-amber-400/80 font-serif italic mt-0.5 truncate">
-                  {draft?.name ? `"${draft.name}"` : "A room you started is waiting"}
+                  {draft?.name
+                    ? `"${draft.name}"`
+                    : "A room you started is waiting"}
                 </p>
               </div>
               <button
@@ -181,7 +211,10 @@ export default function CreateRoomModal({ onClose }: Props) {
               </button>
               <button
                 type="button"
-                onClick={() => { clearDraft(); setShowResumeBanner(false); }}
+                onClick={() => {
+                  clearDraft();
+                  setShowResumeBanner(false);
+                }}
                 className="w-6 h-6 rounded-full flex items-center justify-center text-amber-500/60 hover:text-amber-400 transition-colors shrink-0"
               >
                 <Icons.X size={14} />
@@ -213,9 +246,11 @@ export default function CreateRoomModal({ onClose }: Props) {
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
                 Cover Image
               </label>
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Local or Web URL</span>
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                Local or Web URL
+              </span>
             </div>
-            
+
             <div className="space-y-3">
               <div
                 onClick={() => fileRef.current?.click()}
@@ -251,7 +286,7 @@ export default function CreateRoomModal({ onClose }: Props) {
                 onChange={handleImagePick}
                 className="hidden"
               />
-              
+
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                   <Icons.Link2 size={14} />
@@ -259,8 +294,11 @@ export default function CreateRoomModal({ onClose }: Props) {
                 <input
                   type="url"
                   placeholder="Or paste an image URL from the web..."
-                  value={coverImage && coverImage.startsWith('http') ? coverImage : ''}
-                  onChange={(e) => setCoverImage((e.target as HTMLInputElement).value)}
+                  value={coverImage && coverImage.startsWith("http")
+                    ? coverImage
+                    : ""}
+                  onChange={(e) =>
+                    setCoverImage((e.target as HTMLInputElement).value)}
                   className="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-canvas-primary/50 transition-colors"
                 />
               </div>
@@ -700,7 +738,10 @@ export default function CreateRoomModal({ onClose }: Props) {
           {/* Actions */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => { clearDraft(); onClose(); }}
+              onClick={() => {
+                clearDraft();
+                onClose();
+              }}
               type="button"
               className="flex-1 py-4 rounded-2xl border border-white/10 text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
             >

@@ -1,4 +1,3 @@
-
 interface MoodStat {
   mood: string;
   label: string;

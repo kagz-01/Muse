@@ -527,88 +527,125 @@ export default function RoomInside({ roomId }: { roomId: string }) {
               {/* ROOM INTELLIGENCE TOGGLE */}
               {showRoomDetails && (
                 <div className="mt-8 pt-6 border-t border-[var(--muse-text)]/10 animate-in slide-in-from-top-4 fade-in duration-300">
-                    <div className="flex flex-wrap items-center gap-6">
-                      <div className="flex items-center gap-2">
-                        <Icons.Layers size={14} className="text-[var(--muse-muted)]" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                          Artifacts
-                        </span>
-                        <span className="text-sm font-bold text-[var(--muse-text)] ml-1">
-                          {items.length}
-                        </span>
-                      </div>
-                      <div className="w-px h-4 bg-[var(--muse-text)]/10" />
-                      <div className="flex items-center gap-2">
-                        {room.isPublic ? <Icons.Globe size={14} className="text-[var(--muse-muted)]" /> : <Icons.Lock size={14} className="text-[var(--muse-muted)]" />}
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                          Access
-                        </span>
-                        <span className="text-sm font-bold text-[var(--muse-text)] ml-1">
-                          {room.isPublic ? "Community" : "Vault"}
-                        </span>
-                      </div>
-                      <div className="w-px h-4 bg-[var(--muse-text)]/10" />
-                      <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: customHex || hex }} />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                          Theme
-                        </span>
-                        <span className="text-sm font-bold ml-1 uppercase" style={{ color: customHex || undefined }}>
-                          {customHex ? "Custom" : room.themeColor}
-                        </span>
-                      </div>
-                      <div className="w-px h-4 bg-[var(--muse-text)]/10" />
-                      <div className="flex items-center gap-2">
-                        <Icons.Activity size={14} className="text-[var(--muse-muted)]" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                          Mood
-                        </span>
-                        <span className="text-sm font-bold text-[var(--muse-text)] ml-1 flex items-center gap-2">
-                          {MOOD_OPTIONS.find((m) => m.id === room.mood)?.emoji || "🎯"} <span className="capitalize">{room.mood || "Focus"}</span>
-                        </span>
-                      </div>
-                      {room.category && (
-                        <>
-                          <div className="w-px h-4 bg-[var(--muse-text)]/10" />
-                          <div className="flex items-center gap-2">
-                            <Icons.FolderOpen size={14} className="text-[var(--muse-muted)]" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                              Category
-                            </span>
-                            <span className="text-sm font-bold text-[var(--muse-text)] ml-1 capitalize">
-                              {room.category}
-                            </span>
-                          </div>
-                        </>
-                      )}
-                      {room.size && (
-                        <>
-                          <div className="w-px h-4 bg-[var(--muse-text)]/10" />
-                          <div className="flex items-center gap-2">
-                            <Icons.LayoutGrid size={14} className="text-[var(--muse-muted)]" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
-                              Size
-                            </span>
-                            <span className="text-sm font-bold text-[var(--muse-text)] ml-1 capitalize">
-                              {room.size}
-                            </span>
-                          </div>
-                        </>
-                      )}
+                  <div className="flex flex-wrap items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <Icons.Layers
+                        size={14}
+                        className="text-[var(--muse-muted)]"
+                      />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                        Artifacts
+                      </span>
+                      <span className="text-sm font-bold text-[var(--muse-text)] ml-1">
+                        {items.length}
+                      </span>
                     </div>
-
-                    {room.tags && room.tags.length > 0 && (
-                      <div className="mt-4 flex flex-wrap items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mr-2">
-                          Tags:
+                    <div className="w-px h-4 bg-[var(--muse-text)]/10" />
+                    <div className="flex items-center gap-2">
+                      {room.isPublic
+                        ? (
+                          <Icons.Globe
+                            size={14}
+                            className="text-[var(--muse-muted)]"
+                          />
+                        )
+                        : (
+                          <Icons.Lock
+                            size={14}
+                            className="text-[var(--muse-muted)]"
+                          />
+                        )}
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                        Access
+                      </span>
+                      <span className="text-sm font-bold text-[var(--muse-text)] ml-1">
+                        {room.isPublic ? "Community" : "Vault"}
+                      </span>
+                    </div>
+                    <div className="w-px h-4 bg-[var(--muse-text)]/10" />
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: customHex || hex }}
+                      />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                        Theme
+                      </span>
+                      <span
+                        className="text-sm font-bold ml-1 uppercase"
+                        style={{ color: customHex || undefined }}
+                      >
+                        {customHex ? "Custom" : room.themeColor}
+                      </span>
+                    </div>
+                    <div className="w-px h-4 bg-[var(--muse-text)]/10" />
+                    <div className="flex items-center gap-2">
+                      <Icons.Activity
+                        size={14}
+                        className="text-[var(--muse-muted)]"
+                      />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                        Mood
+                      </span>
+                      <span className="text-sm font-bold text-[var(--muse-text)] ml-1 flex items-center gap-2">
+                        {MOOD_OPTIONS.find((m) => m.id === room.mood)?.emoji ||
+                          "🎯"}{" "}
+                        <span className="capitalize">
+                          {room.mood || "Focus"}
                         </span>
-                        {room.tags.map((tag) => (
-                          <span key={tag} className="px-3 py-1 rounded-full border border-[var(--muse-text)]/10 bg-[var(--muse-text)]/[0.05] text-[10px] font-bold uppercase tracking-widest text-[var(--muse-text)]">
-                            {tag}
+                      </span>
+                    </div>
+                    {room.category && (
+                      <>
+                        <div className="w-px h-4 bg-[var(--muse-text)]/10" />
+                        <div className="flex items-center gap-2">
+                          <Icons.FolderOpen
+                            size={14}
+                            className="text-[var(--muse-muted)]"
+                          />
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                            Category
                           </span>
-                        ))}
-                      </div>
+                          <span className="text-sm font-bold text-[var(--muse-text)] ml-1 capitalize">
+                            {room.category}
+                          </span>
+                        </div>
+                      </>
                     )}
+                    {room.size && (
+                      <>
+                        <div className="w-px h-4 bg-[var(--muse-text)]/10" />
+                        <div className="flex items-center gap-2">
+                          <Icons.LayoutGrid
+                            size={14}
+                            className="text-[var(--muse-muted)]"
+                          />
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)]">
+                            Size
+                          </span>
+                          <span className="text-sm font-bold text-[var(--muse-text)] ml-1 capitalize">
+                            {room.size}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {room.tags && room.tags.length > 0 && (
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mr-2">
+                        Tags:
+                      </span>
+                      {room.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-3 py-1 rounded-full border border-[var(--muse-text)]/10 bg-[var(--muse-text)]/[0.05] text-[10px] font-bold uppercase tracking-widest text-[var(--muse-text)]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -647,7 +684,6 @@ export default function RoomInside({ roomId }: { roomId: string }) {
           {activeTab === "collection"
             ? (
               <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-bold text-[var(--muse-text)] tracking-tight flex items-center gap-4">
                     <Icons.Layers
@@ -678,7 +714,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                   </div>
                 )}
 
-                  {items.length === 0
+                {items.length === 0
                   ? (
                     <div className="flex flex-col items-center justify-center py-32 bg-[#111318]/50 backdrop-blur-md rounded-[3rem] border border-[var(--muse-text)]/5">
                       <div
@@ -701,8 +737,12 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                       {/* Simulated Spatial Canvas Grid */}
                       {items.map((item, index) => {
                         // Stagger the layout to feel more spatial/masonry
-                        const mt = index % 3 === 1 ? 'mt-16' : index % 3 === 2 ? 'mt-8' : 'mt-0';
-                        
+                        const mt = index % 3 === 1
+                          ? "mt-16"
+                          : index % 3 === 2
+                          ? "mt-8"
+                          : "mt-0";
+
                         return (
                           <div
                             key={item.id}
@@ -710,74 +750,81 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                             style={glowStyle}
                           >
                             <div className="relative">
-                               <div
-                                 className="h-40 relative overflow-hidden rounded-t-[2.5rem]"
-                                 style={{
-                                   background: customHex
-                                     ? `linear-gradient(135deg, ${customHex}40, transparent)`
-                                     : undefined,
-                                 }}
-                               >
-                                 <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
-                                 <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
-                                   <Icons.ExternalLink
-                                     size={40}
-                                     className={theme.text}
-                                   />
-                                 </div>
-                                 <a
-                                   href={item.sourceUrl}
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[var(--muse-bg)]/60 backdrop-blur-md flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-xl"
-                                 >
-                                   <Icons.ExternalLink size={14} />
-                                 </a>
-                               </div>
+                              <div
+                                className="h-40 relative overflow-hidden rounded-t-[2.5rem]"
+                                style={{
+                                  background: customHex
+                                    ? `linear-gradient(135deg, ${customHex}40, transparent)`
+                                    : undefined,
+                                }}
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-white/5 opacity-50" />
+                                <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                                  <Icons.ExternalLink
+                                    size={40}
+                                    className={theme.text}
+                                  />
+                                </div>
+                                <a
+                                  href={item.sourceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[var(--muse-bg)]/60 backdrop-blur-md flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-xl"
+                                >
+                                  <Icons.ExternalLink size={14} />
+                                </a>
+                              </div>
 
-                               {/* Hover UI: Connect/Thread simulation */}
-                               <div className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-30">
-                                  <button type="button" className="w-12 h-12 rounded-full bg-canvas-primary/20 backdrop-blur-xl border border-canvas-primary/50 text-canvas-primary flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4)] hover:bg-canvas-primary/40 transition-colors cursor-pointer" title="Weave into Thread">
-                                    <Icons.GitMerge size={20} />
+                              {/* Hover UI: Connect/Thread simulation */}
+                              <div className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-30">
+                                <button
+                                  type="button"
+                                  className="w-12 h-12 rounded-full bg-canvas-primary/20 backdrop-blur-xl border border-canvas-primary/50 text-canvas-primary flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.4)] hover:bg-canvas-primary/40 transition-colors cursor-pointer"
+                                  title="Weave into Thread"
+                                >
+                                  <Icons.GitMerge size={20} />
+                                </button>
+                              </div>
+                              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-30">
+                                <button
+                                  type="button"
+                                  className="px-4 py-2 rounded-full bg-indigo-500/20 backdrop-blur-xl border border-indigo-500/50 text-indigo-400 font-bold uppercase tracking-widest text-[9px] flex items-center gap-2 shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:bg-indigo-500/40 transition-colors cursor-pointer"
+                                >
+                                  <Icons.Link2 size={12} /> Connect Node
+                                </button>
+                              </div>
+
+                              <div className="p-7">
+                                <div className="flex flex-col gap-1 mb-4">
+                                  <span
+                                    className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}
+                                  >
+                                    Artifact
+                                  </span>
+                                  <h4 className="font-bold text-lg leading-tight text-[var(--muse-text)]/90 group-hover:text-[var(--muse-text)] transition-colors line-clamp-2">
+                                    {item.title}
+                                  </h4>
+                                </div>
+
+                                {item.note && (
+                                  <p className="text-sm text-[var(--muse-muted)] line-clamp-2 mb-6 font-serif italic border-l-2 border-[var(--muse-text)]/10 pl-4 py-1 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+                                    "{item.note}"
+                                  </p>
+                                )}
+
+                                <div className="flex items-center justify-between mt-auto pt-5 border-t border-[var(--muse-text)]/5">
+                                  <span className="text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-[var(--muse-muted)]">
+                                    Sourced from collective
+                                  </span>
+                                  <button
+                                    onClick={() => deleteItem(item.id)}
+                                    type="button"
+                                    className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--muse-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
+                                  >
+                                    <Icons.Trash2 size={14} />
                                   </button>
-                               </div>
-                               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-30">
-                                  <button type="button" className="px-4 py-2 rounded-full bg-indigo-500/20 backdrop-blur-xl border border-indigo-500/50 text-indigo-400 font-bold uppercase tracking-widest text-[9px] flex items-center gap-2 shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:bg-indigo-500/40 transition-colors cursor-pointer">
-                                    <Icons.Link2 size={12} /> Connect Node
-                                  </button>
-                               </div>
-
-                               <div className="p-7">
-                                 <div className="flex flex-col gap-1 mb-4">
-                                   <span
-                                     className={`text-[8px] font-bold uppercase tracking-[0.2em] ${theme.text}`}
-                                   >
-                                     Artifact
-                                   </span>
-                                   <h4 className="font-bold text-lg leading-tight text-[var(--muse-text)]/90 group-hover:text-[var(--muse-text)] transition-colors line-clamp-2">
-                                     {item.title}
-                                   </h4>
-                                 </div>
-
-                                 {item.note && (
-                                   <p className="text-sm text-[var(--muse-muted)] line-clamp-2 mb-6 font-serif italic border-l-2 border-[var(--muse-text)]/10 pl-4 py-1 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
-                                     "{item.note}"
-                                   </p>
-                                 )}
-
-                                 <div className="flex items-center justify-between mt-auto pt-5 border-t border-[var(--muse-text)]/5">
-                                   <span className="text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-[var(--muse-muted)]">
-                                     Sourced from collective
-                                   </span>
-                                   <button
-                                     onClick={() => deleteItem(item.id)}
-                                     type="button"
-                                     className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--muse-muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
-                                   >
-                                     <Icons.Trash2 size={14} />
-                                   </button>
-                                 </div>
-                               </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         );

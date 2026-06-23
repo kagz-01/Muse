@@ -1,11 +1,16 @@
 /**
  * Notification System Dispatcher
- * 
- * Mock implementation to demonstrate routing of different notification events 
+ *
+ * Mock implementation to demonstrate routing of different notification events
  * (Email, Push, In-App) based on the settings toggles.
  */
 
-export type NotificationType = "reply" | "like" | "follow" | "achievement" | "system";
+export type NotificationType =
+  | "reply"
+  | "like"
+  | "follow"
+  | "achievement"
+  | "system";
 
 export interface NotificationPayload {
   userId: string;
@@ -31,14 +36,19 @@ export async function dispatchEmail(payload: NotificationPayload) {
  * In production, this would integrate with Firebase Cloud Messaging (FCM) or Apple Push Notification service (APNs).
  */
 export async function dispatchPush(payload: NotificationPayload) {
-  console.log(`[MOCK PUSH] To User: ${payload.userId} | ${payload.title}: ${payload.body}`);
+  console.log(
+    `[MOCK PUSH] To User: ${payload.userId} | ${payload.title}: ${payload.body}`,
+  );
   return true;
 }
 
 /**
  * Main dispatcher to route an event to the appropriate channels based on user preferences.
  */
-export async function notifyUser(payload: NotificationPayload, userSettings: any) {
+export async function notifyUser(
+  payload: NotificationPayload,
+  userSettings: any,
+) {
   const tasks = [];
 
   // If the user hasn't explicitly disabled in-app notifications

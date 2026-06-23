@@ -11,7 +11,7 @@ export const handler = {
   async POST(req: Request, _ctx: FreshContext): Promise<Response> {
     try {
       const body = await req.json() as SocraticRequest;
-      
+
       if (!body.recentText) {
         return new Response(JSON.stringify({ error: "Missing recentText" }), {
           status: 400,
@@ -22,23 +22,25 @@ export const handler = {
       const question = await generateDynamicSocraticQuestion(
         body.userName || "Traveler",
         body.recentText,
-        body.contextItems || []
+        body.contextItems || [],
       );
 
       return new Response(JSON.stringify({ question }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-      
     } catch (error) {
       console.error("Socratic Question Error:", error);
-      return new Response(JSON.stringify({ 
-        error: "Failed to generate socratic question",
-        details: error instanceof Error ? error.message : "Unknown error"
-      }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Failed to generate socratic question",
+          details: error instanceof Error ? error.message : "Unknown error",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
   },
 };

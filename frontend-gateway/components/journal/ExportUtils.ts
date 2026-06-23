@@ -132,7 +132,8 @@ export function triggerExport(
     case "docx":
       content = exportAsDOCX(entries, options);
       filename = `journal-export-${dateStr}.docx`;
-      mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      mimeType =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       break;
   }
 

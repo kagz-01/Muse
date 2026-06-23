@@ -16,7 +16,7 @@ async function run() {
       console.log(`Executing:\n${statement.substring(0, 50)}...`);
       await executeDB(statement);
     }
-    
+
     console.log("Schema executed successfully!");
   } catch (error) {
     console.error("Error executing schema:", error);

@@ -31,29 +31,35 @@ export const handler: Handlers = {
 
       if (!aiResponse.ok) {
         const errText = await aiResponse.text();
-        return new Response(`AI Engine Error: ${errText}`, { status: aiResponse.status });
+        return new Response(`AI Engine Error: ${errText}`, {
+          status: aiResponse.status,
+        });
       }
 
       const scrapedData = await aiResponse.json();
-      
+
       // Determine type based on extension
       const fileName = file.name.toLowerCase();
       let type = "document";
       if (fileName.endsWith(".pdf")) type = "pdf";
       if (fileName.endsWith(".docx")) type = "word";
-      if (fileName.endsWith(".xlsx") || fileName.endsWith(".csv")) type = "spreadsheet";
+      if (fileName.endsWith(".xlsx") || fileName.endsWith(".csv")) {
+        type = "spreadsheet";
+      }
 
       // 2. Insert into CockroachDB JSONB
       await executeDB(
         "INSERT INTO artifacts (room_id, type, source_url, unstructured_data) VALUES ($1, $2, $3, $4)",
-        roomId, type, file.name, JSON.stringify(scrapedData)
+        roomId,
+        type,
+        file.name,
+        JSON.stringify(scrapedData),
       );
 
       return new Response(JSON.stringify({ success: true, type }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-
     } catch (e) {
       console.error("Error uploading document:", e);
       return new Response("Internal Server Error", { status: 500 });

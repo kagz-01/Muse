@@ -24,7 +24,8 @@ export const handler: Handlers = {
           "SELECT email FROM users WHERE id = $1",
           userId,
         );
-        const email = (userRes[0] as { email: string })?.email ?? "user@muse.os";
+        const email = (userRes[0] as { email: string })?.email ??
+          "user@muse.os";
 
         const otpauthUrl = generateURI({
           secret: newSecret,

@@ -47,7 +47,7 @@ export default function ResonanceModal({
                 Resonate with Stream
               </h2>
             </div>
-            
+
             {isAnalyzing && (
               <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-lg animate-pulse">
                 <Icons.Cpu size={12} className="text-indigo-400" />
@@ -70,7 +70,8 @@ export default function ResonanceModal({
 
             <div className="mt-8 flex items-center justify-between">
               <p className="text-[9px] text-gray-500 uppercase tracking-widest max-w-[200px]">
-                Your thought will be automatically analyzed and grouped by theme.
+                Your thought will be automatically analyzed and grouped by
+                theme.
               </p>
 
               <button
@@ -78,17 +79,19 @@ export default function ResonanceModal({
                 disabled={isAnalyzing || !content.trim()}
                 className="px-8 py-4 bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 rounded-full text-[10px] font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 cursor-pointer shadow-xl"
               >
-                {isAnalyzing ? (
-                  <>
-                    <Icons.RefreshCcw size={14} className="animate-spin" />
-                    Analyzing Theme...
-                  </>
-                ) : (
-                  <>
-                    <Icons.Waves size={14} />
-                    Inject Resonance
-                  </>
-                )}
+                {isAnalyzing
+                  ? (
+                    <>
+                      <Icons.RefreshCcw size={14} className="animate-spin" />
+                      Analyzing Theme...
+                    </>
+                  )
+                  : (
+                    <>
+                      <Icons.Waves size={14} />
+                      Inject Resonance
+                    </>
+                  )}
               </button>
             </div>
           </form>

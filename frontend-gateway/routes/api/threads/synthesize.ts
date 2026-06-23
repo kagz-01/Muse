@@ -1,6 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
-import { queryDB, executeDB } from "../../../utils/db.ts";
+import { executeDB, queryDB } from "../../../utils/db.ts";
 import { synthesizeArtifacts } from "../../../utils/ai.ts";
 
 export const handler: Handlers = {
@@ -19,15 +19,24 @@ export const handler: Handlers = {
       }
 
       // Verify the room belongs to the user
-      const roomCheck = await queryDB("SELECT id FROM rooms WHERE id = $1 AND user_id = $2", roomId, userId);
+      const roomCheck = await queryDB(
+        "SELECT id FROM rooms WHERE id = $1 AND user_id = $2",
+        roomId,
+        userId,
+      );
       if (roomCheck.length === 0) {
         return new Response("Room not found or unauthorized", { status: 404 });
       }
 
       // Fetch all artifacts for this room
-      const artifacts = await queryDB("SELECT id, type, unstructured_data FROM artifacts WHERE room_id = $1", roomId);
+      const artifacts = await queryDB(
+        "SELECT id, type, unstructured_data FROM artifacts WHERE room_id = $1",
+        roomId,
+      );
       if (artifacts.length === 0) {
-        return new Response("No artifacts found to synthesize", { status: 400 });
+        return new Response("No artifacts found to synthesize", {
+          status: 400,
+        });
       }
 
       // Run through our new Deno LangChain AI Engine
@@ -42,20 +51,24 @@ export const handler: Handlers = {
          VALUES ($1, $2, $3) RETURNING *`,
         roomId,
         artifactIds,
-        aiBlueprint
+        aiBlueprint,
       );
 
-      return new Response(JSON.stringify({
-        success: true,
-        thread: insertResult[0],
-      }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-
+      return new Response(
+        JSON.stringify({
+          success: true,
+          thread: insertResult[0],
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     } catch (e) {
       console.error("Error triggering synthesis:", e);
-      return new Response(`Internal Server Error: ${(e as Error).message}`, { status: 500 });
+      return new Response(`Internal Server Error: ${(e as Error).message}`, {
+        status: 500,
+      });
     }
   },
 };

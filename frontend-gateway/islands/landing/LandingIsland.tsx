@@ -183,7 +183,11 @@ export default function LandingIsland() {
           <div className="mb-8 relative animate-in slide-in-from-bottom-5 duration-700">
             <div className="absolute inset-0 bg-canvas-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
             <div className="relative w-32 h-32 md:w-40 md:h-40 bg-white/10 rounded-[3rem] flex items-center justify-center shadow-[0_0_60px_rgba(99,102,241,0.4)]">
-              <Icons.Infinity size={72} strokeWidth={1.5} className="text-white" />
+              <Icons.Infinity
+                size={72}
+                strokeWidth={1.5}
+                className="text-white"
+              />
             </div>
           </div>
 
@@ -364,7 +368,11 @@ export default function LandingIsland() {
           <div className="mb-10 relative">
             <div className="absolute inset-0 bg-canvas-primary/20 blur-3xl scale-150 animate-pulse" />
             <div className="relative w-40 h-40 bg-white/10 rounded-[4rem] flex items-center justify-center shadow-[0_0_80px_rgba(99,102,241,0.5)]">
-              <Icons.Infinity size={88} strokeWidth={1.5} className="text-white" />
+              <Icons.Infinity
+                size={88}
+                strokeWidth={1.5}
+                className="text-white"
+              />
             </div>
           </div>
 
@@ -401,7 +409,11 @@ export default function LandingIsland() {
         <footer className="border-t border-white/5 py-10 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-600 text-[11px] font-bold uppercase tracking-widest z-10 relative">
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 bg-white/10 rounded-lg flex items-center justify-center opacity-60">
-              <Icons.Infinity size={14} strokeWidth={2} className="text-white" />
+              <Icons.Infinity
+                size={14}
+                strokeWidth={2}
+                className="text-white"
+              />
             </div>
             <span>Muse © 2025</span>
           </div>

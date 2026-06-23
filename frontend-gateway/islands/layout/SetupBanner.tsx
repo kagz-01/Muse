@@ -1,12 +1,12 @@
 import { useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
-  userSignal,
+  dismissSetupBanner,
   getSetupSteps,
   isProfileComplete,
   setupBannerDismissedSignal,
-  dismissSetupBanner,
   type SetupStep,
+  userSignal,
 } from "../../signals/user.ts";
 
 export default function SetupBanner() {
@@ -34,18 +34,29 @@ export default function SetupBanner() {
   return (
     <div
       className={`fixed top-0 left-0 right-0 z-[70] transition-all duration-400 ease-in-out ${
-        isAnimatingOut ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"
+        isAnimatingOut
+          ? "-translate-y-full opacity-0"
+          : "translate-y-0 opacity-100"
       }`}
     >
       {/* Main banner bar */}
       <div className="bg-[var(--muse-surface)]/95 backdrop-blur-2xl border-b border-[var(--muse-border)] px-4 py-2.5 flex items-center gap-3 shadow-lg">
-        
         {/* Progress ring icon */}
         <div className="relative flex-shrink-0">
           <svg className="w-9 h-9 -rotate-90" viewBox="0 0 36 36">
-            <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" className="text-white/10" />
             <circle
-              cx="18" cy="18" r="15"
+              cx="18"
+              cy="18"
+              r="15"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              className="text-white/10"
+            />
+            <circle
+              cx="18"
+              cy="18"
+              r="15"
               fill="none"
               strokeWidth="3"
               strokeDasharray={`${pct * 0.942} 100`}
@@ -79,7 +90,9 @@ export default function SetupBanner() {
           Setup
           <Icons.ChevronDown
             size={12}
-            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
+            className={`transition-transform duration-300 ${
+              isExpanded ? "rotate-180" : ""
+            }`}
           />
         </button>
 
@@ -114,24 +127,29 @@ export default function SetupBanner() {
               >
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    step.done ? "bg-emerald-500 text-black" : "bg-white/10 text-[var(--muse-muted)]"
+                    step.done
+                      ? "bg-emerald-500 text-black"
+                      : "bg-white/10 text-[var(--muse-muted)]"
                   }`}
                 >
-                  {step.done ? (
-                    <Icons.Check size={12} />
-                  ) : (
-                    <Icons.Circle size={12} />
-                  )}
+                  {step.done
+                    ? <Icons.Check size={12} />
+                    : <Icons.Circle size={12} />}
                 </div>
                 <span
                   className={`text-sm font-medium ${
-                    step.done ? "line-through text-[var(--muse-muted)]" : "text-[var(--muse-text)]"
+                    step.done
+                      ? "line-through text-[var(--muse-muted)]"
+                      : "text-[var(--muse-text)]"
                   }`}
                 >
                   {step.label}
                 </span>
                 {!step.done && (
-                  <Icons.ArrowRight size={14} className="ml-auto text-[var(--muse-muted)]" />
+                  <Icons.ArrowRight
+                    size={14}
+                    className="ml-auto text-[var(--muse-muted)]"
+                  />
                 )}
               </a>
             ))}

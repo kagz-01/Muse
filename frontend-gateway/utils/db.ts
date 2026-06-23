@@ -1,7 +1,8 @@
 import { Pool } from "postgres";
 
 // We read from Deno Deploy environment variables or a local .env file.
-const DATABASE_URL = Deno.env.get("DATABASE_URL") || "postgres://user:password@localhost:5432/muse";
+const DATABASE_URL = Deno.env.get("DATABASE_URL") ||
+  "postgres://user:password@localhost:5432/muse";
 
 // Create a connection pool with 3 concurrent connections max to fit within free-tier limits.
 const pool = new Pool(DATABASE_URL, 3, true);

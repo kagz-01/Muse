@@ -1,6 +1,10 @@
 import { Handlers } from "$fresh/server.ts";
 import { queryDB } from "../../../utils/db.ts";
-import { comparePassword, createSession, setSessionCookie } from "../../../utils/auth.ts";
+import {
+  comparePassword,
+  createSession,
+  setSessionCookie,
+} from "../../../utils/auth.ts";
 
 export const handler: Handlers = {
   async POST(req) {
@@ -14,7 +18,10 @@ export const handler: Handlers = {
       }
 
       // Fetch user
-      const users = await queryDB("SELECT id, password_hash FROM users WHERE email = $1", email);
+      const users = await queryDB(
+        "SELECT id, password_hash FROM users WHERE email = $1",
+        email,
+      );
       if (users.length === 0) {
         return new Response("Invalid email or password", { status: 401 });
       }
@@ -23,10 +30,16 @@ export const handler: Handlers = {
 
       // Verify password
       if (!user.password_hash) {
-        return new Response("Please login with your connected provider (e.g., Google)", { status: 401 });
+        return new Response(
+          "Please login with your connected provider (e.g., Google)",
+          { status: 401 },
+        );
       }
 
-      const isValid = await comparePassword(password, user.password_hash as string);
+      const isValid = await comparePassword(
+        password,
+        user.password_hash as string,
+      );
       if (!isValid) {
         return new Response("Invalid email or password", { status: 401 });
       }
@@ -45,7 +58,6 @@ export const handler: Handlers = {
         status: 303,
         headers,
       });
-
     } catch (e) {
       console.error(e);
       return new Response("Internal Server Error", { status: 500 });

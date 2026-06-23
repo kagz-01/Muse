@@ -34,9 +34,18 @@ const SEED_STREAKS: UserStreak[] = [
     expiresAt: Date.now() + 1000 * 60 * 60 * 22,
     createdAt: Date.now() - TWENTY_FOUR_HOURS * 42,
     history: [
-      { timestamp: Date.now() - 1000 * 60 * 60 * 2, action: "Shared an artifact in Philosophy" },
-      { timestamp: Date.now() - TWENTY_FOUR_HOURS, action: "Extended thought on consciousness" },
-      { timestamp: Date.now() - TWENTY_FOUR_HOURS * 2, action: "Journal reflection exchange" },
+      {
+        timestamp: Date.now() - 1000 * 60 * 60 * 2,
+        action: "Shared an artifact in Philosophy",
+      },
+      {
+        timestamp: Date.now() - TWENTY_FOUR_HOURS,
+        action: "Extended thought on consciousness",
+      },
+      {
+        timestamp: Date.now() - TWENTY_FOUR_HOURS * 2,
+        action: "Journal reflection exchange",
+      },
     ],
   },
   {
@@ -48,7 +57,10 @@ const SEED_STREAKS: UserStreak[] = [
     expiresAt: Date.now() + 1000 * 60 * 60 * 3, // fading
     createdAt: Date.now() - TWENTY_FOUR_HOURS * 7,
     history: [
-      { timestamp: Date.now() - 1000 * 60 * 60 * 21, action: "Added artifact to shared room" },
+      {
+        timestamp: Date.now() - 1000 * 60 * 60 * 21,
+        action: "Added artifact to shared room",
+      },
     ],
   },
   {
@@ -60,7 +72,10 @@ const SEED_STREAKS: UserStreak[] = [
     expiresAt: Date.now() + 1000 * 60 * 60 * 19,
     createdAt: Date.now() - TWENTY_FOUR_HOURS,
     history: [
-      { timestamp: Date.now() - 1000 * 60 * 60 * 5, action: "Started a new synthesis chain" },
+      {
+        timestamp: Date.now() - 1000 * 60 * 60 * 5,
+        action: "Started a new synthesis chain",
+      },
     ],
   },
 ];
@@ -117,7 +132,11 @@ export function extendStreak(streakId: string, action = "Extended thought") {
 }
 
 /** Start a new streak with a connection. */
-export function startStreak(partnerId: string, partnerName: string, partnerAvatar?: string) {
+export function startStreak(
+  partnerId: string,
+  partnerName: string,
+  partnerAvatar?: string,
+) {
   const now = Date.now();
   const newStreak: UserStreak = {
     id: `str-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -142,6 +161,8 @@ export function removeStreak(streakId: string) {
 /** Prune all broken streaks. Returns number removed. */
 export function pruneBrokenStreaks(): number {
   const before = streaksSignal.value.length;
-  streaksSignal.value = streaksSignal.value.filter((s) => getStreakState(s) !== "broken");
+  streaksSignal.value = streaksSignal.value.filter((s) =>
+    getStreakState(s) !== "broken"
+  );
   return before - streaksSignal.value.length;
 }

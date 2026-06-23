@@ -16,11 +16,11 @@ export default function ActivityHeatmap({ data }: ActivityHeatmapProps) {
 
   const getIntensityColor = (count: number): string => {
     const percent = (count / maxCount) * 100;
-    if (count === 0) return "bg-white/5 border-white/10";
-    if (percent < 25) return "bg-violet-900/30 border-violet-700/30";
-    if (percent < 50) return "bg-violet-700/50 border-violet-600/50";
-    if (percent < 75) return "bg-violet-600/70 border-violet-500/70";
-    return "bg-violet-500 border-violet-400";
+    if (count === 0) return "bg-white/5 border-white/10 opacity-40";
+    if (percent < 25) return "bg-canvas-primary/20 border-canvas-primary/40 shadow-[0_0_8px_rgba(34,211,238,0.2)]";
+    if (percent < 50) return "bg-canvas-primary/40 border-canvas-primary/60 shadow-[0_0_12px_rgba(34,211,238,0.4)]";
+    if (percent < 75) return "bg-canvas-primary/70 border-canvas-primary/80 shadow-[0_0_16px_rgba(34,211,238,0.6)]";
+    return "bg-canvas-primary border-white shadow-[0_0_24px_rgba(34,211,238,0.9)] scale-110 z-10";
   };
 
   const getWeeks = useMemo(() => {
@@ -43,7 +43,14 @@ export default function ActivityHeatmap({ data }: ActivityHeatmapProps) {
   }, [data]);
 
   return (
-    <div className="rounded-2xl p-6 border" style={{ background: 'var(--muse-surface)', borderColor: 'var(--muse-border)', boxShadow: '0 10px 30px rgba(var(--muse-accent-rgb),0.04)'}}>
+    <div
+      className="rounded-2xl p-6 border"
+      style={{
+        background: "var(--muse-surface)",
+        borderColor: "var(--muse-border)",
+        boxShadow: "0 10px 30px rgba(var(--muse-accent-rgb),0.04)",
+      }}
+    >
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
           <span className="text-violet-400">📊</span> 31-Day Activity
