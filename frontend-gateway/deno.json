@@ -27,7 +27,7 @@
     "$std/": "https://deno.land/std@0.216.0/",
     "postgres": "https://deno.land/x/postgres@v0.19.3/mod.ts",
     "bcrypt": "https://deno.land/x/bcrypt@v0.4.1/mod.ts",
-    "recharts": "https://esm.sh/recharts@2.12.0?alias=react:preact/compat,react-dom:preact/compat-render&deps=preact@10.22.0"
+    "recharts": "https://esm.sh/recharts@2.12.0?alias=react:preact/compat,react-dom:preact/compat&deps=preact@10.22.0"
   },
   "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
   "nodeModulesDir": "auto"
