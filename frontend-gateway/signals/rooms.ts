@@ -141,7 +141,7 @@ export interface Room {
   isVault?: boolean; // True if this is a private vault room
 }
 
-const STORAGE_KEY = "muse_rooms_v1";
+const STORAGE_KEY = "muse_rooms_v2";
 
 const INITIAL_ROOMS: Room[] = [
   {

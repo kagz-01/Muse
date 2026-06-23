@@ -19,7 +19,7 @@ export interface Item {
   };
 }
 
-const STORAGE_KEY = "muse_items_v1";
+const STORAGE_KEY = "muse_items_v2";
 
 const INITIAL_ITEMS: Item[] = [
   {

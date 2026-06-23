@@ -54,7 +54,7 @@ export interface Thread {
   };
 }
 
-const STORAGE_KEY = "muse_threads_v1";
+const STORAGE_KEY = "muse_threads_v2";
 
 const INITIAL_THREADS: Thread[] = [
   {
