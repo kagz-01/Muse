@@ -1,6 +1,7 @@
-import { useState } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
+  activeThemesSignal,
   circlesSignal,
   collaboratorsSignal,
   communityRoomsSignal,
@@ -15,6 +16,10 @@ import {
 import ThoughtStream from "./ThoughtStream.tsx";
 import WisdomMap from "./WisdomMap.tsx";
 import AuraCard from "../../components/connections/AuraCard.tsx";
+import {
+  CircleMembershipChart,
+  CommunityThemePulse,
+} from "../../components/community/CommunityCharts.tsx";
 
 type Tab = "Stream" | "Wisdom" | "Circles" | "People";
 
@@ -26,6 +31,26 @@ export default function ConnectionsHub() {
   const collaborators = collaboratorsSignal.value;
   const communityRooms = communityRoomsSignal.value;
   const soloMode = soloModeSignal.value;
+  const topThemes = activeThemesSignal.value;
+
+  const circleMembershipData = useMemo(
+    () =>
+      circles.slice(0, 5).map((c) => ({
+        name: c.name.split(" ").slice(0, 2).join(" "),
+        members: c.memberCount,
+      })),
+    [circles],
+  );
+
+  const themePulseData = useMemo(
+    () =>
+      topThemes.slice(0, 6).map((theme, i) => ({
+        subject: theme,
+        value: Math.max(30, 95 - i * 12),
+        fullMark: 100,
+      })),
+    [topThemes],
+  );
 
   const tabs: { id: Tab; icon: unknown; label: string }[] = [
     { id: "Stream", icon: Icons.Activity, label: "Thought Stream" },
@@ -104,37 +129,21 @@ export default function ConnectionsHub() {
                 </h1>
               </div>
 
-              {/* Live Telemetry Data */}
-              <div className="flex flex-col gap-3 self-start md:self-end bg-black/40 backdrop-blur-md p-4 rounded-3xl border border-white/5 shadow-2xl">
-                <div className="flex items-center justify-between gap-6">
-                  <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold flex items-center gap-2">
-                    <Icons.Activity size={12} className="text-emerald-400" />
-                    {" "}
-                    Active Nodes
+              {/* Live Telemetry: Real Circle Membership Chart */}
+              <div className="self-start md:self-end bg-black/40 backdrop-blur-md p-5 rounded-3xl border border-white/5 shadow-2xl min-w-[300px]">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[9px] uppercase tracking-[0.25em] text-gray-500 font-bold flex items-center gap-2">
+                    <Icons.BarChart3
+                      size={12}
+                      className="text-canvas-primary"
+                    />
+                    Circle Membership
                   </span>
-                  <span className="text-white font-mono font-bold text-sm">
-                    {(Math.random() * 500 + 1000).toFixed(0)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-6">
-                  <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold flex items-center gap-2">
-                    <Icons.Wifi size={12} className="text-canvas-primary" />
-                    {" "}
-                    Latency
-                  </span>
-                  <span className="text-white font-mono font-bold text-sm">
-                    {(Math.random() * 20 + 10).toFixed(0)}ms
+                  <span className="text-[9px] font-mono text-emerald-400 font-bold">
+                    {circles.reduce((s, c) => s + c.memberCount, 0)} total
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-6">
-                  <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold flex items-center gap-2">
-                    <Icons.Cpu size={12} className="text-indigo-400" />{" "}
-                    Sync Rate
-                  </span>
-                  <span className="text-white font-mono font-bold text-sm">
-                    99.8%
-                  </span>
-                </div>
+                <CircleMembershipChart data={circleMembershipData} />
               </div>
             </div>
 
@@ -172,6 +181,25 @@ export default function ConnectionsHub() {
                 </button>
               ))}
             </div>
+
+            {/* Community Theme Pulse Radar */}
+            {themePulseData.length > 0 && (
+              <div className="mt-10 grid grid-cols-1 md:grid-cols-[1fr_auto] items-center gap-8 border-t border-white/5 pt-10">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2 mb-1">
+                    <Icons.Radar size={12} className="text-canvas-primary" />
+                    Community Theme Pulse
+                  </p>
+                  <p className="text-xs text-gray-600 font-serif italic">
+                    The live distribution of intellectual themes resonating
+                    across all active circles right now.
+                  </p>
+                </div>
+                <div className="w-64 h-52 shrink-0">
+                  <CommunityThemePulse data={themePulseData} />
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

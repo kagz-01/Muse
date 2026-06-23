@@ -11,6 +11,7 @@ import CreateRoomModal from "../modals/CreateRoomModal.tsx";
 import VaultGateModal from "../modals/VaultGateModal.tsx";
 import { isVaultUnlockedSignal } from "../../signals/vault.ts";
 import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.tsx";
+import { CircleMembershipChart } from "../../components/community/CommunityCharts.tsx";
 
 type RoomTab = "all" | "pinned" | "vault" | "archived" | "starred" | "collab";
 type RoomSort = "latest" | "alphabetical";
@@ -347,6 +348,17 @@ export default function RoomsGallery() {
     [activeRooms, starredIds],
   );
 
+  const roomCategoryChartData = useMemo(
+    () => [
+      { name: "All", members: rooms.length },
+      { name: "Public", members: collabRooms.length },
+      { name: "Vault", members: vaultRooms.length },
+      { name: "Starred", members: starredRooms.length },
+      { name: "Archived", members: archivedRooms.length },
+    ],
+    [rooms, collabRooms, vaultRooms, starredRooms, archivedRooms],
+  );
+
   const tabRooms = useMemo(() => {
     switch (activeTab) {
       case "pinned":
@@ -564,6 +576,23 @@ export default function RoomsGallery() {
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Room Breakdown Chart */}
+          <div className="relative z-10 mt-8 pt-8 border-t border-[var(--muse-border)] grid grid-cols-1 md:grid-cols-[1fr_auto] items-center gap-6">
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] flex items-center gap-2 mb-1">
+                <Icons.BarChart3 size={12} className="text-canvas-primary" />
+                Room Breakdown
+              </p>
+              <p className="text-xs text-[var(--muse-muted)] font-serif italic">
+                A breakdown of your room collection — vault, public, starred,
+                and archived.
+              </p>
+            </div>
+            <div className="w-72 shrink-0">
+              <CircleMembershipChart data={roomCategoryChartData} />
             </div>
           </div>
         </section>

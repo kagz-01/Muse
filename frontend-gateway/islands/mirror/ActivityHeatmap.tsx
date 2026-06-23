@@ -17,9 +17,15 @@ export default function ActivityHeatmap({ data }: ActivityHeatmapProps) {
   const getIntensityColor = (count: number): string => {
     const percent = (count / maxCount) * 100;
     if (count === 0) return "bg-white/5 border-white/10 opacity-40";
-    if (percent < 25) return "bg-canvas-primary/20 border-canvas-primary/40 shadow-[0_0_8px_rgba(34,211,238,0.2)]";
-    if (percent < 50) return "bg-canvas-primary/40 border-canvas-primary/60 shadow-[0_0_12px_rgba(34,211,238,0.4)]";
-    if (percent < 75) return "bg-canvas-primary/70 border-canvas-primary/80 shadow-[0_0_16px_rgba(34,211,238,0.6)]";
+    if (percent < 25) {
+      return "bg-canvas-primary/20 border-canvas-primary/40 shadow-[0_0_8px_rgba(34,211,238,0.2)]";
+    }
+    if (percent < 50) {
+      return "bg-canvas-primary/40 border-canvas-primary/60 shadow-[0_0_12px_rgba(34,211,238,0.4)]";
+    }
+    if (percent < 75) {
+      return "bg-canvas-primary/70 border-canvas-primary/80 shadow-[0_0_16px_rgba(34,211,238,0.6)]";
+    }
     return "bg-canvas-primary border-white shadow-[0_0_24px_rgba(34,211,238,0.9)] scale-110 z-10";
   };
 
