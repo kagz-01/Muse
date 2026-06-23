@@ -134,11 +134,26 @@ export default function HomeOverview() {
             </div>
 
             <h1 className="mt-5 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] text-white max-w-3xl">
-              {greeting}, {user?.username || "Creator"}.
+              {greeting}, {user?.username || "Stranger"}.
               <span className="block bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
                 Your creative universe is in motion.
               </span>
             </h1>
+
+            {!user?.username && (
+              <div className="mt-6 flex items-center gap-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 w-fit">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+                  <Icons.UserPlus size={18} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-amber-200">Account Incomplete</p>
+                  <p className="text-xs text-amber-400/80 mt-0.5">Please set up your username and profile details.</p>
+                </div>
+                <a href="/profile/edit" className="ml-4 rounded-full bg-amber-500/20 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-amber-300 hover:bg-amber-500/30 transition-colors">
+                  Complete Profile
+                </a>
+              </div>
+            )}
 
             <p className="mt-5 max-w-2xl text-gray-400 text-base md:text-lg leading-relaxed font-serif italic">
               A quiet dashboard for collecting, contemplating, and turning

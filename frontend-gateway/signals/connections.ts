@@ -143,21 +143,6 @@ export const collaboratorsSignal = signal<Collaborator[]>([
     matchPercentage: 85,
     topCitedNode: "We need better data to understand voter apathy.",
   },
-  {
-    id: "p4",
-    name: "David Kim",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-    role: "Sociology Student",
-    status: "Online",
-    bio:
-      "Exploring the intersection of civic duty and interpersonal relationships.",
-    sharedThemes: ["Politics", "Psychology", "Community"],
-    aura: "amber",
-    intelligenceProfile: "Observer",
-    matchPercentage: 88,
-    topCitedNode: "How does political polarization affect modern dating?",
-  },
 ]);
 
 export const communityRoomsSignal = signal<CommunityRoom[]>([
