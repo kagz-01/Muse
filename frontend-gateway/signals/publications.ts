@@ -16,24 +16,7 @@ export interface Publication {
   txId?: string; // Simulated Ledger ID
 }
 
-export const publicationsSignal = signal<Publication[]>([
-  {
-    id: "p1",
-    authorId: "u1",
-    authorName: "Kagz",
-    authorAura: "#6366f1",
-    title: "The Honesty of Raw Materials",
-    content:
-      "My latest synthesis on how brutalist architecture serves as a blueprint for digital sovereignty. When we stop hiding the infrastructure, we start owning the experience.",
-    sourceThreadId: "t1",
-    lineageRoomIds: ["r1", "r2"],
-    resonanceScore: 94,
-    timestamp: new Date().toISOString(),
-    auraGradients: ["#6366f1", "#10b981"],
-    isImmutable: true,
-    txId: "0x7e2...9a1",
-  },
-]);
+export const publicationsSignal = signal<Publication[]>([]);
 
 export function publishThought(
   publication: Omit<

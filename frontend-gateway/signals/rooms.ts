@@ -143,46 +143,7 @@ export interface Room {
 
 const STORAGE_KEY = "muse_rooms_v2";
 
-const INITIAL_ROOMS: Room[] = [
-  {
-    id: "r1",
-    name: "World Politics Debate",
-    description:
-      "A space to discuss and analyze global political movements and local elections.",
-    emoji: "🗳️",
-    category: "brainstorm",
-    size: "medium",
-    themeColor: "indigo",
-    coverImage:
-      "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=1200&q=80",
-    isPublic: true,
-    count: 5,
-    tags: ["politics", "news", "debate", "society"],
-    notificationsEnabled: true,
-    updatedAt: new Date().toISOString(),
-    semanticTags: ["politics", "debate", "society"],
-    resonanceMetrics: { views: 420, wovenCount: 12 },
-  },
-  {
-    id: "r2",
-    name: "Love & Relationships",
-    description:
-      "Reflections on modern romance, connection, and the five love languages.",
-    emoji: "❤️",
-    category: "journal",
-    size: "small",
-    themeColor: "rose",
-    coverImage:
-      "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1200&q=80",
-    isPublic: false,
-    count: 3,
-    tags: ["romance", "love", "relationships", "personal"],
-    notificationsEnabled: false,
-    updatedAt: new Date().toISOString(),
-    semanticTags: ["romance", "love", "relationships"],
-    resonanceMetrics: { views: 0, wovenCount: 0 },
-  },
-];
+const INITIAL_ROOMS: Room[] = [];
 
 function loadRooms(): Room[] {
   if (typeof localStorage === "undefined") return INITIAL_ROOMS;

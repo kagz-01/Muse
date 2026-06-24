@@ -5,14 +5,18 @@ async function migrateDB() {
   console.log("Running DB migration to add missing columns...");
 
   try {
-    await executeDB(`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT`);
+    await executeDB(
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT`,
+    );
     console.log("Added 'avatar_url' to 'users'.");
   } catch (err) {
     console.error("Failed to add 'avatar_url':", err);
   }
 
   try {
-    await executeDB(`ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false`);
+    await executeDB(
+      `ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false`,
+    );
     console.log("Added 'is_public' to 'journal_entries'.");
   } catch (err) {
     console.error("Failed to add 'is_public':", err);

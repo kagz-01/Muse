@@ -66,9 +66,9 @@ export interface User {
 
 export const userSignal = signal<User>({
   id: "u1",
-  name: "Kagz",
-  username: "kagz",
-  email: "kagz@muse.app",
+  name: "",
+  username: "",
+  email: "",
   bio: "Synthesizer of patterns, collector of signals.",
   location: "",
   links: [],
