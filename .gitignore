@@ -9,3 +9,10 @@
 _fresh/
 # npm dependencies
 node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
