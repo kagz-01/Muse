@@ -22,6 +22,15 @@ export const handler: Handlers = {
       });
     }
 
+    // Guard: CockroachDB requires valid UUIDs. Reject malformed session values.
+    const UUID_RE =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!UUID_RE.test(userId)) {
+      return new Response(JSON.stringify({ error: "Invalid session" }), {
+        status: 401,
+      });
+    }
+
     try {
       // In production, match users based on shared tags in journal_entries
       // For now, we will select random users to simulate the network

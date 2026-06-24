@@ -20,7 +20,7 @@ export const handler: Handlers = {
       SELECT 
         j.id, 
         j.raw_thought as content, 
-        j.tags, 
+        j.tags,
         j.mood, 
         j.created_at as timestamp, 
         u.username as author_name,
@@ -48,7 +48,7 @@ export const handler: Handlers = {
           },
           content: entry.content,
           timestamp: new Date(entry.timestamp as string).toISOString(),
-          tags: entry.tags || [],
+          tags: Array.isArray(entry.tags) ? entry.tags : [],
           // Mocking alignment and challenge counts for now until we build interaction tables
           alignCount: Math.floor(Math.random() * 50),
           challengeCount: Math.floor(Math.random() * 10),
