@@ -6,6 +6,13 @@ import {
   setSessionCookie,
 } from "../../../utils/auth.ts";
 
+function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 export const handler: Handlers = {
   async POST(req) {
     try {
@@ -15,7 +22,7 @@ export const handler: Handlers = {
       const password = form.get("password")?.toString();
 
       if (!email || !username || !password) {
-        return new Response("Missing fields", { status: 400 });
+        return jsonResponse({ error: "Missing fields" }, 400);
       }
 
       // Check if user already exists
@@ -25,7 +32,10 @@ export const handler: Handlers = {
         username,
       );
       if (existing.length > 0) {
-        return new Response("Email or Username already taken", { status: 409 });
+        return jsonResponse(
+          { error: "Email or Username already taken" },
+          409,
+        );
       }
 
       // Hash password
@@ -49,6 +59,7 @@ export const handler: Handlers = {
       const headers = new Headers();
       setSessionCookie(headers, sessionId);
       headers.set("location", "/dashboard"); // Assuming you have a /dashboard route
+      headers.set("Content-Type", "application/json");
 
       return new Response(null, {
         status: 303, // See Other (Redirect)
@@ -56,7 +67,7 @@ export const handler: Handlers = {
       });
     } catch (e) {
       console.error(e);
-      return new Response("Internal Server Error", { status: 500 });
+      return jsonResponse({ error: "Internal Server Error" }, 500);
     }
   },
 };
