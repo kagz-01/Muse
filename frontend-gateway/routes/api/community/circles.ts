@@ -1,9 +1,17 @@
 import { Handlers } from "$fresh/server.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
-import { getSessionUser } from "../../../utils/auth.ts";
+import { getSessionUser, isDemoUser } from "../../../utils/auth.ts";
+import { DEMO_CIRCLES } from "../../../utils/demo_data.ts";
 
 export const handler: Handlers = {
-  async GET(_req) {
+  async GET(req) {
+    // Demo mode — return template circles
+    if (isDemoUser(await getSessionUser(req))) {
+      return new Response(JSON.stringify({ circles: DEMO_CIRCLES }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
     try {
       const circles = await queryDB(`
         SELECT id, name, description, theme, member_count, recent_activity 
@@ -32,6 +40,13 @@ export const handler: Handlers = {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
       });
+    }
+    // Demo users cannot mutate data
+    if (isDemoUser(userId)) {
+      return new Response(
+        JSON.stringify({ error: "Not available in demo mode" }),
+        { status: 403 },
+      );
     }
 
     try {

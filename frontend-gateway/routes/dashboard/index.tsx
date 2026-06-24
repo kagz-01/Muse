@@ -1,10 +1,11 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { getSessionUser } from "../../utils/auth.ts";
+import { getSessionUser, isDemoUser } from "../../utils/auth.ts";
 import { queryDB } from "../../utils/db.ts";
 import DashboardLayout from "../../islands/dashboard/DashboardLayout.tsx";
 import { type RoomData } from "../../islands/dashboard/RoomCard.tsx";
 import { Head } from "$fresh/runtime.ts";
 import DashboardClientManager from "../../islands/dashboard/DashboardClientManager.tsx";
+import { DEMO_ROOMS, DEMO_USER } from "../../utils/demo_data.ts";
 
 interface DashboardData {
   user: {
@@ -13,21 +14,41 @@ interface DashboardData {
     email: string;
   };
   rooms: RoomData[];
+  isDemo: boolean;
 }
 
 export const handler: Handlers<DashboardData> = {
   async GET(req, ctx) {
-    // 1. Authenticate user
     const userId = await getSessionUser(req);
     if (!userId) {
-      // Not logged in, redirect to landing
       return new Response("", {
         status: 303,
         headers: { location: "/" },
       });
     }
 
-    // 2. Fetch User Data
+    // ── DEMO SHORTCUT ────────────────────────────────────────────────────────
+    if (isDemoUser(userId)) {
+      const demoRooms: RoomData[] = DEMO_ROOMS.map((r) => ({
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        theme_color: r.theme_color,
+        tags: r.tags,
+        created_at: r.created_at,
+      }));
+      return ctx.render({
+        user: {
+          id: DEMO_USER.id,
+          username: DEMO_USER.username,
+          email: DEMO_USER.email,
+        },
+        rooms: demoRooms,
+        isDemo: true,
+      });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     const users = await queryDB(
       "SELECT id, username, email FROM users WHERE id = $1",
       userId,
@@ -37,7 +58,6 @@ export const handler: Handlers<DashboardData> = {
     }
     const userRow = users[0] as Record<string, string>;
 
-    // 3. Fetch Rooms
     const rawRooms = await queryDB(
       "SELECT id, title, description, theme_color, tags, created_at FROM rooms WHERE user_id = $1 ORDER BY created_at DESC",
       userId,
@@ -63,12 +83,13 @@ export const handler: Handlers<DashboardData> = {
     return ctx.render({
       user: { id: userId, username: userRow.username, email: userRow.email },
       rooms,
+      isDemo: false,
     });
   },
 };
 
 export default function Dashboard({ data }: PageProps<DashboardData>) {
-  const { user, rooms } = data;
+  const { user, rooms, isDemo } = data;
 
   return (
     <>
@@ -76,7 +97,11 @@ export default function Dashboard({ data }: PageProps<DashboardData>) {
         <title>Dashboard | Muse Ecosystem</title>
       </Head>
       <DashboardLayout user={user}>
-        <DashboardClientManager initialRooms={rooms} initialUser={user} />
+        <DashboardClientManager
+          initialRooms={rooms}
+          initialUser={user}
+          isDemo={isDemo}
+        />
       </DashboardLayout>
     </>
   );

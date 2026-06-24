@@ -5,7 +5,6 @@ import LiveDashboardSimulation from "./LiveDashboardSimulation.tsx";
 import LandingFooter from "./LandingFooter.tsx";
 import DemoVideo from "./DemoVideo.tsx";
 import BrandModal from "./BrandModal.tsx";
-import { login } from "../../signals/user.ts";
 import {
   appThemeSignal,
   initializeTheme,
@@ -26,9 +25,14 @@ export default function LandingPage() {
     setIsDemoOpen(true);
   };
 
+  // Demo entry: submit a server-side POST so the httpOnly cookie is set properly.
+  // This makes demo mode persist across ALL page navigations — no URL params needed.
   const handleGuestEntry = () => {
-    login("demo@muse.app");
-    globalThis.location.href = "/dashboard?demo=1";
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/api/auth/demo";
+    document.body.appendChild(form);
+    form.submit();
   };
 
   const currentTheme = appThemeSignal.value;

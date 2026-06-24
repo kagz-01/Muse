@@ -12,14 +12,16 @@ interface InitialUser {
 }
 
 export default function DashboardClientManager(
-  { initialRooms, initialUser }: {
+  { initialRooms, initialUser, isDemo = false }: {
     initialRooms: RoomData[];
     initialUser?: InitialUser;
+    isDemo?: boolean;
   },
 ) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Bootstrap userSignal with real DB data so greetings & profile use actual user info
+  // Bootstrap userSignal with server-side user data on mount.
+  // This ensures the greeting uses the logged-in user's name, not the signal default.
   useEffect(() => {
     if (!initialUser) return;
     userSignal.value = {
@@ -27,15 +29,41 @@ export default function DashboardClientManager(
       id: initialUser.id,
       username: initialUser.username,
       email: initialUser.email,
-      // Only override name if not already set to avoid wiping local profile edits
-      name: userSignal.value?.name || initialUser.username || "Stranger",
+      // Prefer the username from DB. Fall back to 'Stranger' if not set.
+      name: initialUser.username || "Stranger",
     };
   }, [initialUser?.id]);
 
+  const handleCreateRoom = () => {
+    if (isDemo) return; // silently block in demo mode
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="h-full">
+      {/* Persistent Demo Mode Banner */}
+      {isDemo && (
+        <div className="mb-6 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 flex items-center gap-3">
+          <span className="text-amber-300">👁</span>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-amber-300">
+              Demo Mode
+            </p>
+            <p className="text-sm text-amber-100/80 mt-0.5">
+              You're exploring a sample workspace. Sign up to own your own.
+            </p>
+          </div>
+          <a
+            href="/"
+            className="ml-auto text-xs font-bold text-amber-300 border border-amber-400/40 rounded-full px-3 py-1 hover:bg-amber-400/20 transition-colors"
+          >
+            Sign Up →
+          </a>
+        </div>
+      )}
+
       {initialRooms.length === 0
-        ? <EmptyState onCreateClick={() => setIsModalOpen(true)} />
+        ? <EmptyState onCreateClick={handleCreateRoom} />
         : (
           <div className="animate-in fade-in duration-500">
             <div className="flex items-center justify-between mb-8">
@@ -44,17 +72,21 @@ export default function DashboardClientManager(
                   Sovereign Rooms
                 </h1>
                 <p className="text-[var(--muse-muted)]">
-                  Your active knowledge environments.
+                  {isDemo
+                    ? "Sample knowledge environments to explore."
+                    : "Your active knowledge environments."}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--muse-text)] text-[var(--muse-bg)] text-xs font-bold uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform"
-              >
-                <Icons.Plus size={16} />
-                New Room
-              </button>
+              {!isDemo && (
+                <button
+                  type="button"
+                  onClick={handleCreateRoom}
+                  className="flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--muse-text)] text-[var(--muse-bg)] text-xs font-bold uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform"
+                >
+                  <Icons.Plus size={16} />
+                  New Room
+                </button>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

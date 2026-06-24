@@ -1,10 +1,21 @@
 import { Handlers } from "$fresh/server.ts";
 import { queryDB } from "../../../utils/db.ts";
-import { getSessionUser } from "../../../utils/auth.ts";
+import { getSessionUser, isDemoUser } from "../../../utils/auth.ts";
+import { DEMO_COLLABORATORS } from "../../../utils/demo_data.ts";
 
 export const handler: Handlers = {
   async GET(req) {
     const userId = await getSessionUser(req);
+    // Demo mode — return template collaborators
+    if (isDemoUser(userId)) {
+      return new Response(
+        JSON.stringify({ collaborators: DEMO_COLLABORATORS }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
     if (!userId) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,

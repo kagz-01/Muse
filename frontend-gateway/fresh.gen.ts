@@ -27,6 +27,7 @@ import * as $api_ai_socratic from "./routes/api/ai/socratic.ts";
 import * as $api_artifacts_ingest_url from "./routes/api/artifacts/ingest-url.ts";
 import * as $api_artifacts_upload_document from "./routes/api/artifacts/upload-document.ts";
 import * as $api_auth_2fa from "./routes/api/auth/2fa.ts";
+import * as $api_auth_demo from "./routes/api/auth/demo.ts";
 import * as $api_auth_login from "./routes/api/auth/login.ts";
 import * as $api_auth_register from "./routes/api/auth/register.ts";
 import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
@@ -166,6 +167,7 @@ const manifest = {
     "./routes/api/artifacts/ingest-url.ts": $api_artifacts_ingest_url,
     "./routes/api/artifacts/upload-document.ts": $api_artifacts_upload_document,
     "./routes/api/auth/2fa.ts": $api_auth_2fa,
+    "./routes/api/auth/demo.ts": $api_auth_demo,
     "./routes/api/auth/login.ts": $api_auth_login,
     "./routes/api/auth/register.ts": $api_auth_register,
     "./routes/api/circles/[id]/members.ts": $api_circles_id_members,
