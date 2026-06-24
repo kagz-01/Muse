@@ -127,10 +127,15 @@ export default function PulseHome() {
     if (!quickCaptureText.trim()) return;
     setIsCapturing(true);
     // Simulate network delay for "professional" feel
-    setTimeout(() => {
-      addEntry(quickCaptureText, false);
-      setQuickCaptureText("");
-      setIsCapturing(false);
+    setTimeout(async () => {
+      try {
+        await addEntry(quickCaptureText, false);
+        setQuickCaptureText("");
+      } catch (e) {
+        console.error("Failed to capture:", e);
+      } finally {
+        setIsCapturing(false);
+      }
     }, 600);
   };
 

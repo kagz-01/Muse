@@ -50,8 +50,8 @@ export default function CreateHub() {
     }, 800);
   };
 
-  const handleStartJournal = (isPublic: boolean = false) => {
-    const entry = addEntry(undefined, isPublic);
+  const handleStartJournal = async (isPublic: boolean = false) => {
+    const entry = await addEntry(undefined, isPublic);
     globalThis.location.href = `/journal/${entry.id}`;
   };
 

@@ -55,7 +55,15 @@ function excerpt(body: string, chars = 160): string {
   return text.length > chars ? text.slice(0, chars) + "…" : text;
 }
 
-export default function JournalGallery() {
+export default function JournalGallery(
+  { initialEntries }: { initialEntries?: JournalEntry[] },
+) {
+  useEffect(() => {
+    if (initialEntries && initialEntries.length > 0) {
+      journalSignal.value = initialEntries;
+    }
+  }, [initialEntries]);
+
   const entries: JournalEntry[] = journalSignal.value;
 
   const [search, setSearch] = useState("");
@@ -108,9 +116,9 @@ export default function JournalGallery() {
     [entries, search, filterMood, showFavorites, filterVisibility, filterType],
   );
 
-  const handleNewEntry = () => {
+  const handleNewEntry = async () => {
     try {
-      const entry = addEntry();
+      const entry = await addEntry();
       globalThis.location.assign(`/journal/${entry.id}`);
     } catch (e: unknown) {
       if (e instanceof Error) {

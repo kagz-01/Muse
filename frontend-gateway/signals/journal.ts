@@ -288,20 +288,39 @@ function generateSafeId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
 }
 
-export function addEntry(body = "", isPublic = false): JournalEntry {
+export async function addEntry(
+  body = "",
+  isPublic = false,
+): Promise<JournalEntry> {
+  const response = await fetch("/api/journal/capture", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ rawThought: body || "New reflection..." }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to capture journal entry: ${await response.text()}`,
+    );
+  }
+
+  const { entry } = await response.json();
+
+  // Transform DB entry to frontend format
   const newEntry: JournalEntry = {
-    id: generateSafeId(),
-    body,
-    mood: "reflective",
-    tags: [],
+    id: entry.id,
+    body: entry.raw_thought,
+    mood: entry.mood || "reflective",
+    tags: entry.tags || [],
     linkedItemIds: [],
-    isFavorited: false,
-    isPinned: false,
-    isArchived: false,
-    isPublic,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-    wordCount: body.trim().split(/\s+/).filter(Boolean).length,
+    isFavorited: entry.is_favorited || false,
+    isPinned: entry.is_pinned || false,
+    isArchived: entry.is_archived || false,
+    isPublic: entry.is_public || isPublic,
+    createdAt: new Date(entry.created_at).getTime(),
+    updatedAt: new Date(entry.updated_at).getTime(),
+    wordCount: entry.raw_thought.trim().split(/\s+/).filter(Boolean).length,
+    synthesis: entry.synthesized_context || undefined,
   };
 
   journalSignal.value = [newEntry, ...journalSignal.value];

@@ -159,7 +159,7 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
       // Prepare context from floatingContext (which is reactive to what the user just typed)
       const contextItems = floatingContext.map((item) => ({
         title: item.title,
-        note: item.note || item.content,
+        note: item.note || item.storedContent,
       }));
 
       // Fetch dynamic Socratic question
@@ -201,6 +201,20 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
     globalThis.location.href = "/journal";
   };
 
+  // Floating Context (Match items based on current input)
+  const floatingContext = useMemo(() => {
+    if (!currentInput.trim()) return [];
+    const words = currentInput.toLowerCase().split(/\s+/).filter((w) =>
+      w.length > 3
+    );
+    if (words.length === 0) return [];
+
+    return allItems.filter((item) => {
+      const text = `${item.title} ${item.storedContent || ""}`.toLowerCase();
+      return words.some((w) => text.includes(w));
+    }).slice(0, 3);
+  }, [currentInput, allItems]);
+
   if (!entry) {
     if (!isHydrated) return <div className="min-h-screen bg-[#0a0a0a]" />;
     return (
@@ -220,20 +234,6 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
 
   const cfg = moodConfig[mood] || moodConfig["reflective"];
   const blocks = body.split("\n\n").filter((b) => b.trim().length > 0);
-
-  // Floating Context (Match items based on current input)
-  const floatingContext = useMemo(() => {
-    if (!currentInput.trim()) return [];
-    const words = currentInput.toLowerCase().split(/\s+/).filter((w) =>
-      w.length > 3
-    );
-    if (words.length === 0) return [];
-
-    return allItems.filter((item) => {
-      const text = `${item.title} ${item.content || ""}`.toLowerCase();
-      return words.some((w) => text.includes(w));
-    }).slice(0, 3);
-  }, [currentInput, allItems]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0a] relative overflow-hidden">
