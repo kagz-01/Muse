@@ -14,8 +14,11 @@ import {
   setFeedFilter,
 } from "../../signals/feed-filter.ts";
 import { followersSignal } from "../../signals/followers.ts";
+import { type Perspective } from "../../signals/connections.ts";
 
-export default function ThoughtStream() {
+export default function ThoughtStream(
+  { streamData = [] }: { streamData?: Perspective[] },
+) {
   const [activeSynthesisNode, setActiveSynthesisNode] = useState<string | null>(
     null,
   );
@@ -27,7 +30,7 @@ export default function ThoughtStream() {
   );
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
 
-  const allPerspectives = persSig.value;
+  const allPerspectives = streamData.length > 0 ? streamData : persSig.value;
   const feedFilter = feedFilterSignal.value;
   const followers = followersSignal.value;
 

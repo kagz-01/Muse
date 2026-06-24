@@ -1,0 +1,60 @@
+import { Handlers } from "$fresh/server.ts";
+import { queryDB } from "../../../utils/db.ts";
+import { getSessionUser } from "../../../utils/auth.ts";
+
+export const handler: Handlers = {
+  async GET(req) {
+    const userId = await getSessionUser(req);
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      });
+    }
+
+    try {
+      // In production, match users based on shared tags in journal_entries
+      // For now, we will select random users to simulate the network
+      const users = await queryDB(
+        `
+        SELECT id, username, email, avatar_url 
+        FROM users 
+        WHERE id != $1
+        LIMIT 10
+      `,
+        userId,
+      );
+
+      const collaborators = users.map((e: unknown, i: number) => {
+        const u = e as Record<string, unknown>;
+        return {
+          id: u.id,
+          name: u.username || (u.email as string).split("@")[0],
+          avatar: u.avatar_url ||
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=" + u.username,
+          role: ["Synthesizer", "Architect", "Challenger", "Observer"][i % 4],
+          status: ["Online", "Reflecting", "Deep Focus", "Offline"][i % 4],
+          bio: "Exploring the intersections of systems and human thought.",
+          sharedThemes: ["Next.js", "AI", "Design Systems"],
+          aura: ["#60a5fa", "#34d399", "#fbbf24", "#fb7185"][i % 4],
+          intelligenceProfile:
+            ["Synthesizer", "Architect", "Challenger"][i % 3],
+          matchPercentage: Math.floor(Math.random() * 30) + 70, // 70-99%
+          topCitedNode: "Mental Models for Engineers",
+        };
+      });
+
+      return new Response(JSON.stringify({ collaborators }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error: unknown) {
+      console.error("Failed to fetch collaborators:", error);
+      return new Response(
+        JSON.stringify({ error: "Failed to fetch collaborators" }),
+        {
+          status: 500,
+        },
+      );
+    }
+  },
+};

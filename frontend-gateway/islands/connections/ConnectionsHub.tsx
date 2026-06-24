@@ -1,11 +1,15 @@
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
+  type ActiveCircle,
   activeThemesSignal,
   circlesSignal,
+  type Collaborator,
   collaboratorsSignal,
+  type CommunityRoom,
   communityRoomsSignal,
   joinCircle,
+  type Perspective,
 } from "../../signals/connections.ts";
 import { soloModeSignal, toggleSoloMode } from "../../signals/user.ts";
 import {
@@ -27,8 +31,49 @@ export default function ConnectionsHub() {
   const [activeTab, setActiveTab] = useState<Tab>("Stream");
   const [activeProfileFilter, setActiveProfileFilter] = useState<string>("All");
 
-  const circles = circlesSignal.value;
-  const collaborators = collaboratorsSignal.value;
+  const [stream, setStream] = useState<Perspective[]>([]);
+  const [fetchedCircles, setFetchedCircles] = useState<ActiveCircle[]>([]);
+  const [fetchedCollaborators, setFetchedCollaborators] = useState<
+    Collaborator[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCommunityData() {
+      try {
+        const [streamRes, circlesRes, collabRes] = await Promise.all([
+          fetch("/api/community/stream"),
+          fetch("/api/community/circles"),
+          fetch("/api/community/collaborators"),
+        ]);
+
+        if (streamRes.ok) {
+          const { stream } = await streamRes.json();
+          setStream(stream);
+        }
+        if (circlesRes.ok) {
+          const { circles } = await circlesRes.json();
+          setFetchedCircles(circles);
+        }
+        if (collabRes.ok) {
+          const { collaborators } = await collabRes.json();
+          setFetchedCollaborators(collaborators);
+        }
+      } catch (err) {
+        console.error("Failed to load community data", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadCommunityData();
+  }, []);
+
+  const circles = fetchedCircles.length > 0
+    ? (fetchedCircles as typeof circlesSignal.value)
+    : circlesSignal.value;
+  const collaborators = fetchedCollaborators.length > 0
+    ? (fetchedCollaborators as typeof collaboratorsSignal.value)
+    : collaboratorsSignal.value;
   const communityRooms = communityRoomsSignal.value;
   const soloMode = soloModeSignal.value;
   const topThemes = activeThemesSignal.value;
@@ -155,31 +200,28 @@ export default function ConnectionsHub() {
             </p>
 
             {/* Tab Navigation */}
-            <div className="flex flex-wrap items-center gap-3 p-1.5 bg-white/5 border border-white/10 rounded-[2.5rem] w-fit shadow-xl backdrop-blur-sm">
-              {tabs.map((tab) => (
-                <button
-                  type="button"
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`
+            <div className="flex gap-4 border-b border-white/5 pb-4 overflow-x-auto no-scrollbar">
+              {tabs.map((tab) => {
+                const Icon = tab.icon as any;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`
                       flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 cursor-pointer
                       ${
-                    activeTab === tab.id
-                      ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-[1.02]"
-                      : "text-gray-500 hover:text-white hover:bg-white/10"
-                  }
+                      activeTab === tab.id
+                        ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-[1.02]"
+                        : "text-gray-500 hover:text-white hover:bg-white/10"
+                    }
                     `}
-                >
-                  {(() => {
-                    const Icon = tab
-                      .icon as unknown as import("preact").ComponentType<
-                        Record<string, unknown>
-                      >;
-                    return <Icon size={16} />;
-                  })()}
-                  {tab.label}
-                </button>
-              ))}
+                  >
+                    <Icon size={16} />
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Community Theme Pulse Radar */}
@@ -246,12 +288,27 @@ export default function ConnectionsHub() {
             )
             : (
               <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <div className="min-w-0">
-                  {activeTab === "Stream" && <ThoughtStream />}
+                {/* CONTENT AREA */}
+                <div className="min-h-[500px]">
+                  {isLoading && (
+                    <div className="w-full py-20 flex flex-col items-center justify-center">
+                      <Icons.Loader
+                        size={32}
+                        className="text-emerald-500 animate-spin mb-4"
+                      />
+                      <p className="text-gray-500 uppercase tracking-widest text-xs font-bold">
+                        Syncing Ledger...
+                      </p>
+                    </div>
+                  )}
 
-                  {activeTab === "Wisdom" && <WisdomMap />}
+                  {!isLoading && activeTab === "Stream" && (
+                    <ThoughtStream streamData={stream} />
+                  )}
 
-                  {activeTab === "Circles" && (
+                  {!isLoading && activeTab === "Wisdom" && <WisdomMap />}
+
+                  {!isLoading && activeTab === "Circles" && (
                     <div className="space-y-16">
                       <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                         {circles.map((circle) => (
@@ -282,7 +339,7 @@ export default function ConnectionsHub() {
                           </button>
                         </div>
                         <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                          {communityRooms.map((room) => (
+                          {communityRooms.map((room: CommunityRoom) => (
                             <div key={room.id} className="flex-shrink-0 w-80">
                               <CommunityRoomCard room={room} />
                             </div>
@@ -292,7 +349,7 @@ export default function ConnectionsHub() {
                     </div>
                   )}
 
-                  {activeTab === "People" && (
+                  {!isLoading && activeTab === "People" && (
                     <div className="space-y-10 animate-in fade-in duration-500">
                       <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                         <div>

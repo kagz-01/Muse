@@ -33,6 +33,9 @@ import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
 import * as $api_circles_id_membership from "./routes/api/circles/[id]/membership.ts";
 import * as $api_circles_join from "./routes/api/circles/join.ts";
 import * as $api_circles_leave from "./routes/api/circles/leave.ts";
+import * as $api_community_circles from "./routes/api/community/circles.ts";
+import * as $api_community_collaborators from "./routes/api/community/collaborators.ts";
+import * as $api_community_stream from "./routes/api/community/stream.ts";
 import * as $api_extract from "./routes/api/extract.ts";
 import * as $api_followers_follow from "./routes/api/followers/follow.ts";
 import * as $api_followers_index from "./routes/api/followers/index.ts";
@@ -42,6 +45,7 @@ import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $api_journal_capture from "./routes/api/journal/capture.ts";
 import * as $api_mirror from "./routes/api/mirror.ts";
+import * as $api_profile_index from "./routes/api/profile/index.ts";
 import * as $api_rooms_create from "./routes/api/rooms/create.ts";
 import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
@@ -51,6 +55,7 @@ import * as $dashboard_index from "./routes/dashboard/index.tsx";
 import * as $dashboard_rooms_id_ from "./routes/dashboard/rooms/[id].tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $profile_edit from "./routes/profile/edit.ts";
 import * as $Error404 from "./islands/Error404.tsx";
 import * as $WalletConnectButton from "./islands/WalletConnectButton.tsx";
 import * as $ai_feedback_AIAnalysisDashboard from "./islands/ai-feedback/AIAnalysisDashboard.tsx";
@@ -167,6 +172,9 @@ const manifest = {
     "./routes/api/circles/[id]/membership.ts": $api_circles_id_membership,
     "./routes/api/circles/join.ts": $api_circles_join,
     "./routes/api/circles/leave.ts": $api_circles_leave,
+    "./routes/api/community/circles.ts": $api_community_circles,
+    "./routes/api/community/collaborators.ts": $api_community_collaborators,
+    "./routes/api/community/stream.ts": $api_community_stream,
     "./routes/api/extract.ts": $api_extract,
     "./routes/api/followers/follow.ts": $api_followers_follow,
     "./routes/api/followers/index.ts": $api_followers_index,
@@ -176,6 +184,7 @@ const manifest = {
     "./routes/api/joke.ts": $api_joke,
     "./routes/api/journal/capture.ts": $api_journal_capture,
     "./routes/api/mirror.ts": $api_mirror,
+    "./routes/api/profile/index.ts": $api_profile_index,
     "./routes/api/rooms/create.ts": $api_rooms_create,
     "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
@@ -185,6 +194,7 @@ const manifest = {
     "./routes/dashboard/rooms/[id].tsx": $dashboard_rooms_id_,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
+    "./routes/profile/edit.ts": $profile_edit,
   },
   islands: {
     "./islands/Error404.tsx": $Error404,
