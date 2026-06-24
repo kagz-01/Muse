@@ -2,17 +2,13 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { getSessionUser } from "../../utils/auth.ts";
 import { queryDB } from "../../utils/db.ts";
 import DashboardLayout from "../../islands/dashboard/DashboardLayout.tsx";
-import EmptyState from "../../components/dashboard/EmptyState.tsx";
-import RoomCard, { RoomData } from "../../islands/dashboard/RoomCard.tsx";
-import CreateRoomModal from "../../islands/dashboard/CreateRoomModal.tsx";
+import { type RoomData } from "../../islands/dashboard/RoomCard.tsx";
 import { Head } from "$fresh/runtime.ts";
-
-// Because fresh islands can't export state easily to the parent route,
-// we'll wrap the inner content in a small island that holds the modal state
 import DashboardClientManager from "../../islands/dashboard/DashboardClientManager.tsx";
 
 interface DashboardData {
   user: {
+    id: string;
     username: string;
     email: string;
   };
@@ -33,7 +29,7 @@ export const handler: Handlers<DashboardData> = {
 
     // 2. Fetch User Data
     const users = await queryDB(
-      "SELECT username, email FROM users WHERE id = $1",
+      "SELECT id, username, email FROM users WHERE id = $1",
       userId,
     );
     if (users.length === 0) {
@@ -47,8 +43,15 @@ export const handler: Handlers<DashboardData> = {
       userId,
     );
 
-    // Format dates and tags properly for the UI
-    const rooms: RoomData[] = rawRooms.map((r: any) => ({
+    interface RawRoom {
+      id: string;
+      title: string;
+      description: string;
+      theme_color: string;
+      tags: string[];
+      created_at: { toISOString(): string };
+    }
+    const rooms: RoomData[] = (rawRooms as RawRoom[]).map((r) => ({
       id: r.id,
       title: r.title,
       description: r.description,
@@ -58,7 +61,7 @@ export const handler: Handlers<DashboardData> = {
     }));
 
     return ctx.render({
-      user: { username: userRow.username, email: userRow.email },
+      user: { id: userId, username: userRow.username, email: userRow.email },
       rooms,
     });
   },
@@ -73,7 +76,7 @@ export default function Dashboard({ data }: PageProps<DashboardData>) {
         <title>Dashboard | Muse Ecosystem</title>
       </Head>
       <DashboardLayout user={user}>
-        <DashboardClientManager initialRooms={rooms} />
+        <DashboardClientManager initialRooms={rooms} initialUser={user} />
       </DashboardLayout>
     </>
   );

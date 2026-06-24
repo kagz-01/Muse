@@ -1,13 +1,36 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import RoomCard, { RoomData } from "./RoomCard.tsx";
 import CreateRoomModal from "./CreateRoomModal.tsx";
 import EmptyState from "../../components/dashboard/EmptyState.tsx";
+import { userSignal } from "../../signals/user.ts";
+
+interface InitialUser {
+  id: string;
+  username: string;
+  email: string;
+}
 
 export default function DashboardClientManager(
-  { initialRooms }: { initialRooms: RoomData[] },
+  { initialRooms, initialUser }: {
+    initialRooms: RoomData[];
+    initialUser?: InitialUser;
+  },
 ) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Bootstrap userSignal with real DB data so greetings & profile use actual user info
+  useEffect(() => {
+    if (!initialUser) return;
+    userSignal.value = {
+      ...userSignal.value,
+      id: initialUser.id,
+      username: initialUser.username,
+      email: initialUser.email,
+      // Only override name if not already set to avoid wiping local profile edits
+      name: userSignal.value?.name || initialUser.username || "Stranger",
+    };
+  }, [initialUser?.id]);
 
   return (
     <div className="h-full">
@@ -25,6 +48,7 @@ export default function DashboardClientManager(
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(true)}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--muse-text)] text-[var(--muse-bg)] text-xs font-bold uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform"
               >
