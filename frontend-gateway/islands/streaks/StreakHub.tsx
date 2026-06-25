@@ -12,11 +12,11 @@ import {
 import { userSignal } from "../../signals/user.ts";
 
 const PROMPTS = [
-  "What is a pattern you noticed today, but chose to ignore?",
-  "Distill the most complex thought you had today into a single sentence.",
-  "What idea feels too dangerous to write down right now?",
-  "Connect two completely unrelated concepts you encountered today.",
-  "What is the underlying mood of your thoughts today?"
+  "Synthesize your current hyperfocus into one public insight.",
+  "What abstract concept did you finally connect today?",
+  "Share a raw, unpolished idea that needs community feedback.",
+  "Distill today's research into a single spark for your network.",
+  "What is a pattern you noticed today that others should see?"
 ];
 
 export default function StreakHub() {
@@ -26,7 +26,7 @@ export default function StreakHub() {
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [synthesisContent, setSynthesisContent] = useState("");
   const [captureMode, setCaptureMode] = useState<"text" | "voice" | "camera">("text");
-  const [destination, setDestination] = useState<string>("journal");
+  const [destination, setDestination] = useState<string>("network");
   const [isRecording, setIsRecording] = useState(false);
   const [activePrompt, setActivePrompt] = useState("");
   const [selectedPartner, setSelectedPartner] = useState<UserStreak | null>(null);
@@ -82,7 +82,7 @@ export default function StreakHub() {
     setActivePrompt(PROMPTS[Math.floor(Math.random() * PROMPTS.length)]);
     setIsSynthesizing(true);
     setCaptureMode("text");
-    setDestination("journal");
+    setDestination("network");
     setSynthesisContent("");
     setIsRecording(false);
   };
@@ -328,8 +328,10 @@ export default function StreakHub() {
                   <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--muse-accent)] to-purple-500 opacity-50 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-center gap-2 mb-1">
                     {/* @ts-ignore dynamic import */}
-                    {item.type === "journal" ? <Icons.BookOpen size={14} className="text-[var(--muse-muted)]" /> : <Icons.LayoutGrid size={14} className="text-[var(--muse-muted)]" />}
-                    <p className="text-xs font-bold text-[var(--muse-muted)] uppercase tracking-wider">{item.type === "journal" ? "Journal Entry" : "Room Created"}</p>
+                    {item.type === "network" ? <Icons.Globe size={14} className="text-[var(--muse-muted)]" /> : <Icons.LayoutGrid size={14} className="text-[var(--muse-muted)]" />}
+                    <p className="text-xs font-bold text-[var(--muse-muted)] uppercase tracking-wider">
+                      {item.type === "network" ? "Public Spark" : item.type === "room" ? "Room Created" : "Artifact Added"}
+                    </p>
                     <span className="text-[10px] text-gray-600 ml-auto">{new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
                   <p className="text-base text-[var(--muse-text)] leading-relaxed">{item.content}</p>
@@ -512,7 +514,7 @@ export default function StreakHub() {
                   <textarea
                     value={synthesisContent}
                     onInput={(e) => setSynthesisContent(e.currentTarget.value)}
-                    placeholder="Type your synthesis here..."
+                    placeholder="What did you create or synthesize today?"
                     className="w-full max-w-2xl bg-transparent border-b-2 border-white/20 p-4 text-white text-xl focus:border-[var(--muse-accent)] outline-none resize-none min-h-[120px] transition-colors placeholder:text-gray-600 font-serif"
                     autoFocus
                   />
@@ -559,9 +561,9 @@ export default function StreakHub() {
                     onChange={(e) => setDestination(e.currentTarget.value)}
                     className="bg-transparent text-white font-bold text-lg outline-none cursor-pointer"
                   >
-                    <option value="journal" className="bg-black text-white">Private Journal</option>
-                    <option value="room-sys-arch" className="bg-black text-white">Room: System Architecture</option>
-                    <option value="room-quantum" className="bg-black text-white">Room: Quantum Physics</option>
+                    <option value="network" className="bg-black text-white">Publish to Network</option>
+                    <option value="new_room" className="bg-black text-white">Create New Room</option>
+                    <option value="room-sys-arch" className="bg-black text-white">Add to Room: System Architecture</option>
                   </select>
                 </div>
 

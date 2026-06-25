@@ -38,13 +38,16 @@ export const handler: Handlers = {
         }
       };
 
-      // Fetch today's momentum feed (activities)
+      // Fetch today's momentum feed (activities - exclusively creations, NO journals)
       const feedResult = await queryDB(
-        `SELECT 'journal' as type, created_at, raw_thought as content 
-         FROM journal_entries WHERE user_id = $1 AND created_at >= current_date
+        `SELECT 'network' as type, created_at, title as content 
+         FROM items WHERE user_id = $1 AND room_id IS NULL AND created_at >= current_date
          UNION ALL
          SELECT 'room' as type, created_at, title as content 
          FROM rooms WHERE user_id = $1 AND created_at >= current_date
+         UNION ALL
+         SELECT 'item' as type, created_at, title as content 
+         FROM items WHERE user_id = $1 AND room_id IS NOT NULL AND created_at >= current_date
          ORDER BY created_at DESC LIMIT 10`,
         userId as string
       );
@@ -84,16 +87,30 @@ export const handler: Handlers = {
       if (action === "capture_momentum") {
         const today = new Date().toISOString().split("T")[0];
         
-        // 1. Insert the artifact into the DB based on destination
-        if (destination && destination !== "journal") {
+        // 1. Insert the artifact into the DB based on destination (Creation Engine)
+        if (destination === "network") {
+          // A public spark to the community network
+          await executeDB(
+            `INSERT INTO items (user_id, title) VALUES ($1, $2)`,
+            userId as string, content
+          );
+        } else if (destination === "new_room") {
+          // Creating a new collection room
+          await executeDB(
+            `INSERT INTO rooms (user_id, title) VALUES ($1, $2)`,
+            userId as string, content
+          );
+        } else if (destination && destination.length > 10) {
+          // Assuming destination is a UUID for an existing room
           await executeDB(
             `INSERT INTO items (user_id, room_id, title) VALUES ($1, $2, $3)`,
             userId as string, destination, content
           );
         } else {
+          // Fallback to network
           await executeDB(
-            `INSERT INTO journal_entries (user_id, raw_thought, mood) VALUES ($1, $2, $3)`,
-            userId as string, content, "reflection"
+            `INSERT INTO items (user_id, title) VALUES ($1, $2)`,
+            userId as string, content
           );
         }
         
