@@ -19,6 +19,20 @@ const PROMPTS = [
   "What is a pattern you noticed today that others should see?"
 ];
 
+const REACTIONS = ["❤️", "🤯", "🔥", "💡", "🫀"];
+
+const PENDING_REQUESTS = [
+  { id: "req-1", name: "Kwame Otieno", handle: "@kwame.synthesizes", mutual: 2 },
+  { id: "req-2", name: "Amara Diallo", handle: "@amara.mind", mutual: 5 },
+];
+
+const PARTNER_SPARKS: Record<string, Array<{id: string; content: string; type: string; time: string; reactions: Record<string, number>}>> = {
+  default: [
+    { id: "s1", content: "Finished mapping the relationship between entropy and creative blocks. The parallel is striking — systems resist order until energy is applied.", type: "network", time: "2h ago", reactions: { "🔥": 3, "💡": 7 } },
+    { id: "s2", content: "Started a new room: Quantum Cognition. Exploring how superposition might apply to decision-making under uncertainty.", type: "room", time: "5h ago", reactions: { "❤️": 2, "🤯": 4 } },
+  ]
+};
+
 export default function StreakHub() {
   const [sharing, setSharing] = useState(false);
   const [justShared, setJustShared] = useState(false);
@@ -30,6 +44,12 @@ export default function StreakHub() {
   const [isRecording, setIsRecording] = useState(false);
   const [activePrompt, setActivePrompt] = useState("");
   const [selectedPartner, setSelectedPartner] = useState<UserStreak | null>(null);
+  const [sparkIndex, setSparkIndex] = useState(0);
+  const [myReaction, setMyReaction] = useState<string | null>(null);
+  const [comment, setComment] = useState("");
+  const [showRequests, setShowRequests] = useState(false);
+  const [requests, setRequests] = useState(PENDING_REQUESTS);
+  const [parallelMode, setParallelMode] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
 
   const streak = globalStreakSignal.value;
@@ -263,8 +283,20 @@ export default function StreakHub() {
 
   return (
     <div className="w-full min-h-screen flex flex-col pb-32 relative overflow-y-auto overflow-x-hidden bg-[var(--muse-bg)]">
-      {/* Settings Button */}
-      <div className="absolute top-6 right-6 z-50">
+      {/* Header Row: Bell + Settings */}
+      <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
+        {/* Entanglement Requests Bell */}
+        <button
+          type="button"
+          onClick={() => setShowRequests(!showRequests)}
+          className="relative w-12 h-12 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-all shadow-md"
+        >
+          {/* @ts-ignore dynamic import */}
+          <Icons.Bell size={20} />
+          {requests.length > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center">{requests.length}</span>
+          )}
+        </button>
         <button
           type="button"
           onClick={() => setShowSettings(true)}
@@ -274,6 +306,49 @@ export default function StreakHub() {
           <Icons.Settings2 size={20} />
         </button>
       </div>
+
+      {/* Entanglement Requests Panel */}
+      {showRequests && (
+        <div className="absolute top-24 right-6 z-50 w-80 bg-[#111] border border-gray-800 rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-300">
+          <div className="p-5 border-b border-gray-800">
+            <h3 className="text-sm font-bold text-white">Entanglement Requests</h3>
+            <p className="text-xs text-gray-500 mt-0.5">People who want to streak with you</p>
+          </div>
+          {requests.length === 0 ? (
+            <p className="p-5 text-sm text-gray-500 text-center">No pending requests</p>
+          ) : (
+            <div className="divide-y divide-gray-800">
+              {requests.map((req) => (
+                <div key={req.id} className="p-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500/30 to-rose-500/30 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-white">{req.name.charAt(0)}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-white truncate">{req.name}</p>
+                    <p className="text-xs text-gray-500">{req.handle} · {req.mutual} mutual</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRequests(r => r.filter(x => x.id !== req.id))}
+                      className="px-3 py-1.5 rounded-full bg-white text-black text-xs font-bold hover:scale-105 transition-transform"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRequests(r => r.filter(x => x.id !== req.id))}
+                      className="px-3 py-1.5 rounded-full bg-white/10 text-gray-400 text-xs font-bold hover:bg-white/20 transition-colors"
+                    >
+                      Ignore
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Decorative background glow */}
       <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[400px] rounded-full pointer-events-none opacity-50 ${flameShadow} transition-all duration-1000`} />
@@ -345,8 +420,11 @@ export default function StreakHub() {
       {/* Social / Entanglements Section */}
       <div className="w-full px-6 py-12 relative z-10 border-t border-[var(--muse-border)] overflow-hidden">
         <div className="max-w-[1400px] mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-[var(--muse-text)] font-serif italic">Entanglements</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-[var(--muse-text)] font-serif italic">The Horizon</h2>
+              <p className="text-xs text-[var(--muse-muted)] mt-0.5 uppercase tracking-widest">Your Entanglement Network</p>
+            </div>
             <button 
               type="button"
               onClick={() => alert("Network Management feature is coming soon! You will be able to search for partners and manage invites here.")}
@@ -356,30 +434,39 @@ export default function StreakHub() {
             </button>
           </div>
 
+          {/* THE HORIZON — Stories-style entanglement stream */}
           {partnerStreaks.length > 0 ? (
-            <div className="flex overflow-x-auto pb-6 -mx-6 px-6 gap-4 snap-x hide-scrollbar">
-              {partnerStreaks.map((pStreak) => (
-                <div 
-                  key={pStreak.id} 
-                  onClick={() => setSelectedPartner(pStreak)}
-                  className="min-w-[220px] max-w-[260px] p-5 rounded-[2rem] bg-[var(--muse-surface)] border border-[var(--muse-border)] flex flex-col items-center gap-4 hover:border-[var(--muse-accent)] transition-colors cursor-pointer group snap-center text-center"
-                >
-                  <div className="flex items-center justify-between w-full px-2">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30 flex-shrink-0">
-                      <span className="text-lg font-bold text-indigo-400">{pStreak.partnerName.charAt(0)}</span>
+            <div className="flex overflow-x-auto pb-4 -mx-6 px-6 gap-5 snap-x hide-scrollbar">
+              {partnerStreaks.map((pStreak) => {
+                const hasNew = pStreak.count > 0;
+                return (
+                  <button
+                    key={pStreak.id}
+                    type="button"
+                    onClick={() => { setSelectedPartner(pStreak); setSparkIndex(0); setMyReaction(null); setComment(""); }}
+                    className="flex flex-col items-center gap-2 flex-shrink-0 snap-center group"
+                  >
+                    {/* Avatar ring — glows when partner has new sparks */}
+                    <div className={`p-[3px] rounded-full ${
+                      hasNew
+                        ? "bg-gradient-to-tr from-orange-500 via-rose-500 to-indigo-500"
+                        : "bg-gray-700"
+                    }`}>
+                      <div className="p-[2px] rounded-full bg-[var(--muse-bg)]">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-500/20 to-rose-500/20 flex items-center justify-center">
+                          <span className="text-xl font-black text-white">{pStreak.partnerName.charAt(0)}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-col items-center justify-center flex-shrink-0">
+                    <p className="text-xs font-bold text-[var(--muse-muted)] group-hover:text-[var(--muse-text)] transition-colors max-w-[72px] truncate">{pStreak.partnerName.split(" ")[0]}</p>
+                    <div className="flex items-center gap-1">
                       {/* @ts-ignore dynamic import */}
-                      <Icons.Flame size={16} className="text-orange-500 mb-0.5" />
-                      <span className="text-lg font-black text-[var(--muse-text)]">{pStreak.count}</span>
+                      <Icons.Flame size={10} className="text-orange-500" />
+                      <span className="text-[10px] font-black text-orange-500">{pStreak.count}</span>
                     </div>
-                  </div>
-                  <div className="w-full">
-                    <p className="text-base font-bold text-[var(--muse-text)]">{pStreak.partnerName}</p>
-                    <p className="text-xs text-[var(--muse-muted)] truncate">{pStreak.history[0]?.action || "No history yet"}</p>
-                  </div>
-                </div>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           ) : (
             <div className="w-full py-12 text-center rounded-3xl bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] border-dashed">
@@ -401,71 +488,139 @@ export default function StreakHub() {
         </div>
       </div>
 
-      {/* Partner Activity Modal */}
-      {selectedPartner && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedPartner(null)} />
-          <div className="w-full max-w-md bg-[#111111] border border-gray-800 rounded-3xl p-8 relative z-10 shadow-2xl animate-in zoom-in-95 duration-300">
-            <button 
-              type="button"
-              onClick={() => setSelectedPartner(null)}
-              className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors"
-            >
-              {/* @ts-ignore dynamic import */}
-              <Icons.X size={24} />
-            </button>
-            
-            <div className="flex flex-col items-center mb-8">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30 mb-4">
-                <span className="text-3xl font-bold text-indigo-400">{selectedPartner.partnerName.charAt(0)}</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white">{selectedPartner.partnerName}</h3>
-              <div className="flex items-center gap-2 mt-2">
+      {/* Full-Screen Partner Spark Viewer */}
+      {selectedPartner && !parallelMode && (() => {
+        const sparks = PARTNER_SPARKS[selectedPartner.id] ?? PARTNER_SPARKS.default;
+        const spark = sparks[sparkIndex];
+        return (
+          <div className="fixed inset-0 z-[100] flex flex-col bg-black animate-in fade-in duration-300">
+            {/* Top bar */}
+            <div className="flex items-center justify-between px-6 pt-10 pb-4">
+              <button type="button" onClick={() => setSelectedPartner(null)} className="text-gray-500 hover:text-white transition-colors">
                 {/* @ts-ignore dynamic import */}
-                <Icons.Flame size={16} className="text-orange-500" />
-                <span className="text-sm font-bold text-orange-500">{selectedPartner.count} Day Streak</span>
+                <Icons.ChevronLeft size={28} />
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500/30 to-rose-500/30 flex items-center justify-center">
+                  <span className="font-black text-white">{selectedPartner.partnerName.charAt(0)}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">{selectedPartner.partnerName}</p>
+                  <div className="flex items-center gap-1">
+                    {/* @ts-ignore dynamic import */}
+                    <Icons.Flame size={12} className="text-orange-500" />
+                    <span className="text-xs font-bold text-orange-500">{selectedPartner.count} day streak</span>
+                  </div>
+                </div>
+              </div>
+              <div className="w-8" />
+            </div>
+
+            {/* Spark progress dots */}
+            <div className="flex gap-1.5 px-6 mb-6">
+              {sparks.map((_, i) => (
+                <div key={i} className={`h-1 rounded-full flex-1 transition-all duration-300 ${
+                  i === sparkIndex ? "bg-white" : i < sparkIndex ? "bg-white/40" : "bg-white/10"
+                }`} />
+              ))}
+            </div>
+
+            {/* Spark content */}
+            <div className="flex-1 flex flex-col items-center justify-center px-8">
+              <div className="w-full max-w-2xl">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6 block">
+                  {spark.type === "network" ? "Public Spark" : "Room Creation"} · {spark.time}
+                </span>
+                <p className="text-2xl md:text-4xl font-bold text-white leading-snug font-serif">
+                  {spark.content}
+                </p>
+
+                {/* Existing reactions tally */}
+                <div className="flex gap-3 mt-10 flex-wrap">
+                  {Object.entries(spark.reactions).map(([emoji, count]) => (
+                    <span key={emoji} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 text-sm font-bold text-white">
+                      {emoji} <span className="text-xs text-gray-300">{count}</span>
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-4 border-b border-gray-800 pb-2">Latest Activity</h4>
-              
-              {/* In a real scenario, this is filtered by their streak_permissions JSON on the backend */}
-              <div className="p-4 rounded-2xl bg-[#0a0a0a] border border-gray-800">
-                <div className="flex items-center gap-2 mb-2">
-                  {/* @ts-ignore dynamic import */}
-                  <Icons.Activity size={14} className="text-emerald-500" />
-                  <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Active Today</span>
-                </div>
-                <p className="text-sm text-gray-300">{selectedPartner.history[0]?.action || "Synthesized a new thought."}</p>
-              </div>
-              
-              <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-3">
-                 {/* @ts-ignore dynamic import */}
-                 <Icons.Sparkles size={16} className="text-indigo-400" />
-                 <div>
-                   <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-1">Current Mood Aura</p>
-                   <p className="text-sm text-indigo-200">Deep Focus</p>
-                 </div>
-              </div>
+            {/* Prev / Next navigation */}
+            <div className="flex justify-between px-6 mb-4">
+              <button type="button" onClick={() => setSparkIndex(i => Math.max(0, i - 1))} disabled={sparkIndex === 0}
+                className="p-3 rounded-full bg-white/10 text-white disabled:opacity-20 hover:bg-white/20 transition-colors">
+                {/* @ts-ignore dynamic import */}
+                <Icons.ChevronLeft size={20} />
+              </button>
+              <button type="button" onClick={() => setSparkIndex(i => Math.min(sparks.length - 1, i + 1))} disabled={sparkIndex === sparks.length - 1}
+                className="p-3 rounded-full bg-white/10 text-white disabled:opacity-20 hover:bg-white/20 transition-colors">
+                {/* @ts-ignore dynamic import */}
+                <Icons.ChevronRight size={20} />
+              </button>
             </div>
-            
-            <button
-              type="button"
-              className="w-full mt-8 py-3 rounded-full bg-white text-black font-bold text-sm hover:scale-105 active:scale-95 transition-transform"
-            >
-              Send Resonance Spark
-            </button>
+
+            {/* Interaction bar: Reactions + Comment + Streak Back */}
+            <div className="px-6 pb-10 border-t border-white/10 pt-5 flex flex-col gap-4">
+              {/* Emoji Reactions */}
+              <div className="flex items-center gap-3 justify-center">
+                {REACTIONS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    onClick={() => setMyReaction(r => r === emoji ? null : emoji)}
+                    className={`text-2xl w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                      myReaction === emoji ? "bg-white/20 scale-125" : "bg-white/5 hover:bg-white/15 hover:scale-110"
+                    }`}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+
+              {/* Comment Input */}
+              <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
+                <input
+                  type="text"
+                  value={comment}
+                  onInput={(e) => setComment(e.currentTarget.value)}
+                  placeholder="Reply with a thought..."
+                  className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-gray-600"
+                />
+                {comment.trim() && (
+                  <button type="button" onClick={() => setComment("")} className="text-[var(--muse-accent)] text-xs font-bold">
+                    Send
+                  </button>
+                )}
+              </div>
+
+              {/* Streak Back / Parallel Spark */}
+              <button
+                type="button"
+                onClick={() => {
+                  setParallelMode(true);
+                  setDestination(`partner:${selectedPartner.id}`);
+                  setActivePrompt(`Responding to ${selectedPartner.partnerName.split(" ")[0]}'s spark...`);
+                  setIsSynthesizing(true);
+                  setCaptureMode("text");
+                  setSynthesisContent("");
+                }}
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-rose-600 text-white font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+              >
+                {/* @ts-ignore dynamic import */}
+                <Icons.Zap size={18} /> Parallel Spark — Streak Back
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Immersive Contemplation Modal */}
       {isSynthesizing && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 bg-black/95 backdrop-blur-md animate-in fade-in duration-700">
           <button 
             type="button"
-            onClick={() => setIsSynthesizing(false)}
+            onClick={() => { setIsSynthesizing(false); setParallelMode(false); }}
             className="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors"
           >
             {/* @ts-ignore dynamic import */}
