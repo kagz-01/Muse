@@ -90,9 +90,9 @@ export default function StreakHub() {
               {/* @ts-ignore dynamic import */}
               <Icons.Ghost size={32} className="text-gray-400 group-hover:text-gray-300 transition-colors" />
               <div>
-                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Ghost Mode</p>
+                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Anonymous</p>
                 <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
-                  Share a cryptographic hash. Private, but mathematically proven.
+                  Just show that you were active today. Content remains completely hidden.
                 </p>
               </div>
             </button>
@@ -110,9 +110,9 @@ export default function StreakHub() {
               {/* @ts-ignore dynamic import */}
               <Icons.Sparkles size={32} className="text-indigo-400 group-hover:text-indigo-300 transition-colors" />
               <div>
-                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Aura Mode</p>
+                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Mood Only</p>
                 <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
-                  Share an AI-generated emotional color gradient representing your thought.
+                  Share a colorful aura representing the general emotion of your thought.
                 </p>
               </div>
             </button>
@@ -130,9 +130,9 @@ export default function StreakHub() {
               {/* @ts-ignore dynamic import */}
               <Icons.Eye size={32} className="text-canvas-primary group-hover:text-canvas-primary/80 transition-colors" />
               <div>
-                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Clear Mode</p>
+                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Public</p>
                 <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
-                  Share a beautifully blurred preview of your actual synthesis.
+                  Show everyone a blurred preview of your actual synthesis.
                 </p>
               </div>
             </button>
@@ -173,23 +173,23 @@ export default function StreakHub() {
       </div>
 
       {/* Decorative background glow */}
-      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full pointer-events-none opacity-50 ${flameShadow} transition-all duration-1000`} />
+      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[400px] rounded-full pointer-events-none opacity-50 ${flameShadow} transition-all duration-1000`} />
 
       {/* Main Flame Section */}
-      <div className="flex-1 flex flex-col items-center justify-center relative z-10 pt-20">
-        <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] mb-8">
+      <div className="flex-1 flex flex-col items-center justify-center relative z-10 pt-10 pb-8">
+        <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] mb-4">
           Cognitive Momentum
         </h3>
         
-        <div className="relative flex flex-col items-center justify-center mb-12">
-          <div className={`w-48 h-48 rounded-full flex items-center justify-center ${flameBg} border border-[var(--muse-border)] mb-6 transition-all duration-700`}>
+        <div className="relative flex flex-col items-center justify-center mb-8">
+          <div className={`w-32 h-32 rounded-full flex items-center justify-center ${flameBg} border border-[var(--muse-border)] mb-4 transition-all duration-700`}>
             {/* @ts-ignore dynamic import */}
-            <Icons.Flame size={96} className={`${flameColor} ${streak && streak.currentStreak > 0 ? "animate-pulse" : "opacity-50"} transition-colors duration-700`} />
+            <Icons.Flame size={64} className={`${flameColor} ${streak && streak.currentStreak > 0 ? "animate-pulse" : "opacity-50"} transition-colors duration-700`} />
           </div>
-          <div className="text-8xl font-black text-[var(--muse-text)] tracking-tighter">
+          <div className="text-6xl font-black text-[var(--muse-text)] tracking-tighter">
             {streak ? streak.currentStreak : 0}
           </div>
-          <p className="text-lg font-bold uppercase tracking-widest text-[var(--muse-muted)] mt-2">
+          <p className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)] mt-1">
             Day Streak
           </p>
         </div>
@@ -206,11 +206,11 @@ export default function StreakHub() {
             type="button"
             onClick={handleShare}
             disabled={sharing}
-            className="px-10 py-5 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-lg shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.4)] hover:shadow-[0_0_50px_rgba(var(--muse-accent-rgb),0.6)] hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 flex items-center gap-3 cursor-pointer"
+            className="px-8 py-4 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-lg shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.4)] hover:shadow-[0_0_50px_rgba(var(--muse-accent-rgb),0.6)] hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 flex items-center gap-3 cursor-pointer"
           >
             {/* @ts-ignore dynamic import */}
-            <Icons.Zap size={24} />
-            Share Spark ({streak?.defaultSparkMode})
+            <Icons.Zap size={20} />
+            Share Spark
           </button>
         )}
       </div>
