@@ -50,7 +50,9 @@ import * as $api_journal_id_ from "./routes/api/journal/[id].ts";
 import * as $api_journal_index from "./routes/api/journal/index.ts";
 import * as $api_mirror from "./routes/api/mirror.ts";
 import * as $api_profile_index from "./routes/api/profile/index.ts";
+import * as $api_rooms_id_ from "./routes/api/rooms/[id].ts";
 import * as $api_rooms_create from "./routes/api/rooms/create.ts";
+import * as $api_rooms_index from "./routes/api/rooms/index.ts";
 import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
 import * as $api_threads_synthesize from "./routes/api/threads/synthesize.ts";
@@ -198,7 +200,9 @@ const manifest = {
     "./routes/api/journal/index.ts": $api_journal_index,
     "./routes/api/mirror.ts": $api_mirror,
     "./routes/api/profile/index.ts": $api_profile_index,
+    "./routes/api/rooms/[id].ts": $api_rooms_id_,
     "./routes/api/rooms/create.ts": $api_rooms_create,
+    "./routes/api/rooms/index.ts": $api_rooms_index,
     "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
     "./routes/api/threads/synthesize.ts": $api_threads_synthesize,

@@ -1,6 +1,7 @@
 import { signal } from "@preact/signals";
 import { itemsSignal } from "./items.ts";
 import { threadsSignal } from "./threads.ts";
+import { userSignal } from "./user.ts";
 
 export type RoomTheme =
   | "indigo"
@@ -162,79 +163,132 @@ function loadRooms(): Room[] {
 
 export const roomsSignal = signal<Room[]>(loadRooms());
 
+// Keep localStorage as a fast cache for demo mode + offline display
 if (typeof localStorage !== "undefined") {
   roomsSignal.subscribe((rooms: Room[]) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
-    } catch {
-      // ignore write errors in restricted environments
+    const isDemo = userSignal.value?.id === "__demo__";
+    if (isDemo) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
+      } catch { /* ignore */ }
     }
   });
 }
 
-export function addRoom(
+// Load rooms from backend for authenticated users
+export async function syncRoomsFromBackend(): Promise<void> {
+  const isDemo = userSignal.value?.id === "__demo__";
+  if (isDemo) return;
+  try {
+    const response = await fetch("/api/rooms");
+    if (response.ok) {
+      const rooms = await response.json();
+      roomsSignal.value = rooms;
+    }
+  } catch (e) {
+    console.error("Failed to sync rooms from backend:", e);
+  }
+}
+
+export async function addRoom(
   room: Omit<
     Room,
     "id" | "updatedAt" | "count" | "semanticTags" | "resonanceMetrics"
   >,
-) {
-  const newId = "r" + (roomsSignal.value.length + 1);
-  const newRoom: Room = {
-    ...room,
-    id: newId,
-    updatedAt: new Date().toISOString(),
-    count: 0,
-    semanticTags: [],
-    resonanceMetrics: { views: 0, wovenCount: 0 },
-  };
+): Promise<string> {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  if (isDemo) {
+    const newId = "r" + (roomsSignal.value.length + 1);
+    const newRoom: Room = {
+      ...room,
+      id: newId,
+      updatedAt: new Date().toISOString(),
+      count: 0,
+      semanticTags: [],
+      resonanceMetrics: { views: 0, wovenCount: 0 },
+    };
+    roomsSignal.value = [...roomsSignal.value, newRoom];
+    return newId;
+  }
+
+  const response = await fetch("/api/rooms", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(room),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create room: ${await response.text()}`);
+  }
+
+  const { room: newRoom } = await response.json();
   roomsSignal.value = [...roomsSignal.value, newRoom];
-  return newId;
+  return newRoom.id;
 }
 
-export function updateRoomTheme(id: string, theme: RoomTheme) {
-  roomsSignal.value = roomsSignal.value.map((r: Room) =>
-    r.id === id ? { ...r, themeColor: theme } : r
-  );
-}
+export async function updateRoom(id: string, updates: Partial<Room>) {
+  const isDemo = userSignal.value?.id === "__demo__";
 
-export function updateRoomCover(id: string, cover: string) {
-  roomsSignal.value = roomsSignal.value.map((r: Room) =>
-    r.id === id ? { ...r, coverImage: cover } : r
-  );
-}
-
-export function toggleRoomPrivacy(id: string) {
-  roomsSignal.value = roomsSignal.value.map((r: Room) =>
-    r.id === id ? { ...r, isPublic: !r.isPublic } : r
-  );
-}
-
-export function updateRoom(id: string, updates: Partial<Room>) {
+  // Optimistic update
   roomsSignal.value = roomsSignal.value.map((r: Room) =>
     r.id === id ? { ...r, ...updates, updatedAt: new Date().toISOString() } : r
   );
+
+  if (!isDemo && !id.startsWith("r")) {
+    try {
+      await fetch(`/api/rooms/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+    } catch (e) {
+      console.error("Failed to update room on backend:", e);
+    }
+  }
 }
 
-export function deleteRoom(id: string) {
-  // Remove the room itself
+export async function updateRoomTheme(id: string, theme: RoomTheme) {
+  await updateRoom(id, { themeColor: theme });
+}
+
+export async function updateRoomCover(id: string, cover: string) {
+  await updateRoom(id, { coverImage: cover });
+}
+
+export async function toggleRoomPrivacy(id: string) {
+  const room = roomsSignal.value.find((r) => r.id === id);
+  if (room) {
+    await updateRoom(id, { isPublic: !room.isPublic });
+  }
+}
+
+export async function deleteRoom(id: string) {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  // Remove from signal first (optimistic)
   roomsSignal.value = roomsSignal.value.filter((r: Room) => r.id !== id);
 
-  // Remove items belonging to the room
+  // Clean up local signal references
   const removedItemIds = itemsSignal.value
     .filter((it) => it.roomId === id)
     .map((it) => it.id);
-
   itemsSignal.value = itemsSignal.value.filter((it) => it.roomId !== id);
-
-  // Remove references to removed items and the room from threads
   threadsSignal.value = threadsSignal.value
     .map((t) => ({
       ...t,
       itemIds: t.itemIds.filter((iid) => !removedItemIds.includes(iid)),
       sourceRoomIds: t.sourceRoomIds.filter((rid) => rid !== id),
     }))
-    // Optionally remove threads that now have no items and no source rooms
     .filter((t) => t.itemIds.length > 0 || t.sourceRoomIds.length > 0);
+
+  if (!isDemo && !id.startsWith("r")) {
+    try {
+      await fetch(`/api/rooms/${id}`, { method: "DELETE" });
+    } catch (e) {
+      console.error("Failed to delete room on backend:", e);
+    }
+  }
 }
 
 export function resetRooms() {
