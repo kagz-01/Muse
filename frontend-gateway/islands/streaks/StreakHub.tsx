@@ -1,4 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useState, useRef } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   globalStreakSignal,
@@ -21,17 +21,21 @@ const PROMPTS = [
 
 const REACTIONS = ["❤️", "🤯", "🔥", "💡", "🫀"];
 
-const PENDING_REQUESTS = [
-  { id: "req-1", name: "Kwame Otieno", handle: "@kwame.synthesizes", mutual: 2 },
-  { id: "req-2", name: "Amara Diallo", handle: "@amara.mind", mutual: 5 },
-];
+interface SocialRequest {
+  id: string;
+  requester_id: string;
+  name: string;
+  username: string;
+  avatar_url?: string;
+}
 
-const PARTNER_SPARKS: Record<string, Array<{id: string; content: string; type: string; time: string; reactions: Record<string, number>}>> = {
-  default: [
-    { id: "s1", content: "Finished mapping the relationship between entropy and creative blocks. The parallel is striking — systems resist order until energy is applied.", type: "network", time: "2h ago", reactions: { "🔥": 3, "💡": 7 } },
-    { id: "s2", content: "Started a new room: Quantum Cognition. Exploring how superposition might apply to decision-making under uncertainty.", type: "room", time: "5h ago", reactions: { "❤️": 2, "🤯": 4 } },
-  ]
-};
+interface PartnerSpark {
+  id: string;
+  content: string;
+  type: string;
+  created_at: string;
+  reactions: Array<{ emoji: string; count: number }>;
+}
 
 export default function StreakHub() {
   const [sharing, setSharing] = useState(false);
@@ -45,12 +49,17 @@ export default function StreakHub() {
   const [activePrompt, setActivePrompt] = useState("");
   const [selectedPartner, setSelectedPartner] = useState<UserStreak | null>(null);
   const [sparkIndex, setSparkIndex] = useState(0);
+  const [partnerSparks, setPartnerSparks] = useState<PartnerSpark[]>([]);
+  const [loadingSparks, setLoadingSparks] = useState(false);
   const [myReaction, setMyReaction] = useState<string | null>(null);
   const [comment, setComment] = useState("");
   const [showRequests, setShowRequests] = useState(false);
-  const [requests, setRequests] = useState(PENDING_REQUESTS);
+  const [requests, setRequests] = useState<SocialRequest[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
   const [parallelMode, setParallelMode] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const pickerContainerRef = useRef<HTMLDivElement>(null);
 
   const streak = globalStreakSignal.value;
   const user = userSignal.value;
@@ -59,6 +68,95 @@ export default function StreakHub() {
   useEffect(() => {
     loadGlobalStreak().then(() => setIsInitializing(false));
   }, []);
+
+  // Load pending entanglement requests when panel opens
+  useEffect(() => {
+    if (!showRequests || requestsLoading) return;
+    setRequestsLoading(true);
+    fetch("/api/user/social?action=requests")
+      .then(r => r.json())
+      .then(d => { if (d.requests) setRequests(d.requests); })
+      .catch(console.error)
+      .finally(() => setRequestsLoading(false));
+  }, [showRequests]);
+
+  // Fetch partner sparks when a partner is selected
+  const openPartnerViewer = async (partner: UserStreak) => {
+    setSelectedPartner(partner);
+    setSparkIndex(0);
+    setMyReaction(null);
+    setComment("");
+    setPartnerSparks([]);
+    setLoadingSparks(true);
+    try {
+      const res = await fetch(`/api/user/social?action=partner_sparks&partnerId=${partner.partnerId}`);
+      const data = await res.json();
+      if (data.sparks) setPartnerSparks(data.sparks);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingSparks(false);
+    }
+  };
+
+  const handleAcceptRequest = async (requestId: string) => {
+    await fetch("/api/user/social", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "respond_request", requestId, accept: true }),
+    });
+    setRequests(r => r.filter(x => x.id !== requestId));
+  };
+
+  const handleIgnoreRequest = async (requestId: string) => {
+    await fetch("/api/user/social", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "respond_request", requestId, accept: false }),
+    });
+    setRequests(r => r.filter(x => x.id !== requestId));
+  };
+
+  const handleReact = async (emoji: string, itemId: string) => {
+    const next = myReaction === emoji ? null : emoji;
+    setMyReaction(next);
+    await fetch("/api/user/social", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "react", itemId, emoji }),
+    });
+  };
+
+  const handleComment = async (itemId: string) => {
+    if (!comment.trim()) return;
+    const text = comment;
+    setComment("");
+    await fetch("/api/user/social", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "comment", itemId, content: text }),
+    });
+  };
+
+  useEffect(() => {
+    if (showEmojiPicker) {
+      import("emoji-picker-element").catch(console.error);
+    }
+  }, [showEmojiPicker]);
+
+  useEffect(() => {
+    const picker = pickerContainerRef.current?.querySelector("emoji-picker");
+    if (!picker) return;
+    const onEmoji = ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      const emoji = customEvent.detail.unicode;
+      const spark = partnerSparks[sparkIndex];
+      if (spark) handleReact(emoji, spark.id);
+      setShowEmojiPicker(false);
+    }) as EventListener;
+    picker.addEventListener("emoji-click", onEmoji);
+    return () => picker.removeEventListener("emoji-click", onEmoji);
+  }, [showEmojiPicker, sparkIndex, partnerSparks]);
 
   if (!user || isInitializing) {
     return (
@@ -227,7 +325,7 @@ export default function StreakHub() {
                       <p className="text-xs text-gray-400">Automatically share when you complete a synthesis.</p>
                     </div>
                   </div>
-                  <button className="w-12 h-6 rounded-full p-1 bg-gray-800 cursor-not-allowed">
+                  <button type="button" className="w-12 h-6 rounded-full p-1 bg-gray-800 cursor-not-allowed">
                     <div className="w-4 h-4 bg-gray-500 rounded-full" />
                   </button>
                 </div>
@@ -241,7 +339,7 @@ export default function StreakHub() {
                       <p className="text-xs text-gray-400">Let community members invite you to shared streaks.</p>
                     </div>
                   </div>
-                  <button className="w-12 h-6 rounded-full p-1 bg-gray-800 cursor-not-allowed">
+                  <button type="button" className="w-12 h-6 rounded-full p-1 bg-gray-800 cursor-not-allowed">
                     <div className="w-4 h-4 bg-gray-500 rounded-full" />
                   </button>
                 </div>
@@ -325,19 +423,19 @@ export default function StreakHub() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-white truncate">{req.name}</p>
-                    <p className="text-xs text-gray-500">{req.handle} · {req.mutual} mutual</p>
+                    <p className="text-xs text-gray-500">@{req.username}</p>
                   </div>
                   <div className="flex gap-2">
                     <button
                       type="button"
-                      onClick={() => setRequests(r => r.filter(x => x.id !== req.id))}
+                      onClick={() => handleAcceptRequest(req.id)}
                       className="px-3 py-1.5 rounded-full bg-white text-black text-xs font-bold hover:scale-105 transition-transform"
                     >
                       Accept
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRequests(r => r.filter(x => x.id !== req.id))}
+                      onClick={() => handleIgnoreRequest(req.id)}
                       className="px-3 py-1.5 rounded-full bg-white/10 text-gray-400 text-xs font-bold hover:bg-white/20 transition-colors"
                     >
                       Ignore
@@ -443,7 +541,7 @@ export default function StreakHub() {
                   <button
                     key={pStreak.id}
                     type="button"
-                    onClick={() => { setSelectedPartner(pStreak); setSparkIndex(0); setMyReaction(null); setComment(""); }}
+                    onClick={() => openPartnerViewer(pStreak)}
                     className="flex flex-col items-center gap-2 flex-shrink-0 snap-center group"
                   >
                     {/* Avatar ring — glows when partner has new sparks */}
@@ -490,8 +588,7 @@ export default function StreakHub() {
 
       {/* Full-Screen Partner Spark Viewer */}
       {selectedPartner && !parallelMode && (() => {
-        const sparks = PARTNER_SPARKS[selectedPartner.id] ?? PARTNER_SPARKS.default;
-        const spark = sparks[sparkIndex];
+        const spark = partnerSparks[sparkIndex];
         return (
           <div className="fixed inset-0 z-[100] flex flex-col bg-black animate-in fade-in duration-300">
             {/* Top bar */}
@@ -516,9 +613,20 @@ export default function StreakHub() {
               <div className="w-8" />
             </div>
 
+            {/* Loading state */}
+            {loadingSparks ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full border-2 border-white border-t-transparent animate-spin" />
+              </div>
+            ) : partnerSparks.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-gray-500 text-sm">No public sparks yet.</p>
+              </div>
+            ) : (
+              <>
             {/* Spark progress dots */}
             <div className="flex gap-1.5 px-6 mb-6">
-              {sparks.map((_, i) => (
+              {partnerSparks.map((_ps: PartnerSpark, i: number) => (
                 <div key={i} className={`h-1 rounded-full flex-1 transition-all duration-300 ${
                   i === sparkIndex ? "bg-white" : i < sparkIndex ? "bg-white/40" : "bg-white/10"
                 }`} />
@@ -529,17 +637,17 @@ export default function StreakHub() {
             <div className="flex-1 flex flex-col items-center justify-center px-8">
               <div className="w-full max-w-2xl">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6 block">
-                  {spark.type === "network" ? "Public Spark" : "Room Creation"} · {spark.time}
+                  {spark?.type === "network" ? "Public Spark" : "Artifact"} · {spark ? new Date(spark.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ""}
                 </span>
                 <p className="text-2xl md:text-4xl font-bold text-white leading-snug font-serif">
-                  {spark.content}
+                  {spark?.content}
                 </p>
 
                 {/* Existing reactions tally */}
                 <div className="flex gap-3 mt-10 flex-wrap">
-                  {Object.entries(spark.reactions).map(([emoji, count]) => (
-                    <span key={emoji} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 text-sm font-bold text-white">
-                      {emoji} <span className="text-xs text-gray-300">{count}</span>
+                  {(spark?.reactions ?? []).map((r: { emoji: string; count: number }) => (
+                    <span key={r.emoji} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 text-sm font-bold text-white">
+                      {r.emoji} <span className="text-xs text-gray-300">{r.count}</span>
                     </span>
                   ))}
                 </div>
@@ -553,7 +661,7 @@ export default function StreakHub() {
                 {/* @ts-ignore dynamic import */}
                 <Icons.ChevronLeft size={20} />
               </button>
-              <button type="button" onClick={() => setSparkIndex(i => Math.min(sparks.length - 1, i + 1))} disabled={sparkIndex === sparks.length - 1}
+              <button type="button" onClick={() => setSparkIndex(i => Math.min(partnerSparks.length - 1, i + 1))} disabled={sparkIndex >= partnerSparks.length - 1}
                 className="p-3 rounded-full bg-white/10 text-white disabled:opacity-20 hover:bg-white/20 transition-colors">
                 {/* @ts-ignore dynamic import */}
                 <Icons.ChevronRight size={20} />
@@ -563,12 +671,12 @@ export default function StreakHub() {
             {/* Interaction bar: Reactions + Comment + Streak Back */}
             <div className="px-6 pb-10 border-t border-white/10 pt-5 flex flex-col gap-4">
               {/* Emoji Reactions */}
-              <div className="flex items-center gap-3 justify-center">
+              <div className="flex items-center gap-3 justify-center relative">
                 {REACTIONS.map((emoji) => (
                   <button
                     key={emoji}
                     type="button"
-                    onClick={() => setMyReaction(r => r === emoji ? null : emoji)}
+                    onClick={() => spark && handleReact(emoji, spark.id)}
                     className={`text-2xl w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                       myReaction === emoji ? "bg-white/20 scale-125" : "bg-white/5 hover:bg-white/15 hover:scale-110"
                     }`}
@@ -576,6 +684,25 @@ export default function StreakHub() {
                     {emoji}
                   </button>
                 ))}
+                
+                {/* Custom Emoji Picker Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className={`text-gray-400 hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition-all border border-dashed border-white/20 ${
+                    showEmojiPicker ? "bg-white/10" : "hover:bg-white/5"
+                  }`}
+                >
+                  {/* @ts-ignore dynamic import */}
+                  <Icons.Plus size={20} />
+                </button>
+
+                {showEmojiPicker && (
+                  <div ref={pickerContainerRef} className="absolute bottom-16 z-50">
+                    {/* @ts-ignore custom element */}
+                    <emoji-picker class="dark"></emoji-picker>
+                  </div>
+                )}
               </div>
 
               {/* Comment Input */}
@@ -588,7 +715,7 @@ export default function StreakHub() {
                   className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-gray-600"
                 />
                 {comment.trim() && (
-                  <button type="button" onClick={() => setComment("")} className="text-[var(--muse-accent)] text-xs font-bold">
+                  <button type="button" onClick={() => spark && handleComment(spark.id)} className="text-[var(--muse-accent)] text-xs font-bold">
                     Send
                   </button>
                 )}
@@ -611,6 +738,8 @@ export default function StreakHub() {
                 <Icons.Zap size={18} /> Parallel Spark — Streak Back
               </button>
             </div>
+            </>
+            )}
           </div>
         );
       })()}
