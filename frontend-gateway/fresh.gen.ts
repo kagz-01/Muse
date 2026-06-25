@@ -46,7 +46,8 @@ import * as $api_followers_status from "./routes/api/followers/status.ts";
 import * as $api_followers_unfollow from "./routes/api/followers/unfollow.ts";
 import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_joke from "./routes/api/joke.ts";
-import * as $api_journal_capture from "./routes/api/journal/capture.ts";
+import * as $api_journal_id_ from "./routes/api/journal/[id].ts";
+import * as $api_journal_index from "./routes/api/journal/index.ts";
 import * as $api_mirror from "./routes/api/mirror.ts";
 import * as $api_profile_index from "./routes/api/profile/index.ts";
 import * as $api_rooms_create from "./routes/api/rooms/create.ts";
@@ -193,7 +194,8 @@ const manifest = {
     "./routes/api/followers/unfollow.ts": $api_followers_unfollow,
     "./routes/api/health/services.ts": $api_health_services,
     "./routes/api/joke.ts": $api_joke,
-    "./routes/api/journal/capture.ts": $api_journal_capture,
+    "./routes/api/journal/[id].ts": $api_journal_id_,
+    "./routes/api/journal/index.ts": $api_journal_index,
     "./routes/api/mirror.ts": $api_mirror,
     "./routes/api/profile/index.ts": $api_profile_index,
     "./routes/api/rooms/create.ts": $api_rooms_create,

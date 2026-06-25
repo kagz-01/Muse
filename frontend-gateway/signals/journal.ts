@@ -1,4 +1,5 @@
 import { signal } from "@preact/signals";
+import { userSignal } from "./user.ts";
 
 export type JournalMood =
   | "reflective"
@@ -291,47 +292,81 @@ function generateSafeId(): string {
 export async function addEntry(
   body = "",
   isPublic = false,
+  mood?: JournalMood,
+  tags: string[] = [],
 ): Promise<JournalEntry> {
-  const response = await fetch("/api/journal/capture", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ rawThought: body || "New reflection..." }),
-  });
+  const isDemo = userSignal.value?.id === "__demo__";
 
-  if (!response.ok) {
-    throw new Error(
-      `Failed to capture journal entry: ${await response.text()}`,
-    );
+  let newEntry: JournalEntry;
+
+  if (isDemo) {
+    newEntry = {
+      id: generateSafeId(),
+      body: body || "New reflection...",
+      mood: mood || "reflective",
+      tags: tags || [],
+      linkedItemIds: [],
+      isFavorited: false,
+      isPinned: false,
+      isArchived: false,
+      isPublic,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      wordCount:
+        (body || "New reflection...").trim().split(/\s+/).filter(Boolean)
+          .length,
+    };
+  } else {
+    const response = await fetch("/api/journal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rawThought: body || "New reflection...",
+        isPublic,
+        mood,
+        tags,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to capture journal entry: ${await response.text()}`,
+      );
+    }
+
+    const { entry } = await response.json();
+
+    newEntry = {
+      id: entry.id,
+      body: entry.raw_thought,
+      mood: entry.mood || "reflective",
+      tags: entry.tags || [],
+      linkedItemIds: [],
+      isFavorited: entry.is_favorited || false,
+      isPinned: entry.is_pinned || false,
+      isArchived: entry.is_archived || false,
+      isPublic: entry.is_public || isPublic,
+      createdAt: new Date(entry.created_at).getTime(),
+      updatedAt: new Date(entry.updated_at).getTime(),
+      wordCount: entry.raw_thought.trim().split(/\s+/).filter(Boolean).length,
+      synthesis: entry.synthesized_context || undefined,
+    };
   }
-
-  const { entry } = await response.json();
-
-  // Transform DB entry to frontend format
-  const newEntry: JournalEntry = {
-    id: entry.id,
-    body: entry.raw_thought,
-    mood: entry.mood || "reflective",
-    tags: entry.tags || [],
-    linkedItemIds: [],
-    isFavorited: entry.is_favorited || false,
-    isPinned: entry.is_pinned || false,
-    isArchived: entry.is_archived || false,
-    isPublic: entry.is_public || isPublic,
-    createdAt: new Date(entry.created_at).getTime(),
-    updatedAt: new Date(entry.updated_at).getTime(),
-    wordCount: entry.raw_thought.trim().split(/\s+/).filter(Boolean).length,
-    synthesis: entry.synthesized_context || undefined,
-  };
 
   journalSignal.value = [newEntry, ...journalSignal.value];
 
-  // Update streak data on new entry
   updateStreakOnNewEntry();
 
   return newEntry;
 }
 
-export function updateJournalEntry(id: string, updates: Partial<JournalEntry>) {
+export async function updateJournalEntry(
+  id: string,
+  updates: Partial<JournalEntry>,
+) {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  // Optimistic update
   journalSignal.value = journalSignal.value.map((e: JournalEntry) => {
     if (e.id === id) {
       const updated = { ...e, ...updates, updatedAt: Date.now() };
@@ -343,30 +378,71 @@ export function updateJournalEntry(id: string, updates: Partial<JournalEntry>) {
     }
     return e;
   });
+
+  if (!isDemo && !id.startsWith("j")) {
+    const apiUpdates = {
+      rawThought: updates.body,
+      mood: updates.mood,
+      tags: updates.tags,
+      isFavorited: updates.isFavorited,
+      isPinned: updates.isPinned,
+      isArchived: updates.isArchived,
+      isPublic: updates.isPublic,
+    };
+
+    // Remove undefined
+    Object.keys(apiUpdates).forEach((key) =>
+      apiUpdates[key as keyof typeof apiUpdates] === undefined &&
+      delete apiUpdates[key as keyof typeof apiUpdates]
+    );
+
+    try {
+      await fetch(`/api/journal/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(apiUpdates),
+      });
+    } catch (e) {
+      console.error("Failed to update journal on backend", e);
+    }
+  }
 }
 
-export function deleteJournalEntry(id: string) {
+export async function deleteJournalEntry(id: string) {
+  const isDemo = userSignal.value?.id === "__demo__";
+
   journalSignal.value = journalSignal.value.filter((e: JournalEntry) =>
     e.id !== id
   );
+
+  if (!isDemo && !id.startsWith("j")) {
+    try {
+      await fetch(`/api/journal/${id}`, { method: "DELETE" });
+    } catch (e) {
+      console.error("Failed to delete journal on backend", e);
+    }
+  }
 }
 
-export function toggleFavoriteJournal(id: string) {
-  journalSignal.value = journalSignal.value.map((e: JournalEntry) =>
-    e.id === id ? { ...e, isFavorited: !e.isFavorited } : e
-  );
+export async function toggleFavoriteJournal(id: string) {
+  const entry = journalSignal.value.find((e) => e.id === id);
+  if (entry) {
+    await updateJournalEntry(id, { isFavorited: !entry.isFavorited });
+  }
 }
 
-export function togglePinJournal(id: string) {
-  journalSignal.value = journalSignal.value.map((e: JournalEntry) =>
-    e.id === id ? { ...e, isPinned: !e.isPinned } : e
-  );
+export async function togglePinJournal(id: string) {
+  const entry = journalSignal.value.find((e) => e.id === id);
+  if (entry) {
+    await updateJournalEntry(id, { isPinned: !entry.isPinned });
+  }
 }
 
-export function toggleArchiveJournal(id: string) {
-  journalSignal.value = journalSignal.value.map((e: JournalEntry) =>
-    e.id === id ? { ...e, isArchived: !e.isArchived } : e
-  );
+export async function toggleArchiveJournal(id: string) {
+  const entry = journalSignal.value.find((e) => e.id === id);
+  if (entry) {
+    await updateJournalEntry(id, { isArchived: !entry.isArchived });
+  }
 }
 
 export function getJournalStreak(): number {

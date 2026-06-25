@@ -7,12 +7,22 @@ export const handler: Handlers = {
   async POST(req) {
     try {
       const userId = await getSessionUser(req);
-      if (!userId) {
+      if (!userId || userId === "__demo__") {
         return new Response("Unauthorized", { status: 401 });
       }
 
       const body = await req.json();
-      const { rawThought, threadId } = body;
+      const {
+        rawThought,
+        threadId,
+        mood,
+        tags,
+        isFavorited,
+        isPinned,
+        isArchived,
+        isPublic,
+        synthesizedContext,
+      } = body;
 
       if (!rawThought || rawThought.trim() === "") {
         return new Response("Journal entry content is required", {
@@ -24,10 +34,23 @@ export const handler: Handlers = {
       const blockchainHash = await generateBlockchainHash(rawThought);
 
       let insertQuery = `
-        INSERT INTO journal_entries (user_id, raw_thought, blockchain_hash) 
-        VALUES ($1, $2, $3) RETURNING *
+        INSERT INTO journal_entries (
+          user_id, raw_thought, blockchain_hash, mood, tags, is_favorited, is_pinned, is_archived, is_public, synthesized_context
+        ) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
       `;
-      let queryArgs: any[] = [userId, rawThought, blockchainHash];
+      let queryArgs: unknown[] = [
+        userId,
+        rawThought,
+        blockchainHash,
+        mood || "reflective",
+        tags || [],
+        isFavorited || false,
+        isPinned || false,
+        isArchived || false,
+        isPublic || false,
+        synthesizedContext ? JSON.stringify(synthesizedContext) : null,
+      ];
 
       // If a threadId is provided, link the journal entry to the synthesized context
       if (threadId) {
@@ -50,10 +73,24 @@ export const handler: Handlers = {
         }
 
         insertQuery = `
-          INSERT INTO journal_entries (user_id, thread_id, raw_thought, blockchain_hash) 
-          VALUES ($1, $2, $3, $4) RETURNING *
+          INSERT INTO journal_entries (
+            user_id, thread_id, raw_thought, blockchain_hash, mood, tags, is_favorited, is_pinned, is_archived, is_public, synthesized_context
+          ) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *
         `;
-        queryArgs = [userId, threadId, rawThought, blockchainHash];
+        queryArgs = [
+          userId,
+          threadId,
+          rawThought,
+          blockchainHash,
+          mood || "reflective",
+          tags || [],
+          isFavorited || false,
+          isPinned || false,
+          isArchived || false,
+          isPublic || false,
+          synthesizedContext ? JSON.stringify(synthesizedContext) : null,
+        ];
       }
 
       const insertResult = await queryDB(insertQuery, ...queryArgs);
