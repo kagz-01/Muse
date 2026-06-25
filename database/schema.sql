@@ -132,3 +132,39 @@ CREATE INDEX idx_threads_room_id ON threads(room_id);
 CREATE INDEX idx_journal_user_id ON journal_entries(user_id);
 CREATE INDEX idx_artifacts_room_id ON artifacts(room_id);
 CREATE INDEX idx_artifacts_unstructured ON artifacts USING GIN (unstructured_data);
+
+-- 7. ENTANGLEMENTS (Streak partnerships / friend connections)
+CREATE TABLE entanglements (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    addressee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status TEXT NOT NULL DEFAULT 'pending', -- 'pending' | 'accepted' | 'rejected'
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(requester_id, addressee_id)
+);
+
+-- 8. SPARK REACTIONS (Emoji reactions on public items/sparks)
+CREATE TABLE spark_reactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    emoji TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(item_id, user_id)
+);
+
+-- 9. SPARK COMMENTS (Replies on public sparks)
+CREATE TABLE spark_comments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Additional indexes for social tables
+CREATE INDEX idx_entanglements_requester ON entanglements(requester_id);
+CREATE INDEX idx_entanglements_addressee ON entanglements(addressee_id);
+CREATE INDEX idx_spark_reactions_item ON spark_reactions(item_id);
+CREATE INDEX idx_spark_comments_item ON spark_comments(item_id);
