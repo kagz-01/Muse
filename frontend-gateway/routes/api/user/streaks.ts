@@ -12,7 +12,7 @@ export const handler: Handlers = {
 
     try {
       const result = await queryDB(
-        `SELECT current_streak, longest_streak, total_journal_days, last_entry_date, streak_level, freeze_count, milestones_unlocked, preferences->>'default_spark_mode' AS default_spark_mode 
+        `SELECT current_streak, longest_streak, total_journal_days, last_entry_date, streak_level, freeze_count, milestones_unlocked, preferences->'streak_permissions' AS streak_permissions 
          FROM users WHERE id = $1`,
         userId as string
       );
@@ -29,11 +29,27 @@ export const handler: Handlers = {
         last_entry_date: row.last_entry_date,
         streak_level: row.streak_level,
         freeze_count: Number(row.freeze_count || 0),
-        milestones_unlocked: row.milestones_unlocked,
-        default_spark_mode: row.default_spark_mode
+        milestones_unlocked: Array.isArray(row.milestones_unlocked) ? row.milestones_unlocked.map(Number) : [],
+        permissions: row.streak_permissions || {
+          show_active: true,
+          show_mood: false,
+          show_room_titles: false,
+          show_journal_previews: false
+        }
       };
 
-      return new Response(JSON.stringify({ streak: streakData }), {
+      // Fetch today's momentum feed (activities)
+      const feedResult = await queryDB(
+        `SELECT 'journal' as type, created_at, raw_thought as content 
+         FROM journal_entries WHERE user_id = $1 AND created_at >= current_date
+         UNION ALL
+         SELECT 'room' as type, created_at, title as content 
+         FROM rooms WHERE user_id = $1 AND created_at >= current_date
+         ORDER BY created_at DESC LIMIT 10`,
+        userId as string
+      );
+
+      return new Response(JSON.stringify({ streak: streakData, feed: feedResult }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -51,22 +67,35 @@ export const handler: Handlers = {
     const userId = rawUserId.replace(/[^a-zA-Z0-9-]/g, "");
 
     try {
-      const { action, privacyMode } = await req.json();
+      const { action, permissions, content, type } = await req.json();
 
-      if (action === "set_mode" && privacyMode) {
+      if (action === "set_permissions" && permissions) {
         await executeDB(
-          `UPDATE users SET preferences = jsonb_set(COALESCE(preferences, '{}'::jsonb), '{default_spark_mode}', $1::jsonb) WHERE id = $2`,
-          `"${privacyMode}"`, userId as string
+          `UPDATE users SET preferences = jsonb_set(COALESCE(preferences, '{}'::jsonb), '{streak_permissions}', $1::jsonb) WHERE id = $2`,
+          JSON.stringify(permissions), userId as string
         );
-        return new Response(JSON.stringify({ success: true, privacyMode }), {
+        return new Response(JSON.stringify({ success: true, permissions }), {
           status: 200,
           headers: { "Content-Type": "application/json" }
         });
       }
 
-      // Right now, any "Spark" action increments the streak if it's a new day
-      if (action === "share_spark") {
+      // Capture Momentum (formerly share_spark)
+      if (action === "capture_momentum") {
         const today = new Date().toISOString().split("T")[0];
+        
+        // 1. Insert the artifact into the DB based on type
+        if (type === "journal" && content) {
+          await executeDB(
+            `INSERT INTO journal_entries (user_id, raw_thought, mood) VALUES ($1, $2, $3)`,
+            userId as string, content, "reflection"
+          );
+        } else if (type === "room" && content) {
+          await executeDB(
+            `INSERT INTO rooms (user_id, title) VALUES ($1, $2)`,
+            userId as string, content
+          );
+        }
         
         const currentData = await queryDB(
           `SELECT current_streak, longest_streak, total_journal_days, last_entry_date FROM users WHERE id = $1`,

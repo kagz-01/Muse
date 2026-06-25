@@ -2,10 +2,12 @@ import { useEffect, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   globalStreakSignal,
+  momentumFeedSignal,
   loadGlobalStreak,
-  setSparkMode,
-  shareSpark,
+  setSparkPermissions,
+  captureMomentum,
   streaksSignal,
+  type UserStreak,
 } from "../../signals/streaks.ts";
 import { userSignal } from "../../signals/user.ts";
 
@@ -13,6 +15,9 @@ export default function StreakHub() {
   const [sharing, setSharing] = useState(false);
   const [justShared, setJustShared] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
+  const [synthesisContent, setSynthesisContent] = useState("");
+  const [selectedPartner, setSelectedPartner] = useState<UserStreak | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
   const streak = globalStreakSignal.value;
@@ -31,23 +36,26 @@ export default function StreakHub() {
     );
   }
 
-  const handleSetMode = async (mode: "ghost" | "aura" | "clear") => {
+  const handleSetPermission = async (key: "show_active" | "show_mood" | "show_room_titles" | "show_journal_previews") => {
     setSharing(true);
-    await setSparkMode(mode);
+    await setSparkPermissions({ [key]: !streak?.permissions?.[key] });
     setSharing(false);
   };
 
   const handleShare = async () => {
+    if (!synthesisContent.trim()) return;
     setSharing(true);
-    const success = await shareSpark();
+    const success = await captureMomentum("journal", synthesisContent);
     setSharing(false);
     if (success) {
       setJustShared(true);
+      setIsSynthesizing(false);
+      setSynthesisContent("");
       setTimeout(() => setJustShared(false), 3000);
     }
   };
 
-  const needsOnboarding = streak && !streak.defaultSparkMode;
+  const needsOnboarding = streak && !streak.permissions;
 
   if (needsOnboarding || showSettings) {
     return (
@@ -73,26 +81,26 @@ export default function StreakHub() {
           </h2>
 
           <div className="flex flex-col gap-10">
-            {/* FOOTPRINT / PRIVACY MODE SECTION */}
             <section>
               <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-4">
-                Footprint (Privacy Mode)
+                Streak Permissions
               </h4>
               <div className="flex flex-col rounded-2xl bg-[#111111] border border-gray-800/50 overflow-hidden">
                 <div className="flex items-center justify-between p-5 border-b border-gray-800/50 hover:bg-white/5 transition-colors">
                   <div className="flex items-center gap-4">
                     {/* @ts-ignore dynamic import */}
-                    <Icons.Ghost size={20} className="text-gray-400" />
+                    <Icons.Activity size={20} className="text-emerald-400" />
                     <div>
-                      <p className="text-base font-bold text-white">Anonymous</p>
-                      <p className="text-xs text-gray-400">Just show activity. Content remains hidden.</p>
+                      <p className="text-base font-bold text-white">Show Active Status</p>
+                      <p className="text-xs text-gray-400">Let partners see that you synthesized today.</p>
                     </div>
                   </div>
                   <button
-                    onClick={() => handleSetMode("ghost")}
-                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.defaultSparkMode === "ghost" ? "bg-[var(--muse-accent)]" : "bg-gray-800"}`}
+                    type="button"
+                    onClick={() => handleSetPermission("show_active")}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.permissions?.show_active ? "bg-emerald-500" : "bg-gray-800"}`}
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.defaultSparkMode === "ghost" ? "translate-x-6" : "translate-x-0"}`} />
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.permissions?.show_active ? "translate-x-6" : "translate-x-0"}`} />
                   </button>
                 </div>
 
@@ -101,32 +109,52 @@ export default function StreakHub() {
                     {/* @ts-ignore dynamic import */}
                     <Icons.Sparkles size={20} className="text-indigo-400" />
                     <div>
-                      <p className="text-base font-bold text-white">Mood Only</p>
-                      <p className="text-xs text-gray-400">Share a colorful aura representing emotion.</p>
+                      <p className="text-base font-bold text-white">Show Mood Aura</p>
+                      <p className="text-xs text-gray-400">Share a colorful aura representing your emotion.</p>
                     </div>
                   </div>
                   <button
-                    onClick={() => handleSetMode("aura")}
-                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.defaultSparkMode === "aura" ? "bg-indigo-500" : "bg-gray-800"}`}
+                    type="button"
+                    onClick={() => handleSetPermission("show_mood")}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.permissions?.show_mood ? "bg-indigo-500" : "bg-gray-800"}`}
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.defaultSparkMode === "aura" ? "translate-x-6" : "translate-x-0"}`} />
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.permissions?.show_mood ? "translate-x-6" : "translate-x-0"}`} />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-5 border-b border-gray-800/50 hover:bg-white/5 transition-colors">
+                  <div className="flex items-center gap-4">
+                    {/* @ts-ignore dynamic import */}
+                    <Icons.Hash size={20} className="text-canvas-primary" />
+                    <div>
+                      <p className="text-base font-bold text-white">Show Room Titles</p>
+                      <p className="text-xs text-gray-400">Display the names of rooms you create.</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSetPermission("show_room_titles")}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.permissions?.show_room_titles ? "bg-canvas-primary" : "bg-gray-800"}`}
+                  >
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.permissions?.show_room_titles ? "translate-x-6" : "translate-x-0"}`} />
                   </button>
                 </div>
 
                 <div className="flex items-center justify-between p-5 hover:bg-white/5 transition-colors">
                   <div className="flex items-center gap-4">
                     {/* @ts-ignore dynamic import */}
-                    <Icons.Eye size={20} className="text-canvas-primary" />
+                    <Icons.Eye size={20} className="text-rose-400" />
                     <div>
-                      <p className="text-base font-bold text-white">Public</p>
-                      <p className="text-xs text-gray-400">Show a blurred preview of your synthesis.</p>
+                      <p className="text-base font-bold text-white">Show Journal Previews</p>
+                      <p className="text-xs text-gray-400">Show short snippets of your journal entries.</p>
                     </div>
                   </div>
                   <button
-                    onClick={() => handleSetMode("clear")}
-                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.defaultSparkMode === "clear" ? "bg-canvas-primary" : "bg-gray-800"}`}
+                    type="button"
+                    onClick={() => handleSetPermission("show_journal_previews")}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.permissions?.show_journal_previews ? "bg-rose-500" : "bg-gray-800"}`}
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.defaultSparkMode === "clear" ? "translate-x-6" : "translate-x-0"}`} />
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.permissions?.show_journal_previews ? "translate-x-6" : "translate-x-0"}`} />
                   </button>
                 </div>
               </div>
@@ -169,7 +197,7 @@ export default function StreakHub() {
             </section>
           </div>
 
-          {needsOnboarding && streak?.defaultSparkMode && (
+          {needsOnboarding && (
             <div className="mt-12 flex justify-end">
               <button
                 type="button"
@@ -244,18 +272,67 @@ export default function StreakHub() {
             <p className="text-xl font-bold text-[var(--muse-text)]">Spark Shared</p>
             <p className="text-sm text-[var(--muse-muted)]">Momentum captured.</p>
           </div>
+        ) : isSynthesizing ? (
+          <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-4">
+            <textarea
+              value={synthesisContent}
+              onInput={(e) => setSynthesisContent(e.currentTarget.value)}
+              placeholder="What did you learn or synthesize today?"
+              className="w-full bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-2xl p-4 text-[var(--muse-text)] focus:border-[var(--muse-accent)] outline-none resize-none h-24 text-sm"
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setIsSynthesizing(false)}
+                className="flex-1 py-3 rounded-full bg-transparent border border-[var(--muse-border)] text-[var(--muse-text)] font-bold text-sm hover:bg-[var(--muse-surface)] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleShare}
+                disabled={sharing || !synthesisContent.trim()}
+                className="flex-1 py-3 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-sm shadow-md hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50"
+              >
+                {sharing ? "Capturing..." : "Capture"}
+              </button>
+            </div>
+          </div>
         ) : (
           <button
             type="button"
-            onClick={handleShare}
-            disabled={sharing}
-            className="px-8 py-4 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-lg shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.4)] hover:shadow-[0_0_50px_rgba(var(--muse-accent-rgb),0.6)] hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 flex items-center gap-3 cursor-pointer"
+            onClick={() => setIsSynthesizing(true)}
+            className="px-8 py-4 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-lg shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.4)] hover:shadow-[0_0_50px_rgba(var(--muse-accent-rgb),0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 cursor-pointer"
           >
             {/* @ts-ignore dynamic import */}
             <Icons.Zap size={20} />
-            Share Spark
+            Quick Synthesis
           </button>
         )}
+
+        {/* Momentum Feed */}
+        <div className="w-full max-w-2xl mx-auto mt-16 px-6">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-6 text-center">Daily Momentum Feed</h4>
+          {momentumFeedSignal.value.length === 0 ? (
+            <p className="text-center text-sm text-[var(--muse-muted)] italic">No momentum captured yet today. Share a spark to begin.</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {momentumFeedSignal.value.map((item, i) => (
+                <div key={i} className="p-5 rounded-[2rem] bg-[var(--muse-surface)] border border-[var(--muse-border)] flex flex-col gap-2 relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--muse-accent)] to-purple-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-2 mb-1">
+                    {/* @ts-ignore dynamic import */}
+                    {item.type === "journal" ? <Icons.BookOpen size={14} className="text-[var(--muse-muted)]" /> : <Icons.LayoutGrid size={14} className="text-[var(--muse-muted)]" />}
+                    <p className="text-xs font-bold text-[var(--muse-muted)] uppercase tracking-wider">{item.type === "journal" ? "Journal Entry" : "Room Created"}</p>
+                    <span className="text-[10px] text-gray-600 ml-auto">{new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  </div>
+                  <p className="text-base text-[var(--muse-text)] leading-relaxed">{item.content}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Social / Entanglements Section */}
@@ -275,7 +352,11 @@ export default function StreakHub() {
           {partnerStreaks.length > 0 ? (
             <div className="flex overflow-x-auto pb-6 -mx-6 px-6 gap-4 snap-x hide-scrollbar">
               {partnerStreaks.map((pStreak) => (
-                <div key={pStreak.id} className="min-w-[220px] max-w-[260px] p-5 rounded-[2rem] bg-[var(--muse-surface)] border border-[var(--muse-border)] flex flex-col items-center gap-4 hover:border-[var(--muse-accent)] transition-colors cursor-pointer group snap-center text-center">
+                <div 
+                  key={pStreak.id} 
+                  onClick={() => setSelectedPartner(pStreak)}
+                  className="min-w-[220px] max-w-[260px] p-5 rounded-[2rem] bg-[var(--muse-surface)] border border-[var(--muse-border)] flex flex-col items-center gap-4 hover:border-[var(--muse-accent)] transition-colors cursor-pointer group snap-center text-center"
+                >
                   <div className="flex items-center justify-between w-full px-2">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30 flex-shrink-0">
                       <span className="text-lg font-bold text-indigo-400">{pStreak.partnerName.charAt(0)}</span>
@@ -312,6 +393,65 @@ export default function StreakHub() {
           )}
         </div>
       </div>
+
+      {/* Partner Activity Modal */}
+      {selectedPartner && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedPartner(null)} />
+          <div className="w-full max-w-md bg-[#111111] border border-gray-800 rounded-3xl p-8 relative z-10 shadow-2xl animate-in zoom-in-95 duration-300">
+            <button 
+              type="button"
+              onClick={() => setSelectedPartner(null)}
+              className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors"
+            >
+              {/* @ts-ignore dynamic import */}
+              <Icons.X size={24} />
+            </button>
+            
+            <div className="flex flex-col items-center mb-8">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30 mb-4">
+                <span className="text-3xl font-bold text-indigo-400">{selectedPartner.partnerName.charAt(0)}</span>
+              </div>
+              <h3 className="text-2xl font-bold text-white">{selectedPartner.partnerName}</h3>
+              <div className="flex items-center gap-2 mt-2">
+                {/* @ts-ignore dynamic import */}
+                <Icons.Flame size={16} className="text-orange-500" />
+                <span className="text-sm font-bold text-orange-500">{selectedPartner.count} Day Streak</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-4 border-b border-gray-800 pb-2">Latest Activity</h4>
+              
+              {/* In a real scenario, this is filtered by their streak_permissions JSON on the backend */}
+              <div className="p-4 rounded-2xl bg-[#0a0a0a] border border-gray-800">
+                <div className="flex items-center gap-2 mb-2">
+                  {/* @ts-ignore dynamic import */}
+                  <Icons.Activity size={14} className="text-emerald-500" />
+                  <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Active Today</span>
+                </div>
+                <p className="text-sm text-gray-300">{selectedPartner.history[0]?.action || "Synthesized a new thought."}</p>
+              </div>
+              
+              <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-3">
+                 {/* @ts-ignore dynamic import */}
+                 <Icons.Sparkles size={16} className="text-indigo-400" />
+                 <div>
+                   <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-1">Current Mood Aura</p>
+                   <p className="text-sm text-indigo-200">Deep Focus</p>
+                 </div>
+              </div>
+            </div>
+            
+            <button
+              type="button"
+              className="w-full mt-8 py-3 rounded-full bg-white text-black font-bold text-sm hover:scale-105 active:scale-95 transition-transform"
+            >
+              Send Resonance Spark
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

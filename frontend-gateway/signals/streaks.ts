@@ -25,6 +25,19 @@ export interface UserStreak {
   createdAt: number;
 }
 
+export interface StreakPermissions {
+  show_active: boolean;
+  show_mood: boolean;
+  show_room_titles: boolean;
+  show_journal_previews: boolean;
+}
+
+export interface MomentumFeedItem {
+  type: string;
+  created_at: string;
+  content: string;
+}
+
 export interface GlobalStreak {
   currentStreak: number;
   longestStreak: number;
@@ -33,10 +46,11 @@ export interface GlobalStreak {
   streakLevel: string;
   freezeCount: number;
   milestonesUnlocked: number[];
-  defaultSparkMode?: "ghost" | "aura" | "clear" | null;
+  permissions: StreakPermissions;
 }
 
 export const globalStreakSignal = signal<GlobalStreak | null>(null);
+export const momentumFeedSignal = signal<MomentumFeedItem[]>([]);
 
 // Seed data so the feature isn't empty on first visit
 const SEED_STREAKS: UserStreak[] = [
@@ -194,7 +208,12 @@ export async function loadGlobalStreak() {
       streakLevel: "Aura",
       freezeCount: 2,
       milestonesUnlocked: [],
-      defaultSparkMode: null,
+      permissions: {
+        show_active: true,
+        show_mood: true,
+        show_room_titles: false,
+        show_journal_previews: false,
+      },
     };
     return;
   }
@@ -211,22 +230,36 @@ export async function loadGlobalStreak() {
         streakLevel: data.streak.streak_level,
         freezeCount: data.streak.freeze_count,
         milestonesUnlocked: data.streak.milestones_unlocked || [],
-        defaultSparkMode: data.streak.default_spark_mode,
+        permissions: data.streak.permissions,
       };
+      if (data.feed) {
+        momentumFeedSignal.value = data.feed;
+      }
     }
   } catch (e) {
     console.error("Failed to load global streak", e);
   }
 }
 
-/** Set the default spark privacy mode */
-export async function setSparkMode(privacyMode: "ghost" | "aura" | "clear") {
+/** Update the streak privacy permissions */
+export async function setSparkPermissions(permissions: Partial<StreakPermissions>) {
   const isDemo = userSignal.value?.id === "__demo__";
+  
+  const updatedPermissions = {
+    ...(globalStreakSignal.value?.permissions || {
+      show_active: true,
+      show_mood: false,
+      show_room_titles: false,
+      show_journal_previews: false
+    }),
+    ...permissions
+  };
+
   if (isDemo) {
     if (globalStreakSignal.value) {
       globalStreakSignal.value = {
         ...globalStreakSignal.value,
-        defaultSparkMode: privacyMode,
+        permissions: updatedPermissions,
       };
     }
     return true;
@@ -236,7 +269,7 @@ export async function setSparkMode(privacyMode: "ghost" | "aura" | "clear") {
     const res = await safeFetch("/api/user/streaks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "set_mode", privacyMode }),
+      body: JSON.stringify({ action: "set_permissions", permissions: updatedPermissions }),
       entity: "settings",
     });
 
@@ -244,20 +277,19 @@ export async function setSparkMode(privacyMode: "ghost" | "aura" | "clear") {
       if (globalStreakSignal.value) {
         globalStreakSignal.value = {
           ...globalStreakSignal.value,
-          defaultSparkMode: privacyMode,
+          permissions: updatedPermissions,
         };
       }
       return true;
     }
   } catch (e) {
-    console.error("Failed to set spark mode", e);
+    console.error("Failed to set spark permissions", e);
   }
   return false;
 }
 
-/** Share a spark to increment global streak */
-export async function shareSpark() {
-  const privacyMode = globalStreakSignal.value?.defaultSparkMode || "ghost";
+/** Capture Momentum (Log a real action to extend streak) */
+export async function captureMomentum(type: "journal" | "room", content: string) {
   const isDemo = userSignal.value?.id === "__demo__";
   
   if (isDemo) {
@@ -267,6 +299,11 @@ export async function shareSpark() {
         currentStreak: globalStreakSignal.value.currentStreak + 1,
         longestStreak: Math.max(globalStreakSignal.value.currentStreak + 1, globalStreakSignal.value.longestStreak),
       };
+      
+      momentumFeedSignal.value = [
+        { type, created_at: new Date().toISOString(), content },
+        ...momentumFeedSignal.value
+      ];
     }
     return true;
   }
@@ -275,7 +312,7 @@ export async function shareSpark() {
     const res = await safeFetch("/api/user/streaks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "share_spark", privacyMode }),
+      body: JSON.stringify({ action: "capture_momentum", type, content }),
       entity: "streak",
     });
 
@@ -287,10 +324,16 @@ export async function shareSpark() {
           currentStreak: data.newStreak,
         };
       }
+      
+      // Prepend to local feed
+      momentumFeedSignal.value = [
+        { type, created_at: new Date().toISOString(), content },
+        ...momentumFeedSignal.value
+      ];
       return true;
     }
   } catch (e) {
-    console.error("Failed to share spark", e);
+    console.error("Failed to capture momentum", e);
   }
   return false;
 }
