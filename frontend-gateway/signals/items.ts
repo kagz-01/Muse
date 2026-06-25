@@ -1,5 +1,6 @@
 import { signal } from "@preact/signals";
 import { removeItemFromThread, threadsSignal } from "./threads.ts";
+import { userSignal } from "./user.ts";
 
 export interface Item {
   id: string;
@@ -9,9 +10,8 @@ export interface Item {
   note?: string;
   isPublic: boolean;
   createdAt: string;
-  // PERSISTENCE METADATA
-  storedContent?: string; // The extracted raw data (text, JSON, etc.)
-  localMediaPath?: string; // Path to the locally stored image/video
+  storedContent?: string;
+  localMediaPath?: string;
   dataProvenance: {
     platform: string;
     extractedAt: string;
@@ -70,7 +70,6 @@ const INITIAL_ITEMS: Item[] = [
 
 function loadItems(): Item[] {
   if (typeof localStorage === "undefined") return INITIAL_ITEMS;
-
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return INITIAL_ITEMS;
@@ -83,42 +82,84 @@ function loadItems(): Item[] {
 
 export const itemsSignal = signal<Item[]>(loadItems());
 
+// Keep localStorage cache for demo mode only
 if (typeof localStorage !== "undefined") {
   itemsSignal.subscribe((items: Item[]) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch {
-      // ignore write errors in restricted environments
+    const isDemo = userSignal.value?.id === "__demo__";
+    if (isDemo) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      } catch { /* ignore */ }
     }
   });
 }
 
-export function addItem(
+export async function syncItemsFromBackend(): Promise<void> {
+  const isDemo = userSignal.value?.id === "__demo__";
+  if (isDemo) return;
+  try {
+    const response = await fetch("/api/items");
+    if (response.ok) {
+      const items = await response.json();
+      itemsSignal.value = items;
+    }
+  } catch (e) {
+    console.error("Failed to sync items from backend:", e);
+  }
+}
+
+export async function addItem(
   item: Omit<Item, "id" | "createdAt" | "dataProvenance">,
 ) {
-  const newItem: Item = {
-    ...item,
-    id: "i" + (itemsSignal.value.length + 1),
-    createdAt: new Date().toISOString(),
-    dataProvenance: {
-      platform: item.sourceUrl.includes("x.com") ? "X" : "Web",
-      extractedAt: new Date().toISOString(),
-      integrityHash: "sha256-" + Math.random().toString(16).slice(2, 10),
-    },
-  };
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  if (isDemo) {
+    const newItem: Item = {
+      ...item,
+      id: "i" + (itemsSignal.value.length + 1),
+      createdAt: new Date().toISOString(),
+      dataProvenance: {
+        platform: item.sourceUrl.includes("x.com") ? "X" : "Web",
+        extractedAt: new Date().toISOString(),
+        integrityHash: "sha256-" + Math.random().toString(16).slice(2, 10),
+      },
+    };
+    itemsSignal.value = [newItem, ...itemsSignal.value];
+    return;
+  }
+
+  const response = await fetch("/api/items", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(item),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to add item: ${await response.text()}`);
+  }
+
+  const { item: newItem } = await response.json();
   itemsSignal.value = [newItem, ...itemsSignal.value];
 }
 
-export function deleteItem(id: string) {
-  // Remove the item from the store
+export async function deleteItem(id: string) {
+  const isDemo = userSignal.value?.id === "__demo__";
+
   itemsSignal.value = itemsSignal.value.filter((i: Item) => i.id !== id);
 
-  // Remove references to this item from all threads
   threadsSignal.value.forEach((t) => {
     if (t.itemIds.includes(id)) {
       removeItemFromThread(t.id, id);
     }
   });
+
+  if (!isDemo && !id.startsWith("i")) {
+    try {
+      await fetch(`/api/items/${id}`, { method: "DELETE" });
+    } catch (e) {
+      console.error("Failed to delete item on backend:", e);
+    }
+  }
 }
 
 export function resetItems() {
