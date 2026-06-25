@@ -8,9 +8,9 @@ import { DEMO_USER } from "../../../utils/demo_data.ts";
 const USER_FOLLOWS_SCHEMA = `
   CREATE TABLE IF NOT EXISTS user_follows (
     follower_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    following_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    followed_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (follower_id, following_id)
+    PRIMARY KEY (follower_id, followed_id)
   )
 `;
 
@@ -90,7 +90,7 @@ export const handler = async (req: Request) => {
     const followingRows = await queryDB(
       `SELECT u.id, u.username, u.email, u.avatar_url, u.resonance_score
        FROM user_follows f
-       JOIN users u ON u.id = f.following_id
+       JOIN users u ON u.id = f.followed_id
        WHERE f.follower_id = $1
        ORDER BY f.created_at DESC`,
       currentUserId,
@@ -100,7 +100,7 @@ export const handler = async (req: Request) => {
       `SELECT u.id, u.username, u.email, u.avatar_url, u.resonance_score
        FROM user_follows f
        JOIN users u ON u.id = f.follower_id
-       WHERE f.following_id = $1
+       WHERE f.followed_id = $1
        ORDER BY f.created_at DESC`,
       currentUserId,
     );

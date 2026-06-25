@@ -1,8 +1,8 @@
-import { executeDB } from "../../utils/db.ts";
+import { executeDB } from "../../../utils/db.ts";
 import {
   isDemoUser,
   requireDemoOrSession,
-} from "../../utils/auth.ts";
+} from "../../../utils/auth.ts";
 
 interface LinkMetadata {
   title: string;

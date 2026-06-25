@@ -1,10 +1,10 @@
 import { FreshContext } from "$fresh/server.ts";
-import { executeDB, queryDB } from "../../../utils/db.ts";
+import { executeDB, queryDB } from "../../../../utils/db.ts";
 import {
   isDemoUser,
   requireDemoOrSession,
-} from "../../../utils/auth.ts";
-import { DEMO_CIRCLES } from "../../../utils/demo_data.ts";
+} from "../../../../utils/auth.ts";
+import { DEMO_CIRCLES } from "../../../../utils/demo_data.ts";
 
 const CIRCLE_MEMBERS_SCHEMA = `
   CREATE TABLE IF NOT EXISTS circle_members (

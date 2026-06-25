@@ -8,9 +8,9 @@ import { DEMO_USER } from "../../../utils/demo_data.ts";
 const USER_FOLLOWS_SCHEMA = `
   CREATE TABLE IF NOT EXISTS user_follows (
     follower_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    following_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    followed_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (follower_id, following_id)
+    PRIMARY KEY (follower_id, followed_id)
   )
 `;
 
@@ -65,9 +65,9 @@ export const handler = async (req: Request) => {
     }
 
     await executeDB(
-      `INSERT INTO user_follows (follower_id, following_id)
+      `INSERT INTO user_follows (follower_id, followed_id)
        VALUES ($1, $2)
-       ON CONFLICT (follower_id, following_id) DO NOTHING`,
+       ON CONFLICT (follower_id, followed_id) DO NOTHING`,
       currentUserId,
       targetUserId,
     );

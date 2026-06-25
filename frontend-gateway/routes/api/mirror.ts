@@ -1,9 +1,9 @@
-import { executeDB, queryDB } from "../utils/db.ts";
+import { executeDB, queryDB } from "../../utils/db.ts";
 import {
   isDemoUser,
   requireDemoOrSession,
-} from "../utils/auth.ts";
-import { DEMO_USER } from "../utils/demo_data.ts";
+} from "../../utils/auth.ts";
+import { DEMO_USER } from "../../utils/demo_data.ts";
 
 const USER_FOLLOWS_SCHEMA = `
   CREATE TABLE IF NOT EXISTS user_follows (
