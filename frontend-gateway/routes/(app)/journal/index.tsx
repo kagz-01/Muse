@@ -3,11 +3,38 @@ import { JournalGallery } from "../../../islands/journal/index.ts";
 import { type JournalEntry } from "../../../signals/journal.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
 import { queryDB } from "../../../utils/db.ts";
+import { DEMO_JOURNALS, DEMO_USER } from "../../../utils/demo_data.ts";
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const handler: Handlers = {
   async GET(req, ctx) {
     const userId = await getSessionUser(req);
     if (!userId) {
+      return new Response("", { status: 303, headers: { location: "/auth" } });
+    }
+
+    if (userId === DEMO_USER.id) {
+      const demoEntries = DEMO_JOURNALS.map((e) => ({
+        id: e.id,
+        body: e.content,
+        mood: e.mood,
+        tags: e.tags,
+        linkedItemIds: [],
+        isFavorited: false,
+        isPinned: false,
+        isArchived: false,
+        isPublic: false,
+        createdAt: new Date(e.created_at).getTime(),
+        updatedAt: new Date(e.created_at).getTime(),
+        wordCount: e.content.trim().split(/\s+/).filter(Boolean).length,
+      }));
+      return ctx.render({ entries: demoEntries });
+    }
+
+    if (!UUID_RE.test(userId)) {
+      // Clear invalid session by redirecting to auth which will override it or require new login
       return new Response("", { status: 303, headers: { location: "/auth" } });
     }
 
