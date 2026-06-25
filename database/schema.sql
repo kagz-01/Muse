@@ -65,6 +65,16 @@ CREATE TABLE items (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
+-- 3.5 ITEM ANNOTATIONS (Parallel collaboration notes on an item)
+CREATE TABLE item_annotations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    item_id UUID REFERENCES items(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    annotation TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
 -- 4. THREADS TABLE (AI Synthesis)
 CREATE TABLE threads (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

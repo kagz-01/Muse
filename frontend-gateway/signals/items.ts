@@ -22,6 +22,14 @@ export interface Item {
   authorId?: string;
   authorName?: string;
   authorAvatar?: string;
+  annotations?: {
+    id: string;
+    annotation: string;
+    createdAt: string;
+    authorId: string;
+    authorName: string;
+    authorAvatar: string;
+  }[];
 }
 
 const STORAGE_KEY = "muse_items_v2";
@@ -198,4 +206,64 @@ registerIdSwapCallback("item", (tempId, realId) => {
 
 export function resetItems() {
   itemsSignal.value = [];
+}
+
+export async function fetchAnnotations(itemId: string) {
+  try {
+    const response = await fetch(`/api/items/${itemId}/annotate`);
+    if (response.ok) {
+      const data = await response.json();
+      itemsSignal.value = itemsSignal.value.map((i: Item) => 
+        i.id === itemId ? { ...i, annotations: data.annotations } : i
+      );
+    }
+  } catch (e) {
+    console.error("Failed to fetch annotations:", e);
+  }
+}
+
+export async function annotateItem(itemId: string, annotationText: string) {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  if (isDemo) {
+    const newAnnotation = {
+      id: "a" + Math.random().toString(16).slice(2),
+      annotation: annotationText,
+      createdAt: new Date().toISOString(),
+      authorId: "__demo__",
+      authorName: "Demo User",
+      authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=DemoUser",
+    };
+    
+    itemsSignal.value = itemsSignal.value.map((i: Item) => {
+      if (i.id === itemId) {
+        return { ...i, annotations: [...(i.annotations || []), newAnnotation] };
+      }
+      return i;
+    });
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/items/${itemId}/annotate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ annotation: annotationText }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      itemsSignal.value = itemsSignal.value.map((i: Item) => {
+        if (i.id === itemId) {
+          return { ...i, annotations: [...(i.annotations || []), data.annotation] };
+        }
+        return i;
+      });
+    } else {
+      throw new Error(await response.text());
+    }
+  } catch (e) {
+    console.error("Failed to post annotation:", e);
+    throw e;
+  }
 }

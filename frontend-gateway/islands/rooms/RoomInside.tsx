@@ -11,6 +11,7 @@ import {
 import { addItem, deleteItem, itemsSignal } from "../../signals/items.ts";
 import { addThread, type ThreadMood } from "../../signals/threads.ts";
 import EditRoomModal from "../modals/EditRoomModal.tsx";
+import ArtifactAnnotations from "./ArtifactAnnotations.tsx";
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import ArtifactExtractor from "../../components/rooms/ArtifactExtractor.tsx";
 import AnalysisIndicator from "../../components/ai-feedback/AnalysisIndicator.tsx";
@@ -871,6 +872,9 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                                     <Icons.Trash2 size={14} />
                                   </button>
                                 </div>
+                                
+                                {/* Parallel Annotations */}
+                                <ArtifactAnnotations item={item} theme={theme} />
                               </div>
                             </div>
                           </div>
