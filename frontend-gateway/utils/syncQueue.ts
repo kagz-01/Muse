@@ -10,7 +10,7 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 5000;
 
 export type SyncMethod = "POST" | "PUT" | "DELETE" | "PATCH";
-export type SyncEntity = "journal" | "room" | "thread" | "item" | "settings";
+export type SyncEntity = "journal" | "room" | "thread" | "item" | "settings" | "streak";
 
 export interface SyncOperation {
   /** Unique ID for this queued operation */

@@ -64,6 +64,7 @@ import * as $api_user_change_password from "./routes/api/user/change-password.ts
 import * as $api_user_delete from "./routes/api/user/delete.ts";
 import * as $api_user_export from "./routes/api/user/export.ts";
 import * as $api_user_settings from "./routes/api/user/settings.ts";
+import * as $api_user_streaks from "./routes/api/user/streaks.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $dashboard_index from "./routes/dashboard/index.tsx";
 import * as $dashboard_rooms_id_ from "./routes/dashboard/rooms/[id].tsx";
@@ -149,6 +150,7 @@ import * as $rooms_index from "./islands/rooms/index.ts";
 import * as $settings_PrivacyManager from "./islands/settings/PrivacyManager.tsx";
 import * as $settings_Settings from "./islands/settings/Settings.tsx";
 import * as $settings_index from "./islands/settings/index.ts";
+import * as $streaks_StreakDashboard from "./islands/streaks/StreakDashboard.tsx";
 import * as $streaks_StreakHub from "./islands/streaks/StreakHub.tsx";
 import * as $threads_ThreadInside from "./islands/threads/ThreadInside.tsx";
 import * as $threads_ThreadsGallery from "./islands/threads/ThreadsGallery.tsx";
@@ -219,6 +221,7 @@ const manifest = {
     "./routes/api/user/delete.ts": $api_user_delete,
     "./routes/api/user/export.ts": $api_user_export,
     "./routes/api/user/settings.ts": $api_user_settings,
+    "./routes/api/user/streaks.ts": $api_user_streaks,
     "./routes/auth.tsx": $auth,
     "./routes/dashboard/index.tsx": $dashboard_index,
     "./routes/dashboard/rooms/[id].tsx": $dashboard_rooms_id_,
@@ -311,6 +314,7 @@ const manifest = {
     "./islands/settings/PrivacyManager.tsx": $settings_PrivacyManager,
     "./islands/settings/Settings.tsx": $settings_Settings,
     "./islands/settings/index.ts": $settings_index,
+    "./islands/streaks/StreakDashboard.tsx": $streaks_StreakDashboard,
     "./islands/streaks/StreakHub.tsx": $streaks_StreakHub,
     "./islands/threads/ThreadInside.tsx": $threads_ThreadInside,
     "./islands/threads/ThreadsGallery.tsx": $threads_ThreadsGallery,

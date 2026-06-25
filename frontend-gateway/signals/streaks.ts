@@ -1,4 +1,6 @@
 import { signal } from "@preact/signals";
+import { userSignal } from "./user.ts";
+import { safeFetch } from "../utils/safeFetch.ts";
 
 export type StreakState = "ignition" | "resonance" | "fading" | "broken";
 
@@ -22,6 +24,18 @@ export interface UserStreak {
   history: StreakHistory[];
   createdAt: number;
 }
+
+export interface GlobalStreak {
+  currentStreak: number;
+  longestStreak: number;
+  totalJournalDays: number;
+  lastEntryDate: string;
+  streakLevel: string;
+  freezeCount: number;
+  milestonesUnlocked: number[];
+}
+
+export const globalStreakSignal = signal<GlobalStreak | null>(null);
 
 // Seed data so the feature isn't empty on first visit
 const SEED_STREAKS: UserStreak[] = [
@@ -165,4 +179,77 @@ export function pruneBrokenStreaks(): number {
     getStreakState(s) !== "broken"
   );
   return before - streaksSignal.value.length;
+}
+
+/** Load global streak from backend */
+export async function loadGlobalStreak() {
+  const isDemo = userSignal.value?.id === "__demo__";
+  if (isDemo) {
+    globalStreakSignal.value = {
+      currentStreak: 12,
+      longestStreak: 45,
+      totalJournalDays: 120,
+      lastEntryDate: new Date().toISOString().split("T")[0],
+      streakLevel: "Aura",
+      freezeCount: 2,
+      milestonesUnlocked: [],
+    };
+    return;
+  }
+
+  try {
+    const res = await safeFetch("/api/user/streaks", { entity: "streak" });
+    if (res.ok) {
+      const data = await res.json();
+      globalStreakSignal.value = {
+        currentStreak: data.streak.current_streak,
+        longestStreak: data.streak.longest_streak,
+        totalJournalDays: data.streak.total_journal_days,
+        lastEntryDate: data.streak.last_entry_date,
+        streakLevel: data.streak.streak_level,
+        freezeCount: data.streak.freeze_count,
+        milestonesUnlocked: data.streak.milestones_unlocked || [],
+      };
+    }
+  } catch (e) {
+    console.error("Failed to load global streak", e);
+  }
+}
+
+/** Share a spark to increment global streak */
+export async function shareSpark(privacyMode: "ghost" | "aura" | "clear") {
+  const isDemo = userSignal.value?.id === "__demo__";
+  if (isDemo) {
+    if (globalStreakSignal.value) {
+      globalStreakSignal.value = {
+        ...globalStreakSignal.value,
+        currentStreak: globalStreakSignal.value.currentStreak + 1,
+        longestStreak: Math.max(globalStreakSignal.value.currentStreak + 1, globalStreakSignal.value.longestStreak),
+      };
+    }
+    return true;
+  }
+
+  try {
+    const res = await safeFetch("/api/user/streaks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "share_spark", privacyMode }),
+      entity: "streak",
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (globalStreakSignal.value) {
+        globalStreakSignal.value = {
+          ...globalStreakSignal.value,
+          currentStreak: data.newStreak,
+        };
+      }
+      return true;
+    }
+  } catch (e) {
+    console.error("Failed to share spark", e);
+  }
+  return false;
 }
