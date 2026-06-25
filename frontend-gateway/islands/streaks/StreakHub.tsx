@@ -35,7 +35,6 @@ export default function StreakHub() {
     setSharing(true);
     await setSparkMode(mode);
     setSharing(false);
-    setShowSettings(false);
   };
 
   const handleShare = async () => {
@@ -52,7 +51,7 @@ export default function StreakHub() {
 
   if (needsOnboarding || showSettings) {
     return (
-      <div className="w-full min-h-screen flex flex-col p-6 lg:p-12 bg-[#0a0a0a] animate-in fade-in duration-500">
+      <div className="w-full min-h-screen flex flex-col p-6 lg:p-12 pb-32 bg-[#0a0a0a] animate-in fade-in duration-500 overflow-y-auto">
         <div className="max-w-4xl w-full mx-auto relative mt-8 lg:mt-16">
           {!needsOnboarding && (
             <button
@@ -203,7 +202,7 @@ export default function StreakHub() {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col pb-24 relative overflow-hidden bg-[var(--muse-bg)]">
+    <div className="w-full min-h-screen flex flex-col pb-32 relative overflow-y-auto overflow-x-hidden bg-[var(--muse-bg)]">
       {/* Settings Button */}
       <div className="absolute top-6 right-6 z-50">
         <button
@@ -260,46 +259,58 @@ export default function StreakHub() {
       </div>
 
       {/* Social / Entanglements Section */}
-      <div className="w-full max-w-5xl mx-auto px-6 py-12 relative z-10 border-t border-[var(--muse-border)]">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-[var(--muse-text)] font-serif italic">Entanglements</h2>
-          <button className="text-sm font-bold uppercase tracking-widest text-[var(--muse-accent)] hover:text-[var(--muse-accent-dark)] transition-colors">
-            Manage Network
-          </button>
-        </div>
-
-        {partnerStreaks.length > 0 ? (
-          <div className="flex overflow-x-auto pb-6 -mx-6 px-6 gap-6 snap-x hide-scrollbar">
-            {partnerStreaks.map((pStreak) => (
-              <div key={pStreak.id} className="min-w-[300px] max-w-[350px] p-6 rounded-3xl bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center gap-4 hover:border-[var(--muse-accent)] transition-colors cursor-pointer group snap-center">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30 flex-shrink-0">
-                  <span className="text-xl font-bold text-indigo-400">{pStreak.partnerName.charAt(0)}</span>
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <p className="text-lg font-bold text-[var(--muse-text)]">{pStreak.partnerName}</p>
-                  <p className="text-sm text-[var(--muse-muted)] truncate">{pStreak.history[0]?.action || "No history yet"}</p>
-                </div>
-                <div className="flex flex-col items-center justify-center flex-shrink-0">
-                  {/* @ts-ignore dynamic import */}
-                  <Icons.Flame size={20} className="text-orange-500 mb-1" />
-                  <span className="text-lg font-black text-[var(--muse-text)]">{pStreak.count}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="w-full py-12 text-center rounded-3xl bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] border-dashed">
-            {/* @ts-ignore dynamic import */}
-            <Icons.Users size={48} className="mx-auto text-[var(--muse-muted)] mb-4" />
-            <p className="text-lg font-bold text-[var(--muse-text)]">No Entanglements Yet</p>
-            <p className="text-sm text-[var(--muse-muted)] mb-6 max-w-sm mx-auto">
-              Streaks are more powerful when shared. Invite a resonance partner to lock in your momentum together.
-            </p>
-            <button className="px-6 py-3 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors font-medium">
-              Find Partners
+      <div className="w-full px-6 py-12 relative z-10 border-t border-[var(--muse-border)] overflow-hidden">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-[var(--muse-text)] font-serif italic">Entanglements</h2>
+            <button 
+              type="button"
+              onClick={() => alert("Network Management feature is coming soon! You will be able to search for partners and manage invites here.")}
+              className="text-sm font-bold uppercase tracking-widest text-[var(--muse-accent)] hover:text-[var(--muse-accent-dark)] transition-colors"
+            >
+              Manage Network
             </button>
           </div>
-        )}
+
+          {partnerStreaks.length > 0 ? (
+            <div className="flex overflow-x-auto pb-6 -mx-6 px-6 gap-4 snap-x hide-scrollbar">
+              {partnerStreaks.map((pStreak) => (
+                <div key={pStreak.id} className="min-w-[220px] max-w-[260px] p-5 rounded-[2rem] bg-[var(--muse-surface)] border border-[var(--muse-border)] flex flex-col items-center gap-4 hover:border-[var(--muse-accent)] transition-colors cursor-pointer group snap-center text-center">
+                  <div className="flex items-center justify-between w-full px-2">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30 flex-shrink-0">
+                      <span className="text-lg font-bold text-indigo-400">{pStreak.partnerName.charAt(0)}</span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center flex-shrink-0">
+                      {/* @ts-ignore dynamic import */}
+                      <Icons.Flame size={16} className="text-orange-500 mb-0.5" />
+                      <span className="text-lg font-black text-[var(--muse-text)]">{pStreak.count}</span>
+                    </div>
+                  </div>
+                  <div className="w-full">
+                    <p className="text-base font-bold text-[var(--muse-text)]">{pStreak.partnerName}</p>
+                    <p className="text-xs text-[var(--muse-muted)] truncate">{pStreak.history[0]?.action || "No history yet"}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="w-full py-12 text-center rounded-3xl bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] border-dashed">
+              {/* @ts-ignore dynamic import */}
+              <Icons.Users size={48} className="mx-auto text-[var(--muse-muted)] mb-4" />
+              <p className="text-lg font-bold text-[var(--muse-text)]">No Entanglements Yet</p>
+              <p className="text-sm text-[var(--muse-muted)] mb-6 max-w-sm mx-auto">
+                Streaks are more powerful when shared. Invite a resonance partner to lock in your momentum together.
+              </p>
+              <button 
+                type="button"
+                onClick={() => alert("Partner discovery coming soon!")}
+                className="px-6 py-3 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors font-medium"
+              >
+                Find Partners
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
     </div>
