@@ -53,7 +53,10 @@ import * as $api_rooms_create from "./routes/api/rooms/create.ts";
 import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
 import * as $api_threads_synthesize from "./routes/api/threads/synthesize.ts";
+import * as $api_user_change_password from "./routes/api/user/change-password.ts";
 import * as $api_user_delete from "./routes/api/user/delete.ts";
+import * as $api_user_export from "./routes/api/user/export.ts";
+import * as $api_user_settings from "./routes/api/user/settings.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $dashboard_index from "./routes/dashboard/index.tsx";
 import * as $dashboard_rooms_id_ from "./routes/dashboard/rooms/[id].tsx";
@@ -197,7 +200,10 @@ const manifest = {
     "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
     "./routes/api/threads/synthesize.ts": $api_threads_synthesize,
+    "./routes/api/user/change-password.ts": $api_user_change_password,
     "./routes/api/user/delete.ts": $api_user_delete,
+    "./routes/api/user/export.ts": $api_user_export,
+    "./routes/api/user/settings.ts": $api_user_settings,
     "./routes/auth.tsx": $auth,
     "./routes/dashboard/index.tsx": $dashboard_index,
     "./routes/dashboard/rooms/[id].tsx": $dashboard_rooms_id_,

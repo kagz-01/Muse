@@ -380,6 +380,12 @@ export default function Settings() {
   const [customSat, setCustomSatState] = useState(100);
   const [customLight, setCustomLightState] = useState(60);
   const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordStatus, setPasswordStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [passwordErrorMsg, setPasswordErrorMsg] = useState("");
 
   const hasInitialized = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -387,32 +393,65 @@ export default function Settings() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    async function loadSettings() {
+      try {
+        const response = await fetch("/api/user/settings");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.preferences) {
+            if (data.preferences.appearance) {
+              setAppearance({
+                ...DEFAULT_APPEARANCE,
+                ...data.preferences.appearance,
+              });
+            }
+            if (data.preferences.notifications) {
+              setNotifications({
+                ...DEFAULT_NOTIFICATIONS,
+                ...data.preferences.notifications,
+              });
+            }
+            if (data.preferences.dataSettings) {
+              setDataSettings({
+                ...DEFAULT_DATA_SETTINGS,
+                ...data.preferences.dataSettings,
+              });
+            }
+          }
+          if (user) {
+            user.name = data.name || user.name;
+            user.bio = data.bio || user.bio;
+            user.avatarUrl = data.avatarUrl || user.avatarUrl;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load settings:", err);
+      } finally {
+        hasInitialized.current = true;
+      }
+    }
+
+    // Also try to read legacy local storage
     try {
       const raw = globalThis.localStorage?.getItem(STORAGE_KEY);
-      if (!raw) {
-        hasInitialized.current = true;
-        return;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.appearance) {
+          setAppearance({ ...DEFAULT_APPEARANCE, ...parsed.appearance });
+        }
+        if (parsed.notifications) {
+          setNotifications({
+            ...DEFAULT_NOTIFICATIONS,
+            ...parsed.notifications,
+          });
+        }
+        if (parsed.dataSettings) {
+          setDataSettings({ ...DEFAULT_DATA_SETTINGS, ...parsed.dataSettings });
+        }
       }
-      const parsed = JSON.parse(raw) as {
-        appearance?: AppearanceSettings;
-        notifications?: NotificationSettings;
-        dataSettings?: DataSettings;
-      };
+    } catch {}
 
-      if (parsed.appearance) {
-        setAppearance({ ...DEFAULT_APPEARANCE, ...parsed.appearance });
-      }
-      if (parsed.notifications) {
-        setNotifications({ ...DEFAULT_NOTIFICATIONS, ...parsed.notifications });
-      }
-      if (parsed.dataSettings) {
-        setDataSettings({ ...DEFAULT_DATA_SETTINGS, ...parsed.dataSettings });
-      }
-    } catch {
-      // Ignore malformed local settings and use defaults.
-    } finally {
-      hasInitialized.current = true;
-    }
+    loadSettings();
   }, []);
 
   useEffect(() => {
@@ -435,12 +474,23 @@ export default function Settings() {
 
     setSaveStatus("saving");
 
-    saveTimer.current = setTimeout(() => {
+    saveTimer.current = setTimeout(async () => {
       try {
         globalThis.localStorage?.setItem(
           STORAGE_KEY,
           JSON.stringify({ appearance, notifications, dataSettings }),
         );
+
+        await fetch("/api/user/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: user.name,
+            bio: user.bio,
+            avatarUrl: user.avatarUrl,
+            preferences: { appearance, notifications, dataSettings },
+          }),
+        });
       } catch {
         // Best effort persistence.
       }
@@ -523,61 +573,9 @@ export default function Settings() {
   };
 
   const exportData = () => {
-    const payload = {
-      profile: {
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        bio: user.bio,
-        location: user.location,
-        gender: user.gender,
-        pronouns: user.pronouns,
-        birthDate: user.birthDate,
-        occupation: user.occupation,
-        timezone: user.timezone,
-        website: user.website,
-        links: user.links,
-      },
-      publicSettings: user.publicSettings,
-      privacySecurity: user.privacySecurity,
-      appearance,
-      notifications,
-      exportedAt: new Date().toISOString(),
-    };
-
-    const serialized = dataSettings.exportFormat === "csv"
-      ? [
-        "key,value",
-        `name,${JSON.stringify(user.name)}`,
-        `username,${JSON.stringify(user.username)}`,
-        `email,${JSON.stringify(user.email)}`,
-        `location,${JSON.stringify(user.location || "")}`,
-        `gender,${JSON.stringify(user.gender || "")}`,
-        `pronouns,${JSON.stringify(user.pronouns || "")}`,
-        `birthDate,${JSON.stringify(user.birthDate || "")}`,
-        `occupation,${JSON.stringify(user.occupation || "")}`,
-        `timezone,${JSON.stringify(user.timezone || "")}`,
-        `website,${JSON.stringify(user.website || "")}`,
-        `socialLinks,${user.links.length}`,
-        `theme,${appearance.theme}`,
-        `accentColor,${appearance.accentColor}`,
-      ].join("\n")
-      : JSON.stringify(payload, null, 2);
-
-    const mimeType = dataSettings.exportFormat === "csv"
-      ? "text/csv"
-      : "application/json";
-    const ext = dataSettings.exportFormat === "csv" ? "csv" : "json";
-
-    const blob = new Blob([serialized], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `muse-settings-${
-      new Date().toISOString().split("T")[0]
-    }.${ext}`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    // Ping API to trigger download
+    globalThis.location.href =
+      `/api/user/export?format=${dataSettings.exportFormat}`;
 
     setDataSettings((current) => ({
       ...current,
@@ -597,6 +595,36 @@ export default function Settings() {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const handleChangePassword = async (e: Event) => {
+    e.preventDefault();
+    if (!oldPassword || !newPassword) return;
+
+    setPasswordStatus("loading");
+    setPasswordErrorMsg("");
+
+    try {
+      const response = await fetch("/api/user/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ oldPassword, newPassword }),
+      });
+
+      if (response.ok) {
+        setPasswordStatus("success");
+        setOldPassword("");
+        setNewPassword("");
+        setTimeout(() => setPasswordStatus("idle"), 3000);
+      } else {
+        const text = await response.text();
+        setPasswordStatus("error");
+        setPasswordErrorMsg(text);
+      }
+    } catch (err) {
+      setPasswordStatus("error");
+      setPasswordErrorMsg("Network error.");
+    }
   };
 
   const clearAllData = () => {
@@ -1886,6 +1914,57 @@ export default function Settings() {
               >
                 {user.privacySecurity.twoFactorEnabled ? "Enabled" : "Enable"}
               </button>
+            </div>
+
+            <div className="p-4 bg-white/5 rounded-xl border border-white/10 mt-6">
+              <h4 className="text-sm font-bold text-white mb-2">
+                Change Password
+              </h4>
+              <p className="text-xs text-gray-400 mb-4">
+                Secure your account by updating your password regularly.
+              </p>
+              <form onSubmit={handleChangePassword} className="space-y-3">
+                <input
+                  type="password"
+                  placeholder="Current Password"
+                  value={oldPassword}
+                  onInput={(e) =>
+                    setOldPassword((e.target as HTMLInputElement).value)}
+                  className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-white/30"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="New Password (min 8 chars)"
+                  value={newPassword}
+                  onInput={(e) =>
+                    setNewPassword((e.target as HTMLInputElement).value)}
+                  className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-white/30"
+                  required
+                  minLength={8}
+                />
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={passwordStatus === "loading"}
+                    className="px-4 py-2 bg-white text-black text-sm font-medium rounded-xl hover:bg-white/90 transition disabled:opacity-50"
+                  >
+                    {passwordStatus === "loading"
+                      ? "Updating..."
+                      : "Update Password"}
+                  </button>
+                  {passwordStatus === "success" && (
+                    <span className="text-emerald-400 text-xs font-medium">
+                      Password updated successfully!
+                    </span>
+                  )}
+                  {passwordStatus === "error" && (
+                    <span className="text-red-400 text-xs font-medium">
+                      {passwordErrorMsg}
+                    </span>
+                  )}
+                </div>
+              </form>
             </div>
 
             <div className="pt-1 border-t border-white/10 space-y-3">
