@@ -100,6 +100,13 @@ export const handler: Handlers = {
             `INSERT INTO rooms (user_id, title) VALUES ($1, $2)`,
             userId as string, content
           );
+        } else if (destination && destination.startsWith("partner:")) {
+          // Parallel Spark / Streak Back to a specific partner
+          // For now, we drop it into the network as a public parallel spark
+          await executeDB(
+            `INSERT INTO items (user_id, title) VALUES ($1, $2)`,
+            userId as string, `[Parallel Spark] ${content}`
+          );
         } else if (destination && destination.length > 10) {
           // Assuming destination is a UUID for an existing room
           await executeDB(
