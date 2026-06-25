@@ -13,8 +13,37 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+
+  const handleForgotPassword = async (e: Event) => {
+    e.preventDefault();
+    setIsSyncing(true);
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    try {
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        setErrorMsg(text || "Failed to send reset link.");
+      } else {
+        setSuccessMsg("Reset link sent. Check your email.");
+      }
+    } catch (_err) {
+      setErrorMsg("Network error connecting to Vault.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -115,6 +144,12 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
               </div>
             )}
 
+            {successMsg && (
+              <div className="mb-6 p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono rounded-lg animate-in fade-in duration-300">
+                [SUCCESS]: {successMsg}
+              </div>
+            )}
+
             {isSuccess
               ? (
                 <div className="py-20 text-center space-y-6 animate-in zoom-in-95 duration-500">
@@ -125,6 +160,49 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                     Connecting to your cognitive vault...
                   </p>
                 </div>
+              )
+              : isForgotPassword
+              ? (
+                <form onSubmit={handleForgotPassword} className="space-y-6">
+                  <div className="space-y-2.5 group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-100">
+                    <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                      <Icons.Mail size={12} /> Email Address
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) =>
+                        setEmail((e.target as HTMLInputElement).value)}
+                      placeholder="EMAIL@MUSE.SYSTEM"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-5 py-4 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono tracking-widest"
+                    />
+                  </div>
+                  <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-200">
+                    <button
+                      type="submit"
+                      disabled={isSyncing}
+                      className="group relative w-full py-4 rounded-xl bg-white text-black font-bold uppercase tracking-[0.3em] text-[10px] shadow-[0_15px_30px_rgba(255,255,255,0.1)] hover:-translate-y-0.5 hover:shadow-white/20 active:scale-95 transition-all cursor-pointer overflow-hidden disabled:opacity-50"
+                    >
+                      <div className="absolute inset-0 bg-canvas-primary/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+                      <span className="relative z-10 flex items-center justify-center gap-3">
+                        {isSyncing ? "SENDING..." : "SEND RESET LINK"}
+                        {!isSyncing && <Icons.ArrowRight size={14} />}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsForgotPassword(false);
+                        setErrorMsg("");
+                        setSuccessMsg("");
+                      }}
+                      className="w-full py-4 rounded-xl bg-transparent text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px] hover:text-white transition-all cursor-pointer flex items-center justify-center gap-3 active:scale-95"
+                    >
+                      BACK TO LOGIN
+                    </button>
+                  </div>
+                </form>
               )
               : (
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -161,18 +239,44 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                   </div>
 
                   <div className="space-y-2.5 group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-300">
-                    <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
-                      <Icons.Lock size={12} /> Password
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) =>
-                        setPassword((e.target as HTMLInputElement).value)}
-                      placeholder="••••••••"
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-5 py-4 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono"
-                    />
+                    <div className="flex justify-between items-center">
+                      <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-gray-600 group-focus-within:text-canvas-primary transition-colors">
+                        <Icons.Lock size={12} /> Password
+                      </label>
+                      {localMode === "login" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsForgotPassword(true);
+                            setErrorMsg("");
+                            setSuccessMsg("");
+                          }}
+                          className="text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                        >
+                          Forgot?
+                        </button>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={password}
+                        onChange={(e) =>
+                          setPassword((e.target as HTMLInputElement).value)}
+                        placeholder="••••••••"
+                        className="w-full bg-white/[0.03] border border-white/5 rounded-xl pl-5 pr-12 py-4 text-white placeholder-gray-800 focus:outline-none focus:border-canvas-primary/40 focus:bg-white/[0.05] transition-all text-sm font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors focus:outline-none"
+                      >
+                        {showPassword
+                          ? <Icons.EyeOff size={16} />
+                          : <Icons.Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both delay-500">
@@ -188,7 +292,7 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
                           : localMode === "signup"
                           ? "GET STARTED"
                           : "LOGIN"}
-                        {!isSyncing && <ArrowRight size={14} />}
+                        {!isSyncing && <Icons.ArrowRight size={14} />}
                       </span>
                     </button>
 

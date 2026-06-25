@@ -619,7 +619,42 @@ export default function Settings() {
     setDataSettings({ ...DEFAULT_DATA_SETTINGS, lastExport: null });
 
     // Re-enable login flow after wipe.
-    globalThis.location.href = "/auth";
+    globalThis.location.href = "/";
+  };
+
+  const deleteAccount = async () => {
+    const isDemo = user.id === "__demo__";
+    if (isDemo) {
+      alert(
+        "Demo accounts cannot be deleted. Sign up to create your own account.",
+      );
+      return;
+    }
+
+    const confirmed = globalThis.confirm?.(
+      "Are you absolutely sure you want to delete your account? This action is irreversible and will erase all your rooms, journal entries, and profile data from the platform.",
+    ) ?? false;
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch("/api/user/delete", {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        // Clear local storage and state just in case
+        globalThis.localStorage?.removeItem(STORAGE_KEY);
+        logout();
+        globalThis.location.href = "/";
+      } else {
+        const errorText = await response.text();
+        alert(`Failed to delete account: ${errorText}`);
+      }
+    } catch (err) {
+      console.error("Error deleting account", err);
+      alert("Network error. Please try again later.");
+    }
   };
 
   const resetLocalPreferences = () => {
@@ -1976,16 +2011,26 @@ export default function Settings() {
                   Danger Zone
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={clearAllData}
-                className="w-full py-3 border border-red-500/40 rounded-xl text-red-300 hover:bg-red-500/10 transition"
-              >
-                Delete All Data
-              </button>
+              <div className="grid md:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={clearAllData}
+                  className="w-full py-3 border border-red-500/40 rounded-xl text-red-300 hover:bg-red-500/10 transition"
+                >
+                  Clear Local Data
+                </button>
+                <button
+                  type="button"
+                  onClick={deleteAccount}
+                  className="w-full py-3 border border-red-500 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-colors font-bold"
+                >
+                  Delete Account
+                </button>
+              </div>
               <p className="text-[10px] text-gray-500 text-center">
-                This removes local settings and sends you back to sign in. It
-                does not affect server-side backups.
+                Clearing local data only removes preferences from this browser.
+                Deleting your account permanently erases all your data from the
+                platform.
               </p>
             </div>
 

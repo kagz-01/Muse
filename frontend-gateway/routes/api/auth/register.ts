@@ -18,14 +18,22 @@ export const handler: Handlers = {
         return new Response("Missing fields", { status: 400 });
       }
 
-      // Check if user already exists
-      const existing = await queryDB(
-        "SELECT id FROM users WHERE email = $1 OR username = $2",
+      // Check if email already exists
+      const existingEmail = await queryDB(
+        "SELECT id FROM users WHERE email = $1",
         email,
+      );
+      if (existingEmail.length > 0) {
+        return new Response("Email is already used", { status: 409 });
+      }
+
+      // Check if username already exists
+      const existingUsername = await queryDB(
+        "SELECT id FROM users WHERE username = $1",
         username,
       );
-      if (existing.length > 0) {
-        return new Response("Email or Username already taken", { status: 409 });
+      if (existingUsername.length > 0) {
+        return new Response("Username is already taken", { status: 409 });
       }
 
       // Hash password

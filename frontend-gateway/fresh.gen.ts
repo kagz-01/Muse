@@ -28,8 +28,10 @@ import * as $api_artifacts_ingest_url from "./routes/api/artifacts/ingest-url.ts
 import * as $api_artifacts_upload_document from "./routes/api/artifacts/upload-document.ts";
 import * as $api_auth_2fa from "./routes/api/auth/2fa.ts";
 import * as $api_auth_demo from "./routes/api/auth/demo.ts";
+import * as $api_auth_forgot_password from "./routes/api/auth/forgot-password.ts";
 import * as $api_auth_login from "./routes/api/auth/login.ts";
 import * as $api_auth_register from "./routes/api/auth/register.ts";
+import * as $api_auth_reset_password from "./routes/api/auth/reset-password.ts";
 import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
 import * as $api_circles_id_membership from "./routes/api/circles/[id]/membership.ts";
 import * as $api_circles_join from "./routes/api/circles/join.ts";
@@ -51,12 +53,14 @@ import * as $api_rooms_create from "./routes/api/rooms/create.ts";
 import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
 import * as $api_threads_synthesize from "./routes/api/threads/synthesize.ts";
+import * as $api_user_delete from "./routes/api/user/delete.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $dashboard_index from "./routes/dashboard/index.tsx";
 import * as $dashboard_rooms_id_ from "./routes/dashboard/rooms/[id].tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
 import * as $profile_edit from "./routes/profile/edit.ts";
+import * as $reset_password from "./routes/reset-password.tsx";
 import * as $Error404 from "./islands/Error404.tsx";
 import * as $WalletConnectButton from "./islands/WalletConnectButton.tsx";
 import * as $ai_feedback_AIAnalysisDashboard from "./islands/ai-feedback/AIAnalysisDashboard.tsx";
@@ -168,8 +172,10 @@ const manifest = {
     "./routes/api/artifacts/upload-document.ts": $api_artifacts_upload_document,
     "./routes/api/auth/2fa.ts": $api_auth_2fa,
     "./routes/api/auth/demo.ts": $api_auth_demo,
+    "./routes/api/auth/forgot-password.ts": $api_auth_forgot_password,
     "./routes/api/auth/login.ts": $api_auth_login,
     "./routes/api/auth/register.ts": $api_auth_register,
+    "./routes/api/auth/reset-password.ts": $api_auth_reset_password,
     "./routes/api/circles/[id]/members.ts": $api_circles_id_members,
     "./routes/api/circles/[id]/membership.ts": $api_circles_id_membership,
     "./routes/api/circles/join.ts": $api_circles_join,
@@ -191,12 +197,14 @@ const manifest = {
     "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
     "./routes/api/threads/synthesize.ts": $api_threads_synthesize,
+    "./routes/api/user/delete.ts": $api_user_delete,
     "./routes/auth.tsx": $auth,
     "./routes/dashboard/index.tsx": $dashboard_index,
     "./routes/dashboard/rooms/[id].tsx": $dashboard_rooms_id_,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
     "./routes/profile/edit.ts": $profile_edit,
+    "./routes/reset-password.tsx": $reset_password,
   },
   islands: {
     "./islands/Error404.tsx": $Error404,
