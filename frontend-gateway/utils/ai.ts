@@ -208,3 +208,139 @@ export async function extractPublicSpark(journalText: string): Promise<string> {
 
   return spark;
 }
+
+// ─── Pervasive AI Integration ───────────────────────────────────────────────
+
+const profileSchema = z.object({
+  auraColor: z.string().describe("A hex color code representing their cognitive state (e.g. #34d399)"),
+  intelligenceProfile: z.string().describe("A 1-3 word archetype (e.g. 'Systems Architect', 'Socratic Observer')"),
+  bio: z.string().describe("A poetic 1-sentence bio reflecting their recent thoughts"),
+});
+
+const profileParser = StructuredOutputParser.fromZodSchema(profileSchema);
+
+const profilePrompt = new PromptTemplate({
+  template: `You are the Muse AI Profiler. Analyze the following user's public artifacts to generate a "Cognitive Profile".
+Focus on the semantic meaning of what they write about.
+
+User Artifacts:
+{user_data}
+
+{format_instructions}
+`,
+  inputVariables: ["user_data"],
+  partialVariables: { format_instructions: profileParser.getFormatInstructions() },
+});
+
+export async function generateCognitiveProfile(userData: string) {
+  if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY is not configured in the environment.");
+  
+  if (!userData.trim()) {
+    return {
+      auraColor: "#9ca3af",
+      intelligenceProfile: "Wanderer",
+      bio: "Exploring the void, waiting to leave a mark."
+    };
+  }
+
+  const promptValue = await profilePrompt.format({ user_data: userData });
+  const response = await model.invoke(promptValue);
+
+  try {
+    return await profileParser.parse(response.content.toString());
+  } catch (error) {
+    console.error("Failed to parse profile output:", error);
+    return {
+      auraColor: "#fbbf24",
+      intelligenceProfile: "Enigmatic Thinker",
+      bio: "Their thoughts form a complex, unreadable web."
+    };
+  }
+}
+
+const matchReasonPrompt = new PromptTemplate({
+  template: `You are the Muse AI Synthesis Engine. Two users share the following conceptual keywords in their digital gardens:
+{shared_keywords}
+
+Generate exactly ONE compelling sentence explaining *why* their minds resonate based on these shared concepts.
+Do not use their names. Speak directly to the current user (e.g., "You both share a deep curiosity for...").
+
+Reason:
+`,
+  inputVariables: ["shared_keywords"],
+});
+
+export async function generateMatchReason(sharedKeywords: string[]): Promise<string> {
+  if (!GROQ_API_KEY) return "You share overlapping interests in the digital ether.";
+  if (sharedKeywords.length === 0) return "Your connection is mysterious, born from unexplored potential.";
+
+  const promptValue = await matchReasonPrompt.format({
+    shared_keywords: sharedKeywords.join(", "),
+  });
+
+  const response = await model.invoke(promptValue);
+  let reason = response.content.toString().trim();
+  if (reason.startsWith('"') && reason.endsWith('"')) reason = reason.slice(1, -1);
+  return reason;
+}
+
+const emojiPrompt = new PromptTemplate({
+  template: `You are the Muse AI Contextual Engine. The user is writing a journal entry and needs exactly 3 emojis that perfectly match the semantic vibe or meaning of their current sentence.
+
+Sentence:
+"{sentence}"
+
+Output EXACTLY 3 emojis, separated by spaces. Do not output any words or explanation.
+Example Output: 🚀 🌌 ✨
+`,
+  inputVariables: ["sentence"],
+});
+
+export async function suggestEmojis(sentence: string): Promise<string[]> {
+  if (!GROQ_API_KEY) return ["✨", "🧠", "🌱"];
+  if (!sentence.trim()) return ["✍️", "💭", "📓"];
+
+  const promptValue = await emojiPrompt.format({ sentence });
+  const response = await model.invoke(promptValue);
+  
+  const rawEmojis = response.content.toString().trim();
+  // Filter out any alphanumeric text, just keep emojis
+  const emojis = rawEmojis.replace(/[a-zA-Z0-9\s]/g, "").split("").filter(Boolean);
+  
+  return emojis.slice(0, 3).length === 3 ? emojis.slice(0, 3) : ["✨", "🧠", "🌱"];
+}
+
+// ─── AI Observer: Auto-annotate artifacts ───────────────────────────────────
+
+const artifactAnnotationPrompt = new PromptTemplate({
+  template: `You are the Muse AI, a silent intellectual observer. A user has just added an artifact to their digital garden.
+
+Artifact Title: "{title}"
+User's Note: "{note}"
+
+Generate ONE brief, thought-provoking insight or question about this artifact (1-2 sentences max).
+Act like a curious, philosophical co-thinker — not a summarizer.
+Do NOT say "This is about..." or start with "I". Just output the observation directly.
+`,
+  inputVariables: ["title", "note"],
+});
+
+export async function generateArtifactAnnotation(
+  title: string,
+  note: string,
+): Promise<string> {
+  if (!GROQ_API_KEY) return "The Muse observes in silence.";
+
+  try {
+    const promptValue = await artifactAnnotationPrompt.format({ title, note: note || "No note provided." });
+    const response = await model.invoke(promptValue);
+    let annotation = response.content.toString().trim();
+    if (annotation.startsWith('"') && annotation.endsWith('"')) {
+      annotation = annotation.slice(1, -1);
+    }
+    return annotation;
+  } catch (err) {
+    console.error("[AI Observer] Failed to generate annotation:", err);
+    return "Every artifact holds an unasked question.";
+  }
+}

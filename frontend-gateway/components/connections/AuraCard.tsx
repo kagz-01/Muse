@@ -56,9 +56,20 @@ export default function AuraCard(
             <h3 className="text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-canvas-primary transition-colors">
               {collaborator.name}
             </h3>
-            <p className="text-gray-500 font-serif italic text-sm leading-relaxed mb-6 line-clamp-2">
+            <p className="text-gray-500 font-serif italic text-sm leading-relaxed mb-4 line-clamp-2">
               "{collaborator.bio}"
             </p>
+
+            {collaborator.matchReason && (
+              <div className="bg-white/5 border border-white/5 rounded-xl p-3 mb-6">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">
+                  AI Synthesis
+                </p>
+                <p className="text-xs text-gray-300 font-serif italic line-clamp-2">
+                  {collaborator.matchReason}
+                </p>
+              </div>
+            )}
 
             <div className="flex flex-wrap gap-2">
               {collaborator.sharedThemes.map((theme) => (

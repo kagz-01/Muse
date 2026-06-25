@@ -21,6 +21,7 @@ export interface Collaborator {
   aura: string;
   intelligenceProfile: string;
   matchPercentage: number;
+  matchReason?: string;
   topCitedNode: string;
 }
 

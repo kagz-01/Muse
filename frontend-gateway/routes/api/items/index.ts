@@ -1,6 +1,7 @@
 import { Handlers } from "$fresh/server.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
 import { queryDB } from "../../../utils/db.ts";
+import { generateArtifactAnnotation } from "../../../utils/ai.ts";
 
 function rowToItem(row: Record<string, unknown>) {
   return {
@@ -18,6 +19,9 @@ function rowToItem(row: Record<string, unknown>) {
       integrityHash: "",
     },
     createdAt: row.created_at,
+    authorId: row.user_id,
+    authorName: row.author_name,
+    authorAvatar: row.author_avatar,
   };
 }
 
@@ -30,7 +34,13 @@ export const handler: Handlers = {
 
     try {
       const rows = await queryDB(
-        "SELECT * FROM items WHERE user_id = $1 ORDER BY created_at DESC",
+        `SELECT DISTINCT i.*, u.name as author_name, u.avatar_url as author_avatar 
+         FROM items i 
+         LEFT JOIN rooms r ON i.room_id = r.id 
+         LEFT JOIN room_collaborators rc ON r.id = rc.room_id 
+         LEFT JOIN users u ON i.user_id = u.id 
+         WHERE i.user_id = $1 OR r.user_id = $1 OR rc.user_id = $1 
+         ORDER BY i.created_at DESC`,
         userId,
       );
 
@@ -62,9 +72,11 @@ export const handler: Handlers = {
         return new Response("Title and roomId are required", { status: 400 });
       }
 
-      // Verify room ownership
+      // Verify room ownership or collaborator status
       const roomCheck = await queryDB(
-        "SELECT id FROM rooms WHERE id = $1 AND user_id = $2",
+        `SELECT r.id FROM rooms r 
+         LEFT JOIN room_collaborators rc ON r.id = rc.room_id 
+         WHERE r.id = $1 AND (r.user_id = $2 OR rc.user_id = $2)`,
         roomId,
         userId,
       );
@@ -100,15 +112,47 @@ export const handler: Handlers = {
         }),
       );
 
+      const newItem = rowToItem(result[0] as Record<string, unknown>);
+
+      // Phase 3: The AI Observer — fire async annotation, don't block response
+      const itemIdForAnnotation = (result[0] as Record<string, unknown>).id as string;
+      (async () => {
+        try {
+          const aiNote = await generateArtifactAnnotation(title, note || "");
+          // Find or create the Muse system user ID
+          const museUser = await queryDB(
+            `SELECT id FROM users WHERE email = 'muse@system.internal' LIMIT 1`
+          );
+          let museUserId: string;
+          if (museUser.length === 0) {
+            const created = await queryDB(
+              `INSERT INTO users (username, email) VALUES ('The Muse', 'muse@system.internal') RETURNING id`
+            );
+            museUserId = (created[0] as Record<string, unknown>).id as string;
+          } else {
+            museUserId = (museUser[0] as Record<string, unknown>).id as string;
+          }
+          await queryDB(
+            `INSERT INTO item_annotations (item_id, user_id, annotation) VALUES ($1, $2, $3)`,
+            itemIdForAnnotation,
+            museUserId,
+            aiNote
+          );
+          console.log(`[AI Observer] Annotated item ${itemIdForAnnotation}`);
+        } catch (err) {
+          console.error("[AI Observer] Failed to annotate item:", err);
+        }
+      })();
+
       return new Response(
         JSON.stringify({
           success: true,
-          item: rowToItem(result[0] as Record<string, unknown>),
+          item: newItem,
         }),
         {
           status: 201,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     } catch (e) {
       console.error("Error creating item:", e);

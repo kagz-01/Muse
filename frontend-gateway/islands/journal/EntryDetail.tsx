@@ -32,6 +32,10 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editBody, setEditBody] = useState(entry.body);
 
+  // AI Emoji suggestion state
+  const [isSuggestingEmoji, setIsSuggestingEmoji] = useState(false);
+  const [suggestedEmojis, setSuggestedEmojis] = useState<string[]>([]);
+
   const linkedArtifacts = useMemo(() => getLinkedArtifacts(entry.id), [
     entry.id,
   ]);
@@ -91,6 +95,33 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
         console.error(e);
       }
     }
+  };
+
+  const handleSuggestEmojis = async () => {
+    if (!editBody.trim() || isSuggestingEmoji) return;
+    setIsSuggestingEmoji(true);
+    setSuggestedEmojis([]);
+    try {
+      const sentence = editBody.slice(-200);
+      const res = await fetch("/api/ai/suggest-emoji", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sentence }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSuggestedEmojis(data.emojis);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSuggestingEmoji(false);
+    }
+  };
+
+  const appendEmoji = (emoji: string) => {
+    setEditBody((prev: string) => prev + " " + emoji);
+    setSuggestedEmojis([]);
   };
 
   return (
@@ -220,11 +251,36 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
                         onClick={() => {
                           setIsEditing(false);
                           setEditBody(entry.body);
+                          setSuggestedEmojis([]);
                         }}
                         class="px-6 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-2 transition-all"
                       >
                         <Icons.X size={16} /> Cancel
                       </button>
+                      <div class="flex-1"></div>
+                      {suggestedEmojis.length > 0 ? (
+                        <div class="flex items-center gap-2 animate-in fade-in zoom-in slide-in-from-right-4 duration-300 bg-canvas-primary/10 border border-canvas-primary/20 px-3 py-1 rounded-lg">
+                          <span class="text-[10px] uppercase font-bold tracking-widest text-canvas-primary mr-2">AI Suggests:</span>
+                          {suggestedEmojis.map(emoji => (
+                            <button 
+                              key={emoji} 
+                              onClick={() => appendEmoji(emoji)}
+                              class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-canvas-primary/20 transition-colors text-lg"
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={handleSuggestEmojis}
+                          disabled={isSuggestingEmoji || !editBody.trim()}
+                          class="px-4 py-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-300 flex items-center gap-2 transition-all disabled:opacity-50"
+                        >
+                          {isSuggestingEmoji ? <Icons.RefreshCcw size={16} class="animate-spin" /> : <Icons.Wand2 size={16} />}
+                          Suggest Emoji
+                        </button>
+                      )}
                     </div>
                   </div>
                 )
