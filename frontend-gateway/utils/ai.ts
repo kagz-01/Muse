@@ -74,6 +74,53 @@ export async function synthesizeArtifacts(
   }
 }
 
+const parallelSynthesisPrompt = new PromptTemplate({
+  template:
+    `You are the Muse AI Synthesis Engine. You are analyzing the cognitive intersections between two users, "{user_a_name}" and "{user_b_name}".
+Your purpose is to look at the knowledge fragments, journal excerpts, and curated artifacts of BOTH users and identify profound conceptual overlaps.
+
+Where do their minds meet? What shared themes are they exploring from different angles?
+
+User A ({user_a_name}) Data:
+{user_a_data}
+
+User B ({user_b_name}) Data:
+{user_b_data}
+
+{format_instructions}
+`,
+  inputVariables: ["user_a_name", "user_b_name", "user_a_data", "user_b_data"],
+  partialVariables: { format_instructions: parser.getFormatInstructions() },
+});
+
+export async function synthesizeParallel(
+  userAName: string,
+  userAData: string,
+  userBName: string,
+  userBData: string,
+) {
+  if (!GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY is not configured in the environment.");
+  }
+
+  const promptValue = await parallelSynthesisPrompt.format({
+    user_a_name: userAName,
+    user_b_name: userBName,
+    user_a_data: userAData,
+    user_b_data: userBData,
+  });
+
+  const response = await model.invoke(promptValue);
+
+  try {
+    const parsedBlueprint = await parser.parse(response.content.toString());
+    return parsedBlueprint;
+  } catch (error) {
+    console.error("Failed to parse AI output:", error);
+    throw new Error("The AI failed to generate a valid parallel blueprint.");
+  }
+}
+
 const socraticPrompt = new PromptTemplate({
   template: `You are the Muse AI Synthesis Engine, acting as a Socratic guide. 
 Your goal is to prompt deep introspection and unearth hidden themes.

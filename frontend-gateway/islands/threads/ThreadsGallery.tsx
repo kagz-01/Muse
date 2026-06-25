@@ -125,16 +125,27 @@ export default function ThreadsGallery() {
               </p>
             </div>
 
-            <button
-              onClick={() => setShowCreateModal(true)}
-              type="button"
-              className="group relative w-full lg:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-10 py-6 text-[13px] font-bold uppercase tracking-[0.2em] text-black shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-all hover:-translate-y-2 hover:shadow-[0_50px_100px_rgba(255,255,255,0.25)] active:scale-95 overflow-hidden h-fit flex-shrink-0"
-            >
-              <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
-              <div className="absolute inset-0 rounded-2xl ring-2 ring-offset-2 ring-offset-[#0a0a0a] ring-white opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300 -z-10" />
-              <Icons.Plus size={18} />
-              New Synthesis
-            </button>
+            <div className="flex flex-col gap-4 w-full lg:w-auto shrink-0">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                type="button"
+                className="group relative w-full inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-10 py-6 text-[13px] font-bold uppercase tracking-[0.2em] text-black shadow-[0_20px_50px_rgba(255,255,255,0.15)] transition-all hover:-translate-y-2 hover:shadow-[0_50px_100px_rgba(255,255,255,0.25)] active:scale-95 overflow-hidden"
+              >
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                <div className="absolute inset-0 rounded-2xl ring-2 ring-offset-2 ring-offset-[#0a0a0a] ring-white opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300 -z-10" />
+                <Icons.Plus size={18} />
+                New Synthesis
+              </button>
+              
+              <button
+                onClick={() => alert("Parallel Synthesis partner selection coming soon!")}
+                type="button"
+                className="w-full inline-flex items-center justify-center gap-3 rounded-2xl bg-transparent border border-white/20 px-10 py-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white transition-all hover:bg-white/10 hover:border-white/40 active:scale-95"
+              >
+                <Icons.Users size={16} className="text-indigo-400" />
+                Parallel Synthesis
+              </button>
+            </div>
           </div>
 
           {/* STATS & QUICK ACTIONS */}

@@ -68,7 +68,9 @@ CREATE TABLE items (
 -- 4. THREADS TABLE (AI Synthesis)
 CREATE TABLE threads (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+    room_id UUID REFERENCES rooms(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    partner_id UUID REFERENCES users(id) ON DELETE SET NULL,
     title TEXT NOT NULL DEFAULT 'Untitled Thread',
     description TEXT DEFAULT '',
     mood TEXT DEFAULT 'focus',
@@ -129,6 +131,8 @@ CREATE INDEX idx_rooms_user_id ON rooms(user_id);
 CREATE INDEX idx_items_room_id ON items(room_id);
 CREATE INDEX idx_items_user_id ON items(user_id);
 CREATE INDEX idx_threads_room_id ON threads(room_id);
+CREATE INDEX idx_threads_user_id ON threads(user_id);
+CREATE INDEX idx_threads_partner_id ON threads(partner_id);
 CREATE INDEX idx_journal_user_id ON journal_entries(user_id);
 CREATE INDEX idx_artifacts_room_id ON artifacts(room_id);
 CREATE INDEX idx_artifacts_unstructured ON artifacts USING GIN (unstructured_data);
