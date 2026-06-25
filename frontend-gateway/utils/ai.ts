@@ -164,10 +164,47 @@ export async function generateDynamicSocraticQuestion(
   const response = await model.invoke(promptValue);
   let question = response.content.toString().trim();
 
-  // Clean up any stray quotes if the AI included them
   if (question.startsWith('"') && question.endsWith('"')) {
     question = question.slice(1, -1);
   }
 
   return question;
+}
+
+const extractSparkPrompt = new PromptTemplate({
+  template: `You are the Muse AI Synthesis Engine. 
+The user has written a private journal entry. Your task is to extract a "Public Spark" from this entry.
+A Public Spark is a concise, profound, and universally relatable concept or question derived from the private thought.
+
+CRITICAL RULES:
+1. Strip ALL personally identifiable information (PII), names, places, or highly specific personal scenarios.
+2. Elevate the thought into a general philosophical, creative, or intellectual statement or question.
+3. Keep it under 2 sentences.
+4. Output ONLY the text of the spark, nothing else.
+
+Journal Entry:
+"{journal_text}"
+
+Public Spark:
+`,
+  inputVariables: ["journal_text"],
+});
+
+export async function extractPublicSpark(journalText: string): Promise<string> {
+  if (!GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY is not configured in the environment.");
+  }
+
+  const promptValue = await extractSparkPrompt.format({
+    journal_text: journalText,
+  });
+
+  const response = await model.invoke(promptValue);
+  let spark = response.content.toString().trim();
+
+  if (spark.startsWith('"') && spark.endsWith('"')) {
+    spark = spark.slice(1, -1);
+  }
+
+  return spark;
 }

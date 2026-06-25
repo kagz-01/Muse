@@ -78,6 +78,21 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
     removeLinkedArtifact(entry.id, artifactId);
   };
 
+  const handleExtractSpark = async () => {
+    if (confirm("Extract a non-identifying public 'Spark' from this thought? It will be added to your public items for resonance matching.")) {
+      try {
+        const res = await fetch(`/api/journal/${entry.id}/extract`, { method: "POST" });
+        if (res.ok) {
+          alert("Spark successfully extracted and published!");
+        } else {
+          alert("Failed to extract spark. Please try again.");
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
   return (
     <div class="min-h-screen bg-gradient-to-b from-white/5 via-transparent to-white/5 pb-24">
       {/* Header */}
@@ -112,6 +127,15 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
               />
               {entry.isFavorited ? "Favorited" : "Favorite"}
             </button>
+            {!isEditing && isUnlocked && (
+              <button
+                onClick={handleExtractSpark}
+                class="px-4 py-2 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 flex items-center gap-2 transition-all"
+                title="Extract a public spark from this entry for parallel matching"
+              >
+                <Icons.Sparkles size={16} /> Extract Spark
+              </button>
+            )}
             <button
               onClick={() => setIsEditing(!isEditing)}
               class="px-4 py-2 rounded-lg bg-canvas-primary/20 hover:bg-canvas-primary/30 text-canvas-primary flex items-center gap-2 transition-all"
@@ -327,7 +351,7 @@ export function EntryDetail({ entry, onBack, onEdit }: EntryDetailProps) {
           setVaultError(null);
         }}
         onSubmit={handleVaultUnlock}
-        error={vaultError}
+        error={vaultError || undefined}
       />
 
       {isArtifactSelectorOpen && (
