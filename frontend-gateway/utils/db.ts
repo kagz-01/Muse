@@ -20,7 +20,7 @@ export async function queryDB(query: string, ...args: unknown[]) {
   assertQuery(query);
   const client = await pool.connect();
   try {
-    const result = await client.queryObject(query, ...args);
+    const result = await client.queryObject({ text: query, args });
     return result.rows;
   } finally {
     client.release();
@@ -31,7 +31,7 @@ export async function executeDB(query: string, ...args: unknown[]) {
   assertQuery(query);
   const client = await pool.connect();
   try {
-    const result = await client.queryObject(query, ...args);
+    const result = await client.queryObject({ text: query, args });
     return result;
   } finally {
     client.release();
