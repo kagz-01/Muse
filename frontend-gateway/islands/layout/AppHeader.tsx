@@ -23,7 +23,8 @@ import {
 
 const { Moon, Circle, CloudSun, Sun, Bell, Menu } = Icons as unknown as Record<
   string,
-  import("preact").ComponentType<unknown>
+  // deno-lint-ignore no-explicit-any
+  import("preact").ComponentType<any>
 >;
 
 export const prerender = false;
@@ -99,7 +100,7 @@ export default function AppHeader(
               className="cursor-pointer flex items-center gap-3 group text-left"
             >
               <div className="w-10 h-10 bg-[var(--muse-text)] rounded-2xl flex items-center justify-center text-[var(--muse-bg)] font-bold group-hover:rotate-12 transition-all duration-500 shadow-2xl">
-                <Icons.Infinity size={22} strokeWidth={2.5} />
+                <Icons.Infinity className="w-[22px] h-[22px] stroke-[2.5]" />
               </div>
               <span className="text-xl font-bold tracking-tight text-[var(--muse-text)] leading-none transition-colors duration-300">
                 Muse
@@ -144,13 +145,13 @@ export default function AppHeader(
               className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] hover:border-[var(--muse-text)]/20 flex items-center justify-center transition-all text-[var(--muse-muted)] hover:text-[var(--muse-text)] duration-300"
               title={`Switch to next theme (Current: ${currentTheme})`}
             >
-              {currentTheme === "dark" && (Moon ? <Moon size={16} /> : null)}
+              {currentTheme === "dark" && (Moon ? <Moon className="w-4 h-4" /> : null)}
               {currentTheme === "dim" &&
-                (Circle ? <Circle size={16} fill="currentColor" /> : null)}
+                (Circle ? <Circle className="w-4 h-4 fill-current" /> : null)}
               {currentTheme === "tint" &&
-                (CloudSun ? <CloudSun size={16} /> : null)}
+                (CloudSun ? <CloudSun className="w-4 h-4" /> : null)}
               {currentTheme === "light" &&
-                (Sun ? <Sun size={16} fill="currentColor" /> : null)}
+                (Sun ? <Sun className="w-4 h-4 fill-current" /> : null)}
             </button>
 
             <div className="relative" ref={notificationPanelRef}>
@@ -166,10 +167,9 @@ export default function AppHeader(
                 {Bell
                   ? (
                     <Bell
-                      size={16}
-                      className={unreadCount > 0
+                      className={`w-4 h-4 ${unreadCount > 0
                         ? "text-canvas-primary"
-                        : "text-[var(--muse-muted)]"}
+                        : "text-[var(--muse-muted)]"}`}
                     />
                   )
                   : null}
@@ -224,7 +224,7 @@ export default function AppHeader(
               type="button"
               className="w-10 h-10 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:border-canvas-primary transition-all shadow-lg active:scale-95 duration-300"
             >
-              {Menu ? <Menu size={18} /> : null}
+              {Menu ? <Menu className="w-[18px] h-[18px]" /> : null}
             </button>
           </div>
         </div>

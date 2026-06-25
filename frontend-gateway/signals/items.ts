@@ -1,6 +1,8 @@
 import { signal } from "@preact/signals";
 import { removeItemFromThread, threadsSignal } from "./threads.ts";
 import { userSignal } from "./user.ts";
+import { safeFetch } from "../utils/safeFetch.ts";
+import { registerIdSwapCallback } from "../utils/syncQueue.ts";
 
 export interface Item {
   id: string;
@@ -128,17 +130,36 @@ export async function addItem(
     return;
   }
 
-  const response = await fetch("/api/items", {
+  const tempId = "i" + (itemsSignal.value.length + 1) + "_pending";
+  const response = await safeFetch("/api/items", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(item),
+    entity: "item",
+    tempId,
   });
 
   if (!response.ok) {
     throw new Error(`Failed to add item: ${await response.text()}`);
   }
 
-  const { item: newItem } = await response.json();
+  const data = await response.json();
+  if (data.queued) {
+    const newItem: Item = {
+      ...item,
+      id: tempId,
+      createdAt: new Date().toISOString(),
+      dataProvenance: {
+        platform: item.sourceUrl?.includes("x.com") ? "X" : "Web",
+        extractedAt: new Date().toISOString(),
+        integrityHash: "sha256-" + Math.random().toString(16).slice(2, 10),
+      },
+    };
+    itemsSignal.value = [newItem, ...itemsSignal.value];
+    return;
+  }
+
+  const { item: newItem } = data;
   itemsSignal.value = [newItem, ...itemsSignal.value];
 }
 
@@ -155,12 +176,22 @@ export async function deleteItem(id: string) {
 
   if (!isDemo && !id.startsWith("i")) {
     try {
-      await fetch(`/api/items/${id}`, { method: "DELETE" });
+      await safeFetch(`/api/items/${id}`, {
+        method: "DELETE",
+        entity: "item",
+      });
     } catch (e) {
       console.error("Failed to delete item on backend:", e);
     }
   }
 }
+
+// ─── Offline Sync Callback ───────────────────────────────────────────────
+registerIdSwapCallback("item", (tempId, realId) => {
+  itemsSignal.value = itemsSignal.value.map((i) =>
+    i.id === tempId ? { ...i, id: realId } : i
+  );
+});
 
 export function resetItems() {
   itemsSignal.value = [];

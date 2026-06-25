@@ -72,6 +72,7 @@ import * as $index from "./routes/index.tsx";
 import * as $profile_edit from "./routes/profile/edit.ts";
 import * as $reset_password from "./routes/reset-password.tsx";
 import * as $Error404 from "./islands/Error404.tsx";
+import * as $SyncStatusBadge from "./islands/SyncStatusBadge.tsx";
 import * as $WalletConnectButton from "./islands/WalletConnectButton.tsx";
 import * as $ai_feedback_AIAnalysisDashboard from "./islands/ai-feedback/AIAnalysisDashboard.tsx";
 import * as $connections_CommunityPulseStripIsland from "./islands/connections/CommunityPulseStripIsland.tsx";
@@ -228,6 +229,7 @@ const manifest = {
   },
   islands: {
     "./islands/Error404.tsx": $Error404,
+    "./islands/SyncStatusBadge.tsx": $SyncStatusBadge,
     "./islands/WalletConnectButton.tsx": $WalletConnectButton,
     "./islands/ai-feedback/AIAnalysisDashboard.tsx":
       $ai_feedback_AIAnalysisDashboard,

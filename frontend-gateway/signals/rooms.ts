@@ -2,6 +2,8 @@ import { signal } from "@preact/signals";
 import { itemsSignal } from "./items.ts";
 import { threadsSignal } from "./threads.ts";
 import { userSignal } from "./user.ts";
+import { safeFetch } from "../utils/safeFetch.ts";
+import { registerIdSwapCallback } from "../utils/syncQueue.ts";
 
 export type RoomTheme =
   | "indigo"
@@ -212,17 +214,34 @@ export async function addRoom(
     return newId;
   }
 
-  const response = await fetch("/api/rooms", {
+  const tempId = "r" + (roomsSignal.value.length + 1) + "_pending";
+  const response = await safeFetch("/api/rooms", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(room),
+    entity: "room",
+    tempId,
   });
 
   if (!response.ok) {
     throw new Error(`Failed to create room: ${await response.text()}`);
   }
 
-  const { room: newRoom } = await response.json();
+  const data = await response.json();
+  if (data.queued) {
+    const newRoom: Room = {
+      ...room,
+      id: tempId,
+      updatedAt: new Date().toISOString(),
+      count: 0,
+      semanticTags: [],
+      resonanceMetrics: { views: 0, wovenCount: 0 },
+    };
+    roomsSignal.value = [...roomsSignal.value, newRoom];
+    return tempId;
+  }
+
+  const { room: newRoom } = data;
   roomsSignal.value = [...roomsSignal.value, newRoom];
   return newRoom.id;
 }
@@ -237,10 +256,11 @@ export async function updateRoom(id: string, updates: Partial<Room>) {
 
   if (!isDemo && !id.startsWith("r")) {
     try {
-      await fetch(`/api/rooms/${id}`, {
+      await safeFetch(`/api/rooms/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
+        entity: "room",
       });
     } catch (e) {
       console.error("Failed to update room on backend:", e);
@@ -284,12 +304,22 @@ export async function deleteRoom(id: string) {
 
   if (!isDemo && !id.startsWith("r")) {
     try {
-      await fetch(`/api/rooms/${id}`, { method: "DELETE" });
+      await safeFetch(`/api/rooms/${id}`, {
+        method: "DELETE",
+        entity: "room",
+      });
     } catch (e) {
       console.error("Failed to delete room on backend:", e);
     }
   }
 }
+
+// ─── Offline Sync Callback ───────────────────────────────────────────────
+registerIdSwapCallback("room", (tempId, realId) => {
+  roomsSignal.value = roomsSignal.value.map((r) =>
+    r.id === tempId ? { ...r, id: realId } : r
+  );
+});
 
 export function resetRooms() {
   roomsSignal.value = [];

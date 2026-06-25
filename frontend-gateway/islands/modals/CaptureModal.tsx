@@ -52,9 +52,9 @@ export default function CaptureModal() {
     if (step === "contemplation") setStep("context");
   };
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = async () => {
     if (!newRoomName.trim()) return;
-    const newRoomId = addRoom({
+    const newRoomId = await addRoom({
       name: newRoomName.trim(),
       description: "",
       themeColor: "indigo",

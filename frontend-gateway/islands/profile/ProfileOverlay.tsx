@@ -146,7 +146,7 @@ export default function ProfileOverlay() {
                   </p>
                 </div>
               </div>
-              <ChevronRight
+              <Icons.ChevronRight
                 size={16}
                 className="text-emerald-500 group-hover:scale-110 transition-transform"
               />

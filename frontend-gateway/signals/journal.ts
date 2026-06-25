@@ -1,5 +1,7 @@
 import { signal } from "@preact/signals";
 import { userSignal } from "./user.ts";
+import { safeFetch } from "../utils/safeFetch.ts";
+import { registerIdSwapCallback } from "../utils/syncQueue.ts";
 
 export type JournalMood =
   | "reflective"
@@ -298,10 +300,12 @@ export async function addEntry(
   const isDemo = userSignal.value?.id === "__demo__";
 
   let newEntry: JournalEntry;
+  let tempId: string | undefined;
 
   if (isDemo) {
+    tempId = generateSafeId();
     newEntry = {
-      id: generateSafeId(),
+      id: tempId,
       body: body || "New reflection...",
       mood: mood || "reflective",
       tags: tags || [],
@@ -317,7 +321,8 @@ export async function addEntry(
           .length,
     };
   } else {
-    const response = await fetch("/api/journal", {
+    tempId = generateSafeId();
+    const response = await safeFetch("/api/journal", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -326,6 +331,8 @@ export async function addEntry(
         mood,
         tags,
       }),
+      entity: "journal",
+      tempId,
     });
 
     if (!response.ok) {
@@ -334,23 +341,44 @@ export async function addEntry(
       );
     }
 
-    const { entry } = await response.json();
+    const data = await response.json();
 
-    newEntry = {
-      id: entry.id,
-      body: entry.raw_thought,
-      mood: entry.mood || "reflective",
-      tags: entry.tags || [],
-      linkedItemIds: [],
-      isFavorited: entry.is_favorited || false,
-      isPinned: entry.is_pinned || false,
-      isArchived: entry.is_archived || false,
-      isPublic: entry.is_public || isPublic,
-      createdAt: new Date(entry.created_at).getTime(),
-      updatedAt: new Date(entry.updated_at).getTime(),
-      wordCount: entry.raw_thought.trim().split(/\s+/).filter(Boolean).length,
-      synthesis: entry.synthesized_context || undefined,
-    };
+    // If it was queued offline, we use our temp data
+    if (data.queued) {
+      newEntry = {
+        id: tempId,
+        body: body || "New reflection...",
+        mood: mood || "reflective",
+        tags: tags || [],
+        linkedItemIds: [],
+        isFavorited: false,
+        isPinned: false,
+        isArchived: false,
+        isPublic,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        wordCount:
+          (body || "New reflection...").trim().split(/\s+/).filter(Boolean)
+            .length,
+      };
+    } else {
+      const { entry } = data;
+      newEntry = {
+        id: entry.id,
+        body: entry.raw_thought,
+        mood: entry.mood || "reflective",
+        tags: entry.tags || [],
+        linkedItemIds: [],
+        isFavorited: entry.is_favorited || false,
+        isPinned: entry.is_pinned || false,
+        isArchived: entry.is_archived || false,
+        isPublic: entry.is_public || isPublic,
+        createdAt: new Date(entry.created_at).getTime(),
+        updatedAt: new Date(entry.updated_at).getTime(),
+        wordCount: entry.raw_thought.trim().split(/\s+/).filter(Boolean).length,
+        synthesis: entry.synthesized_context || undefined,
+      };
+    }
   }
 
   journalSignal.value = [newEntry, ...journalSignal.value];
@@ -397,10 +425,11 @@ export async function updateJournalEntry(
     );
 
     try {
-      await fetch(`/api/journal/${id}`, {
+      await safeFetch(`/api/journal/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiUpdates),
+        entity: "journal",
       });
     } catch (e) {
       console.error("Failed to update journal on backend", e);
@@ -417,7 +446,10 @@ export async function deleteJournalEntry(id: string) {
 
   if (!isDemo && !id.startsWith("j")) {
     try {
-      await fetch(`/api/journal/${id}`, { method: "DELETE" });
+      await safeFetch(`/api/journal/${id}`, {
+        method: "DELETE",
+        entity: "journal",
+      });
     } catch (e) {
       console.error("Failed to delete journal on backend", e);
     }
@@ -827,3 +859,10 @@ export function getActivityTimeline(
     entries,
   }));
 }
+
+// ─── Offline Sync Callback ───────────────────────────────────────────────
+registerIdSwapCallback("journal", (tempId, realId) => {
+  journalSignal.value = journalSignal.value.map((e) =>
+    e.id === tempId ? { ...e, id: realId } : e
+  );
+});
