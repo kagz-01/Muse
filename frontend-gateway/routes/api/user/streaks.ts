@@ -4,23 +4,36 @@ import { executeDB, queryDB } from "../../../utils/db.ts";
 
 export const handler: Handlers = {
   async GET(req, _ctx) {
-    const userId = await getSessionUser(req);
-    if (!userId) {
+    const rawUserId = await getSessionUser(req);
+    if (!rawUserId) {
       return new Response("Unauthorized", { status: 401 });
     }
+    const userId = rawUserId.replace(/[^a-zA-Z0-9-]/g, "");
 
     try {
       const result = await queryDB(
         `SELECT current_streak, longest_streak, total_journal_days, last_entry_date, streak_level, freeze_count, milestones_unlocked, preferences->>'default_spark_mode' AS default_spark_mode 
          FROM users WHERE id = $1`,
-        [userId as string]
+        userId as string
       );
 
       if (result.length === 0) {
         return new Response("User not found", { status: 404 });
       }
 
-      return new Response(JSON.stringify({ streak: result[0] }), {
+      const row = result[0] as Record<string, unknown>;
+      const streakData = {
+        current_streak: Number(row.current_streak || 0),
+        longest_streak: Number(row.longest_streak || 0),
+        total_journal_days: Number(row.total_journal_days || 0),
+        last_entry_date: row.last_entry_date,
+        streak_level: row.streak_level,
+        freeze_count: Number(row.freeze_count || 0),
+        milestones_unlocked: row.milestones_unlocked,
+        default_spark_mode: row.default_spark_mode
+      };
+
+      return new Response(JSON.stringify({ streak: streakData }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -31,10 +44,11 @@ export const handler: Handlers = {
   },
 
   async POST(req, _ctx) {
-    const userId = await getSessionUser(req);
-    if (!userId) {
+    const rawUserId = await getSessionUser(req);
+    if (!rawUserId) {
       return new Response("Unauthorized", { status: 401 });
     }
+    const userId = rawUserId.replace(/[^a-zA-Z0-9-]/g, "");
 
     try {
       const { action, privacyMode } = await req.json();
@@ -42,7 +56,7 @@ export const handler: Handlers = {
       if (action === "set_mode" && privacyMode) {
         await executeDB(
           `UPDATE users SET preferences = jsonb_set(COALESCE(preferences, '{}'::jsonb), '{default_spark_mode}', $1::jsonb) WHERE id = $2`,
-          [`"${privacyMode}"`, userId as string]
+          `"${privacyMode}"`, userId as string
         );
         return new Response(JSON.stringify({ success: true, privacyMode }), {
           status: 200,
@@ -56,14 +70,14 @@ export const handler: Handlers = {
         
         const currentData = await queryDB(
           `SELECT current_streak, longest_streak, total_journal_days, last_entry_date FROM users WHERE id = $1`,
-          [userId as string]
+          userId as string
         );
         
         if (currentData.length > 0) {
           const row = currentData[0] as Record<string, unknown>;
-          const current_streak = row.current_streak as number;
-          const longest_streak = row.longest_streak as number;
-          const total_journal_days = row.total_journal_days as number;
+          const current_streak = Number(row.current_streak || 0);
+          const longest_streak = Number(row.longest_streak || 0);
+          const total_journal_days = Number(row.total_journal_days || 0);
           const last_entry_date = row.last_entry_date as string;
           
           if (last_entry_date !== today) {
@@ -79,7 +93,7 @@ export const handler: Handlers = {
                 total_journal_days = $3, 
                 last_entry_date = $4 
                WHERE id = $5`,
-              [newStreak, newLongest, newTotal, today, userId as string]
+              newStreak, newLongest, newTotal, today, userId as string
             );
 
             return new Response(JSON.stringify({ success: true, newStreak }), {

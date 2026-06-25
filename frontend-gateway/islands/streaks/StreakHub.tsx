@@ -52,13 +52,13 @@ export default function StreakHub() {
 
   if (needsOnboarding || showSettings) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--muse-bg)] animate-in fade-in duration-500">
-        <div className="max-w-3xl w-full text-center">
-          {showSettings && (
+      <div className="w-full min-h-screen flex flex-col p-6 lg:p-12 bg-[#0a0a0a] animate-in fade-in duration-500">
+        <div className="max-w-4xl w-full mx-auto relative mt-8 lg:mt-16">
+          {!needsOnboarding && (
             <button
               type="button"
               onClick={() => setShowSettings(false)}
-              className="absolute top-8 left-8 flex items-center gap-2 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors"
+              className="absolute -top-16 left-0 flex items-center gap-2 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors"
             >
               {/* @ts-ignore dynamic import */}
               <Icons.ArrowLeft size={20} />
@@ -66,77 +66,121 @@ export default function StreakHub() {
             </button>
           )}
 
-          <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-accent)] mb-4">
-            {showSettings ? "Settings" : "Onboarding"}
+          <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] mb-8">
+            {needsOnboarding ? "Onboarding" : "Settings"}
           </h3>
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--muse-text)] italic font-serif mb-6">
-            Choose Your Footprint
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--muse-text)] italic font-serif mb-12">
+            {needsOnboarding ? "Configure Your Space" : "Manage Momentum"}
           </h2>
-          <p className="text-lg text-[var(--muse-muted)] mb-12 max-w-xl mx-auto">
-            How do you want to show your cognitive momentum? Your Spark is the proof of your reflection.
-          </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <button
-              type="button"
-              onClick={() => handleSetMode("ghost")}
-              disabled={sharing}
-              className={`flex flex-col gap-4 p-8 rounded-[2rem] border transition-all text-left group ${
-                streak?.defaultSparkMode === "ghost"
-                  ? "bg-[var(--muse-surface-soft)] border-gray-400/50 shadow-[0_0_30px_rgba(156,163,175,0.2)]"
-                  : "bg-[var(--muse-surface)] border-[var(--muse-border)] hover:border-gray-500/30"
-              }`}
-            >
-              {/* @ts-ignore dynamic import */}
-              <Icons.Ghost size={32} className="text-gray-400 group-hover:text-gray-300 transition-colors" />
-              <div>
-                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Anonymous</p>
-                <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
-                  Just show that you were active today. Content remains completely hidden.
-                </p>
-              </div>
-            </button>
+          <div className="flex flex-col gap-10">
+            {/* FOOTPRINT / PRIVACY MODE SECTION */}
+            <section>
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-4">
+                Footprint (Privacy Mode)
+              </h4>
+              <div className="flex flex-col rounded-2xl bg-[#111111] border border-gray-800/50 overflow-hidden">
+                <div className="flex items-center justify-between p-5 border-b border-gray-800/50 hover:bg-white/5 transition-colors">
+                  <div className="flex items-center gap-4">
+                    {/* @ts-ignore dynamic import */}
+                    <Icons.Ghost size={20} className="text-gray-400" />
+                    <div>
+                      <p className="text-base font-bold text-white">Anonymous</p>
+                      <p className="text-xs text-gray-400">Just show activity. Content remains hidden.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleSetMode("ghost")}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.defaultSparkMode === "ghost" ? "bg-[var(--muse-accent)]" : "bg-gray-800"}`}
+                  >
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.defaultSparkMode === "ghost" ? "translate-x-6" : "translate-x-0"}`} />
+                  </button>
+                </div>
 
-            <button
-              type="button"
-              onClick={() => handleSetMode("aura")}
-              disabled={sharing}
-              className={`flex flex-col gap-4 p-8 rounded-[2rem] border transition-all text-left group ${
-                streak?.defaultSparkMode === "aura"
-                  ? "bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_30px_rgba(99,102,241,0.3)]"
-                  : "bg-[var(--muse-surface)] border-[var(--muse-border)] hover:border-indigo-500/30"
-              }`}
-            >
-              {/* @ts-ignore dynamic import */}
-              <Icons.Sparkles size={32} className="text-indigo-400 group-hover:text-indigo-300 transition-colors" />
-              <div>
-                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Mood Only</p>
-                <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
-                  Share a colorful aura representing the general emotion of your thought.
-                </p>
-              </div>
-            </button>
+                <div className="flex items-center justify-between p-5 border-b border-gray-800/50 hover:bg-white/5 transition-colors">
+                  <div className="flex items-center gap-4">
+                    {/* @ts-ignore dynamic import */}
+                    <Icons.Sparkles size={20} className="text-indigo-400" />
+                    <div>
+                      <p className="text-base font-bold text-white">Mood Only</p>
+                      <p className="text-xs text-gray-400">Share a colorful aura representing emotion.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleSetMode("aura")}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.defaultSparkMode === "aura" ? "bg-indigo-500" : "bg-gray-800"}`}
+                  >
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.defaultSparkMode === "aura" ? "translate-x-6" : "translate-x-0"}`} />
+                  </button>
+                </div>
 
-            <button
-              type="button"
-              onClick={() => handleSetMode("clear")}
-              disabled={sharing}
-              className={`flex flex-col gap-4 p-8 rounded-[2rem] border transition-all text-left group ${
-                streak?.defaultSparkMode === "clear"
-                  ? "bg-canvas-primary/10 border-canvas-primary/50 shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.3)]"
-                  : "bg-[var(--muse-surface)] border-[var(--muse-border)] hover:border-canvas-primary/30"
-              }`}
-            >
-              {/* @ts-ignore dynamic import */}
-              <Icons.Eye size={32} className="text-canvas-primary group-hover:text-canvas-primary/80 transition-colors" />
-              <div>
-                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Public</p>
-                <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
-                  Show everyone a blurred preview of your actual synthesis.
-                </p>
+                <div className="flex items-center justify-between p-5 hover:bg-white/5 transition-colors">
+                  <div className="flex items-center gap-4">
+                    {/* @ts-ignore dynamic import */}
+                    <Icons.Eye size={20} className="text-canvas-primary" />
+                    <div>
+                      <p className="text-base font-bold text-white">Public</p>
+                      <p className="text-xs text-gray-400">Show a blurred preview of your synthesis.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleSetMode("clear")}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors ${streak?.defaultSparkMode === "clear" ? "bg-canvas-primary" : "bg-gray-800"}`}
+                  >
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${streak?.defaultSparkMode === "clear" ? "translate-x-6" : "translate-x-0"}`} />
+                  </button>
+                </div>
               </div>
-            </button>
+            </section>
+
+            {/* PREFERENCES SECTION */}
+            <section>
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-4">
+                Preferences
+              </h4>
+              <div className="flex flex-col rounded-2xl bg-[#111111] border border-gray-800/50 overflow-hidden">
+                <div className="flex items-center justify-between p-5 border-b border-gray-800/50 hover:bg-white/5 transition-colors opacity-60">
+                  <div className="flex items-center gap-4">
+                    {/* @ts-ignore dynamic import */}
+                    <Icons.Repeat size={20} className="text-gray-400" />
+                    <div>
+                      <p className="text-base font-bold text-white flex items-center gap-2">Auto-share Sparks <span className="text-[9px] px-1.5 py-0.5 rounded border border-gray-700 bg-gray-800 uppercase tracking-wider">Soon</span></p>
+                      <p className="text-xs text-gray-400">Automatically share when you complete a synthesis.</p>
+                    </div>
+                  </div>
+                  <button className="w-12 h-6 rounded-full p-1 bg-gray-800 cursor-not-allowed">
+                    <div className="w-4 h-4 bg-gray-500 rounded-full" />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-5 border-b border-gray-800/50 hover:bg-white/5 transition-colors opacity-60">
+                  <div className="flex items-center gap-4">
+                    {/* @ts-ignore dynamic import */}
+                    <Icons.UserPlus size={20} className="text-gray-400" />
+                    <div>
+                      <p className="text-base font-bold text-white flex items-center gap-2">Allow Streak Invites <span className="text-[9px] px-1.5 py-0.5 rounded border border-gray-700 bg-gray-800 uppercase tracking-wider">Soon</span></p>
+                      <p className="text-xs text-gray-400">Let community members invite you to shared streaks.</p>
+                    </div>
+                  </div>
+                  <button className="w-12 h-6 rounded-full p-1 bg-gray-800 cursor-not-allowed">
+                    <div className="w-4 h-4 bg-gray-500 rounded-full" />
+                  </button>
+                </div>
+              </div>
+            </section>
           </div>
+
+          {needsOnboarding && streak?.defaultSparkMode && (
+            <div className="mt-12 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowSettings(false)}
+                className="px-8 py-3 rounded-full bg-white text-black font-bold text-sm hover:scale-105 transition-transform"
+              >
+                Continue to Hub
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -225,17 +269,17 @@ export default function StreakHub() {
         </div>
 
         {partnerStreaks.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex overflow-x-auto pb-6 -mx-6 px-6 gap-6 snap-x hide-scrollbar">
             {partnerStreaks.map((pStreak) => (
-              <div key={pStreak.id} className="p-6 rounded-3xl bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center gap-4 hover:border-[var(--muse-accent)] transition-colors cursor-pointer group">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30">
+              <div key={pStreak.id} className="min-w-[300px] max-w-[350px] p-6 rounded-3xl bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center gap-4 hover:border-[var(--muse-accent)] transition-colors cursor-pointer group snap-center">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30 flex-shrink-0">
                   <span className="text-xl font-bold text-indigo-400">{pStreak.partnerName.charAt(0)}</span>
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 overflow-hidden">
                   <p className="text-lg font-bold text-[var(--muse-text)]">{pStreak.partnerName}</p>
-                  <p className="text-sm text-[var(--muse-muted)] line-clamp-1">{pStreak.history[0]?.action || "No history yet"}</p>
+                  <p className="text-sm text-[var(--muse-muted)] truncate">{pStreak.history[0]?.action || "No history yet"}</p>
                 </div>
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center flex-shrink-0">
                   {/* @ts-ignore dynamic import */}
                   <Icons.Flame size={20} className="text-orange-500 mb-1" />
                   <span className="text-lg font-black text-[var(--muse-text)]">{pStreak.count}</span>
