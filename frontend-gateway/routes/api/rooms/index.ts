@@ -12,11 +12,14 @@ export const handler: Handlers = {
 
     try {
       const rows = await queryDB(
-        `SELECT id, title, description, emoji, category, size, mood,
-                theme_color, custom_theme_hex, cover_image, is_public, tags,
-                notifications_enabled, updated_at, semantic_tags,
-                resonance_metrics, custom_styling, is_vault, item_count
-         FROM rooms WHERE user_id = $1 ORDER BY updated_at DESC`,
+        `SELECT DISTINCT r.id, r.title, r.description, r.emoji, r.category, r.size, r.mood,
+                r.theme_color, r.custom_theme_hex, r.cover_image, r.is_public, r.tags,
+                r.notifications_enabled, r.updated_at, r.semantic_tags,
+                r.resonance_metrics, r.custom_styling, r.is_vault, r.item_count
+         FROM rooms r
+         LEFT JOIN room_collaborators rc ON r.id = rc.room_id
+         WHERE r.user_id = $1 OR rc.user_id = $1
+         ORDER BY r.updated_at DESC`,
         userId,
       );
 

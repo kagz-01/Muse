@@ -172,17 +172,7 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     }
   };
 
-  const getGridClass = (size?: string) => {
-    switch (size) {
-      case "small":
-        return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
-      case "large":
-        return "grid grid-cols-1 md:grid-cols-2 gap-8";
-      case "medium":
-      default:
-        return "flex gap-6 overflow-x-auto pb-4 scrollbar-hide";
-    }
-  };
+
 
   const handleImageUpload = (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -300,14 +290,14 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     setAiResponse(null);
 
     // Simulate complex neural processing
-    setTimeout(() => {
+    setTimeout(async () => {
       const { response, keywords } = generateDynamicInsight(items, action);
 
       if (action === "Synthesize to Thread" && !threadShared) {
         const generatedTitle = keywords.length > 0
           ? `The Patterns of ${keywords.join(" & ")}`
           : "AI Pattern Synthesis";
-        const threadId = addThread({
+        const threadId = await addThread({
           title: generatedTitle,
           description:
             `A synthesized thread derived from the ${room.name} room, focusing on ${
@@ -507,6 +497,15 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                     className="w-11 h-11 rounded-full bg-[var(--muse-bg)]/50 backdrop-blur-lg border border-[var(--muse-text)]/10 flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-text)]/10 transition-all shadow-xl cursor-pointer"
                   >
                     <Icons.Edit2 size={17} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => alert("Partner invitation flow coming soon!")}
+                    className="w-11 h-11 rounded-full bg-[var(--muse-bg)]/50 backdrop-blur-lg border border-[var(--muse-text)]/10 flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-accent)] hover:bg-[var(--muse-text)]/10 transition-all shadow-xl cursor-pointer"
+                    title="Invite Entanglement Partner"
+                  >
+                    <Icons.UserPlus size={17} />
                   </button>
 
                   <button
