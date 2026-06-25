@@ -1,24 +1,18 @@
 import * as Icons from "lucide-preact";
-import { useState } from "preact/hooks";
 import { toggleCapture } from "../../signals/ui.ts";
-import StreakDashboard from "../streaks/StreakDashboard.tsx";
 
 export default function SynthesisEngine() {
-  const [isStreakOpen, setIsStreakOpen] = useState(false);
-
   return (
-    <>
       <div className="fixed bottom-24 right-6 z-[200] flex flex-col gap-3 items-center">
         {/* STREAK FLOATING BUBBLE */}
-        <button
-          type="button"
-          onClick={() => setIsStreakOpen(true)}
+        <a
+          href="/streaks"
           title="Cognitive Momentum"
           className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-orange-500/20 to-rose-500/10 border border-orange-500/30 text-orange-400 hover:bg-orange-500/20 transition-all duration-300 shadow-[inset_0_2px_8px_rgba(255,255,255,0.1),0_0_12px_rgba(249,115,22,0.3)] hover:shadow-[0_0_20px_rgba(249,115,22,0.5)] hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-xl animate-in slide-in-from-bottom-3 duration-400"
         >
           {/* @ts-ignore dynamic import */}
           <Icons.Flame size={18} />
-        </button>
+        </a>
 
         {/* MIRROR FLOATING BUBBLE */}
       <a
@@ -40,10 +34,5 @@ export default function SynthesisEngine() {
         <div className="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       </button>
     </div>
-    
-    {isStreakOpen && (
-      <StreakDashboard isOpen={isStreakOpen} onClose={() => setIsStreakOpen(false)} />
-    )}
-    </>
   );
 }

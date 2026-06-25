@@ -19,6 +19,7 @@ import * as $_app_rooms_id_ from "./routes/(app)/rooms/[id].tsx";
 import * as $_app_rooms_index from "./routes/(app)/rooms/index.tsx";
 import * as $_app_settings from "./routes/(app)/settings.tsx";
 import * as $_app_streaks from "./routes/(app)/streaks.tsx";
+import * as $_app_streaks_index from "./routes/(app)/streaks/index.tsx";
 import * as $_app_threads_id_ from "./routes/(app)/threads/[id].tsx";
 import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
@@ -150,7 +151,6 @@ import * as $rooms_index from "./islands/rooms/index.ts";
 import * as $settings_PrivacyManager from "./islands/settings/PrivacyManager.tsx";
 import * as $settings_Settings from "./islands/settings/Settings.tsx";
 import * as $settings_index from "./islands/settings/index.ts";
-import * as $streaks_StreakDashboard from "./islands/streaks/StreakDashboard.tsx";
 import * as $streaks_StreakHub from "./islands/streaks/StreakHub.tsx";
 import * as $threads_ThreadInside from "./islands/threads/ThreadInside.tsx";
 import * as $threads_ThreadsGallery from "./islands/threads/ThreadsGallery.tsx";
@@ -176,6 +176,7 @@ const manifest = {
     "./routes/(app)/rooms/index.tsx": $_app_rooms_index,
     "./routes/(app)/settings.tsx": $_app_settings,
     "./routes/(app)/streaks.tsx": $_app_streaks,
+    "./routes/(app)/streaks/index.tsx": $_app_streaks_index,
     "./routes/(app)/threads/[id].tsx": $_app_threads_id_,
     "./routes/(app)/threads/index.tsx": $_app_threads_index,
     "./routes/_404.tsx": $_404,
@@ -314,7 +315,6 @@ const manifest = {
     "./islands/settings/PrivacyManager.tsx": $settings_PrivacyManager,
     "./islands/settings/Settings.tsx": $settings_Settings,
     "./islands/settings/index.ts": $settings_index,
-    "./islands/streaks/StreakDashboard.tsx": $streaks_StreakDashboard,
     "./islands/streaks/StreakHub.tsx": $streaks_StreakHub,
     "./islands/threads/ThreadInside.tsx": $threads_ThreadInside,
     "./islands/threads/ThreadsGallery.tsx": $threads_ThreadsGallery,

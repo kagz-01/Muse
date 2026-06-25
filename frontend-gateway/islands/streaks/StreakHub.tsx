@@ -1,467 +1,263 @@
 import { useEffect, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
-  extendStreak,
-  getStreakState,
-  pruneBrokenStreaks,
-  removeStreak,
-  startStreak,
+  globalStreakSignal,
+  loadGlobalStreak,
+  setSparkMode,
+  shareSpark,
   streaksSignal,
 } from "../../signals/streaks.ts";
-
-function formatTimeRemaining(ms: number): string {
-  if (ms <= 0) return "Expired";
-  const hours = Math.floor(ms / (1000 * 60 * 60));
-  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  return `${minutes}m remaining`;
-}
-
-function formatRelativeTime(ts: number): string {
-  const diff = Date.now() - ts;
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(diff / 3600000);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(diff / 86400000);
-  return `${days}d ago`;
-}
+import { userSignal } from "../../signals/user.ts";
 
 export default function StreakHub() {
-  const [now, setNow] = useState(Date.now());
-  const streaks = streaksSignal.value;
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [showNewForm, setShowNewForm] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [extendNote, setExtendNote] = useState<Record<string, string>>({});
+  const [sharing, setSharing] = useState(false);
+  const [justShared, setJustShared] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  const streak = globalStreakSignal.value;
+  const user = userSignal.value;
+  const partnerStreaks = streaksSignal.value;
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 30000); // every 30s
-    return () => clearInterval(interval);
+    loadGlobalStreak().then(() => setIsInitializing(false));
   }, []);
 
-  const sortedStreaks = [...streaks].sort((a, b) => {
-    const stateA = getStreakState(a);
-    const stateB = getStreakState(b);
-    if (stateA === "fading" && stateB !== "fading") return -1;
-    if (stateB === "fading" && stateA !== "fading") return 1;
-    if (stateA === "broken" && stateB !== "broken") return 1;
-    if (stateB === "broken" && stateA !== "broken") return -1;
-    return b.count - a.count;
-  });
+  if (!user || isInitializing) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--muse-accent)] border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
-  const activeCount =
-    streaks.filter((s) => getStreakState(s) !== "broken").length;
-  const fadingCount =
-    streaks.filter((s) => getStreakState(s) === "fading").length;
-  const longestStreak = streaks.reduce((max, s) => Math.max(max, s.count), 0);
-
-  const handleStartStreak = () => {
-    const trimmed = newName.trim();
-    if (!trimmed) return;
-    startStreak(`u-${Date.now()}`, trimmed);
-    setNewName("");
-    setShowNewForm(false);
+  const handleSetMode = async (mode: "ghost" | "aura" | "clear") => {
+    setSharing(true);
+    await setSparkMode(mode);
+    setSharing(false);
+    setShowSettings(false);
   };
 
-  const handleExtend = (streakId: string) => {
-    const note = extendNote[streakId]?.trim() || "Extended thought";
-    extendStreak(streakId, note);
-    setExtendNote((prev) => ({ ...prev, [streakId]: "" }));
-  };
-
-  const handlePrune = () => {
-    const removed = pruneBrokenStreaks();
-    if (removed === 0) {
-      // nothing to prune
+  const handleShare = async () => {
+    setSharing(true);
+    const success = await shareSpark();
+    setSharing(false);
+    if (success) {
+      setJustShared(true);
+      setTimeout(() => setJustShared(false), 3000);
     }
   };
 
-  const stateConfig = {
-    ignition: {
-      color: "text-sky-400",
-      glow: "bg-sky-400",
-      glowHex: "rgb(56,189,248)",
-      label: "Ignition",
-    },
-    resonance: {
-      color: "text-emerald-400",
-      glow: "bg-emerald-400",
-      glowHex: "rgb(52,211,153)",
-      label: "Resonance",
-    },
-    fading: {
-      color: "text-rose-400",
-      glow: "bg-rose-400",
-      glowHex: "rgb(251,113,133)",
-      label: "Fading",
-    },
-    broken: {
-      color: "text-gray-600",
-      glow: "bg-gray-600",
-      glowHex: "rgb(75,85,99)",
-      label: "Broken",
-    },
-  };
+  const needsOnboarding = streak && !streak.defaultSparkMode;
 
-  return (
-    <div className="w-full pt-4 pb-32 flex flex-col items-center animate-in fade-in duration-1000">
-      <div className="w-full space-y-16">
-        {/* HERO */}
-        <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-8">
-          <div className="space-y-6">
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] text-white">
-              Active Links.<br />
-              <span className="italic font-serif text-gray-400 font-light">
-                Your cognitive streaks.
-              </span>
-            </h1>
-            <p className="max-w-xl text-gray-500 text-base md:text-lg leading-relaxed font-serif italic opacity-90">
-              A streak in Muse is a sustained cognitive connection. Extend a
-              thought, add to a shared room, or anchor an artifact every 24
-              hours to keep the link alive.
-            </p>
-          </div>
-
-          <div className="flex gap-3 self-start md:self-auto">
-            {streaks.some((s) => getStreakState(s) === "broken") && (
-              <button
-                type="button"
-                onClick={handlePrune}
-                className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-bold uppercase tracking-widest hover:bg-rose-500/20 transition-all cursor-pointer"
-              >
-                <Icons.Trash2 size={14} />
-                Clear Broken
-              </button>
-            )}
+  if (needsOnboarding || showSettings) {
+    return (
+      <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--muse-bg)] animate-in fade-in duration-500">
+        <div className="max-w-3xl w-full text-center">
+          {showSettings && (
             <button
               type="button"
-              onClick={() => setShowNewForm(!showNewForm)}
-              className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/5 text-white border border-white/10 text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all cursor-pointer"
+              onClick={() => setShowSettings(false)}
+              className="absolute top-8 left-8 flex items-center gap-2 text-[var(--muse-muted)] hover:text-[var(--muse-text)] transition-colors"
             >
-              <Icons.Plus size={14} />
-              New Link
+              {/* @ts-ignore dynamic import */}
+              <Icons.ArrowLeft size={20} />
+              <span className="text-sm font-bold uppercase tracking-widest">Back to Hub</span>
+            </button>
+          )}
+
+          <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-accent)] mb-4">
+            {showSettings ? "Settings" : "Onboarding"}
+          </h3>
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--muse-text)] italic font-serif mb-6">
+            Choose Your Footprint
+          </h2>
+          <p className="text-lg text-[var(--muse-muted)] mb-12 max-w-xl mx-auto">
+            How do you want to show your cognitive momentum? Your Spark is the proof of your reflection.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <button
+              type="button"
+              onClick={() => handleSetMode("ghost")}
+              disabled={sharing}
+              className={`flex flex-col gap-4 p-8 rounded-[2rem] border transition-all text-left group ${
+                streak?.defaultSparkMode === "ghost"
+                  ? "bg-[var(--muse-surface-soft)] border-gray-400/50 shadow-[0_0_30px_rgba(156,163,175,0.2)]"
+                  : "bg-[var(--muse-surface)] border-[var(--muse-border)] hover:border-gray-500/30"
+              }`}
+            >
+              {/* @ts-ignore dynamic import */}
+              <Icons.Ghost size={32} className="text-gray-400 group-hover:text-gray-300 transition-colors" />
+              <div>
+                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Ghost Mode</p>
+                <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
+                  Share a cryptographic hash. Private, but mathematically proven.
+                </p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSetMode("aura")}
+              disabled={sharing}
+              className={`flex flex-col gap-4 p-8 rounded-[2rem] border transition-all text-left group ${
+                streak?.defaultSparkMode === "aura"
+                  ? "bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_30px_rgba(99,102,241,0.3)]"
+                  : "bg-[var(--muse-surface)] border-[var(--muse-border)] hover:border-indigo-500/30"
+              }`}
+            >
+              {/* @ts-ignore dynamic import */}
+              <Icons.Sparkles size={32} className="text-indigo-400 group-hover:text-indigo-300 transition-colors" />
+              <div>
+                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Aura Mode</p>
+                <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
+                  Share an AI-generated emotional color gradient representing your thought.
+                </p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSetMode("clear")}
+              disabled={sharing}
+              className={`flex flex-col gap-4 p-8 rounded-[2rem] border transition-all text-left group ${
+                streak?.defaultSparkMode === "clear"
+                  ? "bg-canvas-primary/10 border-canvas-primary/50 shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.3)]"
+                  : "bg-[var(--muse-surface)] border-[var(--muse-border)] hover:border-canvas-primary/30"
+              }`}
+            >
+              {/* @ts-ignore dynamic import */}
+              <Icons.Eye size={32} className="text-canvas-primary group-hover:text-canvas-primary/80 transition-colors" />
+              <div>
+                <p className="text-xl font-bold text-[var(--muse-text)] mb-2">Clear Mode</p>
+                <p className="text-sm text-[var(--muse-muted)] leading-relaxed">
+                  Share a beautifully blurred preview of your actual synthesis.
+                </p>
+              </div>
             </button>
           </div>
-        </section>
-
-        {/* NEW STREAK FORM */}
-        {showNewForm && (
-          <section className="px-4 md:px-8 animate-in slide-in-from-top-4 duration-300">
-            <div className="p-6 rounded-[2rem] bg-white/[0.03] border border-white/10 flex flex-col sm:flex-row gap-4 items-end">
-              <div className="flex-1 w-full">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 block">
-                  Connection Name
-                </label>
-                <input
-                  type="text"
-                  value={newName}
-                  onInput={(e) =>
-                    setNewName((e.target as HTMLInputElement).value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleStartStreak()}
-                  placeholder="Who are you linking with?"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-canvas-primary/50 transition-colors"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={handleStartStreak}
-                disabled={!newName.trim()}
-                className="px-6 py-3 rounded-xl bg-canvas-primary/20 text-canvas-primary border border-canvas-primary/30 text-xs font-bold uppercase tracking-widest hover:bg-canvas-primary/30 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed whitespace-nowrap"
-              >
-                Start Chain
-              </button>
-            </div>
-          </section>
-        )}
-
-        {/* SUMMARY STRIP */}
-        <section className="flex flex-wrap items-center gap-4 p-2 bg-white/[0.02] border-y md:border border-white/5 md:rounded-full backdrop-blur-3xl shadow-2xl w-full">
-          <div className="flex-1 flex items-center justify-between px-6 py-4 border-r border-white/5">
-            <div className="flex items-center gap-3">
-              <Icons.Link2 size={18} className="text-emerald-400" />
-              <span className="text-2xl font-bold text-white font-mono">
-                {activeCount}
-              </span>
-            </div>
-            <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">
-              Active Links
-            </span>
-          </div>
-          <div className="flex-1 flex items-center justify-between px-6 py-4 border-r border-white/5">
-            <div className="flex items-center gap-3">
-              <Icons.AlertTriangle size={18} className="text-rose-400" />
-              <span className="text-2xl font-bold text-white font-mono">
-                {fadingCount}
-              </span>
-            </div>
-            <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">
-              Fading
-            </span>
-          </div>
-          <div className="flex-1 flex items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-3">
-              <Icons.Trophy size={18} className="text-amber-400" />
-              <span className="text-2xl font-bold text-white font-mono">
-                {longestStreak}
-              </span>
-            </div>
-            <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold hidden sm:block">
-              Longest Chain
-            </span>
-          </div>
-        </section>
-
-        {/* THE LINK BOARD */}
-        <section className="px-4 md:px-8 w-full space-y-6">
-          {sortedStreaks.length === 0
-            ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center border border-white/5 rounded-[2.5rem] bg-white/[0.02]">
-                <Icons.Link2Off size={48} className="text-gray-600 mb-6" />
-                <p className="text-gray-400 text-lg font-serif mb-2">
-                  No active links.
-                </p>
-                <p className="text-gray-500 text-sm mb-6">
-                  Start a synthesis chain with someone.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowNewForm(true)}
-                  className="px-6 py-3 rounded-2xl bg-white/5 text-white border border-white/10 text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all cursor-pointer"
-                >
-                  <Icons.Plus size={14} className="inline mr-2" />
-                  Create First Link
-                </button>
-              </div>
-            )
-            : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {sortedStreaks.map((streak) => {
-                  const state = getStreakState(streak);
-                  const cfg = stateConfig[state];
-                  const timeRemaining = streak.expiresAt - now;
-                  const isExpanded = expandedId === streak.id;
-
-                  return (
-                    <div
-                      key={streak.id}
-                      className={`relative rounded-[2.5rem] bg-white/[0.02] border transition-all overflow-hidden ${
-                        state === "fading"
-                          ? "border-rose-500/30 shadow-[0_0_30px_rgba(244,63,94,0.1)]"
-                          : state === "broken"
-                          ? "border-gray-800 opacity-60"
-                          : "border-white/5 hover:bg-white/[0.04]"
-                      }`}
-                    >
-                      {/* Glowing progress bar */}
-                      <div className="absolute top-0 left-0 w-full h-1 bg-white/5">
-                        <div
-                          className={`h-full ${cfg.glow} ${
-                            state === "fading" ? "animate-pulse" : ""
-                          } transition-all duration-1000`}
-                          style={{
-                            width: `${
-                              Math.max(
-                                0,
-                                Math.min(
-                                  100,
-                                  (timeRemaining / (1000 * 60 * 60 * 24)) * 100,
-                                ),
-                              )
-                            }%`,
-                            boxShadow:
-                              `0 0 10px ${cfg.glowHex}, 0 0 20px ${cfg.glowHex}`,
-                          }}
-                        />
-                      </div>
-
-                      {/* Main card content */}
-                      <div
-                        className="p-8 cursor-pointer"
-                        onClick={() =>
-                          setExpandedId(isExpanded ? null : streak.id)}
-                      >
-                        <div className="flex justify-between items-start mb-8">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
-                              {streak.partnerAvatar
-                                ? (
-                                  <img
-                                    src={streak.partnerAvatar}
-                                    alt={streak.partnerName}
-                                    className="w-full h-full object-cover"
-                                  />
-                                )
-                                : (
-                                  <span className="text-lg font-bold text-gray-300">
-                                    {streak.partnerName.charAt(0)}
-                                  </span>
-                                )}
-                            </div>
-                            <div>
-                              <h3 className="text-xl font-bold text-white tracking-tight">
-                                {streak.partnerName}
-                              </h3>
-                              <div
-                                className={`text-[10px] uppercase tracking-widest font-bold mt-1 flex items-center gap-1.5 ${cfg.color}`}
-                              >
-                                <div
-                                  className={`w-1.5 h-1.5 rounded-full ${cfg.glow}`}
-                                />
-                                {cfg.label}
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (state === "broken") removeStreak(streak.id);
-                              else setExpandedId(isExpanded ? null : streak.id);
-                            }}
-                            className="p-2 rounded-xl hover:bg-white/5 transition-colors text-gray-500 hover:text-white cursor-pointer"
-                          >
-                            {state === "broken"
-                              ? <Icons.X size={16} />
-                              : (
-                                <Icons.ChevronDown
-                                  size={16}
-                                  className={`transition-transform ${
-                                    isExpanded ? "rotate-180" : ""
-                                  }`}
-                                />
-                              )}
-                          </button>
-                        </div>
-
-                        <div className="flex items-end justify-between">
-                          <div className="flex items-baseline gap-2">
-                            <span
-                              className={`text-5xl font-mono font-bold tracking-tighter ${cfg.color}`}
-                            >
-                              {streak.count}
-                            </span>
-                            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
-                              Days
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            {state === "fading"
-                              ? (
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-rose-400 animate-pulse flex items-center gap-1.5 justify-end">
-                                  <Icons.Clock size={12} />
-                                  {formatTimeRemaining(timeRemaining)}
-                                </p>
-                              )
-                              : state === "broken"
-                              ? (
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600 flex items-center gap-1.5 justify-end">
-                                  <Icons.LinkIcon size={12} />
-                                  Expired
-                                </p>
-                              )
-                              : (
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 flex items-center gap-1.5 justify-end">
-                                  <Icons.CheckCircle2
-                                    size={12}
-                                    className="text-emerald-400"
-                                  />
-                                  Secure today
-                                </p>
-                              )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* EXPANDED: History + Extend Action */}
-                      {isExpanded && state !== "broken" && (
-                        <div className="border-t border-white/5 animate-in slide-in-from-top-2 duration-300">
-                          {/* Extend thought input */}
-                          <div className="p-6 border-b border-white/5">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 block">
-                              Extend This Link
-                            </label>
-                            <div className="flex gap-3">
-                              <input
-                                type="text"
-                                value={extendNote[streak.id] || ""}
-                                onInput={(e) =>
-                                  setExtendNote((prev) => ({
-                                    ...prev,
-                                    [streak.id]:
-                                      (e.target as HTMLInputElement).value,
-                                  }))}
-                                onKeyDown={(e) =>
-                                  e.key === "Enter" && handleExtend(streak.id)}
-                                placeholder="What did you share today?"
-                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-canvas-primary/50 transition-colors"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleExtend(streak.id)}
-                                className="px-5 py-2.5 rounded-xl bg-canvas-primary/20 text-canvas-primary border border-canvas-primary/30 text-xs font-bold uppercase tracking-widest hover:bg-canvas-primary/30 transition-all cursor-pointer"
-                              >
-                                <Icons.Send size={14} />
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* History timeline */}
-                          <div className="p-6 max-h-60 overflow-y-auto">
-                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4">
-                              Link History
-                            </h4>
-                            {streak.history.length > 0
-                              ? (
-                                <div className="space-y-3">
-                                  {streak.history.slice(0, 10).map((h, i) => (
-                                    <div
-                                      key={i}
-                                      className="flex items-start gap-3"
-                                    >
-                                      <div className="w-1.5 h-1.5 rounded-full bg-white/20 mt-2 shrink-0" />
-                                      <div>
-                                        <p className="text-sm text-gray-300">
-                                          {h.action}
-                                        </p>
-                                        <p className="text-[10px] text-gray-600 mt-0.5">
-                                          {formatRelativeTime(h.timestamp)}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )
-                              : (
-                                <p className="text-sm text-gray-600 italic font-serif">
-                                  No history recorded yet.
-                                </p>
-                              )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Fading quick-action */}
-                      {state === "fading" && !isExpanded && (
-                        <div className="px-8 pb-8">
-                          <button
-                            type="button"
-                            onClick={() => setExpandedId(streak.id)}
-                            className="w-full py-3 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-bold uppercase tracking-widest hover:bg-rose-500/20 transition-all cursor-pointer"
-                          >
-                            Extend Thought Now
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-        </section>
+        </div>
       </div>
+    );
+  }
+
+  // --- MAIN HUB ---
+  let flameColor = "text-orange-500";
+  let flameBg = "bg-orange-500/10";
+  let flameShadow = "shadow-[0_0_100px_rgba(249,115,22,0.15)]";
+
+  if (streak && streak.currentStreak >= 7) {
+    flameColor = "text-rose-500";
+    flameBg = "bg-rose-500/10";
+    flameShadow = "shadow-[0_0_120px_rgba(244,63,94,0.2)]";
+  }
+  if (streak && streak.currentStreak >= 30) {
+    flameColor = "text-purple-500";
+    flameBg = "bg-purple-500/10";
+    flameShadow = "shadow-[0_0_150px_rgba(168,85,247,0.3)]";
+  }
+
+  return (
+    <div className="w-full min-h-screen flex flex-col pb-24 relative overflow-hidden bg-[var(--muse-bg)]">
+      {/* Settings Button */}
+      <div className="absolute top-6 right-6 z-50">
+        <button
+          type="button"
+          onClick={() => setShowSettings(true)}
+          className="w-12 h-12 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center justify-center text-[var(--muse-muted)] hover:text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-all shadow-md cursor-pointer"
+        >
+          {/* @ts-ignore dynamic import */}
+          <Icons.Settings2 size={20} />
+        </button>
+      </div>
+
+      {/* Decorative background glow */}
+      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full pointer-events-none opacity-50 ${flameShadow} transition-all duration-1000`} />
+
+      {/* Main Flame Section */}
+      <div className="flex-1 flex flex-col items-center justify-center relative z-10 pt-20">
+        <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] mb-8">
+          Cognitive Momentum
+        </h3>
+        
+        <div className="relative flex flex-col items-center justify-center mb-12">
+          <div className={`w-48 h-48 rounded-full flex items-center justify-center ${flameBg} border border-[var(--muse-border)] mb-6 transition-all duration-700`}>
+            {/* @ts-ignore dynamic import */}
+            <Icons.Flame size={96} className={`${flameColor} ${streak && streak.currentStreak > 0 ? "animate-pulse" : "opacity-50"} transition-colors duration-700`} />
+          </div>
+          <div className="text-8xl font-black text-[var(--muse-text)] tracking-tighter">
+            {streak ? streak.currentStreak : 0}
+          </div>
+          <p className="text-lg font-bold uppercase tracking-widest text-[var(--muse-muted)] mt-2">
+            Day Streak
+          </p>
+        </div>
+
+        {justShared ? (
+          <div className="w-full max-w-sm text-center py-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* @ts-ignore dynamic import */}
+            <Icons.CheckCircle size={32} className="text-emerald-500 mx-auto mb-4" />
+            <p className="text-xl font-bold text-[var(--muse-text)]">Spark Shared</p>
+            <p className="text-sm text-[var(--muse-muted)]">Momentum captured.</p>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleShare}
+            disabled={sharing}
+            className="px-10 py-5 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-lg shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.4)] hover:shadow-[0_0_50px_rgba(var(--muse-accent-rgb),0.6)] hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 flex items-center gap-3 cursor-pointer"
+          >
+            {/* @ts-ignore dynamic import */}
+            <Icons.Zap size={24} />
+            Share Spark ({streak?.defaultSparkMode})
+          </button>
+        )}
+      </div>
+
+      {/* Social / Entanglements Section */}
+      <div className="w-full max-w-5xl mx-auto px-6 py-12 relative z-10 border-t border-[var(--muse-border)]">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-[var(--muse-text)] font-serif italic">Entanglements</h2>
+          <button className="text-sm font-bold uppercase tracking-widest text-[var(--muse-accent)] hover:text-[var(--muse-accent-dark)] transition-colors">
+            Manage Network
+          </button>
+        </div>
+
+        {partnerStreaks.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {partnerStreaks.map((pStreak) => (
+              <div key={pStreak.id} className="p-6 rounded-3xl bg-[var(--muse-surface)] border border-[var(--muse-border)] flex items-center gap-4 hover:border-[var(--muse-accent)] transition-colors cursor-pointer group">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-indigo-500/30">
+                  <span className="text-xl font-bold text-indigo-400">{pStreak.partnerName.charAt(0)}</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-lg font-bold text-[var(--muse-text)]">{pStreak.partnerName}</p>
+                  <p className="text-sm text-[var(--muse-muted)] line-clamp-1">{pStreak.history[0]?.action || "No history yet"}</p>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  {/* @ts-ignore dynamic import */}
+                  <Icons.Flame size={20} className="text-orange-500 mb-1" />
+                  <span className="text-lg font-black text-[var(--muse-text)]">{pStreak.count}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="w-full py-12 text-center rounded-3xl bg-[var(--muse-surface-soft)] border border-[var(--muse-border)] border-dashed">
+            {/* @ts-ignore dynamic import */}
+            <Icons.Users size={48} className="mx-auto text-[var(--muse-muted)] mb-4" />
+            <p className="text-lg font-bold text-[var(--muse-text)]">No Entanglements Yet</p>
+            <p className="text-sm text-[var(--muse-muted)] mb-6 max-w-sm mx-auto">
+              Streaks are more powerful when shared. Invite a resonance partner to lock in your momentum together.
+            </p>
+            <button className="px-6 py-3 rounded-full bg-[var(--muse-surface)] border border-[var(--muse-border)] text-[var(--muse-text)] hover:bg-[var(--muse-surface-soft)] transition-colors font-medium">
+              Find Partners
+            </button>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

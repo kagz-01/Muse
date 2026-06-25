@@ -33,6 +33,7 @@ export interface GlobalStreak {
   streakLevel: string;
   freezeCount: number;
   milestonesUnlocked: number[];
+  defaultSparkMode?: "ghost" | "aura" | "clear" | null;
 }
 
 export const globalStreakSignal = signal<GlobalStreak | null>(null);
@@ -193,6 +194,7 @@ export async function loadGlobalStreak() {
       streakLevel: "Aura",
       freezeCount: 2,
       milestonesUnlocked: [],
+      defaultSparkMode: null,
     };
     return;
   }
@@ -209,6 +211,7 @@ export async function loadGlobalStreak() {
         streakLevel: data.streak.streak_level,
         freezeCount: data.streak.freeze_count,
         milestonesUnlocked: data.streak.milestones_unlocked || [],
+        defaultSparkMode: data.streak.default_spark_mode,
       };
     }
   } catch (e) {
@@ -216,9 +219,47 @@ export async function loadGlobalStreak() {
   }
 }
 
-/** Share a spark to increment global streak */
-export async function shareSpark(privacyMode: "ghost" | "aura" | "clear") {
+/** Set the default spark privacy mode */
+export async function setSparkMode(privacyMode: "ghost" | "aura" | "clear") {
   const isDemo = userSignal.value?.id === "__demo__";
+  if (isDemo) {
+    if (globalStreakSignal.value) {
+      globalStreakSignal.value = {
+        ...globalStreakSignal.value,
+        defaultSparkMode: privacyMode,
+      };
+    }
+    return true;
+  }
+
+  try {
+    const res = await safeFetch("/api/user/streaks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "set_mode", privacyMode }),
+      entity: "settings",
+    });
+
+    if (res.ok) {
+      if (globalStreakSignal.value) {
+        globalStreakSignal.value = {
+          ...globalStreakSignal.value,
+          defaultSparkMode: privacyMode,
+        };
+      }
+      return true;
+    }
+  } catch (e) {
+    console.error("Failed to set spark mode", e);
+  }
+  return false;
+}
+
+/** Share a spark to increment global streak */
+export async function shareSpark() {
+  const privacyMode = globalStreakSignal.value?.defaultSparkMode || "ghost";
+  const isDemo = userSignal.value?.id === "__demo__";
+  
   if (isDemo) {
     if (globalStreakSignal.value) {
       globalStreakSignal.value = {

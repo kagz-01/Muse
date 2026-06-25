@@ -11,7 +11,7 @@ export const handler: Handlers = {
 
     try {
       const result = await queryDB(
-        `SELECT current_streak, longest_streak, total_journal_days, last_entry_date, streak_level, freeze_count, milestones_unlocked 
+        `SELECT current_streak, longest_streak, total_journal_days, last_entry_date, streak_level, freeze_count, milestones_unlocked, preferences->>'default_spark_mode' AS default_spark_mode 
          FROM users WHERE id = $1`,
         [userId as string]
       );
@@ -38,6 +38,17 @@ export const handler: Handlers = {
 
     try {
       const { action, privacyMode } = await req.json();
+
+      if (action === "set_mode" && privacyMode) {
+        await executeDB(
+          `UPDATE users SET preferences = jsonb_set(COALESCE(preferences, '{}'::jsonb), '{default_spark_mode}', $1::jsonb) WHERE id = $2`,
+          [`"${privacyMode}"`, userId as string]
+        );
+        return new Response(JSON.stringify({ success: true, privacyMode }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" }
+        });
+      }
 
       // Right now, any "Spark" action increments the streak if it's a new day
       if (action === "share_spark") {
@@ -71,7 +82,7 @@ export const handler: Handlers = {
               [newStreak, newLongest, newTotal, today, userId as string]
             );
 
-            return new Response(JSON.stringify({ success: true, newStreak, privacyMode }), {
+            return new Response(JSON.stringify({ success: true, newStreak }), {
               status: 200,
               headers: { "Content-Type": "application/json" }
             });
@@ -87,7 +98,7 @@ export const handler: Handlers = {
 
       return new Response("Invalid action", { status: 400 });
     } catch (e) {
-      console.error("Failed to post spark", e);
+      console.error("Failed to post spark/set mode", e);
       return new Response("Internal Server Error", { status: 500 });
     }
   }
