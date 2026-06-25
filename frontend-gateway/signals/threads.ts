@@ -1,4 +1,5 @@
 import { signal } from "@preact/signals";
+import { userSignal } from "./user.ts";
 
 export type ThreadMood = string;
 
@@ -149,17 +150,34 @@ function loadThreads(): Thread[] {
 
 export const threadsSignal = signal<Thread[]>(loadThreads());
 
+// Keep localStorage as a fast cache for demo mode only
 if (typeof localStorage !== "undefined") {
   threadsSignal.subscribe((threads: Thread[]) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
-    } catch {
-      // Ignore storage write errors (readonly or restricted environments)
+    const isDemo = userSignal.value?.id === "__demo__";
+    if (isDemo) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+      } catch { /* ignore */ }
     }
   });
 }
 
-export function addThread(
+// Load threads from backend for authenticated users
+export async function syncThreadsFromBackend(): Promise<void> {
+  const isDemo = userSignal.value?.id === "__demo__";
+  if (isDemo) return;
+  try {
+    const response = await fetch("/api/threads");
+    if (response.ok) {
+      const threads = await response.json();
+      threadsSignal.value = threads;
+    }
+  } catch (e) {
+    console.error("Failed to sync threads from backend:", e);
+  }
+}
+
+export async function addThread(
   thread: Omit<
     Thread,
     | "id"
@@ -168,18 +186,57 @@ export function addThread(
     | "resonanceMetrics"
     | "dialogueLayers"
   >,
-) {
-  const newId = "t" + (threadsSignal.value.length + 1);
-  const newThread: Thread = {
-    ...thread,
-    id: newId,
-    updatedAt: new Date().toISOString(),
-    synthesisScore: Math.floor(Math.random() * 40) + 60,
-    resonanceMetrics: { views: 0, connections: 0 },
-    dialogueLayers: [],
-  };
+): Promise<string> {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  if (isDemo) {
+    const newId = "t" + (threadsSignal.value.length + 1);
+    const newThread: Thread = {
+      ...thread,
+      id: newId,
+      updatedAt: new Date().toISOString(),
+      synthesisScore: Math.floor(Math.random() * 40) + 60,
+      resonanceMetrics: { views: 0, connections: 0 },
+      dialogueLayers: [],
+    };
+    threadsSignal.value = [...threadsSignal.value, newThread];
+    return newId;
+  }
+
+  const response = await fetch("/api/threads", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(thread),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create thread: ${await response.text()}`);
+  }
+
+  const { thread: newThread } = await response.json();
   threadsSignal.value = [...threadsSignal.value, newThread];
-  return newId;
+  return newThread.id;
+}
+
+export async function updateThread(id: string, updates: Partial<Thread>) {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  // Optimistic update
+  threadsSignal.value = threadsSignal.value.map((t) =>
+    t.id === id ? { ...t, ...updates, updatedAt: new Date().toISOString() } : t
+  );
+
+  if (!isDemo && !id.startsWith("t")) {
+    try {
+      await fetch(`/api/threads/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+    } catch (e) {
+      console.error("Failed to update thread on backend:", e);
+    }
+  }
 }
 
 export function addDialogueLayer(
@@ -194,58 +251,66 @@ export function addDialogueLayer(
         resonanceScore: 0,
         timestamp: new Date().toISOString(),
       };
-      return { ...t, dialogueLayers: [...t.dialogueLayers, newLayer] };
+      const updated = { ...t, dialogueLayers: [...t.dialogueLayers, newLayer] };
+      // Persist dialogue layers to backend
+      const isDemo = userSignal.value?.id === "__demo__";
+      if (!isDemo && !threadId.startsWith("t")) {
+        fetch(`/api/threads/${threadId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dialogueLayers: updated.dialogueLayers }),
+        }).catch((e) => console.error("Failed to sync dialogue layers:", e));
+      }
+      return updated;
     }
     return t;
   });
 }
 
-export function toggleThreadPrivacy(id: string) {
-  threadsSignal.value = threadsSignal.value.map((t) =>
-    t.id === id ? { ...t, isPublic: !t.isPublic } : t
-  );
+export async function toggleThreadPrivacy(id: string) {
+  const thread = threadsSignal.value.find((t) => t.id === id);
+  if (thread) await updateThread(id, { isPublic: !thread.isPublic });
 }
 
-export function updateThreadMood(id: string, mood: ThreadMood) {
-  threadsSignal.value = threadsSignal.value.map((t) =>
-    t.id === id ? { ...t, mood, updatedAt: new Date().toISOString() } : t
-  );
+export async function updateThreadMood(id: string, mood: ThreadMood) {
+  await updateThread(id, { mood });
 }
 
 export function removeItemFromThread(threadId: string, itemId: string) {
-  threadsSignal.value = threadsSignal.value.map((t) =>
-    t.id === threadId
-      ? {
-        ...t,
-        itemIds: t.itemIds.filter((i) => i !== itemId),
-        updatedAt: new Date().toISOString(),
-      }
-      : t
-  );
+  const thread = threadsSignal.value.find((t) => t.id === threadId);
+  if (!thread) return;
+  const newItemIds = thread.itemIds.filter((i) => i !== itemId);
+  updateThread(threadId, { itemIds: newItemIds });
 }
 
 export function resetThreads() {
   threadsSignal.value = [];
 }
 
-export function toggleFavoriteThread(id: string) {
-  threadsSignal.value = threadsSignal.value.map((thread) =>
-    thread.id === id ? { ...thread, isFavorited: !thread.isFavorited } : thread
-  );
+export async function toggleFavoriteThread(id: string) {
+  const thread = threadsSignal.value.find((t) => t.id === id);
+  if (thread) await updateThread(id, { isFavorited: !thread.isFavorited });
 }
 
-export function togglePinThread(id: string) {
-  threadsSignal.value = threadsSignal.value.map((thread) =>
-    thread.id === id ? { ...thread, isPinned: !thread.isPinned } : thread
-  );
+export async function togglePinThread(id: string) {
+  const thread = threadsSignal.value.find((t) => t.id === id);
+  if (thread) await updateThread(id, { isPinned: !thread.isPinned });
 }
 
-export function toggleArchiveThread(id: string) {
-  threadsSignal.value = threadsSignal.value.map((thread) =>
-    thread.id === id ? { ...thread, isArchived: !thread.isArchived } : thread
-  );
+export async function toggleArchiveThread(id: string) {
+  const thread = threadsSignal.value.find((t) => t.id === id);
+  if (thread) await updateThread(id, { isArchived: !thread.isArchived });
 }
 
-export function deleteThread(id: string) {
+export async function deleteThread(id: string) {
+  const isDemo = userSignal.value?.id === "__demo__";
   threadsSignal.value = threadsSignal.value.filter((t) => t.id !== id);
+
+  if (!isDemo && !id.startsWith("t")) {
+    try {
+      await fetch(`/api/threads/${id}`, { method: "DELETE" });
+    } catch (e) {
+      console.error("Failed to delete thread on backend:", e);
+    }
+  }
 }

@@ -55,6 +55,8 @@ import * as $api_rooms_create from "./routes/api/rooms/create.ts";
 import * as $api_rooms_index from "./routes/api/rooms/index.ts";
 import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-artifact.ts";
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
+import * as $api_threads_id_ from "./routes/api/threads/[id].ts";
+import * as $api_threads_index from "./routes/api/threads/index.ts";
 import * as $api_threads_synthesize from "./routes/api/threads/synthesize.ts";
 import * as $api_user_change_password from "./routes/api/user/change-password.ts";
 import * as $api_user_delete from "./routes/api/user/delete.ts";
@@ -205,6 +207,8 @@ const manifest = {
     "./routes/api/rooms/index.ts": $api_rooms_index,
     "./routes/api/synthesis/create-artifact.ts": $api_synthesis_create_artifact,
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
+    "./routes/api/threads/[id].ts": $api_threads_id_,
+    "./routes/api/threads/index.ts": $api_threads_index,
     "./routes/api/threads/synthesize.ts": $api_threads_synthesize,
     "./routes/api/user/change-password.ts": $api_user_change_password,
     "./routes/api/user/delete.ts": $api_user_delete,
