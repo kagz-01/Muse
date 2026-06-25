@@ -1,12 +1,14 @@
 import { useState } from "preact/hooks";
 import { Collaborator } from "../../signals/connections.ts";
 import NeuralLinkModal from "./NeuralLinkModal.tsx";
+import ParallelPreviewModal from "./ParallelPreviewModal.tsx";
 import * as Icons from "lucide-preact";
 
 export default function AuraCard(
   { collaborator }: { collaborator: Collaborator },
 ) {
   const [showNeuralLink, setShowNeuralLink] = useState(false);
+  const [showParallelPreview, setShowParallelPreview] = useState(false);
 
   return (
     <>
@@ -73,20 +75,30 @@ export default function AuraCard(
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setShowNeuralLink(true)}
-              className="flex-1 py-4 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-xl cursor-pointer"
+              onClick={() => setShowParallelPreview(true)}
+              className="flex-1 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all cursor-pointer"
             >
-              <Icons.UserPlus size={14} /> Establish Link
+              <Icons.Sparkles size={14} style={{ color: collaborator.aura }} /> Parallel Preview
             </button>
             <button
               type="button"
+              onClick={() => setShowNeuralLink(true)}
               className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+              title="Establish Link"
             >
-              <Icons.ChevronRight size={20} />
+              <Icons.UserPlus size={18} />
             </button>
           </div>
         </div>
       </div>
+      
+      {showParallelPreview && (
+        <ParallelPreviewModal
+          collaborator={collaborator}
+          onClose={() => setShowParallelPreview(false)}
+          onEstablishLink={() => setShowNeuralLink(true)}
+        />
+      )}
       {showNeuralLink && (
         <NeuralLinkModal
           collaborator={collaborator}

@@ -32,20 +32,51 @@ export const handler: Handlers = {
     }
 
     try {
-      // In production, match users based on shared tags in journal_entries
-      // For now, we will select random users to simulate the network
+      // Implement basic matching algorithm based on shared terms in public items
+      // 1. Get current user's public items keywords
+      const currentUserItems = await queryDB(
+        "SELECT title, note FROM items WHERE user_id = $1 AND is_public = true",
+        userId
+      );
+      
+      const currentUserText = currentUserItems.map((i: unknown) => `${(i as Record<string, unknown>).title} ${(i as Record<string, unknown>).note || ""}`).join(" ").toLowerCase();
+      const userWords = new Set(currentUserText.split(/\W+/).filter(w => w.length > 4));
+
+      // 2. Fetch potential collaborators (users other than current)
       const users = await queryDB(
-        `
-        SELECT id, username, email, avatar_url 
-        FROM users 
-        WHERE id != $1
-        LIMIT 10
-      `,
+        `SELECT id, username, email, avatar_url FROM users WHERE id != $1 LIMIT 10`,
         userId,
       );
 
-      const collaborators = users.map((e: unknown, i: number) => {
+      // 3. For each user, calculate overlap
+      const collaborators = await Promise.all(users.map(async (e: unknown, i: number) => {
         const u = e as Record<string, unknown>;
+        
+        // Get this user's public items
+        const partnerItems = await queryDB(
+          "SELECT title, note FROM items WHERE user_id = $1 AND is_public = true",
+          u.id as string
+        );
+        
+        let matchPercentage = 50; // Base match
+        let sharedThemes = ["Exploration"];
+        
+        if (partnerItems.length > 0 && userWords.size > 0) {
+          const partnerText = partnerItems.map((pi: unknown) => `${(pi as Record<string, unknown>).title} ${(pi as Record<string, unknown>).note || ""}`).join(" ").toLowerCase();
+          const partnerWords = new Set(partnerText.split(/\W+/).filter(w => w.length > 4));
+          
+          // Calculate Jaccard similarity approximation
+          const intersection = new Set([...userWords].filter(x => partnerWords.has(x)));
+          if (intersection.size > 0) {
+            matchPercentage = Math.min(99, 50 + (intersection.size * 5)); // Add 5% per shared significant word
+            sharedThemes = Array.from(intersection).slice(0, 3).map(w => w.charAt(0).toUpperCase() + w.slice(1));
+          }
+        } else {
+           // Fallback for empty states
+           matchPercentage = Math.floor(Math.random() * 30) + 60;
+           sharedThemes = ["Next.js", "AI", "Design Systems"].sort(() => 0.5 - Math.random()).slice(0, 2);
+        }
+
         return {
           id: u.id,
           name: u.username || (u.email as string).split("@")[0],
@@ -54,14 +85,14 @@ export const handler: Handlers = {
           role: ["Synthesizer", "Architect", "Challenger", "Observer"][i % 4],
           status: ["Online", "Reflecting", "Deep Focus", "Offline"][i % 4],
           bio: "Exploring the intersections of systems and human thought.",
-          sharedThemes: ["Next.js", "AI", "Design Systems"],
+          sharedThemes,
           aura: ["#60a5fa", "#34d399", "#fbbf24", "#fb7185"][i % 4],
           intelligenceProfile:
             ["Synthesizer", "Architect", "Challenger"][i % 3],
-          matchPercentage: Math.floor(Math.random() * 30) + 70, // 70-99%
+          matchPercentage,
           topCitedNode: "Mental Models for Engineers",
         };
-      });
+      }));
 
       return new Response(JSON.stringify({ collaborators }), {
         status: 200,
