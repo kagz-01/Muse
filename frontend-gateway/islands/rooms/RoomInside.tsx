@@ -95,6 +95,35 @@ export default function RoomInside({ roomId }: { roomId: string }) {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const getCollisions = useMemo(() => {
+    const collisions = new Set<string>();
+    const keywordMap = new Map<string, { itemId: string; authorId: string }[]>();
+
+    // 1. Map keywords to items and authors
+    items.forEach(item => {
+      const text = `${item.title} ${item.note || ""}`.toLowerCase();
+      const words = text.split(/\W+/).filter(w => w.length > 4 && !["about", "which", "there", "their", "where", "would", "https"].includes(w));
+      const authorId = item.authorId || "self";
+      
+      const uniqueWords = Array.from(new Set(words));
+      uniqueWords.forEach(w => {
+        if (!keywordMap.has(w)) keywordMap.set(w, []);
+        keywordMap.get(w)!.push({ itemId: item.id, authorId });
+      });
+    });
+
+    // 2. Find items that share keywords with DIFFERENT authors
+    keywordMap.forEach((entries) => {
+      const authors = new Set(entries.map(e => e.authorId));
+      if (authors.size > 1) {
+        // Collision detected across different authors!
+        entries.forEach(e => collisions.add(e.itemId));
+      }
+    });
+
+    return collisions;
+  }, [items]);
+
   if (!room) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#0a0a0a]">
@@ -210,6 +239,8 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     setShowExtractor(false);
     setMismatchAlert(null);
   };
+
+
 
   const generateDynamicInsight = (
     currentItems: typeof items,
@@ -742,13 +773,21 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                           ? "mt-8"
                           : "mt-0";
 
+                        const isCollision = getCollisions.has(item.id);
                         return (
                           <div
                             key={item.id}
-                            className={`bg-[#111] rounded-[2.5rem] border border-[var(--muse-text)]/5 overflow-visible group transition-all duration-500 w-[320px] sm:w-[380px] flex-shrink-0 ${mt} hover:scale-[1.02] hover:z-20`}
-                            style={glowStyle}
+                            className={`bg-[#111] rounded-[2.5rem] border overflow-visible group transition-all duration-500 w-[320px] sm:w-[380px] flex-shrink-0 ${mt} hover:scale-[1.02] hover:z-20 ${
+                              isCollision ? "border-amber-500/50 shadow-[0_0_30px_rgba(245,158,11,0.2)]" : "border-[var(--muse-text)]/5"
+                            }`}
+                            style={!isCollision ? glowStyle : undefined}
                           >
                             <div className="relative">
+                              {isCollision && (
+                                <div className="absolute top-4 left-4 z-40 px-3 py-1.5 rounded-full bg-amber-500/90 text-[#111] font-bold uppercase tracking-widest text-[9px] flex items-center gap-1.5 shadow-lg backdrop-blur-md">
+                                  <Icons.Zap size={10} /> Cognitive Collision
+                                </div>
+                              )}
                               <div
                                 className="h-40 relative overflow-hidden rounded-t-[2.5rem]"
                                 style={{
@@ -812,9 +851,18 @@ export default function RoomInside({ roomId }: { roomId: string }) {
                                 )}
 
                                 <div className="flex items-center justify-between mt-auto pt-5 border-t border-[var(--muse-text)]/5">
-                                  <span className="text-[9px] uppercase font-bold tracking-[0.15em] truncate max-w-[70%] text-[var(--muse-muted)]">
-                                    Sourced from collective
-                                  </span>
+                                  <div className="flex items-center gap-2 max-w-[70%]">
+                                    {item.authorAvatar ? (
+                                      <img src={item.authorAvatar} alt="" className="w-5 h-5 rounded-full" />
+                                    ) : (
+                                      <div className="w-5 h-5 rounded-full bg-[var(--muse-text)]/10 flex items-center justify-center text-[10px] text-[var(--muse-text)] font-bold">
+                                        {item.authorName?.[0]?.toUpperCase() || "?"}
+                                      </div>
+                                    )}
+                                    <span className="text-[9px] uppercase font-bold tracking-[0.15em] truncate text-[var(--muse-muted)]">
+                                      {item.authorName || "You"}
+                                    </span>
+                                  </div>
                                   <button
                                     onClick={() => deleteItem(item.id)}
                                     type="button"

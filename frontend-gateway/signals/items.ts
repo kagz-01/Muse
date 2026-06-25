@@ -19,6 +19,9 @@ export interface Item {
     extractedAt: string;
     integrityHash: string;
   };
+  authorId?: string;
+  authorName?: string;
+  authorAvatar?: string;
 }
 
 const STORAGE_KEY = "muse_items_v2";
