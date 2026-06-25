@@ -67,7 +67,7 @@ export const handler: Handlers = {
     const userId = rawUserId.replace(/[^a-zA-Z0-9-]/g, "");
 
     try {
-      const { action, permissions, content, type } = await req.json();
+      const { action, permissions, content, _type, destination } = await req.json();
 
       if (action === "set_permissions" && permissions) {
         await executeDB(
@@ -84,16 +84,16 @@ export const handler: Handlers = {
       if (action === "capture_momentum") {
         const today = new Date().toISOString().split("T")[0];
         
-        // 1. Insert the artifact into the DB based on type
-        if (type === "journal" && content) {
+        // 1. Insert the artifact into the DB based on destination
+        if (destination && destination !== "journal") {
+          await executeDB(
+            `INSERT INTO items (user_id, room_id, title) VALUES ($1, $2, $3)`,
+            userId as string, destination, content
+          );
+        } else {
           await executeDB(
             `INSERT INTO journal_entries (user_id, raw_thought, mood) VALUES ($1, $2, $3)`,
             userId as string, content, "reflection"
-          );
-        } else if (type === "room" && content) {
-          await executeDB(
-            `INSERT INTO rooms (user_id, title) VALUES ($1, $2)`,
-            userId as string, content
           );
         }
         

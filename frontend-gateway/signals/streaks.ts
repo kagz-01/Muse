@@ -289,7 +289,7 @@ export async function setSparkPermissions(permissions: Partial<StreakPermissions
 }
 
 /** Capture Momentum (Log a real action to extend streak) */
-export async function captureMomentum(type: "journal" | "room", content: string) {
+export async function captureMomentum(type: string, content: string, destination: string = "journal") {
   const isDemo = userSignal.value?.id === "__demo__";
   
   if (isDemo) {
@@ -312,7 +312,7 @@ export async function captureMomentum(type: "journal" | "room", content: string)
     const res = await safeFetch("/api/user/streaks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "capture_momentum", type, content }),
+      body: JSON.stringify({ action: "capture_momentum", type, content, destination }),
       entity: "streak",
     });
 

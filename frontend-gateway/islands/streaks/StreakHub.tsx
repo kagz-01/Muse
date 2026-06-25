@@ -11,12 +11,24 @@ import {
 } from "../../signals/streaks.ts";
 import { userSignal } from "../../signals/user.ts";
 
+const PROMPTS = [
+  "What is a pattern you noticed today, but chose to ignore?",
+  "Distill the most complex thought you had today into a single sentence.",
+  "What idea feels too dangerous to write down right now?",
+  "Connect two completely unrelated concepts you encountered today.",
+  "What is the underlying mood of your thoughts today?"
+];
+
 export default function StreakHub() {
   const [sharing, setSharing] = useState(false);
   const [justShared, setJustShared] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [synthesisContent, setSynthesisContent] = useState("");
+  const [captureMode, setCaptureMode] = useState<"text" | "voice" | "camera">("text");
+  const [destination, setDestination] = useState<string>("journal");
+  const [isRecording, setIsRecording] = useState(false);
+  const [activePrompt, setActivePrompt] = useState("");
   const [selectedPartner, setSelectedPartner] = useState<UserStreak | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
@@ -43,16 +55,36 @@ export default function StreakHub() {
   };
 
   const handleShare = async () => {
-    if (!synthesisContent.trim()) return;
+    if (captureMode === "text" && !synthesisContent.trim()) return;
+    
+    // For voice/camera, simulate finishing recording
+    if (isRecording) setIsRecording(false);
+    
     setSharing(true);
-    const success = await captureMomentum("journal", synthesisContent);
+    // In a real app, voice/camera would upload a file and return a URL.
+    // Here we just use a placeholder text if not in text mode.
+    const finalContent = captureMode === "text" 
+      ? synthesisContent 
+      : `[Captured ${captureMode} artifact]`;
+      
+    const success = await captureMomentum(captureMode, finalContent, destination);
     setSharing(false);
+    
     if (success) {
       setJustShared(true);
       setIsSynthesizing(false);
       setSynthesisContent("");
       setTimeout(() => setJustShared(false), 3000);
     }
+  };
+
+  const handleOpenCapture = () => {
+    setActivePrompt(PROMPTS[Math.floor(Math.random() * PROMPTS.length)]);
+    setIsSynthesizing(true);
+    setCaptureMode("text");
+    setDestination("journal");
+    setSynthesisContent("");
+    setIsRecording(false);
   };
 
   const needsOnboarding = streak && !streak.permissions;
@@ -272,42 +304,15 @@ export default function StreakHub() {
             <p className="text-xl font-bold text-[var(--muse-text)]">Spark Shared</p>
             <p className="text-sm text-[var(--muse-muted)]">Momentum captured.</p>
           </div>
-        ) : isSynthesizing ? (
-          <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-4">
-            <textarea
-              value={synthesisContent}
-              onInput={(e) => setSynthesisContent(e.currentTarget.value)}
-              placeholder="What did you learn or synthesize today?"
-              className="w-full bg-[var(--muse-surface)] border border-[var(--muse-border)] rounded-2xl p-4 text-[var(--muse-text)] focus:border-[var(--muse-accent)] outline-none resize-none h-24 text-sm"
-              autoFocus
-            />
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setIsSynthesizing(false)}
-                className="flex-1 py-3 rounded-full bg-transparent border border-[var(--muse-border)] text-[var(--muse-text)] font-bold text-sm hover:bg-[var(--muse-surface)] transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleShare}
-                disabled={sharing || !synthesisContent.trim()}
-                className="flex-1 py-3 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-sm shadow-md hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50"
-              >
-                {sharing ? "Capturing..." : "Capture"}
-              </button>
-            </div>
-          </div>
         ) : (
           <button
             type="button"
-            onClick={() => setIsSynthesizing(true)}
+            onClick={handleOpenCapture}
             className="px-8 py-4 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-lg shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.4)] hover:shadow-[0_0_50px_rgba(var(--muse-accent-rgb),0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 cursor-pointer"
           >
             {/* @ts-ignore dynamic import */}
             <Icons.Zap size={20} />
-            Quick Synthesis
+            Ignite Momentum
           </button>
         )}
 
@@ -449,6 +454,127 @@ export default function StreakHub() {
             >
               Send Resonance Spark
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Immersive Contemplation Modal */}
+      {isSynthesizing && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 bg-black/95 backdrop-blur-md animate-in fade-in duration-700">
+          <button 
+            type="button"
+            onClick={() => setIsSynthesizing(false)}
+            className="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors"
+          >
+            {/* @ts-ignore dynamic import */}
+            <Icons.X size={32} />
+          </button>
+
+          <div className="w-full max-w-3xl flex flex-col items-center justify-center h-full relative z-10 animate-in slide-in-from-bottom-10 duration-700">
+            {/* The Deep Prompt */}
+            <h2 className="text-3xl md:text-5xl font-black text-white text-center tracking-tight mb-16 leading-tight italic font-serif">
+              "{activePrompt}"
+            </h2>
+
+            {/* Input Modes */}
+            <div className="w-full flex flex-col items-center gap-8">
+              {/* Mode Toggles */}
+              <div className="flex items-center gap-4 p-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
+                <button
+                  type="button"
+                  onClick={() => setCaptureMode("text")}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${captureMode === "text" ? "bg-white text-black" : "text-gray-400 hover:text-white"}`}
+                >
+                  {/* @ts-ignore dynamic import */}
+                  <Icons.Type size={16} /> Text
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCaptureMode("voice")}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${captureMode === "voice" ? "bg-white text-black" : "text-gray-400 hover:text-white"}`}
+                >
+                  {/* @ts-ignore dynamic import */}
+                  <Icons.Mic size={16} /> Voice
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCaptureMode("camera")}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${captureMode === "camera" ? "bg-white text-black" : "text-gray-400 hover:text-white"}`}
+                >
+                  {/* @ts-ignore dynamic import */}
+                  <Icons.Camera size={16} /> Camera
+                </button>
+              </div>
+
+              {/* Input Area */}
+              <div className="w-full flex justify-center min-h-[160px]">
+                {captureMode === "text" && (
+                  <textarea
+                    value={synthesisContent}
+                    onInput={(e) => setSynthesisContent(e.currentTarget.value)}
+                    placeholder="Type your synthesis here..."
+                    className="w-full max-w-2xl bg-transparent border-b-2 border-white/20 p-4 text-white text-xl focus:border-[var(--muse-accent)] outline-none resize-none min-h-[120px] transition-colors placeholder:text-gray-600 font-serif"
+                    autoFocus
+                  />
+                )}
+
+                {captureMode === "voice" && (
+                  <div className="flex flex-col items-center justify-center gap-6">
+                    <button 
+                      type="button"
+                      onClick={() => setIsRecording(!isRecording)}
+                      className={`w-24 h-24 rounded-full flex items-center justify-center transition-all ${isRecording ? "bg-red-500/20 text-red-500 animate-pulse border-2 border-red-500" : "bg-white/10 text-white hover:bg-white/20 border-2 border-transparent"}`}
+                    >
+                      {/* @ts-ignore dynamic import */}
+                      <Icons.Mic size={40} className={isRecording ? "animate-pulse" : ""} />
+                    </button>
+                    <p className="text-sm font-bold tracking-widest text-gray-400 uppercase">
+                      {isRecording ? "Listening..." : "Tap to Record"}
+                    </p>
+                  </div>
+                )}
+
+                {captureMode === "camera" && (
+                  <div className="flex flex-col items-center justify-center gap-6">
+                    <div className="w-full max-w-md aspect-video rounded-3xl bg-black border border-white/20 flex items-center justify-center relative overflow-hidden">
+                       {/* Mock Viewfinder */}
+                       <div className="absolute inset-0 border-4 border-white/5 m-4 rounded-xl" />
+                       <p className="text-gray-600 font-bold uppercase tracking-widest text-xs">Camera Viewfinder Active</p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setIsRecording(!isRecording)}
+                      className={`w-16 h-16 rounded-full flex items-center justify-center transition-all border-4 ${isRecording ? "border-red-500 bg-red-500" : "border-white bg-white/20 hover:bg-white"}`}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Destination & Submit */}
+              <div className="w-full max-w-2xl flex items-center justify-between mt-12 pt-8 border-t border-white/10">
+                <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Route Artifact To:</span>
+                  <select 
+                    value={destination}
+                    onChange={(e) => setDestination(e.currentTarget.value)}
+                    className="bg-transparent text-white font-bold text-lg outline-none cursor-pointer"
+                  >
+                    <option value="journal" className="bg-black text-white">Private Journal</option>
+                    <option value="room-sys-arch" className="bg-black text-white">Room: System Architecture</option>
+                    <option value="room-quantum" className="bg-black text-white">Room: Quantum Physics</option>
+                  </select>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  disabled={sharing || (captureMode === "text" && !synthesisContent.trim())}
+                  className="px-10 py-4 rounded-full bg-white text-black font-black uppercase tracking-widest text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  {sharing ? "Anchoring..." : "Capture Momentum"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
