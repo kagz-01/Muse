@@ -11,6 +11,10 @@ import { threadsSignal } from "../../signals/threads.ts";
 import { itemsSignal } from "../../signals/items.ts";
 import { setAmbientGlow } from "../../signals/resonance.ts";
 import { getStreakState, streaksSignal } from "../../signals/streaks.ts";
+import {
+  generateDynamicHumor,
+  type UserContext,
+} from "../../utils/dynamicHumor.ts";
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -28,6 +32,8 @@ interface ServiceHealthResponse {
     };
   };
 }
+
+type GreetingPeriod = "morning" | "afternoon" | "evening";
 
 const TIME_MESSAGES: Record<string, string[]> = {
   morning: [
@@ -47,14 +53,46 @@ const TIME_MESSAGES: Record<string, string[]> = {
   ],
 };
 
-function getTimeContext() {
-  const hour = new Date().getHours();
+const HUMOR_MESSAGES: Record<GreetingPeriod, string[]> = {
+  morning: [
+    "I brewed the dashboard early so your ideas could wake up before the rest of the internet.",
+    "Coffee is optional. Momentum is not.",
+    "The day is soft right now. Perfect time to make it productive.",
+  ],
+  afternoon: [
+    "The session is warm, the lights are on, and the excuses are running out.",
+    "Afternoons are for turning scattered thoughts into something that looks intentional.",
+    "You still have time to impress your future self.",
+  ],
+  evening: [
+    "The noise is settling down, which is usually a sign the good ideas are about to show up.",
+    "Evening mode: fewer distractions, sharper signal, slightly more dramatic lighting.",
+    "A quiet hour is a good hour for intelligent trouble.",
+  ],
+};
+
+function getTimeContext(timeZone?: string) {
+  let hour = new Date().getHours();
+  if (timeZone) {
+    try {
+      hour = Number(
+        new Intl.DateTimeFormat("en-US", {
+          hour: "2-digit",
+          hour12: false,
+          timeZone,
+        }).format(new Date()),
+      );
+    } catch {
+      // Fall back to the browser clock when timezone data is missing or invalid.
+    }
+  }
+
   if (hour >= 5 && hour < 12) {
     const msgs = TIME_MESSAGES.morning;
     return {
       greeting: "Good morning",
-      hex: "#f59e0b",
       period: "morning" as const,
+      hex: "#f59e0b",
       message: msgs[Math.floor(Math.random() * msgs.length)],
     };
   }
@@ -70,10 +108,28 @@ function getTimeContext() {
   const msgs = TIME_MESSAGES.evening;
   return {
     greeting: "Good evening",
-    hex: "#6366f1",
     period: "evening" as const,
+    hex: "#6366f1",
     message: msgs[Math.floor(Math.random() * msgs.length)],
   };
+}
+
+function capitalize(value: string): string {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function getGuestPrompt(
+  period: GreetingPeriod,
+  isGuestAccess: boolean,
+  userContext?: Partial<UserContext>,
+): string {
+  if (isGuestAccess) {
+    return "Guest access is active. Finish your profile when you're ready and I'll retire the stranger label.";
+  }
+
+  // Use dynamic humor based on user engagement metrics
+  return generateDynamicHumor(period, userContext);
 }
 
 function toMillis(timestamp: string | number): number {
@@ -94,18 +150,20 @@ export default function PulseHome() {
     ServiceHealthResponse | null
   >(null);
   const [mounted, setMounted] = useState(false);
+  const [heroGreeting, setHeroGreeting] = useState("");
+  const [heroPrompt, setHeroPrompt] = useState("");
 
   // Quick Capture State
   const [quickCaptureText, setQuickCaptureText] = useState("");
   const [isCapturing, setIsCapturing] = useState(false);
 
   useEffect(() => {
-    const ctx = getTimeContext();
+    const ctx = getTimeContext(user?.timezone);
     setTimeContext(ctx);
     setAmbientGlow(ctx.hex);
     requestAnimationFrame(() => setMounted(true));
     return () => setAmbientGlow(null);
-  }, []);
+  }, [user?.timezone]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -122,6 +180,72 @@ export default function PulseHome() {
     loadHealth();
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    let interval: ReturnType<typeof setInterval>;
+    let promptTimeout: ReturnType<typeof setTimeout>;
+
+    const hasUsername = Boolean(user?.username?.trim());
+    const isGuestAccess = user?.id === "__demo__";
+    const displayName = hasUsername
+      ? user!.username!.trim()
+      : isGuestAccess
+      ? "Guest"
+      : "Stranger";
+
+    // Build user context for dynamic humor generation
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: journalEntries.length,
+      roomsJoined: rooms.length,
+      threadsActive: threads.length,
+      hasUsername,
+    };
+
+    const prompt = getGuestPrompt(
+      timeContext.period,
+      isGuestAccess,
+      userContext,
+    );
+
+    // Animate both greeting and name together as one flowing line
+    const fullGreeting = `${timeContext.greeting}, ${capitalize(displayName || "Stranger")}.`;
+
+    setHeroGreeting("");
+    setHeroPrompt("");
+
+    timeout = setTimeout(() => {
+      let index = 0;
+      interval = setInterval(() => {
+        index += 1;
+        setHeroGreeting(fullGreeting.slice(0, index));
+        if (index >= fullGreeting.length) {
+          clearInterval(interval);
+          promptTimeout = setTimeout(() => {
+            setHeroPrompt(prompt);
+          }, 350);
+        }
+      }, 28);
+    }, 220);
+
+    return () => {
+      clearTimeout(timeout);
+      clearTimeout(promptTimeout);
+      clearInterval(interval);
+    };
+  }, [
+    timeContext.greeting,
+    timeContext.period,
+    user?.id,
+    user?.username,
+    user?.cognitiveStreak,
+    user?.resonance?.resonanceScore,
+    journalEntries.length,
+    rooms.length,
+    threads.length,
+  ]);
 
   const handleQuickCapture = () => {
     if (!quickCaptureText.trim()) return;
@@ -153,7 +277,13 @@ export default function PulseHome() {
   const latestThread = threads[0];
   const latestRoom = rooms[0];
 
-  const name = user?.name || user?.username?.split(" ")[0] || "Creator";
+  const isGuestAccess = user?.id === "__demo__";
+  const hasUsername = Boolean(user?.username?.trim());
+  const displayName = hasUsername
+    ? user?.username?.trim()
+    : isGuestAccess
+    ? "Guest"
+    : "Stranger";
   const sysStatus = serviceHealth?.status === "healthy" ? "Online" : "Degraded";
   const sysColor = sysStatus === "Online"
     ? "text-emerald-400"
@@ -180,15 +310,16 @@ export default function PulseHome() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-8">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                Terminal Ready
+                {isGuestAccess ? "Guest Access" : hasUsername ? "Terminal Ready" : "Stranger Mode"}
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tighter leading-[0.9] text-white">
-                {timeContext.greeting},<br />
-                <span className="italic font-serif text-gray-400 font-light">
-                  {name}.
-                </span>
+              <h1 className="text-5xl md:text-6xl font-bold tracking-tighter leading-[1.1] text-white">
+                {heroGreeting}
               </h1>
+
+              <p className="mt-6 max-w-2xl text-sm md:text-base text-gray-400 font-serif italic leading-relaxed">
+                {heroPrompt || timeContext.message}
+              </p>
             </div>
 
             <div className="mt-12 relative z-10">

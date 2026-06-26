@@ -2,6 +2,7 @@ import { signal } from "@preact/signals";
 import { userSignal } from "./user.ts";
 import { safeFetch } from "../utils/safeFetch.ts";
 import { registerIdSwapCallback } from "../utils/syncQueue.ts";
+import { DEMO_THREADS } from "../utils/demo_data.ts";
 
 export type ThreadMood = string;
 
@@ -137,12 +138,39 @@ const INITIAL_THREADS: Thread[] = [
   },
 ];
 
+function getDemoThreads(): Thread[] {
+  return DEMO_THREADS.map((thread) => ({
+    id: thread.id,
+    title: thread.title,
+    description: thread.description,
+    mood: thread.mood as ThreadMood,
+    format: thread.format,
+    depth: thread.depth,
+    theme: thread.theme,
+    itemIds: thread.itemIds,
+    sourceRoomIds: thread.sourceRoomIds,
+    isPublic: thread.isPublic,
+    updatedAt: thread.updatedAt,
+    coverImage: thread.coverImage,
+    thesis: thread.thesis,
+    synthesisScore: thread.synthesisScore,
+    resonanceMetrics: thread.resonanceMetrics,
+    dialogueLayers: thread.dialogueLayers as DialogueLayer[],
+    customStyling: thread.customStyling,
+    synthesis: thread.synthesis,
+  })) as Thread[];
+}
+
 function loadThreads(): Thread[] {
-  if (typeof localStorage === "undefined") return INITIAL_THREADS;
+  if (typeof localStorage === "undefined") {
+    return userSignal.value?.id === "__demo__" ? getDemoThreads() : INITIAL_THREADS;
+  }
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return INITIAL_THREADS;
+    if (!stored) {
+      return userSignal.value?.id === "__demo__" ? getDemoThreads() : INITIAL_THREADS;
+    }
     const parsed = JSON.parse(stored) as Thread[];
     return Array.isArray(parsed) ? parsed : INITIAL_THREADS;
   } catch {
@@ -160,6 +188,12 @@ if (typeof localStorage !== "undefined") {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
       } catch { /* ignore */ }
+    }
+  });
+
+  userSignal.subscribe((user) => {
+    if (user?.id === "__demo__" && !threadsSignal.value.some((thread) => thread.id.startsWith("demo-"))) {
+      threadsSignal.value = getDemoThreads();
     }
   });
 }

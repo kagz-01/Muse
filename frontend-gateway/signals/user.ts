@@ -107,14 +107,35 @@ export const userSignal = signal<User>({
 
 export const soloModeSignal = signal(false);
 
+function setupBannerKeyForUser(userId?: string): string {
+  return `muse-setup-dismissed:${userId || "anonymous"}`;
+}
+
+function readSetupDismissed(userId?: string): boolean {
+  try {
+    return globalThis.localStorage?.getItem(setupBannerKeyForUser(userId)) ===
+      "true";
+  } catch {
+    return false;
+  }
+}
+
 // Tracks whether the user has dismissed the setup banner in this session
 export const setupBannerDismissedSignal = signal(
-  globalThis.localStorage?.getItem("muse-setup-dismissed") === "true",
+  readSetupDismissed(userSignal.value.id),
 );
+
+export function refreshSetupBannerDismissed(userId?: string) {
+  const resolvedId = userId || userSignal.value.id;
+  setupBannerDismissedSignal.value = readSetupDismissed(resolvedId);
+}
 
 export function dismissSetupBanner() {
   try {
-    globalThis.localStorage?.setItem("muse-setup-dismissed", "true");
+    globalThis.localStorage?.setItem(
+      setupBannerKeyForUser(userSignal.value.id),
+      "true",
+    );
   } catch { /* noop */ }
   setupBannerDismissedSignal.value = true;
 }
@@ -135,6 +156,12 @@ export function getSetupSteps(user: User): SetupStep[] {
       href: "/settings",
     },
     {
+      id: "username",
+      label: "Choose a username",
+      done: Boolean(user.username && user.username !== "guest"),
+      href: "/settings",
+    },
+    {
       id: "avatar",
       label: "Upload a photo",
       done: Boolean(user.avatarUrl),
@@ -147,16 +174,124 @@ export function getSetupSteps(user: User): SetupStep[] {
       href: "/settings",
     },
     {
-      id: "room",
-      label: "Create your first Room",
-      done: user.synthesisLineage.totalRooms > 0,
-      href: "/rooms",
+      id: "location",
+      label: "Set your location",
+      done: Boolean(user.location && user.location.trim()),
+      href: "/settings",
     },
+    // Website and social links are optional for most users; don't block setup completion
+    // {
+    //   id: "website",
+    //   label: "Add a website",
+    //   done: Boolean(user.website && user.website.trim()),
+    //   href: "/settings",
+    // },
+    // {
+    //   id: "link",
+    //   label: "Add a social link",
+    //   done: (user.links || []).length > 0,
+    //   href: "/settings",
+    // },
   ];
 }
 
 export function isProfileComplete(user: User): boolean {
   return getSetupSteps(user).every((s) => s.done);
+}
+
+interface BackendProfilePayload {
+  id?: string;
+  email?: string;
+  username?: string;
+  name?: string;
+  wallet_address?: string;
+  resonance_score?: number;
+  current_streak?: number;
+}
+
+interface BackendSettingsPayload {
+  name?: string;
+  bio?: string;
+  avatarUrl?: string;
+  preferences?: {
+    appearance?: Partial<PublicSettings>;
+    notifications?: Partial<Record<string, unknown>>;
+    dataSettings?: Partial<Record<string, unknown>>;
+    publicSettings?: PublicSettings;
+    privacySecurity?: PrivacySecurity;
+    profile?: Partial<Pick<
+      User,
+      | "location"
+      | "gender"
+      | "pronouns"
+      | "birthDate"
+      | "occupation"
+      | "timezone"
+      | "website"
+      | "links"
+    >>;
+  };
+}
+
+export async function syncCurrentUserFromBackend(): Promise<void> {
+  const current = userSignal.value;
+
+  try {
+    const [profileResponse, settingsResponse] = await Promise.all([
+      fetch("/api/profile"),
+      fetch("/api/user/settings"),
+    ]);
+
+    let nextUser: User = { ...current };
+
+    if (profileResponse.ok) {
+      const profile = await profileResponse.json() as BackendProfilePayload;
+      nextUser.id = profile.id || nextUser.id;
+      nextUser.email = profile.email || nextUser.email;
+      nextUser.username = profile.username || nextUser.username;
+      nextUser.name = profile.name || nextUser.name;
+      nextUser.walletAddress = profile.wallet_address || nextUser.walletAddress;
+      if (typeof profile.current_streak === "number") {
+        nextUser.cognitiveStreak = profile.current_streak;
+      }
+      if (typeof profile.resonance_score === "number") {
+        nextUser.resonance = {
+          ...nextUser.resonance,
+          resonanceScore: profile.resonance_score,
+        };
+      }
+    }
+
+    if (settingsResponse.ok) {
+      const settings = await settingsResponse.json() as BackendSettingsPayload;
+      nextUser.name = settings.name || nextUser.username || nextUser.name || "";
+      nextUser.bio = settings.bio || nextUser.bio;
+      nextUser.avatarUrl = settings.avatarUrl || nextUser.avatarUrl;
+
+      if (settings.preferences?.publicSettings) {
+        nextUser.publicSettings = {
+          ...nextUser.publicSettings,
+          ...settings.preferences.publicSettings,
+        };
+      }
+
+      if (settings.preferences?.privacySecurity) {
+        nextUser.privacySecurity = {
+          ...nextUser.privacySecurity,
+          ...settings.preferences.privacySecurity,
+        };
+      }
+
+      if (settings.preferences?.profile) {
+        nextUser = { ...nextUser, ...settings.preferences.profile };
+      }
+    }
+
+    userSignal.value = nextUser;
+    refreshSetupBannerDismissed(nextUser.id);
+  } catch {
+    // Best effort hydration; keep existing local state if the backend is unavailable.
+  }
 }
 
 export function toggleSoloMode() {
@@ -209,6 +344,7 @@ export function login(email: string) {
     name: name.charAt(0).toUpperCase() + name.slice(1),
     email,
   };
+  setupBannerDismissedSignal.value = false;
 }
 
 export function logout() {
@@ -237,4 +373,5 @@ export function logout() {
       twoFactorEnabled: false,
     },
   };
+  refreshSetupBannerDismissed("u1");
 }

@@ -15,12 +15,37 @@ import {
   collaboratorsSignal,
   insightsSignal,
 } from "../../signals/connections.ts";
+import {
+  generateDynamicHumor,
+  type UserContext,
+} from "../../utils/dynamicHumor.ts";
 
-function timeOfDayGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
+function getTimeContext(timeZone?: string): {
+  greeting: string;
+  period: "morning" | "afternoon" | "evening";
+} {
+  let hour = new Date().getHours();
+  if (timeZone) {
+    try {
+      hour = Number(
+        new Intl.DateTimeFormat("en-US", {
+          hour: "2-digit",
+          hour12: false,
+          timeZone,
+        }).format(new Date()),
+      );
+    } catch {
+      // Fall back to browser clock
+    }
+  }
+
+  if (hour >= 5 && hour < 12) {
+    return { greeting: "Good morning", period: "morning" };
+  }
+  if (hour >= 12 && hour < 18) {
+    return { greeting: "Good afternoon", period: "afternoon" };
+  }
+  return { greeting: "Good evening", period: "evening" };
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -42,10 +67,32 @@ export default function HomeOverview() {
   const circles = circlesSignal.value;
   const collaborators = collaboratorsSignal.value;
   const [greeting, setGreeting] = useState("Good morning");
+  const [dynamicSubheading, setDynamicSubheading] = useState("");
 
   useEffect(() => {
-    setGreeting(timeOfDayGreeting());
-  }, []);
+    const timeCtx = getTimeContext(user?.timezone);
+    setGreeting(timeCtx.greeting);
+
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: journalEntries.length,
+      roomsJoined: rooms.length,
+      threadsActive: threads.length,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+
+    const humor = generateDynamicHumor(timeCtx.period, userContext);
+    setDynamicSubheading(humor);
+  }, [
+    user?.timezone,
+    user?.cognitiveStreak,
+    user?.resonance?.resonanceScore,
+    user?.username,
+    journalEntries.length,
+    rooms.length,
+    threads.length,
+  ]);
 
   const totalArtifacts = rooms.reduce((sum, room) => sum + room.count, 0);
   const publicRooms = rooms.filter((room) => room.isPublic).length;
@@ -134,9 +181,12 @@ export default function HomeOverview() {
             </div>
 
             <h1 className="mt-5 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] text-white max-w-3xl">
-              {greeting}, {user?.username || "Stranger"}.
-              <span className="block bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-                Your creative universe is in motion.
+              {greeting}.
+              <span className="block italic mt-2 text-3xl md:text-4xl text-gray-300">
+                {user?.name || user?.username || "Stranger"}
+              </span>
+              <span className="block bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent mt-4 text-lg md:text-xl font-normal not-italic">
+                {dynamicSubheading || "Your creative universe is in motion."}
               </span>
             </h1>
 

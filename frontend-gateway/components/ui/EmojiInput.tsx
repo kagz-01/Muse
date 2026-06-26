@@ -141,10 +141,9 @@ export default function EmojiInput({
 
       {showPicker && (
         <div className="absolute right-0 top-full mt-2 z-[200] shadow-2xl rounded-2xl overflow-hidden border border-white/10 bg-[#111318]">
-          {/* @ts-expect-error Custom element */}
           <emoji-picker
-            ref={pickerRef as any}
-            class="dark"
+            ref={pickerRef}
+            class="light"
             style="--background: #111318; --border-color: rgba(255,255,255,0.1); --indicator-color: #6366f1; --button-hover-background: rgba(255,255,255,0.05);"
           >
           </emoji-picker>

@@ -1,5 +1,6 @@
 import { Head } from "$fresh/runtime.ts";
 import * as Icons from "lucide-preact";
+import { errorMessages } from "../utils/contextualPrompts.ts";
 
 export default function Error404() {
   return (
@@ -31,8 +32,7 @@ export default function Error404() {
               <span className="text-gray-700 italic font-serif">LOST.</span>
             </h1>
             <p className="max-w-md mx-auto text-gray-500 text-xl font-serif italic leading-relaxed">
-              "The artifact you are searching for does not exist in this
-              cognitive plane. The signal has drifted into the void."
+              "{errorMessages.notFound.description}"
             </p>
           </div>
 

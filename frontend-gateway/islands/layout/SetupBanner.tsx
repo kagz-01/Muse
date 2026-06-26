@@ -8,6 +8,7 @@ import {
   type SetupStep,
   userSignal,
 } from "../../signals/user.ts";
+import { getContextualPrompt, type UserContext } from "../../utils/contextualPrompts.ts";
 
 export default function SetupBanner() {
   const user = userSignal.value;
@@ -21,8 +22,8 @@ export default function SetupBanner() {
   const pct = Math.round((done / total) * 100);
   const complete = isProfileComplete(user);
 
-  // Don't render if dismissed or already complete
-  if (isDismissed || complete) return null;
+  // Only hide when explicitly dismissed.
+  if (isDismissed) return null;
 
   const handleDismiss = () => {
     setIsAnimatingOut(true);
@@ -30,6 +31,26 @@ export default function SetupBanner() {
   };
 
   const nextStep = steps.find((s) => !s.done);
+  
+  // Get personality-driven messaging
+  const hour = new Date().getHours();
+  const period = hour >= 5 && hour < 12 ? "morning" : hour >= 12 && hour < 18 ? "afternoon" : "evening";
+  const userContext: Partial<UserContext> = {
+    currentStreak: user?.cognitiveStreak ?? 0,
+    resonanceScore: user?.resonance?.resonanceScore ?? 0,
+    journalEntryCount: 0,
+    roomsJoined: 0,
+    threadsActive: 0,
+    hasUsername: Boolean(user?.username?.trim()),
+  };
+  
+  const setupMsg = complete
+    ? "Your foundation is solid."
+    : pct >= 66
+    ? "Almost there. One more push."
+    : pct >= 33
+    ? "Halfway through. Keep going."
+    : "Let's build your sanctuary first.";
 
   return (
     <div
@@ -73,11 +94,12 @@ export default function SetupBanner() {
         {/* Text */}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-[var(--muse-text)] leading-tight">
-            Complete your profile
+            {setupMsg}
           </p>
           <p className="text-[11px] text-[var(--muse-muted)] truncate">
-            {done} of {total} steps done
-            {nextStep ? ` · Next: ${nextStep.label}` : ""}
+            {complete
+              ? "All profile steps are finished. Dismiss when you're ready."
+              : `${done} of ${total} steps done${nextStep ? ` · Next: ${nextStep.label}` : ""}`}
           </p>
         </div>
 

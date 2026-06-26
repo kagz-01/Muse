@@ -4,6 +4,7 @@ import { threadsSignal } from "./threads.ts";
 import { userSignal } from "./user.ts";
 import { safeFetch } from "../utils/safeFetch.ts";
 import { registerIdSwapCallback } from "../utils/syncQueue.ts";
+import { DEMO_ROOMS } from "../utils/demo_data.ts";
 
 export type RoomTheme =
   | "indigo"
@@ -117,6 +118,7 @@ export const MOOD_OPTIONS: {
 export interface Room {
   id: string;
   name: string;
+  title?: string;
   description?: string;
   emoji?: string; // Room icon/emoji (e.g., 🎨, 📖, 🏗️)
   category?: RoomCategory; // Room type/template (workspace, journal, archive, brainstorm, inspiration)
@@ -148,12 +150,39 @@ const STORAGE_KEY = "muse_rooms_v2";
 
 const INITIAL_ROOMS: Room[] = [];
 
+function getDemoRooms(): Room[] {
+  return DEMO_ROOMS.map((room) => ({
+    id: room.id,
+    name: room.name,
+    title: room.title || room.name,
+    description: room.description,
+    emoji: room.emoji,
+    category: room.category as RoomCategory,
+    size: room.size as RoomSize,
+    mood: room.mood as RoomMood,
+    themeColor: room.themeColor as RoomTheme,
+    isPublic: room.isPublic,
+    count: room.count,
+    tags: room.tags,
+    notificationsEnabled: room.notificationsEnabled,
+    updatedAt: room.updatedAt,
+    semanticTags: room.semanticTags,
+    resonanceMetrics: room.resonanceMetrics,
+    coverImage: room.coverImage,
+    customStyling: room.customStyling,
+  })) as Room[];
+}
+
 function loadRooms(): Room[] {
-  if (typeof localStorage === "undefined") return INITIAL_ROOMS;
+  if (typeof localStorage === "undefined") {
+    return userSignal.value?.id === "__demo__" ? getDemoRooms() : INITIAL_ROOMS;
+  }
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return INITIAL_ROOMS;
+    if (!stored) {
+      return userSignal.value?.id === "__demo__" ? getDemoRooms() : INITIAL_ROOMS;
+    }
     const parsed = JSON.parse(stored) as Room[];
     const base = Array.isArray(parsed) ? parsed : INITIAL_ROOMS;
 
@@ -173,6 +202,12 @@ if (typeof localStorage !== "undefined") {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
       } catch { /* ignore */ }
+    }
+  });
+
+  userSignal.subscribe((user) => {
+    if (user?.id === "__demo__" && !roomsSignal.value.some((room) => room.id.startsWith("demo-"))) {
+      roomsSignal.value = getDemoRooms();
     }
   });
 }

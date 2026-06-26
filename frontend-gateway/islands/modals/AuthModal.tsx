@@ -1,6 +1,9 @@
 import { useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
-import { login } from "../../signals/user.ts";
+import {
+  login,
+  syncCurrentUserFromBackend,
+} from "../../signals/user.ts";
 
 interface AuthModalProps {
   initialMode: "signup" | "login";
@@ -56,7 +59,10 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
-    if (localMode === "signup") formData.append("username", name);
+    if (localMode === "signup") {
+      formData.append("name", name);
+      formData.append("username", name);
+    }
 
     try {
       const response = await fetch(endpoint, {
@@ -65,7 +71,11 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
         redirect: "manual", // We handle redirect so we can show success state
       });
 
-      if (!response.ok && response.type !== "opaqueredirect") {
+      if (!(
+        response.ok ||
+        response.type === "opaqueredirect" ||
+        (response.status >= 300 && response.status < 400)
+      )) {
         const text = await response.text();
         setErrorMsg(text || "Authentication failed");
         setIsSyncing(false);
@@ -75,8 +85,9 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
       // Cinematic sync effect on success
       setIsSyncing(false);
       setIsSuccess(true);
-      setTimeout(() => {
+      setTimeout(async () => {
         login(email);
+        await syncCurrentUserFromBackend();
         globalThis.location.href = "/dashboard";
       }, 1000);
     } catch (_err) {

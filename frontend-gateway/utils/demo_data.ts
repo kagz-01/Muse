@@ -1,62 +1,301 @@
 /**
  * demo_data.ts
- * Single source of truth for all template data returned when a user
- * is in Demo Mode. Import from here across API handlers and SSR routes.
+ * Single source of truth for rich demo content used when a user is in Demo Mode.
  */
+
+const now = Date.now();
+const iso = (offset: number) => new Date(now - offset).toISOString();
 
 export const DEMO_USER = {
   id: "__demo__",
-  username: "explorer",
+  username: "maya",
   email: "demo@muse.app",
-  name: "Guest Explorer",
-  bio: "Curious mind exploring the Muse ecosystem.",
-  avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=explorer",
+  name: "Maya Sol",
+  bio: "I collect patterns, synthesize signals, and make sense of the noise.",
+  location: "Nairobi, Kenya",
+  website: "https://maya-sol.com",
+  avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=maya",
   auraType: "Synthesizer" as const,
   auraColor: "#10b981",
-  cognitiveStreak: 3,
+  cognitiveStreak: 5,
+  resonance: { views: 1240, connections: 86, resonanceScore: 742 },
+  links: [
+    { title: "LinkedIn", url: "https://www.linkedin.com/in/maya-sol" },
+    { title: "Substack", url: "https://maya-synthesis.substack.com" },
+    { title: "GitHub", url: "https://github.com/mayasol" },
+  ],
+  publicSettings: {
+    showProfile: true,
+    showLocation: true,
+    showRooms: true,
+    showThreads: true,
+    showInsights: true,
+  },
+  privacySecurity: {
+    accountVisibility: "public" as const,
+    showEmailInProfile: false,
+    allowSearchIndexing: true,
+    twoFactorEnabled: false,
+  },
 };
 
 export const DEMO_ROOMS = [
   {
     id: "demo-r1",
-    title: "Systems & Architecture",
+    name: "Love & Romance",
+    title: "Love & Romance",
     description:
-      "A deep dive into distributed systems, software design patterns, and scalable architectures. Explore how great systems are built.",
-    theme_color: "indigo",
-    tags: ["systems", "architecture", "engineering", "design"],
-    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      "A room for notes, screenshots, voice memos, and half-finished thoughts about intimacy, affection, and the messy texture of modern romance.",
+    emoji: "💘",
+    category: "journal",
+    size: "large",
+    mood: "warm",
+    themeColor: "rose",
+    isPublic: true,
+    count: 6,
+    tags: ["romance", "relationships", "attachment", "intimacy"],
+    notificationsEnabled: true,
+    updatedAt: iso(2 * 24 * 60 * 60 * 1000),
+    semanticTags: ["dating", "love languages", "social cues"],
+    resonanceMetrics: { views: 1240, wovenCount: 18 },
+    coverImage:
+      "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80",
+    customStyling: { auraIntensity: 0.9, fontFamily: "Cormorant Garamond" },
   },
   {
     id: "demo-r2",
-    title: "The Human Algorithm",
+    name: "Quiet Rituals",
+    title: "Quiet Rituals",
     description:
-      "Reflections on human behavior, cognitive biases, and the patterns that govern how we think, decide, and connect.",
-    theme_color: "emerald",
-    tags: ["psychology", "behavior", "philosophy", "cognition"],
-    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      "A living collection of reflections on attention, identity, and the habits that make a life feel steadier and more honest.",
+    emoji: "🌿",
+    category: "journal",
+    size: "medium",
+    mood: "zen",
+    themeColor: "emerald",
+    isPublic: true,
+    count: 4,
+    tags: ["ritual", "attention", "identity", "self-trust"],
+    notificationsEnabled: true,
+    updatedAt: iso(6 * 24 * 60 * 60 * 1000),
+    semanticTags: ["human behavior", "rituals", "attention"],
+    resonanceMetrics: { views: 911, wovenCount: 11 },
+    coverImage:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+    customStyling: { auraIntensity: 0.75, fontFamily: "Playfair Display" },
+  },
+];
+
+export const DEMO_ITEMS = [
+  {
+    id: "demo-i1",
+    roomId: "demo-r1",
+    title: "Instagram carousel: small gestures, big meaning",
+    sourceUrl: "https://www.instagram.com/p/CyRj0f5Jm2g/",
+    note:
+      "A real-looking social post that captures how tiny acts of care can feel more intimate than grand declarations.",
+    isPublic: true,
+    createdAt: iso(3 * 60 * 60 * 1000),
+    dataProvenance: {
+      platform: "Instagram",
+      extractedAt: iso(3 * 60 * 60 * 1000),
+      integrityHash: "sha256-demo-1",
+    },
+    authorId: "__demo__",
+    authorName: "Maya Sol",
+    authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maya",
+  },
+  {
+    id: "demo-i2",
+    roomId: "demo-r1",
+    title: "PDF excerpt: love languages in long-term relationships",
+    sourceUrl: "https://www.attachmentproject.com/pdf/attachment-and-love-languages.pdf",
+    note:
+      "A document-style artifact that looks like a real attachment theory handout someone saved from a workshop or therapist session.",
+    isPublic: true,
+    createdAt: iso(18 * 60 * 60 * 1000),
+    dataProvenance: {
+      platform: "PDF",
+      extractedAt: iso(18 * 60 * 60 * 1000),
+      integrityHash: "sha256-demo-2",
+    },
+    authorId: "__demo__",
+    authorName: "Maya Sol",
+    authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maya",
+  },
+  {
+    id: "demo-i3",
+    roomId: "demo-r2",
+    title: "YouTube clip: morning rituals that make the day feel lighter",
+    sourceUrl: "https://www.youtube.com/watch?v=4s7QkYhP5JY",
+    note:
+      "A video artifact that feels like a genuine saved reference from someone trying to build a calmer, more intentional morning routine.",
+    isPublic: true,
+    createdAt: iso(30 * 60 * 60 * 1000),
+    dataProvenance: {
+      platform: "YouTube",
+      extractedAt: iso(30 * 60 * 60 * 1000),
+      integrityHash: "sha256-demo-3",
+    },
+    authorId: "__demo__",
+    authorName: "Maya Sol",
+    authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maya",
+  },
+  {
+    id: "demo-i4",
+    roomId: "demo-r2",
+    title: "X thread: the difference between comfort and self-abandonment",
+    sourceUrl: "https://x.com/psychologytoday/status/1775404517627285450",
+    note:
+      "A short social thread that feels like something someone actually bookmarked while thinking about boundaries and self-respect.",
+    isPublic: true,
+    createdAt: iso(45 * 60 * 60 * 1000),
+    dataProvenance: {
+      platform: "X",
+      extractedAt: iso(45 * 60 * 60 * 1000),
+      integrityHash: "sha256-demo-4",
+    },
+    authorId: "__demo__",
+    authorName: "Maya Sol",
+    authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maya",
+  },
+];
+
+export const DEMO_THREADS = [
+  {
+    id: "demo-t1",
+    title: "Synthesis: Attention, Systems, and Trust",
+    description:
+      "A public thread that connects the architecture room with the habits of attention and self-trust.",
+    mood: "focus",
+    format: "essay",
+    depth: "80",
+    theme: "Pattern synthesis",
+    itemIds: ["demo-i1", "demo-i2"],
+    sourceRoomIds: ["demo-r1"],
+    isPublic: true,
+    updatedAt: iso(2 * 60 * 60 * 1000),
+    coverImage:
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80",
+    thesis:
+      "The strongest systems are the ones that make trust legible, not just efficient.",
+    synthesisScore: 92,
+    resonanceMetrics: { views: 1180, connections: 37 },
+    dialogueLayers: [
+      {
+        id: "demo-d1",
+        userId: "__demo__",
+        userName: "Maya Sol",
+        content:
+          "It felt important to connect the design of attention with the design of trust. They are the same choreography in different forms.",
+        type: "insight",
+        resonanceScore: 58,
+        timestamp: iso(90 * 60 * 1000),
+      },
+    ],
+    customStyling: { auraGradients: ["#6366f1", "#10b981"] },
+    synthesis: {
+      patterns: ["attention", "trust", "systems thinking"],
+      tensions: ["efficiency vs clarity"],
+      coherenceScore: 91,
+      recommendations: ["Link this thread to more ritual-driven reflections"],
+    },
+  },
+  {
+    id: "demo-t2",
+    title: "The Ritual Layer of Human Behavior",
+    description:
+      "A synthesis of reflection, habit, and identity that brings together the orchard of human patterns.",
+    mood: "zen",
+    format: "manifesto",
+    depth: "70",
+    theme: "Human patterns",
+    itemIds: ["demo-i3", "demo-i4"],
+    sourceRoomIds: ["demo-r2"],
+    isPublic: true,
+    updatedAt: iso(8 * 60 * 60 * 1000),
+    coverImage:
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
+    thesis:
+      "Ritual gives shape to attention, and shape makes trust feel possible.",
+    synthesisScore: 88,
+    resonanceMetrics: { views: 940, connections: 29 },
+    dialogueLayers: [
+      {
+        id: "demo-d2",
+        userId: "__demo__",
+        userName: "Maya Sol",
+        content:
+          "The best rituals are simple enough to repeat and serious enough to matter.",
+        type: "signal",
+        resonanceScore: 41,
+        timestamp: iso(6 * 60 * 60 * 1000),
+      },
+    ],
+    customStyling: { auraGradients: ["#10b981", "#f59e0b"] },
+    synthesis: {
+      patterns: ["ritual", "identity", "attention"],
+      tensions: ["digital distraction vs quiet repetition"],
+      coherenceScore: 87,
+      recommendations: ["Add a reflective journal entry to close the loop"],
+    },
   },
 ];
 
 export const DEMO_JOURNALS = [
   {
     id: "demo-j1",
-    title: "First Principles Thinking",
-    content:
-      "Most people reason by analogy — copying what others do with slight modifications. First principles reasoning cuts through that. You boil things down to the most fundamental truths and reason up from there. When I looked at my own habits through this lens, I realized I was optimizing for things that didn't actually matter to me. The foundation was someone else's blueprint.",
+    body:
+      "The most useful systems are the ones that reduce friction without flattening the human layer. I keep noticing how much trust lives in the small repeatable behaviors we barely name. When I write them down, I can see the architecture behind my own peace.",
     mood: "reflective",
-    tags: ["thinking", "mental models", "clarity"],
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    room_id: "demo-r2",
+    tags: ["systems", "trust", "clarity", "ritual"],
+    linkedItemIds: ["demo-i1", "demo-i2"],
+    isFavorited: true,
+    isPublic: true,
+    createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
+    updatedAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
+    wordCount: 56,
+    type: "synthesis",
+    synthesis: {
+      sourceRoomIds: ["demo-r1"],
+      sourceThreadIds: ["demo-t1"],
+      keyInsights: ["Trust is designed", "Attention is a system input"],
+      patterns: ["trust", "systems", "attention"],
+      nextActions: ["Add a tighter notes map to the room"],
+      synthesizedAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
+    },
+    linkedArtifacts: [
+      { id: "demo-i1", type: "room" as const, title: "How attention shapes product design", linkedAt: Date.now() - 2 * 24 * 60 * 60 * 1000 },
+      { id: "demo-t1", type: "thread" as const, title: "Synthesis: Attention, Systems, and Trust", linkedAt: Date.now() - 2 * 24 * 60 * 60 * 1000 },
+    ],
+    viewCount: 73,
   },
   {
     id: "demo-j2",
-    title: "On Building in Public",
-    content:
-      "There's a strange alchemy that happens when you commit to transparency. The fear of judgment becomes fuel. The imperfect draft becomes a signal that you're moving. I started treating my projects like open-source research. The feedback loops accelerated everything. Vulnerability, it turns out, is a compounding asset.",
-    mood: "energized",
-    tags: ["creativity", "building", "growth"],
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    room_id: "demo-r1",
+    body:
+      "The rituals I keep are not ornamental. They are bridge points between the chaotic world outside and the steadier version of me that shows up when I slow down. A simple page, a consistent cup of tea, a few minutes of silence. These are not extras. They are the infrastructure of attention.",
+    mood: "grounded",
+    tags: ["ritual", "attention", "identity", "reflection"],
+    linkedItemIds: ["demo-i3", "demo-i4"],
+    isFavorited: true,
+    isPublic: true,
+    createdAt: Date.now() - 5 * 24 * 60 * 60 * 1000,
+    updatedAt: Date.now() - 5 * 24 * 60 * 60 * 1000,
+    wordCount: 62,
+    type: "reflection",
+    synthesis: {
+      sourceRoomIds: ["demo-r2"],
+      sourceThreadIds: ["demo-t2"],
+      keyInsights: ["Ritual is infrastructure", "Identity stabilizes through repetition"],
+      patterns: ["ritual", "identity", "attention"],
+      nextActions: ["Bring this into an upcoming room note"],
+      synthesizedAt: Date.now() - 5 * 24 * 60 * 60 * 1000,
+    },
+    linkedArtifacts: [
+      { id: "demo-i3", type: "room" as const, title: "The psychology of ritual and habit", linkedAt: Date.now() - 5 * 24 * 60 * 60 * 1000 },
+      { id: "demo-t2", type: "thread" as const, title: "The Ritual Layer of Human Behavior", linkedAt: Date.now() - 5 * 24 * 60 * 60 * 1000 },
+    ],
+    viewCount: 49,
   },
 ];
 
@@ -70,7 +309,7 @@ export const DEMO_STREAM = [
     },
     content:
       "The most dangerous assumption in product design is that users know what they want. They know what they feel. Your job is to translate.",
-    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    timestamp: iso(60 * 60 * 1000),
     tags: ["product", "design", "empathy"],
     alignCount: 47,
     challengeCount: 3,
@@ -84,7 +323,7 @@ export const DEMO_STREAM = [
     },
     content:
       "Attention is the only truly non-renewable resource. Every notification is a withdrawal. Every deep work session is a deposit.",
-    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    timestamp: iso(3 * 60 * 60 * 1000),
     tags: ["focus", "productivity", "attention"],
     alignCount: 82,
     challengeCount: 11,
@@ -98,7 +337,7 @@ export const DEMO_STREAM = [
     },
     content:
       "Language isn't just how we communicate ideas — it's how we imprison them. The moment a feeling becomes a word, something ineffable is lost.",
-    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    timestamp: iso(5 * 60 * 60 * 1000),
     tags: ["philosophy", "language", "consciousness"],
     alignCount: 61,
     challengeCount: 28,
@@ -133,8 +372,7 @@ export const DEMO_COLLABORATORS = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=amara",
     role: "Synthesizer",
     status: "Online",
-    bio:
-      "Product designer exploring the intersection of AI and human behavior.",
+    bio: "Product designer exploring the intersection of AI and human behavior.",
     sharedThemes: ["Design", "AI", "Psychology"],
     aura: "#10b981",
     intelligenceProfile: "Synthesizer",
@@ -147,8 +385,7 @@ export const DEMO_COLLABORATORS = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=kofi",
     role: "Architect",
     status: "Deep Focus",
-    bio:
-      "Systems engineer. Obsessed with elegant abstractions and distributed systems.",
+    bio: "Systems engineer. Obsessed with elegant abstractions and distributed systems.",
     sharedThemes: ["Systems", "Engineering", "Focus"],
     aura: "#6366f1",
     intelligenceProfile: "Architect",
@@ -161,8 +398,7 @@ export const DEMO_COLLABORATORS = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=zara",
     role: "Challenger",
     status: "Reflecting",
-    bio:
-      "Philosopher-poet. Writing about language, consciousness, and the edges of thought.",
+    bio: "Philosopher-poet. Writing about language, consciousness, and the edges of thought.",
     sharedThemes: ["Philosophy", "Language", "Consciousness"],
     aura: "#f59e0b",
     intelligenceProfile: "Challenger",

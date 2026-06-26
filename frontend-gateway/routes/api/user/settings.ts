@@ -51,16 +51,73 @@ export const handler: Handlers = {
 
     try {
       const data = await req.json();
-      const { name, bio, avatarUrl, preferences } = data;
+      const {
+        name,
+        bio,
+        avatarUrl,
+        username,
+        email,
+        preferences,
+      } = data;
 
-      await executeDB(
-        "UPDATE users SET name = $1, bio = $2, avatar_url = $3, preferences = $4 WHERE id = $5",
-        name || "",
-        bio || "",
-        avatarUrl || "",
-        preferences || {},
-        userId,
-      );
+      if (username) {
+        const conflict = await queryDB(
+          "SELECT id FROM users WHERE username = $1 AND id != $2",
+          username,
+          userId,
+        );
+        if (conflict.length > 0) {
+          return new Response("Username already taken", { status: 409 });
+        }
+      }
+
+      if (email) {
+        const conflict = await queryDB(
+          "SELECT id FROM users WHERE email = $1 AND id != $2",
+          email,
+          userId,
+        );
+        if (conflict.length > 0) {
+          return new Response("Email already taken", { status: 409 });
+        }
+      }
+
+      const updates: string[] = [];
+      const values: unknown[] = [];
+
+      if (name !== undefined) {
+        updates.push(`name = $${updates.length + 1}`);
+        values.push(name || "");
+      }
+      if (bio !== undefined) {
+        updates.push(`bio = $${updates.length + 1}`);
+        values.push(bio || "");
+      }
+      if (avatarUrl !== undefined) {
+        updates.push(`avatar_url = $${updates.length + 1}`);
+        values.push(avatarUrl || "");
+      }
+      if (username !== undefined) {
+        updates.push(`username = $${updates.length + 1}`);
+        values.push(username || "");
+      }
+      if (email !== undefined) {
+        updates.push(`email = $${updates.length + 1}`);
+        values.push(email || "");
+      }
+      if (preferences !== undefined) {
+        updates.push(`preferences = $${updates.length + 1}`);
+        values.push(preferences || {});
+      }
+
+      if (updates.length === 0) {
+        return new Response("No valid fields to update", { status: 400 });
+      }
+
+      values.push(userId);
+      const query = `UPDATE users SET ${updates.join(", ")} WHERE id = $${
+        values.length}`;
+      await executeDB(query, ...values);
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { "Content-Type": "application/json" },

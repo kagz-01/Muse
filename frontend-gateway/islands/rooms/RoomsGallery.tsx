@@ -12,6 +12,8 @@ import VaultGateModal from "../modals/VaultGateModal.tsx";
 import { isVaultUnlockedSignal } from "../../signals/vault.ts";
 import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.tsx";
 import { CircleMembershipChart } from "../../components/community/CommunityCharts.tsx";
+import { userSignal } from "../../signals/user.ts";
+import { emptyStateMessages, getContextualPrompt, type UserContext } from "../../utils/contextualPrompts.ts";
 
 type RoomTab = "all" | "pinned" | "vault" | "archived" | "starred" | "collab";
 type RoomSort = "latest" | "alphabetical";
@@ -684,15 +686,26 @@ export default function RoomsGallery() {
                   <Icons.Aperture size={20} />
                 </div>
                 <h3 className={`text-xl font-bold ${textClass}`}>
-                  No rooms in this tab yet
+                  {emptyStateMessages.rooms.title}
                 </h3>
                 <p
                   className={`mt-2 max-w-md text-sm font-serif italic leading-relaxed ${mutedClass}`}
                 >
-                  This chamber will fill as you begin pinning, archiving,
-                  starring, and sharing rooms with purpose.
-                </p>
-              </div>
+                  {(() => {
+                    const hour = new Date().getHours();
+                    const period = hour >= 5 && hour < 12 ? "morning" : hour >= 12 && hour < 18 ? "afternoon" : "evening";
+                    const user = userSignal.value;
+                    const userContext: Partial<UserContext> = {
+                      currentStreak: user?.cognitiveStreak ?? 0,
+                      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+                      journalEntryCount: 0,
+                      roomsJoined: 0,
+                      threadsActive: 0,
+                      hasUsername: Boolean(user?.username?.trim()),
+                    };
+                    return getContextualPrompt("empty_rooms", period, userContext);
+                  })()}
+                </p>\n              </div>
             )
             : (
               <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">

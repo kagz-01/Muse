@@ -1,6 +1,7 @@
 import { signal } from "@preact/signals";
 import { userSignal } from "./user.ts";
 import { safeFetch } from "../utils/safeFetch.ts";
+import { DEMO_JOURNALS } from "../utils/demo_data.ts";
 import { registerIdSwapCallback } from "../utils/syncQueue.ts";
 
 export type JournalMood =
@@ -207,54 +208,49 @@ function normalizeJournalEntry(raw: unknown): JournalEntry | null {
   };
 }
 
+function getDemoJournalEntries(): JournalEntry[] {
+  return DEMO_JOURNALS.map((entry) => ({
+    id: entry.id,
+    body: entry.body,
+    mood: entry.mood as JournalMood,
+    tags: entry.tags,
+    linkedItemIds: entry.linkedItemIds,
+    isFavorited: entry.isFavorited,
+    isPublic: entry.isPublic,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+    wordCount: entry.wordCount,
+    type: entry.type as JournalEntry["type"],
+    synthesis: entry.synthesis,
+    linkedArtifacts: entry.linkedArtifacts,
+    viewCount: entry.viewCount,
+  })) as JournalEntry[];
+}
+
 function loadJournal(): JournalEntry[] {
-  if (typeof localStorage === "undefined") return [];
+  if (typeof localStorage === "undefined") {
+    return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
+  }
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as unknown;
-        if (!Array.isArray(parsed)) return [];
+        if (!Array.isArray(parsed)) {
+          return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
+        }
         return parsed
           .map(normalizeJournalEntry)
           .filter((entry): entry is JournalEntry => entry !== null);
       } catch {
-        return [];
+        return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
       }
     }
   } catch {
-    return [];
+    return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
   }
 
-  // Seed initial data if empty
-  return [
-    {
-      id: "j1",
-      body:
-        "I was reading about the new zoning policies proposed today. It makes me wonder about how much our daily lives are shaped by local decisions we barely pay attention to, compared to the national politics that consume our news feeds.",
-      mood: "reflective",
-      tags: ["politics", "local", "thoughts"],
-      linkedItemIds: ["i1", "i2"],
-      isFavorited: true,
-      isPublic: false,
-      createdAt: Date.now() - 86400000,
-      updatedAt: Date.now() - 86400000,
-      wordCount: 40,
-    },
-    {
-      id: "j2",
-      body:
-        "Reflecting on my relationship today, I realized how important acts of service are to me. When they made me coffee this morning, it meant more than any grand romantic gesture could have.",
-      mood: "grounded",
-      tags: ["romance", "love languages", "gratitude"],
-      linkedItemIds: ["i3"],
-      isFavorited: false,
-      isPublic: true,
-      createdAt: Date.now() - 43200000,
-      updatedAt: Date.now() - 43200000,
-      wordCount: 32,
-    },
-  ];
+  return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
 }
 
 export const journalSignal = signal<JournalEntry[]>(loadJournal());
@@ -267,6 +263,12 @@ if (typeof localStorage !== "undefined") {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     } catch {
       // ignore write errors in restricted environments
+    }
+  });
+
+  userSignal.subscribe((user) => {
+    if (user?.id === "__demo__" && !journalSignal.value.some((entry) => entry.id.startsWith("demo-"))) {
+      journalSignal.value = getDemoJournalEntries();
     }
   });
 

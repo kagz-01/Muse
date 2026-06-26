@@ -12,7 +12,7 @@ export const handler: Handlers = {
       }
 
       const rows = await queryDB(
-        "SELECT id, email, username, wallet_address, resonance_score, current_streak, created_at FROM users WHERE id = $1",
+        "SELECT id, email, username, name, wallet_address, resonance_score, current_streak, created_at FROM users WHERE id = $1",
         userId,
       );
 
@@ -20,7 +20,25 @@ export const handler: Handlers = {
         return new Response("User not found", { status: 404 });
       }
 
-      return new Response(JSON.stringify(rows[0]), {
+      // Convert any BigInt values returned by the DB into safe JSON values.
+      const sanitize = (val: unknown): unknown => {
+        if (val === null || val === undefined) return val;
+        if (typeof val === "bigint") return Number(val);
+        if (val instanceof Date) return val.toISOString();
+        if (Array.isArray(val)) return val.map(sanitize);
+        if (val && typeof val === "object") {
+          const o: Record<string, unknown> = {};
+          for (const [k, v] of Object.entries(val as Record<string, unknown>)) {
+            o[k] = sanitize(v);
+          }
+          return o;
+        }
+        return val;
+      };
+
+      const safeRow = sanitize(rows[0]);
+
+      return new Response(JSON.stringify(safeRow), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });

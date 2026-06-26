@@ -3,6 +3,7 @@ import { removeItemFromThread, threadsSignal } from "./threads.ts";
 import { userSignal } from "./user.ts";
 import { safeFetch } from "../utils/safeFetch.ts";
 import { registerIdSwapCallback } from "../utils/syncQueue.ts";
+import { DEMO_ITEMS } from "../utils/demo_data.ts";
 
 export interface Item {
   id: string;
@@ -81,11 +82,22 @@ const INITIAL_ITEMS: Item[] = [
   },
 ];
 
+function getDemoItems(): Item[] {
+  return DEMO_ITEMS.map((item) => ({
+    ...item,
+    createdAt: item.createdAt,
+  })) as Item[];
+}
+
 function loadItems(): Item[] {
-  if (typeof localStorage === "undefined") return INITIAL_ITEMS;
+  if (typeof localStorage === "undefined") {
+    return userSignal.value?.id === "__demo__" ? getDemoItems() : INITIAL_ITEMS;
+  }
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return INITIAL_ITEMS;
+    if (!stored) {
+      return userSignal.value?.id === "__demo__" ? getDemoItems() : INITIAL_ITEMS;
+    }
     const parsed = JSON.parse(stored) as Item[];
     return Array.isArray(parsed) ? parsed : INITIAL_ITEMS;
   } catch {
@@ -103,6 +115,12 @@ if (typeof localStorage !== "undefined") {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
       } catch { /* ignore */ }
+    }
+  });
+
+  userSignal.subscribe((user) => {
+    if (user?.id === "__demo__" && !itemsSignal.value.some((item) => item.id.startsWith("demo-"))) {
+      itemsSignal.value = getDemoItems();
     }
   });
 }

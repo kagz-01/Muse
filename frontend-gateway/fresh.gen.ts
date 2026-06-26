@@ -25,6 +25,7 @@ import * as $_app_threads_index from "./routes/(app)/threads/index.tsx";
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $api_ai_socratic from "./routes/api/ai/socratic.ts";
+import * as $api_ai_suggest_emoji from "./routes/api/ai/suggest-emoji.ts";
 import * as $api_artifacts_ingest_url from "./routes/api/artifacts/ingest-url.ts";
 import * as $api_artifacts_upload_document from "./routes/api/artifacts/upload-document.ts";
 import * as $api_auth_2fa from "./routes/api/auth/2fa.ts";
@@ -47,9 +48,11 @@ import * as $api_followers_status from "./routes/api/followers/status.ts";
 import * as $api_followers_unfollow from "./routes/api/followers/unfollow.ts";
 import * as $api_health_services from "./routes/api/health/services.ts";
 import * as $api_items_id_ from "./routes/api/items/[id].ts";
+import * as $api_items_id_annotate from "./routes/api/items/[id]/annotate.ts";
 import * as $api_items_index from "./routes/api/items/index.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $api_journal_id_ from "./routes/api/journal/[id].ts";
+import * as $api_journal_id_extract from "./routes/api/journal/[id]/extract.ts";
 import * as $api_journal_index from "./routes/api/journal/index.ts";
 import * as $api_mirror from "./routes/api/mirror.ts";
 import * as $api_profile_index from "./routes/api/profile/index.ts";
@@ -60,11 +63,13 @@ import * as $api_synthesis_create_artifact from "./routes/api/synthesis/create-a
 import * as $api_synthesis_parse from "./routes/api/synthesis/parse.ts";
 import * as $api_threads_id_ from "./routes/api/threads/[id].ts";
 import * as $api_threads_index from "./routes/api/threads/index.ts";
+import * as $api_threads_parallel from "./routes/api/threads/parallel.ts";
 import * as $api_threads_synthesize from "./routes/api/threads/synthesize.ts";
 import * as $api_user_change_password from "./routes/api/user/change-password.ts";
 import * as $api_user_delete from "./routes/api/user/delete.ts";
 import * as $api_user_export from "./routes/api/user/export.ts";
 import * as $api_user_settings from "./routes/api/user/settings.ts";
+import * as $api_user_social from "./routes/api/user/social.ts";
 import * as $api_user_streaks from "./routes/api/user/streaks.ts";
 import * as $auth from "./routes/auth.tsx";
 import * as $dashboard_index from "./routes/dashboard/index.tsx";
@@ -141,6 +146,7 @@ import * as $profile_CollectiveProfile from "./islands/profile/CollectiveProfile
 import * as $profile_ProfileOverlay from "./islands/profile/ProfileOverlay.tsx";
 import * as $profile_ProfilePage from "./islands/profile/ProfilePage.tsx";
 import * as $profile_index from "./islands/profile/index.ts";
+import * as $rooms_ArtifactAnnotations from "./islands/rooms/ArtifactAnnotations.tsx";
 import * as $rooms_ArtifactUploader from "./islands/rooms/ArtifactUploader.tsx";
 import * as $rooms_JournalModal from "./islands/rooms/JournalModal.tsx";
 import * as $rooms_RoomClientManager from "./islands/rooms/RoomClientManager.tsx";
@@ -182,6 +188,7 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/api/ai/socratic.ts": $api_ai_socratic,
+    "./routes/api/ai/suggest-emoji.ts": $api_ai_suggest_emoji,
     "./routes/api/artifacts/ingest-url.ts": $api_artifacts_ingest_url,
     "./routes/api/artifacts/upload-document.ts": $api_artifacts_upload_document,
     "./routes/api/auth/2fa.ts": $api_auth_2fa,
@@ -204,9 +211,11 @@ const manifest = {
     "./routes/api/followers/unfollow.ts": $api_followers_unfollow,
     "./routes/api/health/services.ts": $api_health_services,
     "./routes/api/items/[id].ts": $api_items_id_,
+    "./routes/api/items/[id]/annotate.ts": $api_items_id_annotate,
     "./routes/api/items/index.ts": $api_items_index,
     "./routes/api/joke.ts": $api_joke,
     "./routes/api/journal/[id].ts": $api_journal_id_,
+    "./routes/api/journal/[id]/extract.ts": $api_journal_id_extract,
     "./routes/api/journal/index.ts": $api_journal_index,
     "./routes/api/mirror.ts": $api_mirror,
     "./routes/api/profile/index.ts": $api_profile_index,
@@ -217,11 +226,13 @@ const manifest = {
     "./routes/api/synthesis/parse.ts": $api_synthesis_parse,
     "./routes/api/threads/[id].ts": $api_threads_id_,
     "./routes/api/threads/index.ts": $api_threads_index,
+    "./routes/api/threads/parallel.ts": $api_threads_parallel,
     "./routes/api/threads/synthesize.ts": $api_threads_synthesize,
     "./routes/api/user/change-password.ts": $api_user_change_password,
     "./routes/api/user/delete.ts": $api_user_delete,
     "./routes/api/user/export.ts": $api_user_export,
     "./routes/api/user/settings.ts": $api_user_settings,
+    "./routes/api/user/social.ts": $api_user_social,
     "./routes/api/user/streaks.ts": $api_user_streaks,
     "./routes/auth.tsx": $auth,
     "./routes/dashboard/index.tsx": $dashboard_index,
@@ -305,6 +316,7 @@ const manifest = {
     "./islands/profile/ProfileOverlay.tsx": $profile_ProfileOverlay,
     "./islands/profile/ProfilePage.tsx": $profile_ProfilePage,
     "./islands/profile/index.ts": $profile_index,
+    "./islands/rooms/ArtifactAnnotations.tsx": $rooms_ArtifactAnnotations,
     "./islands/rooms/ArtifactUploader.tsx": $rooms_ArtifactUploader,
     "./islands/rooms/JournalModal.tsx": $rooms_JournalModal,
     "./islands/rooms/RoomClientManager.tsx": $rooms_RoomClientManager,

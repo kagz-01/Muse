@@ -22,6 +22,8 @@ import {
   toggleSoloMode,
   updatePrivacySecurity,
   updateProfile,
+  type PrivacySecurity,
+  type PublicSettings,
   type User as UserModel,
   userSignal,
 } from "../../signals/user.ts";
@@ -38,6 +40,7 @@ import {
   setGlobalFontSize,
   setTheme,
 } from "../../signals/ui.ts";
+import { syncCurrentUserFromBackend } from "../../signals/user.ts";
 
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import TwoFactorModal from "../modals/TwoFactorModal.tsx";
@@ -157,6 +160,34 @@ const DEFAULT_DATA_SETTINGS: DataSettings = {
   lastExport: null,
 };
 
+type ProfileDraft = Pick<
+  UserModel,
+  | "name"
+  | "username"
+  | "email"
+  | "bio"
+  | "location"
+  | "gender"
+  | "pronouns"
+  | "birthDate"
+  | "occupation"
+  | "timezone"
+  | "website"
+  | "avatarUrl"
+  | "links"
+>;
+
+interface SettingsStorage {
+  appearance?: AppearanceSettings;
+  notifications?: NotificationSettings;
+  dataSettings?: DataSettings;
+  profileDraft?: Partial<ProfileDraft>;
+  publicSettings?: PublicSettings;
+  privacySecurity?: PrivacySecurity;
+}
+
+const STORAGE_KEY = "muse-fresh-settings";
+
 const ACCENT_OPTIONS: Array<
   { value: AppearanceSettings["accentColor"]; className: string }
 > = [
@@ -190,8 +221,6 @@ const FONT_SIZE_OPTIONS: Array<
   { value: "medium", label: "Medium", size: 16 },
   { value: "large", label: "Large", size: 18 },
 ];
-
-const STORAGE_KEY = "muse-fresh-settings";
 
 // Dynamic IANA timezone list – uses browser API when available, curated fallback otherwise
 const IANA_TIMEZONES: string[] = (() => {
@@ -393,6 +422,40 @@ export default function Settings() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    let savedStorage: SettingsStorage | null = null;
+    try {
+      const raw = globalThis.localStorage?.getItem(STORAGE_KEY);
+      if (raw) {
+        savedStorage = JSON.parse(raw) as SettingsStorage;
+      }
+    } catch {
+      savedStorage = null;
+    }
+
+    if (savedStorage) {
+      if (savedStorage.appearance) {
+        setAppearance({ ...DEFAULT_APPEARANCE, ...savedStorage.appearance });
+      }
+      if (savedStorage.notifications) {
+        setNotifications({
+          ...DEFAULT_NOTIFICATIONS,
+          ...savedStorage.notifications,
+        });
+      }
+      if (savedStorage.dataSettings) {
+        setDataSettings({ ...DEFAULT_DATA_SETTINGS, ...savedStorage.dataSettings });
+      }
+      if (savedStorage.profileDraft) {
+        updateProfile({ ...savedStorage.profileDraft });
+      }
+      if (savedStorage.publicSettings) {
+        updateProfile({ publicSettings: savedStorage.publicSettings });
+      }
+      if (savedStorage.privacySecurity) {
+        updateProfile({ privacySecurity: savedStorage.privacySecurity });
+      }
+    }
+
     async function loadSettings() {
       try {
         const response = await fetch("/api/user/settings");
@@ -417,12 +480,37 @@ export default function Settings() {
                 ...data.preferences.dataSettings,
               });
             }
+            if (data.preferences.publicSettings) {
+              updateProfile({
+                publicSettings: {
+                  ...user.publicSettings,
+                  ...data.preferences.publicSettings,
+                },
+              });
+            }
+            if (data.preferences.privacySecurity) {
+              updateProfile({
+                privacySecurity: {
+                  ...user.privacySecurity,
+                  ...data.preferences.privacySecurity,
+                },
+              });
+            }
+            if (data.preferences.profile) {
+              updateProfile({
+                ...data.preferences.profile,
+              });
+            }
           }
-          if (user) {
-            user.name = data.name || user.name;
-            user.bio = data.bio || user.bio;
-            user.avatarUrl = data.avatarUrl || user.avatarUrl;
+          updateProfile({
+            name: data.name || user.name,
+            bio: data.bio || user.bio,
+            avatarUrl: data.avatarUrl || user.avatarUrl,
+          });
+          if (savedStorage?.profileDraft) {
+            updateProfile({ ...savedStorage.profileDraft });
           }
+          await syncCurrentUserFromBackend();
         }
       } catch (err) {
         console.error("Failed to load settings:", err);
@@ -430,26 +518,6 @@ export default function Settings() {
         hasInitialized.current = true;
       }
     }
-
-    // Also try to read legacy local storage
-    try {
-      const raw = globalThis.localStorage?.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed.appearance) {
-          setAppearance({ ...DEFAULT_APPEARANCE, ...parsed.appearance });
-        }
-        if (parsed.notifications) {
-          setNotifications({
-            ...DEFAULT_NOTIFICATIONS,
-            ...parsed.notifications,
-          });
-        }
-        if (parsed.dataSettings) {
-          setDataSettings({ ...DEFAULT_DATA_SETTINGS, ...parsed.dataSettings });
-        }
-      }
-    } catch {}
 
     loadSettings();
   }, []);
@@ -467,7 +535,79 @@ export default function Settings() {
   }, [appearance.fontSize]);
 
   useEffect(() => {
-    if (!hasInitialized.current || !user) return;
+    const handleBeforeUnload = () => {
+      try {
+        globalThis.localStorage?.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            appearance,
+            notifications,
+            dataSettings,
+            profileDraft: {
+              name: user.name,
+              username: user.username,
+              email: user.email,
+              bio: user.bio,
+              location: user.location,
+              gender: user.gender,
+              pronouns: user.pronouns,
+              birthDate: user.birthDate,
+              occupation: user.occupation,
+              timezone: user.timezone,
+              website: user.website,
+              avatarUrl: user.avatarUrl,
+              links: user.links,
+            },
+            publicSettings: user.publicSettings,
+            privacySecurity: user.privacySecurity,
+          }),
+        );
+      } catch {
+        // swallow any localStorage failures during unload
+      }
+    };
+
+    globalThis.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      globalThis.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [user, appearance, notifications, dataSettings]);
+
+  useEffect(() => {
+    const persistLocal = () => {
+      try {
+        globalThis.localStorage?.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            appearance,
+            notifications,
+            dataSettings,
+            profileDraft: {
+              name: user.name,
+              username: user.username,
+              email: user.email,
+              bio: user.bio,
+              location: user.location,
+              gender: user.gender,
+              pronouns: user.pronouns,
+              birthDate: user.birthDate,
+              occupation: user.occupation,
+              timezone: user.timezone,
+              website: user.website,
+              avatarUrl: user.avatarUrl,
+              links: user.links,
+            },
+            publicSettings: user.publicSettings,
+            privacySecurity: user.privacySecurity,
+          }),
+        );
+      } catch {
+        // Ignore localStorage write failures.
+      }
+    };
+
+    if (!user) return;
+    persistLocal();
 
     if (saveTimer.current) clearTimeout(saveTimer.current);
     if (hideSavedTimer.current) clearTimeout(hideSavedTimer.current);
@@ -476,11 +616,6 @@ export default function Settings() {
 
     saveTimer.current = setTimeout(async () => {
       try {
-        globalThis.localStorage?.setItem(
-          STORAGE_KEY,
-          JSON.stringify({ appearance, notifications, dataSettings }),
-        );
-
         await fetch("/api/user/settings", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -488,7 +623,25 @@ export default function Settings() {
             name: user.name,
             bio: user.bio,
             avatarUrl: user.avatarUrl,
-            preferences: { appearance, notifications, dataSettings },
+            username: user.username,
+            email: user.email,
+            preferences: {
+              appearance,
+              notifications,
+              dataSettings,
+              publicSettings: user.publicSettings,
+              privacySecurity: user.privacySecurity,
+              profile: {
+                location: user.location,
+                gender: user.gender,
+                pronouns: user.pronouns,
+                birthDate: user.birthDate,
+                occupation: user.occupation,
+                timezone: user.timezone,
+                website: user.website,
+                links: user.links,
+              },
+            },
           }),
         });
       } catch {
@@ -503,35 +656,7 @@ export default function Settings() {
       if (saveTimer.current) clearTimeout(saveTimer.current);
       if (hideSavedTimer.current) clearTimeout(hideSavedTimer.current);
     };
-  }, [
-    user,
-    appearance,
-    notifications,
-    dataSettings,
-    soloMode,
-    user?.name,
-    user?.username,
-    user?.email,
-    user?.bio,
-    user?.location,
-    user?.gender,
-    user?.pronouns,
-    user?.birthDate,
-    user?.occupation,
-    user?.timezone,
-    user?.website,
-    user?.avatarUrl,
-    user?.links,
-    user?.privacySecurity.accountVisibility,
-    user?.privacySecurity.showEmailInProfile,
-    user?.privacySecurity.allowSearchIndexing,
-    user?.privacySecurity.twoFactorEnabled,
-    user?.publicSettings.showProfile,
-    user?.publicSettings.showLocation,
-    user?.publicSettings.showRooms,
-    user?.publicSettings.showThreads,
-    user?.publicSettings.showInsights,
-  ]);
+  }, [user, appearance, notifications, dataSettings]);
 
   if (!user) {
     return (

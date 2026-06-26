@@ -4,6 +4,7 @@ import RoomCard, { RoomData } from "./RoomCard.tsx";
 import CreateRoomModal from "./CreateRoomModal.tsx";
 import EmptyState from "../../components/dashboard/EmptyState.tsx";
 import { userSignal } from "../../signals/user.ts";
+import { DEMO_USER } from "../../utils/demo_data.ts";
 
 interface InitialUser {
   id: string;
@@ -26,13 +27,23 @@ export default function DashboardClientManager(
     if (!initialUser) return;
     userSignal.value = {
       ...userSignal.value,
+      ...(isDemo ? DEMO_USER : {}),
       id: initialUser.id,
       username: initialUser.username,
       email: initialUser.email,
       // Prefer the username from DB. Fall back to 'Stranger' if not set.
-      name: initialUser.username || "Stranger",
+      name: initialUser.username || DEMO_USER.name || "Stranger",
+      links: isDemo ? DEMO_USER.links : userSignal.value.links,
+      bio: isDemo ? DEMO_USER.bio : userSignal.value.bio,
+      website: isDemo ? DEMO_USER.website : userSignal.value.website,
+      location: isDemo ? DEMO_USER.location : userSignal.value.location,
+      avatarUrl: isDemo ? DEMO_USER.avatarUrl : userSignal.value.avatarUrl,
+      auraType: isDemo ? DEMO_USER.auraType : userSignal.value.auraType,
+      auraColor: isDemo ? DEMO_USER.auraColor : userSignal.value.auraColor,
+      cognitiveStreak: isDemo ? DEMO_USER.cognitiveStreak : userSignal.value.cognitiveStreak,
+      resonance: isDemo ? DEMO_USER.resonance : userSignal.value.resonance,
     };
-  }, [initialUser?.id]);
+  }, [initialUser?.id, isDemo]);
 
   const handleCreateRoom = () => {
     if (isDemo) return; // silently block in demo mode

@@ -1,6 +1,10 @@
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
-import { logout, userSignal } from "../../signals/user.ts";
+import {
+  logout,
+  syncCurrentUserFromBackend,
+  userSignal,
+} from "../../signals/user.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
 import { itemsSignal } from "../../signals/items.ts";
 import { threadsSignal } from "../../signals/threads.ts";
@@ -29,20 +33,32 @@ export default function ProfilePage() {
   const themes = activeThemesSignal.value;
 
   const [activeTab, setActiveTab] = useState<ProfileTab>("overview");
+  const [isHydrating, setIsHydrating] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      await syncCurrentUserFromBackend();
+      if (alive) setIsHydrating(false);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const recentActivity = useMemo<ProfileActivity[]>(() => {
     const fromItems: ProfileActivity[] = items.map((item) => ({
       id: `item-${item.id}`,
       title: `Added artifact: ${item.title}`,
       detail: item.isPublic ? "Public artifact" : "Private artifact",
-      timestamp: item.createdAt,
+      timestamp: new Date(item.createdAt).getTime(),
     }));
 
     const fromThreads: ProfileActivity[] = threads.map((thread) => ({
       id: `thread-${thread.id}`,
       title: `Updated thread: ${thread.title}`,
       detail: thread.isPublic ? "Public thread" : "Private thread",
-      timestamp: thread.updatedAt,
+      timestamp: new Date(thread.updatedAt).getTime(),
     }));
 
     const fromJournals: ProfileActivity[] = journals.map((entry) => ({
@@ -106,6 +122,14 @@ export default function ProfilePage() {
     logout();
     globalThis.location.href = "/auth";
   };
+
+  if (isHydrating) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-[var(--muse-muted)]">
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-canvas-bg-dark px-6 md:px-10 py-8 max-w-6xl mx-auto pb-24 md:pb-12">
@@ -179,7 +203,7 @@ export default function ProfilePage() {
           <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap gap-2">
             {user.links.slice(0, 6).map((link) => (
               <a
-                key={link.id}
+                key={`${link.title}-${link.url}`}
                 href={link.url}
                 target="_blank"
                 rel="noreferrer"

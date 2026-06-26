@@ -11,6 +11,7 @@ export const handler: Handlers = {
     try {
       const form = await req.formData();
       const email = form.get("email")?.toString();
+      const name = form.get("name")?.toString()?.trim();
       const username = form.get("username")?.toString();
       const password = form.get("password")?.toString();
 
@@ -41,9 +42,10 @@ export const handler: Handlers = {
 
       // Insert new user
       const result = await executeDB(
-        "INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3) RETURNING id",
+        "INSERT INTO users (email, username, name, password_hash) VALUES ($1, $2, $3, $4) RETURNING id",
         email,
         username,
+        name || username,
         hashedPassword,
       );
 

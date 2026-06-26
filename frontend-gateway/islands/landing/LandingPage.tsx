@@ -164,7 +164,7 @@ export default function LandingPage() {
           onGuestEntry={handleGuestEntry}
         />
 
-        <LiveDashboardSimulation />
+        <LiveDashboardSimulation viewerMode="guest" />
 
         <LandingFooter />
       </main>

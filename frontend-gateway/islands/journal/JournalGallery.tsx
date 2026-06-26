@@ -13,6 +13,13 @@ import {
 import * as Icons from "lucide-preact";
 import EmojiInput from "../../components/ui/EmojiInput.tsx";
 import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.tsx";
+import { userSignal } from "../../signals/user.ts";
+import {
+  emptyStateMessages,
+  getContextualPrompt,
+  type UserContext,
+} from "../../utils/contextualPrompts.ts";
+import { generateDynamicHumor } from "../../utils/dynamicHumor.ts";
 
 export const moodConfig: Record<
   JournalMood,
@@ -136,22 +143,34 @@ export default function JournalGallery(
   }
 
   if (entries.length === 0) {
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12 ? "morning" : hour >= 12 && hour < 18 ? "afternoon" : "evening";
+    const user = userSignal.value;
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+    const contextualMsg = getContextualPrompt("empty_journal", period, userContext);
+    
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center items-center px-6 pb-12">
         <div className="w-20 h-20 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(139,92,246,0.1)]">
           <span className="text-violet-400 text-3xl">📖</span>
         </div>
-        <h1 className="text-3xl font-bold mb-3 text-white">Your Journal</h1>
+        <h1 className="text-3xl font-bold mb-3 text-white">{emptyStateMessages.journal.title}</h1>
         <p className="text-gray-400 font-serif italic text-base max-w-md text-center leading-relaxed mb-8">
-          A private space for raw thought, emotional tracking, and quiet
-          reflection. Completely local. Completely yours.
+          {contextualMsg}
         </p>
         <button
           onClick={handleNewEntry}
           type="button"
           className="flex items-center gap-3 px-10 py-5 bg-white text-black font-bold uppercase tracking-widest text-sm rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 transition-all cursor-pointer"
         >
-          Write First Entry <span className="inline-block">➜</span>
+          {emptyStateMessages.journal.cta} <span className="inline-block">➜</span>
         </button>
       </div>
     );
