@@ -75,6 +75,8 @@ CREATE TABLE item_annotations (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE INDEX idx_item_annotations_item_id ON item_annotations(item_id);
+
 -- 4. THREADS TABLE (AI Synthesis)
 CREATE TABLE threads (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

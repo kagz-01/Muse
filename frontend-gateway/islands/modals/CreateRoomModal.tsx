@@ -118,14 +118,14 @@ export default function CreateRoomModal({ onClose }: Props) {
     ? { name: "custom", hex: currentColor, label: "Custom Color" }
     : paletteColors.find((c) => c.name === themeColor)!;
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!name.trim()) {
       setError("Give your room a name.");
       return;
     }
 
     try {
-      const newRoomId = addRoom({
+      const newRoomId = await addRoom({
         name: name.trim(),
         description: description.trim(),
         emoji: emoji || "🏛️",
@@ -138,7 +138,6 @@ export default function CreateRoomModal({ onClose }: Props) {
         customThemeHex: useCustomColor ? currentColor : undefined,
         coverImage,
         isPublic,
-        isVault: !isPublic,
       });
       clearDraft(); // ✅ wipe draft on success
       onClose();

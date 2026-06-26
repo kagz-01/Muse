@@ -160,7 +160,6 @@ export default function EditRoomModal({ room, onClose, onDeleted }: Props) {
       customThemeHex: useCustomColor ? currentColor : undefined,
       coverImage,
       isPublic,
-      isVault: !isPublic,
     });
     onClose();
   };

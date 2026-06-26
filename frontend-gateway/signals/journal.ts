@@ -228,29 +228,33 @@ function getDemoJournalEntries(): JournalEntry[] {
 }
 
 function loadJournal(): JournalEntry[] {
+  const isDemo = userSignal.value?.id === "__demo__";
+
   if (typeof localStorage === "undefined") {
-    return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
+    return isDemo ? getDemoJournalEntries() : [];
   }
   try {
+    if (!isDemo) return [];
+
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as unknown;
         if (!Array.isArray(parsed)) {
-          return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
+          return getDemoJournalEntries();
         }
         return parsed
           .map(normalizeJournalEntry)
           .filter((entry): entry is JournalEntry => entry !== null);
       } catch {
-        return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
+        return getDemoJournalEntries();
       }
     }
   } catch {
-    return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
+    return isDemo ? getDemoJournalEntries() : [];
   }
 
-  return userSignal.value?.id === "__demo__" ? getDemoJournalEntries() : [];
+  return isDemo ? getDemoJournalEntries() : [];
 }
 
 export const journalSignal = signal<JournalEntry[]>(loadJournal());
@@ -267,8 +271,13 @@ if (typeof localStorage !== "undefined") {
   });
 
   userSignal.subscribe((user) => {
-    if (user?.id === "__demo__" && !journalSignal.value.some((entry) => entry.id.startsWith("demo-"))) {
-      journalSignal.value = getDemoJournalEntries();
+    if (user?.id === "__demo__") {
+      if (!journalSignal.value.some((entry) => entry.id.startsWith("demo-"))) {
+        journalSignal.value = getDemoJournalEntries();
+      }
+    } else {
+      journalSignal.value = [];
+      localStorage.removeItem(STORAGE_KEY);
     }
   });
 

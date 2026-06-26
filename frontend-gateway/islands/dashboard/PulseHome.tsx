@@ -186,13 +186,12 @@ export default function PulseHome() {
     let interval: ReturnType<typeof setInterval>;
     let promptTimeout: ReturnType<typeof setTimeout>;
 
-    const hasUsername = Boolean(user?.username?.trim());
+    const hasDisplayName = Boolean(
+      user?.name?.trim() || user?.username?.trim(),
+    );
     const isGuestAccess = user?.id === "__demo__";
-    const displayName = hasUsername
-      ? user!.username!.trim()
-      : isGuestAccess
-      ? "Guest"
-      : "Stranger";
+    const displayName = user?.name?.trim() || user?.username?.trim() ||
+      (isGuestAccess ? "Guest" : "Stranger");
 
     // Build user context for dynamic humor generation
     const userContext: Partial<UserContext> = {
@@ -201,7 +200,7 @@ export default function PulseHome() {
       journalEntryCount: journalEntries.length,
       roomsJoined: rooms.length,
       threadsActive: threads.length,
-      hasUsername,
+      hasUsername: hasDisplayName,
     };
 
     const prompt = getGuestPrompt(
@@ -278,12 +277,8 @@ export default function PulseHome() {
   const latestRoom = rooms[0];
 
   const isGuestAccess = user?.id === "__demo__";
-  const hasUsername = Boolean(user?.username?.trim());
-  const displayName = hasUsername
-    ? user?.username?.trim()
-    : isGuestAccess
-    ? "Guest"
-    : "Stranger";
+  const displayName = user?.name?.trim() || user?.username?.trim() ||
+    (isGuestAccess ? "Guest" : "Stranger");
   const sysStatus = serviceHealth?.status === "healthy" ? "Online" : "Degraded";
   const sysColor = sysStatus === "Online"
     ? "text-emerald-400"
@@ -310,7 +305,7 @@ export default function PulseHome() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-8">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                {isGuestAccess ? "Guest Access" : hasUsername ? "Terminal Ready" : "Stranger Mode"}
+                {isGuestAccess ? "Guest Access" : displayName ? "Terminal Ready" : "Stranger Mode"}
               </div>
 
               <h1 className="text-5xl md:text-6xl font-bold tracking-tighter leading-[1.1] text-white">

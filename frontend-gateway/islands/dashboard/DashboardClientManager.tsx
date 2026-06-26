@@ -8,6 +8,7 @@ import { DEMO_USER } from "../../utils/demo_data.ts";
 
 interface InitialUser {
   id: string;
+  name?: string;
   username: string;
   email: string;
 }
@@ -31,8 +32,8 @@ export default function DashboardClientManager(
       id: initialUser.id,
       username: initialUser.username,
       email: initialUser.email,
-      // Prefer the username from DB. Fall back to 'Stranger' if not set.
-      name: initialUser.username || DEMO_USER.name || "Stranger",
+      // Prefer the server-side name when available, otherwise fall back to username.
+      name: initialUser.name || initialUser.username || DEMO_USER.name || "Stranger",
       links: isDemo ? DEMO_USER.links : userSignal.value.links,
       bio: isDemo ? DEMO_USER.bio : userSignal.value.bio,
       website: isDemo ? DEMO_USER.website : userSignal.value.website,

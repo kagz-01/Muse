@@ -77,7 +77,7 @@ export default function EmojiInput({
         picker.removeEventListener("emoji-click", handleEmojiClick);
       }
     };
-  }, [value, onInput]);
+  }, [value, onInput, showPicker]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

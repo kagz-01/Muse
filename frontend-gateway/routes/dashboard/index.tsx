@@ -10,6 +10,7 @@ import { DEMO_ROOMS, DEMO_USER } from "../../utils/demo_data.ts";
 interface DashboardData {
   user: {
     id: string;
+    name?: string;
     username: string;
     email: string;
   };
@@ -33,9 +34,9 @@ export const handler: Handlers<DashboardData> = {
         id: r.id,
         title: r.title,
         description: r.description,
-        theme_color: r.theme_color,
+        theme_color: r.themeColor,
         tags: r.tags,
-        created_at: r.created_at,
+        created_at: r.updatedAt,
       }));
       return ctx.render({
         user: {
@@ -50,7 +51,7 @@ export const handler: Handlers<DashboardData> = {
     // ─────────────────────────────────────────────────────────────────────────
 
     const users = await queryDB(
-      "SELECT id, username, email FROM users WHERE id = $1",
+      "SELECT id, name, username, email FROM users WHERE id = $1",
       userId,
     );
     if (users.length === 0) {
@@ -81,7 +82,12 @@ export const handler: Handlers<DashboardData> = {
     }));
 
     return ctx.render({
-      user: { id: userId, username: userRow.username, email: userRow.email },
+      user: {
+        id: userId,
+        name: userRow.name,
+        username: userRow.username,
+        email: userRow.email,
+      },
       rooms,
       isDemo: false,
     });

@@ -174,21 +174,23 @@ function getDemoRooms(): Room[] {
 }
 
 function loadRooms(): Room[] {
+  const isDemo = userSignal.value?.id === "__demo__";
+
   if (typeof localStorage === "undefined") {
-    return userSignal.value?.id === "__demo__" ? getDemoRooms() : INITIAL_ROOMS;
+    return isDemo ? getDemoRooms() : INITIAL_ROOMS;
   }
 
   try {
+    if (!isDemo) return INITIAL_ROOMS;
+
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      return userSignal.value?.id === "__demo__" ? getDemoRooms() : INITIAL_ROOMS;
-    }
+    if (!stored) return getDemoRooms();
     const parsed = JSON.parse(stored) as Room[];
     const base = Array.isArray(parsed) ? parsed : INITIAL_ROOMS;
 
     return base;
   } catch {
-    return INITIAL_ROOMS;
+    return isDemo ? getDemoRooms() : INITIAL_ROOMS;
   }
 }
 
@@ -206,8 +208,13 @@ if (typeof localStorage !== "undefined") {
   });
 
   userSignal.subscribe((user) => {
-    if (user?.id === "__demo__" && !roomsSignal.value.some((room) => room.id.startsWith("demo-"))) {
-      roomsSignal.value = getDemoRooms();
+    if (user?.id === "__demo__") {
+      if (!roomsSignal.value.some((room) => room.id.startsWith("demo-"))) {
+        roomsSignal.value = getDemoRooms();
+      }
+    } else {
+      roomsSignal.value = INITIAL_ROOMS;
+      localStorage.removeItem(STORAGE_KEY);
     }
   });
 }

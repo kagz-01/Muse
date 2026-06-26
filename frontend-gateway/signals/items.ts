@@ -35,52 +35,7 @@ export interface Item {
 
 const STORAGE_KEY = "muse_items_v2";
 
-const INITIAL_ITEMS: Item[] = [
-  {
-    id: "i1",
-    roomId: "r1",
-    title: "Voter Turnout Statistics 2024",
-    sourceUrl: "https://politics.news/voter-turnout",
-    note:
-      "The lowest engagement we've seen in a decade for municipal elections.",
-    isPublic: true,
-    createdAt: new Date().toISOString(),
-    dataProvenance: {
-      platform: "Web",
-      extractedAt: new Date().toISOString(),
-      integrityHash: "sha256-a1b2c3",
-    },
-  },
-  {
-    id: "i2",
-    roomId: "r1",
-    title: "City Council Zoning Proposal",
-    sourceUrl: "https://localgov.city/zoning",
-    note: "This will affect housing availability dramatically.",
-    isPublic: true,
-    createdAt: new Date().toISOString(),
-    dataProvenance: {
-      platform: "Web",
-      extractedAt: new Date().toISOString(),
-      integrityHash: "sha256-d4e5f6",
-    },
-  },
-  {
-    id: "i3",
-    roomId: "r2",
-    title: "The 5 Love Languages Explained",
-    sourceUrl: "https://psychology.com/love-languages",
-    note:
-      "Fascinating how acts of service can be misinterpreted if your partner values words of affirmation.",
-    isPublic: false,
-    createdAt: new Date().toISOString(),
-    dataProvenance: {
-      platform: "Web",
-      extractedAt: new Date().toISOString(),
-      integrityHash: "sha256-x7y8z9",
-    },
-  },
-];
+const INITIAL_ITEMS: Item[] = [];
 
 function getDemoItems(): Item[] {
   return DEMO_ITEMS.map((item) => ({
@@ -90,18 +45,20 @@ function getDemoItems(): Item[] {
 }
 
 function loadItems(): Item[] {
+  const isDemo = userSignal.value?.id === "__demo__";
+
   if (typeof localStorage === "undefined") {
-    return userSignal.value?.id === "__demo__" ? getDemoItems() : INITIAL_ITEMS;
+    return isDemo ? getDemoItems() : INITIAL_ITEMS;
   }
   try {
+    if (!isDemo) return INITIAL_ITEMS;
+
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      return userSignal.value?.id === "__demo__" ? getDemoItems() : INITIAL_ITEMS;
-    }
+    if (!stored) return getDemoItems();
     const parsed = JSON.parse(stored) as Item[];
-    return Array.isArray(parsed) ? parsed : INITIAL_ITEMS;
+    return Array.isArray(parsed) ? parsed : getDemoItems();
   } catch {
-    return INITIAL_ITEMS;
+    return isDemo ? getDemoItems() : INITIAL_ITEMS;
   }
 }
 
@@ -119,8 +76,13 @@ if (typeof localStorage !== "undefined") {
   });
 
   userSignal.subscribe((user) => {
-    if (user?.id === "__demo__" && !itemsSignal.value.some((item) => item.id.startsWith("demo-"))) {
-      itemsSignal.value = getDemoItems();
+    if (user?.id === "__demo__") {
+      if (!itemsSignal.value.some((item) => item.id.startsWith("demo-"))) {
+        itemsSignal.value = getDemoItems();
+      }
+    } else {
+      itemsSignal.value = INITIAL_ITEMS;
+      localStorage.removeItem(STORAGE_KEY);
     }
   });
 }

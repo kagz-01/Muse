@@ -60,83 +60,7 @@ export interface Thread {
 
 const STORAGE_KEY = "muse_threads_v2";
 
-const INITIAL_THREADS: Thread[] = [
-  {
-    id: "t1",
-    title: "The Impact of Local Elections",
-    description:
-      "Analyzing how municipal votes shape daily life more than national ones.",
-    mood: "focus",
-    format: "essay",
-    depth: "50",
-    itemIds: ["i1", "i2"],
-    sourceRoomIds: ["r1"],
-    isPublic: true,
-    updatedAt: new Date().toISOString(),
-    coverImage:
-      "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=1200&q=80",
-    thesis:
-      "Local elections have more direct impact on our communities, yet they suffer the lowest turnout.",
-    synthesisScore: 88,
-    resonanceMetrics: { views: 1240, connections: 86 },
-    dialogueLayers: [
-      {
-        id: "d1",
-        userId: "u2",
-        userName: "Elena",
-        content:
-          "This is so true. Our city council just passed a zoning law that completely changed my neighborhood, and only 15% of people voted on it.",
-        type: "insight",
-        resonanceScore: 42,
-        timestamp: new Date().toISOString(),
-      },
-    ],
-    customStyling: {
-      auraGradients: ["#6366f1", "#10b981"],
-    },
-    synthesis: {
-      patterns: ["local engagement", "policy impact", "voter apathy"],
-      tensions: ["national media focus vs local reality"],
-      coherenceScore: 85,
-      recommendations: [
-        "Explore ways to make local election information more accessible",
-      ],
-    },
-    isVault: false,
-  },
-  {
-    id: "t2",
-    title: "The Evolution of Modern Dating",
-    description:
-      "How dating apps and social media have shifted human connection.",
-    mood: "melancholy",
-    format: "manifesto",
-    depth: "80",
-    itemIds: ["i3"],
-    sourceRoomIds: ["r2"],
-    isPublic: true,
-    updatedAt: new Date().toISOString(),
-    coverImage:
-      "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1200&q=80",
-    thesis:
-      "Modern dating apps have fundamentally shifted human connection from serendipitous moments to gamified transactions.",
-    synthesisScore: 75,
-    resonanceMetrics: { views: 890, connections: 45 },
-    dialogueLayers: [],
-    customStyling: {
-      auraGradients: ["#f43f5e", "#fbbf24"],
-    },
-    synthesis: {
-      patterns: ["gamification", "choice paralysis", "digital romance"],
-      tensions: ["efficiency vs authentic connection"],
-      coherenceScore: 78,
-      recommendations: [
-        "Look into the psychological effects of endless swiping",
-      ],
-    },
-    isVault: false,
-  },
-];
+const INITIAL_THREADS: Thread[] = [];
 
 function getDemoThreads(): Thread[] {
   return DEMO_THREADS.map((thread) => ({
@@ -162,19 +86,21 @@ function getDemoThreads(): Thread[] {
 }
 
 function loadThreads(): Thread[] {
+  const isDemo = userSignal.value?.id === "__demo__";
+
   if (typeof localStorage === "undefined") {
-    return userSignal.value?.id === "__demo__" ? getDemoThreads() : INITIAL_THREADS;
+    return isDemo ? getDemoThreads() : INITIAL_THREADS;
   }
 
   try {
+    if (!isDemo) return INITIAL_THREADS;
+
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      return userSignal.value?.id === "__demo__" ? getDemoThreads() : INITIAL_THREADS;
-    }
+    if (!stored) return getDemoThreads();
     const parsed = JSON.parse(stored) as Thread[];
-    return Array.isArray(parsed) ? parsed : INITIAL_THREADS;
+    return Array.isArray(parsed) ? parsed : getDemoThreads();
   } catch {
-    return INITIAL_THREADS;
+    return isDemo ? getDemoThreads() : INITIAL_THREADS;
   }
 }
 
@@ -192,8 +118,13 @@ if (typeof localStorage !== "undefined") {
   });
 
   userSignal.subscribe((user) => {
-    if (user?.id === "__demo__" && !threadsSignal.value.some((thread) => thread.id.startsWith("demo-"))) {
-      threadsSignal.value = getDemoThreads();
+    if (user?.id === "__demo__") {
+      if (!threadsSignal.value.some((thread) => thread.id.startsWith("demo-"))) {
+        threadsSignal.value = getDemoThreads();
+      }
+    } else {
+      threadsSignal.value = INITIAL_THREADS;
+      localStorage.removeItem(STORAGE_KEY);
     }
   });
 }
