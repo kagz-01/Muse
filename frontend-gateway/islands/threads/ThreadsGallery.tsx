@@ -51,7 +51,7 @@ export default function ThreadsGallery() {
   const [activeMoodFilter, setActiveMoodFilter] = useState<string>("all");
   const [customMoodInput, setCustomMoodInput] = useState("");
   const [filterVisibility, setFilterVisibility] = useState<
-    "all" | "public" | "private"
+    "all" | "public" | "private" | "vault"
   >("all");
   const [vaultModalThread, setVaultModalThread] = useState<Thread | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -77,7 +77,8 @@ export default function ThreadsGallery() {
 
       const matchesVisibility = filterVisibility === "all" ||
         (filterVisibility === "public" && t.isPublic) ||
-        (filterVisibility === "private" && !t.isPublic);
+        (filterVisibility === "private" && !t.isPublic && !t.isVault) ||
+        (filterVisibility === "vault" && t.isVault);
 
       return matchesSearch && matchesMood && matchesVisibility;
     });
@@ -305,6 +306,7 @@ export default function ThreadsGallery() {
                 { id: "all", label: "All" },
                 { id: "public", label: "Public" },
                 { id: "private", label: "Private" },
+                { id: "vault", label: "Vault" },
               ].map((filter) => (
                 <button
                   key={filter.id}
@@ -471,7 +473,11 @@ export default function ThreadsGallery() {
                                 style={{ backgroundColor: hex }}
                               />
                               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">
-                                {thread.isPublic ? "Public" : "Private"}
+                                {thread.isVault
+                                  ? "Vault"
+                                  : thread.isPublic
+                                  ? "Public"
+                                  : "Private"}
                               </span>
                             </div>
                             {thread.isPublic

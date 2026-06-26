@@ -35,9 +35,11 @@ export default function CreateRoomModal({ onClose }: Props) {
     tags: string[];
     themeColor: string;
     isPublic: boolean;
+    isVault: boolean;
   }>("muse_room_draft");
 
   const [showResumeBanner, setShowResumeBanner] = useState(hasDraft);
+  const [isVault, setIsVault] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [emoji, setEmoji] = useState("");
@@ -68,6 +70,7 @@ export default function CreateRoomModal({ onClose }: Props) {
     if (draft.tags?.length) setTags(draft.tags);
     if (draft.themeColor) setThemeColor(draft.themeColor as RoomTheme);
     if (typeof draft.isPublic === "boolean") setIsPublic(draft.isPublic);
+    if (typeof draft.isVault === "boolean") setIsVault(draft.isVault);
     setShowResumeBanner(false);
   };
 
@@ -138,6 +141,7 @@ export default function CreateRoomModal({ onClose }: Props) {
         customThemeHex: useCustomColor ? currentColor : undefined,
         coverImage,
         isPublic,
+        isVault,
       });
       clearDraft(); // ✅ wipe draft on success
       onClose();
@@ -160,6 +164,7 @@ export default function CreateRoomModal({ onClose }: Props) {
         tags,
         themeColor,
         isPublic,
+        isVault,
       });
     }
   }, [
@@ -172,6 +177,7 @@ export default function CreateRoomModal({ onClose }: Props) {
     tags,
     themeColor,
     isPublic,
+    isVault,
   ]);
 
   return (
@@ -672,66 +678,73 @@ export default function CreateRoomModal({ onClose }: Props) {
               )}
           </div>
           {/* Visibility Toggle */}
-          <div className="mb-8">
-            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-              Room Mode
-            </label>
-            <div className="space-y-2">
-              <button
-                onClick={() => setIsPublic(false)}
-                className={`w-full p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group hover:scale-[1.01] ${
-                  !isPublic
-                    ? "border-white/40 bg-white/10 shadow-xl shadow-white/5"
-                    : "border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10"
-                }`}
-                type="button"
-              >
-                <div className="flex items-center gap-3">
-                  <Icons.Lock
-                    size={16}
-                    className={!isPublic ? "text-white" : "text-gray-500"}
-                  />
-                  <div>
-                    <p className="text-sm font-bold text-white">
-                      Private — Solo Mode
-                    </p>
-                    <p className="text-xs text-gray-400 font-serif italic">
-                      Only you can access this room
-                    </p>
-                  </div>
-                </div>
-              </button>
-              <button
-                onClick={() => setIsPublic(true)}
-                className={`w-full p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group hover:scale-[1.01] ${
-                  isPublic
-                    ? "border-canvas-primary/50 bg-canvas-primary/15 shadow-xl shadow-canvas-primary/10"
-                    : "border-white/10 bg-white/5 hover:border-canvas-primary/30 hover:bg-white/10"
-                }`}
-                type="button"
-              >
-                <div className="flex items-center gap-3">
-                  <Icons.Globe
-                    size={16}
-                    className={isPublic
-                      ? "text-canvas-primary"
-                      : "text-gray-500"}
-                  />
-                  <div>
-                    <p
-                      className={`text-sm font-bold ${
-                        isPublic ? "text-canvas-primary" : "text-white"
-                      }`}
-                    >
-                      Community — Shared Mode
-                    </p>
-                    <p className="text-xs text-gray-400 font-serif italic">
-                      Collaborate & share with others
-                    </p>
-                  </div>
-                </div>
-              </button>
-            </div>
+          <div className="mb-8 p-1 bg-white/5 rounded-2xl flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsPublic(false);
+                setIsVault(false);
+              }}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                !isPublic && !isVault
+                  ? "bg-white/10 text-white shadow-xl"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <Icons.Lock size={16} />
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Private — Solo Mode
+                </span>
+                <span className="block text-[9px] text-gray-400 font-normal">
+                  Only you can access this room
+                </span>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsPublic(false);
+                setIsVault(true);
+              }}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                isVault
+                  ? "bg-amber-500/20 text-amber-400 shadow-xl shadow-amber-500/5"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <Icons.Shield size={16} />
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Vault — Protected Mode
+                </span>
+                <span className="block text-[9px] text-gray-400 font-normal">
+                  Hidden behind the master vault
+                </span>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsPublic(true);
+                setIsVault(false);
+              }}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                isPublic
+                  ? "bg-indigo-500/20 text-indigo-400 shadow-xl shadow-indigo-500/5"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <Icons.Globe size={16} />
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Community Hub
+                </span>
+                <span className="block text-[9px] text-indigo-400/60 font-normal">
+                  Visible to others
+                </span>
+              </div>
+            </button>
           </div>
 
           {/* Actions */}

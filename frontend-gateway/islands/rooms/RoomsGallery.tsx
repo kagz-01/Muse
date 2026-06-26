@@ -196,7 +196,11 @@ function RoomCard({
               >
               </span>
               <span className="rounded-full border border-[var(--muse-border)] bg-[var(--muse-surface-soft)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--muse-muted)]">
-                {room.isPublic ? "Open room" : "Private room"}
+                {room.isVault
+                  ? "Vault room"
+                  : room.isPublic
+                  ? "Open room"
+                  : "Private room"}
               </span>
             </div>
             <h3 className="text-2xl font-bold tracking-tight text-[var(--muse-text)] group-hover:text-canvas-primary transition-colors duration-300">
@@ -338,7 +342,7 @@ export default function RoomsGallery() {
     [rooms, archivedIds],
   );
   const vaultRooms = useMemo(
-    () => activeRooms.filter((room) => !room.isPublic),
+    () => activeRooms.filter((room) => room.isVault),
     [activeRooms],
   );
   const collabRooms = useMemo(

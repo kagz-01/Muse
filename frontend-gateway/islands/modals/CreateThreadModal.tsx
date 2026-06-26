@@ -41,6 +41,7 @@ export default function CreateThreadModal({ onClose }: Props) {
     depth: string;
     theme: string;
     isPublic: boolean;
+    isVault: boolean;
   }>("muse_thread_draft");
 
   const [showResumeBanner, setShowResumeBanner] = useState(hasDraft);
@@ -53,6 +54,7 @@ export default function CreateThreadModal({ onClose }: Props) {
   const [theme, setTheme] = useState("");
   const [coverPreview, setCoverPreview] = useState("");
   const [isPublic, setIsPublic] = useState(false);
+  const [isVault, setIsVault] = useState(false);
   const [error, setError] = useState("");
 
   const applyDraft = () => {
@@ -65,6 +67,7 @@ export default function CreateThreadModal({ onClose }: Props) {
     if (draft.depth) setDepth(draft.depth);
     if (draft.theme) setTheme(draft.theme);
     if (typeof draft.isPublic === "boolean") setIsPublic(draft.isPublic);
+    if (typeof draft.isVault === "boolean") setIsVault(draft.isVault);
     setShowResumeBanner(false);
   };
 
@@ -101,13 +104,13 @@ export default function CreateThreadModal({ onClose }: Props) {
     ? moodColors[selectedMoodOption.id]
     : "#a855f7"; // default to purple-ish if custom
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!title.trim()) {
       setError("Give your thread a title.");
       return;
     }
 
-    const newId = addThread({
+    const newId = await addThread({
       title: title.trim(),
       description: description.trim(),
       thesis: thesis.trim(),
@@ -117,9 +120,9 @@ export default function CreateThreadModal({ onClose }: Props) {
       theme,
       coverImage: coverPreview,
       isPublic,
+      isVault,
       itemIds: [],
       sourceRoomIds: [],
-      isVault: !isPublic,
     });
 
     clearDraft(); // ✅ wipe draft on success
@@ -139,9 +142,10 @@ export default function CreateThreadModal({ onClose }: Props) {
         depth,
         theme,
         isPublic,
+        isVault,
       });
     }
-  }, [title, description, thesis, mood, format, depth, theme, isPublic]);
+  }, [title, description, thesis, mood, format, depth, theme, isPublic, isVault]);
 
   return (
     <div
@@ -447,9 +451,12 @@ export default function CreateThreadModal({ onClose }: Props) {
           <div className="mb-8 p-1 bg-white/5 rounded-2xl flex gap-2">
             <button
               type="button"
-              onClick={() => setIsPublic(false)}
+              onClick={() => {
+                setIsPublic(false);
+                setIsVault(false);
+              }}
               className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                !isPublic
+                !isPublic && !isVault
                   ? "bg-white/10 text-white shadow-xl"
                   : "text-gray-500 hover:text-gray-300"
               }`}
@@ -457,16 +464,41 @@ export default function CreateThreadModal({ onClose }: Props) {
               <Icons.Lock size={16} />
               <div className="text-left">
                 <span className="block text-[10px] font-bold uppercase tracking-widest">
-                  Private Vault
+                  Private — Solo Mode
                 </span>
                 <span className="block text-[9px] text-gray-400 font-normal">
-                  Uses Master Password
+                  Only you can access this thread
                 </span>
               </div>
             </button>
             <button
               type="button"
-              onClick={() => setIsPublic(true)}
+              onClick={() => {
+                setIsPublic(false);
+                setIsVault(true);
+              }}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                isVault
+                  ? "bg-amber-500/20 text-amber-400 shadow-xl shadow-amber-500/5"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <Icons.Shield size={16} />
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Vault — Protected Mode
+                </span>
+                <span className="block text-[9px] text-gray-400 font-normal">
+                  Hidden behind the master vault
+                </span>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsPublic(true);
+                setIsVault(false);
+              }}
               className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
                 isPublic
                   ? "bg-indigo-500/20 text-indigo-400 shadow-xl shadow-indigo-500/5"
