@@ -18,17 +18,17 @@ export const handler: Handlers = {
     if (userId === DEMO_USER.id) {
       const demoEntries = DEMO_JOURNALS.map((e) => ({
         id: e.id,
-        body: e.content,
+        body: e.body,
         mood: e.mood,
         tags: e.tags,
-        linkedItemIds: [],
-        isFavorited: false,
-        isPinned: false,
+        linkedItemIds: e.linkedItemIds || [],
+        isFavorited: e.isFavorited || false,
+        isPinned: e.isPinned || false,
         isArchived: false,
-        isPublic: false,
-        createdAt: new Date(e.created_at).getTime(),
-        updatedAt: new Date(e.created_at).getTime(),
-        wordCount: e.content.trim().split(/\s+/).filter(Boolean).length,
+        isPublic: e.isPublic || false,
+        createdAt: new Date(e.createdAt).getTime(),
+        updatedAt: new Date(e.updatedAt).getTime(),
+        wordCount: e.body.trim().split(/\s+/).filter(Boolean).length,
       }));
       return ctx.render({ entries: demoEntries });
     }

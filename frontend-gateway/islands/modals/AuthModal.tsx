@@ -96,12 +96,33 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
     }
   };
 
-  const handleDemoEntry = () => {
+  const handleDemoEntry = async () => {
     setIsSyncing(true);
-    setTimeout(() => {
-      login("demo@muse.app");
-      globalThis.location.href = "/dashboard?demo=1";
-    }, 1200);
+
+    try {
+      const response = await fetch("/api/auth/demo", {
+        method: "POST",
+        redirect: "manual",
+      });
+
+      if (response.status === 303) {
+        const location = response.headers.get("location") || "/dashboard";
+        globalThis.location.href = location;
+        return;
+      }
+
+      if (response.ok) {
+        globalThis.location.href = "/dashboard";
+        return;
+      }
+
+      const text = await response.text();
+      setErrorMsg(text || "Failed to enter demo mode");
+    } catch (_err) {
+      setErrorMsg("Network error connecting to Vault.");
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   return (

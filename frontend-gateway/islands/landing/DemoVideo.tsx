@@ -438,9 +438,21 @@ export default function DemoVideo(
                 <div className="pt-8">
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={async () => {
                       onClose();
-                      globalThis.location.href = "/dashboard?demo=1";
+                      try {
+                        const response = await fetch("/api/auth/demo", {
+                          method: "POST",
+                          redirect: "manual",
+                        });
+                        if (response.status === 303) {
+                          globalThis.location.href = response.headers.get("location") || "/dashboard";
+                        } else {
+                          globalThis.location.href = "/dashboard";
+                        }
+                      } catch {
+                        globalThis.location.href = "/dashboard";
+                      }
                     }}
                     className="px-8 py-4 bg-white text-black rounded-full text-[11px] font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                   >
