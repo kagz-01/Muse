@@ -8,6 +8,19 @@ export interface ActiveCircle {
   memberCount: number;
   recentActivity: string;
   members: { avatar: string }[];
+  isJoined?: boolean;
+  resonanceScore?: number;
+  ritual?: string;
+}
+
+export interface CollaborationSpark {
+  id: string;
+  title: string;
+  description: string;
+  circleName: string;
+  participants: number;
+  urgency: "High" | "Medium" | "Low";
+  actionLabel: string;
 }
 
 export interface Collaborator {
@@ -85,6 +98,9 @@ export const circlesSignal = signal<ActiveCircle[]>([
     memberCount: 124,
     recentActivity: "8m ago",
     members: [{ avatar: "" }, { avatar: "" }, { avatar: "" }],
+    isJoined: true,
+    resonanceScore: 94,
+    ritual: "Weekly reflection prompt",
   },
   {
     id: "c2",
@@ -95,6 +111,32 @@ export const circlesSignal = signal<ActiveCircle[]>([
     memberCount: 86,
     recentActivity: "15m ago",
     members: [{ avatar: "" }, { avatar: "" }],
+    isJoined: false,
+    resonanceScore: 88,
+    ritual: "Shared city note review",
+  },
+]);
+
+export const collaborationSparkSignal = signal<CollaborationSpark[]>([
+  {
+    id: "collab-1",
+    title: "Build a civic reflection thread",
+    description:
+      "Turn this week’s public thought into a shared investigation with 3 other resonators.",
+    circleName: "Local Politics Watch",
+    participants: 4,
+    urgency: "High",
+    actionLabel: "Open collaboration",
+  },
+  {
+    id: "collab-2",
+    title: "Create a relationship insight capsule",
+    description:
+      "Package a recurring pattern into a small guided workshop for your circle.",
+    circleName: "Modern Romance & Relationships",
+    participants: 2,
+    urgency: "Medium",
+    actionLabel: "Propose ritual",
   },
 ]);
 
@@ -222,7 +264,36 @@ export const perspectivesSignal = signal<Perspective[]>([
 ]);
 
 export function joinCircle(id: string) {
-  console.log(`Joining circle: ${id}`);
+  circlesSignal.value = circlesSignal.value.map((circle) =>
+    circle.id === id
+      ? {
+        ...circle,
+        isJoined: true,
+        memberCount: circle.memberCount + 1,
+      }
+      : circle
+  );
+}
+
+export function createCircle(input: {
+  name: string;
+  description: string;
+  theme: string;
+}) {
+  const newCircle: ActiveCircle = {
+    id: `circle-${Date.now()}`,
+    name: input.name,
+    description: input.description,
+    theme: input.theme,
+    memberCount: 1,
+    recentActivity: "Just created",
+    members: [{ avatar: "" }],
+    isJoined: true,
+    resonanceScore: 90,
+    ritual: "New circle ritual pending",
+  };
+
+  circlesSignal.value = [newCircle, ...circlesSignal.value];
 }
 
 export function submitPerspective(
@@ -270,6 +341,28 @@ export function alignWithPerspective(id: string) {
   });
 }
 
+export async function alignWithPerspectiveRemote(id: string) {
+  alignWithPerspective(id);
+
+  try {
+    const res = await fetch(`/api/community/perspectives/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "align" }),
+    });
+    if (!res.ok) return;
+
+    const result = await res.json();
+    perspectivesSignal.value = perspectivesSignal.value.map((p) =>
+      p.id === id
+        ? { ...p, alignCount: result.alignCount ?? p.alignCount }
+        : p
+    );
+  } catch (error) {
+    console.error("Failed to sync align action:", error);
+  }
+}
+
 export function challengePerspective(id: string) {
   perspectivesSignal.value = perspectivesSignal.value.map((p) => {
     if (p.id === id) {
@@ -277,6 +370,28 @@ export function challengePerspective(id: string) {
     }
     return p;
   });
+}
+
+export async function challengePerspectiveRemote(id: string) {
+  challengePerspective(id);
+
+  try {
+    const res = await fetch(`/api/community/perspectives/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "challenge" }),
+    });
+    if (!res.ok) return;
+
+    const result = await res.json();
+    perspectivesSignal.value = perspectivesSignal.value.map((p) =>
+      p.id === id
+        ? { ...p, challengeCount: result.challengeCount ?? p.challengeCount }
+        : p
+    );
+  } catch (error) {
+    console.error("Failed to sync challenge action:", error);
+  }
 }
 
 export function synthesizePerspective(content: string, targetId: string) {

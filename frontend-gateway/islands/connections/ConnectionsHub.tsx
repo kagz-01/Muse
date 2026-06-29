@@ -8,6 +8,8 @@ import {
   collaboratorsSignal,
   type CommunityRoom,
   communityRoomsSignal,
+  type CollaborationSpark,
+  collaborationSparkSignal,
   joinCircle,
   type Perspective,
 } from "../../signals/connections.ts";
@@ -25,27 +27,41 @@ import {
   CommunityThemePulse,
 } from "../../components/community/CommunityCharts.tsx";
 
-type Tab = "Stream" | "Wisdom" | "Circles" | "People";
+type Tab = "Stream" | "Wisdom" | "Circles" | "Collab" | "People";
 
 export default function ConnectionsHub() {
   const [activeTab, setActiveTab] = useState<Tab>("Stream");
   const [activeProfileFilter, setActiveProfileFilter] = useState<string>("All");
+  const [circleDraft, setCircleDraft] = useState({
+    name: "",
+    description: "",
+    theme: "",
+  });
+  const [circleFeedback, setCircleFeedback] = useState<string | null>(null);
 
   const [stream, setStream] = useState<Perspective[]>([]);
   const [fetchedCircles, setFetchedCircles] = useState<ActiveCircle[]>([]);
+  const [circlesState, setCirclesState] = useState<ActiveCircle[]>(
+    circlesSignal.value,
+  );
   const [fetchedCollaborators, setFetchedCollaborators] = useState<
     Collaborator[]
+  >([]);
+  const [collaborationSparksState, setCollaborationSparks] = useState<
+    CollaborationSpark[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadCommunityData() {
       try {
-        const [streamRes, circlesRes, collabRes] = await Promise.all([
-          fetch("/api/community/stream"),
-          fetch("/api/community/circles"),
-          fetch("/api/community/collaborators"),
-        ]);
+        const [streamRes, circlesRes, collabRes, sparksRes] =
+          await Promise.all([
+            fetch("/api/community/stream"),
+            fetch("/api/community/circles"),
+            fetch("/api/community/collaborators"),
+            fetch("/api/community/collaborations"),
+          ]);
 
         if (streamRes.ok) {
           const { stream } = await streamRes.json();
@@ -54,10 +70,15 @@ export default function ConnectionsHub() {
         if (circlesRes.ok) {
           const { circles } = await circlesRes.json();
           setFetchedCircles(circles);
+          setCirclesState(circles);
         }
         if (collabRes.ok) {
           const { collaborators } = await collabRes.json();
           setFetchedCollaborators(collaborators);
+        }
+        if (sparksRes.ok) {
+          const { collaborations } = await sparksRes.json();
+          setCollaborationSparks(collaborations);
         }
       } catch (err) {
         console.error("Failed to load community data", err);
@@ -68,15 +89,100 @@ export default function ConnectionsHub() {
     loadCommunityData();
   }, []);
 
-  const circles = fetchedCircles.length > 0
-    ? (fetchedCircles as typeof circlesSignal.value)
-    : circlesSignal.value;
+  const circles = fetchedCircles.length > 0 ? fetchedCircles : circlesState;
   const collaborators = fetchedCollaborators.length > 0
     ? (fetchedCollaborators as typeof collaboratorsSignal.value)
     : collaboratorsSignal.value;
   const communityRooms = communityRoomsSignal.value;
   const soloMode = soloModeSignal.value;
   const topThemes = activeThemesSignal.value;
+  const collaborationSparks = collaborationSparksState.length > 0
+    ? collaborationSparksState
+    : collaborationSparkSignal.value;
+
+  const handleCreateCircle = async (event: Event) => {
+    event.preventDefault();
+    setCircleFeedback(null);
+    if (!circleDraft.name.trim() || !circleDraft.description.trim()) {
+      setCircleFeedback("Name and purpose are required to launch a circle.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/community/circles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: circleDraft.name.trim(),
+          description: circleDraft.description.trim(),
+          theme: circleDraft.theme.trim() || "Emergent",
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setCircleFeedback(err.error || "Failed to create circle");
+        return;
+      }
+
+      const data = await res.json();
+      const createdId = data.circleId || `circle-${Date.now()}`;
+
+      const newCircle: ActiveCircle = {
+        id: createdId,
+        name: circleDraft.name.trim(),
+        description: circleDraft.description.trim(),
+        theme: circleDraft.theme.trim() || "Emergent",
+        memberCount: 1,
+        recentActivity: "Just created",
+        members: [{ avatar: "" }],
+        isJoined: true,
+        resonanceScore: 90,
+        ritual: "New circle ritual pending",
+      };
+
+      setCirclesState((prev) => [newCircle, ...prev]);
+      setCircleDraft({ name: "", description: "", theme: "" });
+      setCircleFeedback(`Circle "${newCircle.name}" is live.`);
+    } catch (err) {
+      console.error("Create circle failed", err);
+      setCircleFeedback("Failed to create circle");
+    }
+  };
+
+  const handleJoinCircle = (circleId: string) => {
+    // Optimistic UI update
+    setCirclesState((prev) => prev.map((circle) =>
+      circle.id === circleId
+        ? {
+          ...circle,
+          isJoined: true,
+          memberCount: circle.memberCount + 1,
+        }
+        : circle
+    ));
+
+    // Inform server (best-effort). The /api/circles/join endpoint returns updated count.
+    (async () => {
+      try {
+        const res = await fetch("/api/circles/join", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ circleId }),
+        });
+        if (res.ok) {
+          const body = await res.json();
+          if (body.memberCount != null) {
+            setCirclesState((prev) => prev.map((c) =>
+              c.id === circleId ? { ...c, memberCount: body.memberCount } : c
+            ));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to join circle on server", err);
+      }
+    })();
+  };
 
   const circleMembershipData = useMemo(
     () =>
@@ -101,6 +207,7 @@ export default function ConnectionsHub() {
     { id: "Stream", icon: Icons.Activity, label: "Thought Stream" },
     { id: "Wisdom", icon: Icons.Aperture, label: "Wisdom Map" },
     { id: "Circles", icon: Icons.MessageSquare, label: "Active Circles" },
+    { id: "Collab", icon: Icons.Handshake, label: "Collaborations" },
     { id: "People", icon: Icons.Users, label: "Collaborators" },
   ];
 
@@ -310,6 +417,68 @@ export default function ConnectionsHub() {
 
                   {!isLoading && activeTab === "Circles" && (
                     <div className="space-y-16">
+                      <div className="rounded-[2.5rem] border border-white/10 bg-white/[0.03] p-8">
+                        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                          <div className="max-w-2xl">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-400">
+                              Circle Builder
+                            </p>
+                            <h2 className="mt-3 text-3xl font-bold text-white">
+                              Start a circle around a living idea.
+                            </h2>
+                            <p className="mt-3 text-sm leading-relaxed text-gray-400">
+                              Give your circle a purpose, a ritual, and a threshold for resonance. It becomes a place where new thinkers can join the work.
+                            </p>
+                          </div>
+
+                          <form
+                            className="w-full max-w-xl space-y-3"
+                            onSubmit={handleCreateCircle}
+                          >
+                            <input
+                              type="text"
+                              value={circleDraft.name}
+                              onInput={(e) => {
+                                const target = e.currentTarget as HTMLInputElement;
+                                setCircleDraft((prev) => ({ ...prev, name: target.value }));
+                              }}
+                              placeholder="Circle name"
+                              className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none"
+                            />
+                            <input
+                              type="text"
+                              value={circleDraft.theme}
+                              onInput={(e) => {
+                                const target = e.currentTarget as HTMLInputElement;
+                                setCircleDraft((prev) => ({ ...prev, theme: target.value }));
+                              }}
+                              placeholder="Theme"
+                              className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none"
+                            />
+                            <textarea
+                              value={circleDraft.description}
+                              onInput={(e) => {
+                                const target = e.currentTarget as HTMLTextAreaElement;
+                                setCircleDraft((prev) => ({ ...prev, description: target.value }));
+                              }}
+                              placeholder="What is this circle for?"
+                              className="min-h-[100px] w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none"
+                            />
+                            <div className="flex items-center justify-between gap-3">
+                              <button
+                                type="submit"
+                                className="rounded-full bg-emerald-500 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-black"
+                              >
+                                Launch circle
+                              </button>
+                              {circleFeedback && (
+                                <p className="text-xs text-emerald-400">{circleFeedback}</p>
+                              )}
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+
                       <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                         {circles.map((circle) => (
                           <div
@@ -318,7 +487,7 @@ export default function ConnectionsHub() {
                           >
                             <ActiveCircleCard
                               circle={circle}
-                              onJoin={() => joinCircle(circle.id)}
+                              onJoin={() => handleJoinCircle(circle.id)}
                             />
                           </div>
                         ))}
@@ -345,6 +514,57 @@ export default function ConnectionsHub() {
                             </div>
                           ))}
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isLoading && activeTab === "Collab" && (
+                    <div className="space-y-8 animate-in fade-in duration-500">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-400">
+                          Collaboration Layer
+                        </p>
+                        <h2 className="mt-3 text-3xl font-bold text-white">
+                          Turn resonance into shared work.
+                        </h2>
+                        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-gray-400">
+                          These are live bridges from thought to action: a place to convert a spark into a ritual, a thread, or a meaningful collaboration.
+                        </p>
+                      </div>
+
+                      <div className="grid gap-6 lg:grid-cols-2">
+                        {collaborationSparks.map((spark) => (
+                          <div
+                            key={spark.id}
+                            className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-7"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-400">
+                                {spark.urgency} signal
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {spark.participants} participants
+                              </span>
+                            </div>
+                            <h3 className="mt-5 text-xl font-semibold text-white">
+                              {spark.title}
+                            </h3>
+                            <p className="mt-3 text-sm leading-relaxed text-gray-400">
+                              {spark.description}
+                            </p>
+                            <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+                              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
+                                {spark.circleName}
+                              </span>
+                              <button
+                                type="button"
+                                className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-300"
+                              >
+                                {spark.actionLabel}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}

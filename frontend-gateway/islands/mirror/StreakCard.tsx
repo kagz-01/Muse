@@ -44,8 +44,8 @@ export default function StreakCard(
     }
   }, [currentLevel]);
 
-  const handleFreeze = () => {
-    const success = freezeStreak();
+  const handleFreeze = async () => {
+    const success = await freezeStreak();
     if (success && onFreezeUsed) {
       onFreezeUsed();
     }

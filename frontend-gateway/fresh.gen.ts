@@ -34,12 +34,15 @@ import * as $api_auth_forgot_password from "./routes/api/auth/forgot-password.ts
 import * as $api_auth_login from "./routes/api/auth/login.ts";
 import * as $api_auth_register from "./routes/api/auth/register.ts";
 import * as $api_auth_reset_password from "./routes/api/auth/reset-password.ts";
+import * as $api_auth_session from "./routes/api/auth/session.ts";
 import * as $api_circles_id_members from "./routes/api/circles/[id]/members.ts";
 import * as $api_circles_id_membership from "./routes/api/circles/[id]/membership.ts";
 import * as $api_circles_join from "./routes/api/circles/join.ts";
 import * as $api_circles_leave from "./routes/api/circles/leave.ts";
 import * as $api_community_circles from "./routes/api/community/circles.ts";
+import * as $api_community_collaborations from "./routes/api/community/collaborations.ts";
 import * as $api_community_collaborators from "./routes/api/community/collaborators.ts";
+import * as $api_community_perspectives_id_ from "./routes/api/community/perspectives/[id].ts";
 import * as $api_community_stream from "./routes/api/community/stream.ts";
 import * as $api_extract from "./routes/api/extract.ts";
 import * as $api_followers_follow from "./routes/api/followers/follow.ts";
@@ -55,6 +58,7 @@ import * as $api_journal_id_ from "./routes/api/journal/[id].ts";
 import * as $api_journal_id_extract from "./routes/api/journal/[id]/extract.ts";
 import * as $api_journal_index from "./routes/api/journal/index.ts";
 import * as $api_mirror from "./routes/api/mirror.ts";
+import * as $api_personality_greeting from "./routes/api/personality/greeting.ts";
 import * as $api_profile_index from "./routes/api/profile/index.ts";
 import * as $api_rooms_id_ from "./routes/api/rooms/[id].ts";
 import * as $api_rooms_create from "./routes/api/rooms/create.ts";
@@ -78,6 +82,8 @@ import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
 import * as $profile_edit from "./routes/profile/edit.ts";
 import * as $reset_password from "./routes/reset-password.tsx";
+import * as $DemoModeBanner from "./islands/DemoModeBanner.tsx";
+import * as $DemoSessionHydrator from "./islands/DemoSessionHydrator.tsx";
 import * as $Error404 from "./islands/Error404.tsx";
 import * as $SyncStatusBadge from "./islands/SyncStatusBadge.tsx";
 import * as $WalletConnectButton from "./islands/WalletConnectButton.tsx";
@@ -197,12 +203,16 @@ const manifest = {
     "./routes/api/auth/login.ts": $api_auth_login,
     "./routes/api/auth/register.ts": $api_auth_register,
     "./routes/api/auth/reset-password.ts": $api_auth_reset_password,
+    "./routes/api/auth/session.ts": $api_auth_session,
     "./routes/api/circles/[id]/members.ts": $api_circles_id_members,
     "./routes/api/circles/[id]/membership.ts": $api_circles_id_membership,
     "./routes/api/circles/join.ts": $api_circles_join,
     "./routes/api/circles/leave.ts": $api_circles_leave,
     "./routes/api/community/circles.ts": $api_community_circles,
+    "./routes/api/community/collaborations.ts": $api_community_collaborations,
     "./routes/api/community/collaborators.ts": $api_community_collaborators,
+    "./routes/api/community/perspectives/[id].ts":
+      $api_community_perspectives_id_,
     "./routes/api/community/stream.ts": $api_community_stream,
     "./routes/api/extract.ts": $api_extract,
     "./routes/api/followers/follow.ts": $api_followers_follow,
@@ -218,6 +228,7 @@ const manifest = {
     "./routes/api/journal/[id]/extract.ts": $api_journal_id_extract,
     "./routes/api/journal/index.ts": $api_journal_index,
     "./routes/api/mirror.ts": $api_mirror,
+    "./routes/api/personality/greeting.ts": $api_personality_greeting,
     "./routes/api/profile/index.ts": $api_profile_index,
     "./routes/api/rooms/[id].ts": $api_rooms_id_,
     "./routes/api/rooms/create.ts": $api_rooms_create,
@@ -243,6 +254,8 @@ const manifest = {
     "./routes/reset-password.tsx": $reset_password,
   },
   islands: {
+    "./islands/DemoModeBanner.tsx": $DemoModeBanner,
+    "./islands/DemoSessionHydrator.tsx": $DemoSessionHydrator,
     "./islands/Error404.tsx": $Error404,
     "./islands/SyncStatusBadge.tsx": $SyncStatusBadge,
     "./islands/WalletConnectButton.tsx": $WalletConnectButton,

@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   dismissSetupBanner,
@@ -8,13 +8,34 @@ import {
   type SetupStep,
   userSignal,
 } from "../../signals/user.ts";
-import { getContextualPrompt, type UserContext } from "../../utils/contextualPrompts.ts";
+import {
+  fetchPersonalityPrompt,
+  getContextualPrompt,
+  type UserContext,
+} from "../../utils/contextualPrompts.ts";
 
 export default function SetupBanner() {
   const user = userSignal.value;
   const isDismissed = setupBannerDismissedSignal.value;
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const [setupMsg, setSetupMsg] = useState<string>(() => {
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12
+      ? "morning"
+      : hour >= 12 && hour < 18
+      ? "afternoon"
+      : "evening";
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+    return getContextualPrompt("setup_profile", period, userContext);
+  });
 
   const steps = getSetupSteps(user);
   const done = steps.filter((s) => s.done).length;
@@ -31,26 +52,29 @@ export default function SetupBanner() {
   };
 
   const nextStep = steps.find((s) => !s.done);
-  
-  // Get personality-driven messaging
-  const hour = new Date().getHours();
-  const period = hour >= 5 && hour < 12 ? "morning" : hour >= 12 && hour < 18 ? "afternoon" : "evening";
-  const userContext: Partial<UserContext> = {
-    currentStreak: user?.cognitiveStreak ?? 0,
-    resonanceScore: user?.resonance?.resonanceScore ?? 0,
-    journalEntryCount: 0,
-    roomsJoined: 0,
-    threadsActive: 0,
-    hasUsername: Boolean(user?.username?.trim()),
-  };
-  
-  const setupMsg = complete
-    ? "Your foundation is solid."
-    : pct >= 66
-    ? "Almost there. One more push."
-    : pct >= 33
-    ? "Halfway through. Keep going."
-    : "Let's build your sanctuary first.";
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12
+      ? "morning"
+      : hour >= 12 && hour < 18
+      ? "afternoon"
+      : "evening";
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+
+    fetchPersonalityPrompt("setup_profile", period, userContext)
+      .then(setSetupMsg)
+      .catch(() => {
+        // keep the fallback setup hint if the API fails
+      });
+  }, []);
 
   return (
     <div

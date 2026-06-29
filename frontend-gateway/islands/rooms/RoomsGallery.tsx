@@ -1,5 +1,5 @@
 // Use a simple record type for inline style objects
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   deleteRoom,
@@ -13,7 +13,12 @@ import { isVaultUnlockedSignal } from "../../signals/vault.ts";
 import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.tsx";
 import { CircleMembershipChart } from "../../components/community/CommunityCharts.tsx";
 import { userSignal } from "../../signals/user.ts";
-import { emptyStateMessages, getContextualPrompt, type UserContext } from "../../utils/contextualPrompts.ts";
+import {
+  emptyStateMessages,
+  fetchPersonalityPrompt,
+  getContextualPrompt,
+  type UserContext,
+} from "../../utils/contextualPrompts.ts";
 
 type RoomTab = "all" | "pinned" | "vault" | "archived" | "starred" | "collab";
 type RoomSort = "latest" | "alphabetical";
@@ -317,6 +322,24 @@ export default function RoomsGallery() {
   const [starredIds, setStarredIds] = useState<string[]>([]);
   const [archivedIds, setArchivedIds] = useState<string[]>([]);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [emptyRoomsPrompt, setEmptyRoomsPrompt] = useState<string>(() => {
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12
+      ? "morning"
+      : hour >= 12 && hour < 18
+      ? "afternoon"
+      : "evening";
+    const user = userSignal.value;
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+    return getContextualPrompt("empty_rooms", period, userContext);
+  });
 
   const requestDelete = (id: string) => setPendingDeleteId(id);
 
@@ -327,6 +350,35 @@ export default function RoomsGallery() {
     setStarredIds((s) => s.filter((x) => x !== id));
     setArchivedIds((a) => a.filter((x) => x !== id));
   };
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12
+      ? "morning"
+      : hour >= 12 && hour < 18
+      ? "afternoon"
+      : "evening";
+    const user = userSignal.value;
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+
+    const hasVisibleRooms = activeTab === "all"
+      ? rooms.some((room) => !pinnedIds.includes(room.id))
+      : rooms.length > 0;
+    if (hasVisibleRooms) return;
+
+    fetchPersonalityPrompt("empty_rooms", period, userContext)
+      .then(setEmptyRoomsPrompt)
+      .catch(() => {
+        // Keep the fallback prompt if the API fails
+      });
+  }, [rooms, pinnedIds, activeTab]);
 
   const roomOrder = useMemo(
     () => new Map(rooms.map((room, index) => [room.id, index])),
@@ -695,20 +747,7 @@ export default function RoomsGallery() {
                 <p
                   className={`mt-2 max-w-md text-sm font-serif italic leading-relaxed ${mutedClass}`}
                 >
-                  {(() => {
-                    const hour = new Date().getHours();
-                    const period = hour >= 5 && hour < 12 ? "morning" : hour >= 12 && hour < 18 ? "afternoon" : "evening";
-                    const user = userSignal.value;
-                    const userContext: Partial<UserContext> = {
-                      currentStreak: user?.cognitiveStreak ?? 0,
-                      resonanceScore: user?.resonance?.resonanceScore ?? 0,
-                      journalEntryCount: 0,
-                      roomsJoined: 0,
-                      threadsActive: 0,
-                      hasUsername: Boolean(user?.username?.trim()),
-                    };
-                    return getContextualPrompt("empty_rooms", period, userContext);
-                  })()}
+                  {emptyRoomsPrompt}
                 </p>\n              </div>
             )
             : (

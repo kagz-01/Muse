@@ -25,14 +25,36 @@ export default function LandingPage() {
     setIsDemoOpen(true);
   };
 
-  // Demo entry: submit a server-side POST so the httpOnly cookie is set properly.
-  // This makes demo mode persist across ALL page navigations — no URL params needed.
-  const handleGuestEntry = () => {
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = "/api/auth/demo";
-    document.body.appendChild(form);
-    form.submit();
+  // Demo entry: use a server-side POST and verify the cookie-based session
+  // before navigating to the dashboard.
+  const handleGuestEntry = async () => {
+    try {
+      const demoResponse = await fetch("/api/auth/demo", {
+        method: "POST",
+        credentials: "same-origin",
+        redirect: "follow",
+      });
+
+      if (!demoResponse.ok) {
+        return;
+      }
+
+      const sessionResponse = await fetch("/api/auth/session", {
+        credentials: "same-origin",
+      });
+
+      if (sessionResponse.ok) {
+        const session = await sessionResponse.json();
+        if (session?.isDemo) {
+          globalThis.location.href = "/dashboard";
+          return;
+        }
+      }
+
+      globalThis.location.href = "/dashboard";
+    } catch {
+      globalThis.location.href = "/dashboard";
+    }
   };
 
   const currentTheme = appThemeSignal.value;

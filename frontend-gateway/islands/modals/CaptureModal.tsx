@@ -1,7 +1,10 @@
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
   addNotification,
+  captureModeSignal,
+  captureRoomIdSignal,
+  closeCapture,
   isCaptureOpenSignal,
   toggleCapture,
 } from "../../signals/ui.ts";
@@ -16,28 +19,44 @@ export default function CaptureModal() {
   const [roomId, setRoomId] = useState("");
   const [note, setNote] = useState("");
   const [isScanning, setIsScanning] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
-  // Inline Room Creation State
-  const [isAddingRoom, setIsAddingRoom] = useState(false);
-  const [newRoomName, setNewRoomName] = useState("");
-  const [newRoomIsPublic, setNewRoomIsPublic] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
+  const audioInputRef = useRef<HTMLInputElement | null>(null);
 
+  const captureMode = captureModeSignal.value;
+  const captureRoomId = captureRoomIdSignal.value;
   const isOpen = isCaptureOpenSignal.value;
   const rooms = roomsSignal.value;
 
   // Initialize roomId if not set
   useEffect(() => {
-    if (rooms.length > 0 && !roomId) {
+    if (captureRoomId) {
+      setRoomId(captureRoomId);
+    } else if (rooms.length > 0 && !roomId) {
       setRoomId(rooms[0].id);
     }
-  }, [rooms, roomId]);
+  }, [rooms, roomId, captureRoomId]);
+
+  useEffect(() => {
+    if (captureMode !== "url") {
+      setUrl("");
+      setFileError("");
+      setSelectedFile(null);
+    }
+  }, [captureMode]);
 
   if (!isOpen) return null;
 
   const handleNext = () => {
-    if (step === "input" && url) {
+    if (step === "input") {
+      if (captureMode === "url" && !url) return;
+      if (captureMode !== "url" && !selectedFile) return;
       setIsScanning(true);
-      // Mock scanning effect
       setTimeout(() => {
         setIsScanning(false);
         setStep("context");
@@ -70,38 +89,100 @@ export default function CaptureModal() {
     setStep("contemplation");
   };
 
-  const handleCapture = (e: Event) => {
-    e.preventDefault();
-    if (!url || !roomId) return;
+  const handleFileSelection = (file: File | null) => {
+    setSelectedFile(file);
+    setFileError("");
+  };
 
-    let title = "Captured Artifact";
-    try {
-      title = url.startsWith("http")
-        ? new URL(url).hostname
-        : "Personal Thought";
-    } catch (_e) {
-      // Keep fallback title when URL parsing fails.
+  const handleCapture = async (e: Event) => {
+    e.preventDefault();
+    if (!roomId) return;
+
+    if (captureMode === "url") {
+      if (!url) return;
+      let title = "Captured Artifact";
+      try {
+        title = url.startsWith("http")
+          ? new URL(url).hostname
+          : "Personal Thought";
+      } catch (_e) {
+        // Keep fallback title when URL parsing fails.
+      }
+
+      addItem({
+        roomId,
+        title,
+        sourceUrl: url.startsWith("http")
+          ? url
+          : `https://google.com/search?q=${encodeURIComponent(url)}`,
+        note,
+        isPublic: false,
+      });
+      addNotification(
+        "Synthesis Captured",
+        `"${title}" was committed to the vault.`,
+      );
+      setStep("input");
+      setUrl("");
+      setNote("");
+      closeCapture();
+      return;
     }
 
-    addItem({
-      roomId,
-      title,
-      sourceUrl: url.startsWith("http")
-        ? url
-        : `https://google.com/search?q=${encodeURIComponent(url)}`,
-      note,
-      isPublic: false,
-    });
-    addNotification(
-      "Synthesis Captured",
-      `"${title}" was committed to the vault.`,
-    );
+    if (!selectedFile) {
+      setFileError("Select a file before continuing.");
+      return;
+    }
 
-    // Reset and close
-    setStep("input");
-    setUrl("");
-    setNote("");
-    toggleCapture();
+    setIsUploading(true);
+    setFileError("");
+
+    const dispatchArtifactAdded = (artifact: {
+      roomId: string;
+      id: string;
+      type: string;
+      source_url: string;
+      created_at: string;
+    }) => {
+      window.dispatchEvent(
+        new CustomEvent("muse:artifact-added", { detail: artifact }),
+      );
+    };
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("roomId", roomId);
+      formData.append("note", note);
+      formData.append("captureMode", captureMode);
+
+      const response = await fetch("/api/artifacts/upload-document", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const data = await response.json();
+      dispatchArtifactAdded({
+        roomId,
+        id: `artifact-${Date.now()}`,
+        type: data.type || captureMode,
+        source_url: selectedFile.name,
+        created_at: new Date().toISOString(),
+      });
+
+      addNotification(
+        "Synthesis Captured",
+        `Your ${captureMode} was submitted to the room.`,
+      );
+      closeCapture();
+    } catch (err: any) {
+      setFileError(err.message || "Upload failed.");
+      setIsUploading(false);
+    }
   };
 
   const steps: CaptureStep[] = ["input", "context", "contemplation"];
@@ -173,35 +254,98 @@ export default function CaptureModal() {
                 </p>
               </div>
 
+              <div className="flex flex-wrap justify-center gap-2">
+                {[
+                  { id: "url", label: "Link" },
+                  { id: "document", label: "Document" },
+                  { id: "photo", label: "Photo" },
+                  { id: "video", label: "Video" },
+                  { id: "audio", label: "Audio" },
+                ].map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => captureModeSignal.value = option.id as typeof captureMode}
+                    className={`rounded-3xl border px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all ${
+                      captureMode === option.id
+                        ? "bg-canvas-primary text-black border-transparent"
+                        : "bg-[var(--muse-surface)] border-[var(--muse-border)] text-[var(--muse-muted)] hover:border-white/20"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+
               <div className="relative group max-w-lg mx-auto">
-                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-[var(--muse-border)] group-focus-within:bg-canvas-primary transition-colors duration-500 shadow-[0_0_20px_rgba(99,102,241,0.2)]" />
-                <input
-                  type="text"
-                  required
-                  placeholder="Paste a URL or a deep thought..."
-                  autoFocus
-                  value={url}
-                  onInput={(e) => setUrl((e.target as HTMLInputElement).value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleNext();
-                    if (e.key === "Escape") toggleCapture();
-                  }}
-                  className="w-full bg-transparent text-2xl p-6 text-center outline-none transition-colors placeholder-[var(--muse-border)] font-sans text-[var(--muse-text)] border-0"
-                />
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-4">
-                  <Icons.Link2 size={18} className="text-[var(--muse-muted)]" />
-                </div>
+                {captureMode === "url" ? (
+                  <>
+                    <div className="absolute inset-x-0 bottom-0 h-0.5 bg-[var(--muse-border)] group-focus-within:bg-canvas-primary transition-colors duration-500 shadow-[0_0_20px_rgba(99,102,241,0.2)]" />
+                    <input
+                      type="text"
+                      required
+                      placeholder="Paste a URL or a deep thought..."
+                      autoFocus
+                      value={url}
+                      onInput={(e) => setUrl((e.target as HTMLInputElement).value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleNext();
+                        if (e.key === "Escape") toggleCapture();
+                      }}
+                      className="w-full bg-transparent text-2xl p-6 text-center outline-none transition-colors placeholder-[var(--muse-border)] font-sans text-[var(--muse-text)] border-0"
+                    />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-4">
+                      <Icons.Link2 size={18} className="text-[var(--muse-muted)]" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (captureMode === "document") {
+                          fileInputRef.current?.click();
+                        } else if (captureMode === "photo") {
+                          photoInputRef.current?.click();
+                        } else if (captureMode === "video") {
+                          videoInputRef.current?.click();
+                        } else {
+                          audioInputRef.current?.click();
+                        }
+                      }}
+                      className="w-full rounded-3xl border border-[var(--muse-border)] bg-[var(--muse-surface)] px-6 py-6 text-left text-[var(--muse-text)] transition-all hover:border-white/20"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="space-y-2">
+                          <p className="text-sm font-bold text-[var(--muse-text)]">
+                            {selectedFile ? selectedFile.name : `Select a ${captureMode}`}
+                          </p>
+                          <p className="text-xs text-[var(--muse-muted)]">
+                            {selectedFile ? selectedFile.type : `Choose a ${captureMode} file to upload`}
+                          </p>
+                        </div>
+                        <Icons.Upload size={20} className="text-[var(--muse-muted)]" />
+                      </div>
+                    </button>
+                    {fileError && (
+                      <p className="mt-3 text-sm text-rose-400">{fileError}</p>
+                    )}
+                  </>
+                )}
               </div>
 
               <div className="flex justify-center pt-8">
                 <button
                   type="button"
                   onClick={handleNext}
-                  disabled={!url || isScanning}
+                  disabled={
+                    isScanning || isUploading ||
+                    (captureMode === "url" ? !url : !selectedFile)
+                  }
                   className="group px-10 py-5 bg-[var(--muse-text)] text-[var(--muse-bg)] font-bold uppercase tracking-widest text-[11px] rounded-3xl flex items-center gap-3 shadow-[0_20px_40px_rgba(0,0,0,0.15)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-30 disabled:translate-y-0 cursor-pointer"
                 >
                   {isScanning ? "Scanning Artifact..." : "Analyze Resonance"}
-                  {!isScanning && (
+                  {!(isScanning || isUploading) && (
                     <Icons.Aperture
                       size={16}
                       className="text-canvas-primary group-hover:rotate-12 transition-transform"
@@ -209,6 +353,50 @@ export default function CaptureModal() {
                   )}
                 </button>
               </div>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".pdf,.doc,.docx,.xlsx,.csv,.txt"
+                onChange={(e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+                  handleFileSelection(file);
+                }}
+              />
+              <input
+                type="file"
+                ref={photoInputRef}
+                className="hidden"
+                capture="environment"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+                  handleFileSelection(file);
+                }}
+              />
+              <input
+                type="file"
+                ref={videoInputRef}
+                className="hidden"
+                capture="environment"
+                accept="video/*"
+                onChange={(e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+                  handleFileSelection(file);
+                }}
+              />
+              <input
+                type="file"
+                ref={audioInputRef}
+                className="hidden"
+                capture="microphone"
+                accept="audio/*"
+                onChange={(e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+                  handleFileSelection(file);
+                }}
+              />
             </div>
           )}
 

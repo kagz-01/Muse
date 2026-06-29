@@ -71,11 +71,15 @@ const loading = getRandomLoadingMessage();
    - Apply dynamic humor to 404, 500, network error pages
 
 2. **Empty States** (Journal, Rooms, Threads, Community)
-   - Replace generic "No items" with personality-driven message
-   - Use `emptyStateMessages` + `getContextualPrompt("empty_*")`
+   - Already active for journal, rooms, and thread empty states
+   - Uses `/api/personality/greeting` for Groq-backed prompts with fallback
    - Add time/engagement context to make feel personalized
 
-3. **Loading States**
+3. **Setup/Onboarding Banner**
+   - Setup banner now uses the same personality prompt system
+   - Encouraging, context-aware messaging is fetched from the API
+
+4. **Loading States**
    - Replace spinner-only UX with `getRandomLoadingMessage()`
    - Show messages that relate to what's being loaded (synthesizing, connecting, etc.)
 
@@ -161,7 +165,9 @@ import { getRandomLoadingMessage } from "../../utils/contextualPrompts.ts";
 
 ---
 
-## AI Integration (Future)
+## AI Integration
+
+Muse now supports Groq-powered personality prompts for the dashboard hero and other contextual greetings. This runs via `/api/personality/greeting` and falls back to deterministic humor when the model is unavailable.
 
 For even more dynamic prompts, integrate with an LLM using this system prompt:
 
@@ -194,9 +200,9 @@ Avoid:
 - [ ] `islands/dashboard/PulseHome.tsx` ✅ DONE
 - [ ] `islands/dashboard/HomeOverview.tsx` ✅ DONE
 - [ ] Error pages (404, 500, etc.)
-- [ ] Empty state components (journal, rooms, threads, community)
+- [x] Empty state components (journal, rooms, threads, community)
 - [ ] Loading indicators with messages
-- [ ] Setup/onboarding flow
+- [x] Setup/onboarding flow
 - [ ] Success toast notifications
 - [ ] Community/room component headers
 - [ ] Journal entry modals

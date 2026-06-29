@@ -10,6 +10,8 @@ import {
   deleteJournalEntry,
   type JournalEntry as _JournalEntry,
   type JournalMood,
+  type JournalAttachment,
+  type LinkedArtifact,
   journalSignal,
   toggleArchiveJournal,
   toggleFavoriteJournal,
@@ -18,6 +20,8 @@ import {
 } from "../../signals/journal.ts";
 import { itemsSignal } from "../../signals/items.ts";
 import { roomsSignal } from "../../signals/rooms.ts";
+import { threadsSignal } from "../../signals/threads.ts";
+import { ArtifactSelector, LinkedArtifacts } from "./index.ts";
 import { moodConfig } from "./JournalGallery.tsx";
 import {
   AIInsightsResponse,
@@ -66,22 +70,33 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
   const [mood, setMood] = useState<JournalMood>(entry?.mood ?? "reflective");
   const [customMoodText, setCustomMoodText] = useState(entry?.customMood ?? "");
   const [tags, setTags] = useState<string[]>(entry?.tags ?? []);
-  const [linkedItemIds, setLinkedItemIds] = useState<string[]>(
-    entry?.linkedItemIds ?? [],
+  const [linkedArtifacts, setLinkedArtifacts] = useState<LinkedArtifact[]>(
+    entry?.linkedArtifacts ?? [],
+  );
+  const [attachments, setAttachments] = useState<JournalAttachment[]>(
+    entry?.attachments ?? [],
   );
   const [isPublic, setIsPublic] = useState(entry?.isPublic ?? false);
   const [saved, setSaved] = useState(true);
-  const [showDelete, setShowDelete] = useState(false);
-  const [showMoodPicker, setShowMoodPicker] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState<number | null>(
     entry?.updatedAt ?? null,
   );
+  const [showDelete, setShowDelete] = useState(false);
+  const [showMoodPicker, setShowMoodPicker] = useState(false);
+  const [showTagInput, setShowTagInput] = useState(false);
+  const [newTagText, setNewTagText] = useState("");
+  const [showArtifactSelector, setShowArtifactSelector] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkLabel, setLinkLabel] = useState("");
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
   const [showExportModal, setShowExportModal] = useState(false);
 
   // Phase 2: Conversational State
   const [currentInput, setCurrentInput] = useState("");
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [aiResponses, setAiResponses] = useState<Record<number, string>>({});
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +111,8 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
       setMood(entry.mood);
       setCustomMoodText(entry.customMood ?? "");
       setTags(entry.tags);
-      setLinkedItemIds(entry.linkedItemIds);
+      setLinkedArtifacts(entry.linkedArtifacts ?? []);
+      setAttachments(entry.attachments ?? []);
       setIsPublic(entry.isPublic);
       setLastSavedTime(entry.updatedAt);
     }
@@ -122,12 +138,13 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
       mood,
       customMood: mood === "custom" ? customMoodText : undefined,
       tags,
-      linkedItemIds,
+      linkedArtifacts,
+      attachments,
       isPublic,
     });
     setSaved(true);
     setLastSavedTime(Date.now());
-  }, [entry, body, mood, customMoodText, tags, linkedItemIds, isPublic]);
+  }, [entry, body, mood, customMoodText, tags, linkedArtifacts, attachments, isPublic]);
 
   useEffect(() => {
     setSaved(false);
@@ -136,7 +153,100 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [body, mood, customMoodText, tags, linkedItemIds, isPublic, save]);
+  }, [body, mood, customMoodText, tags, linkedArtifacts, attachments, isPublic, save]);
+
+  const addTag = (tag: string) => {
+    const normalized = tag.trim().replace(/^#/, "");
+    if (!normalized) return;
+    setTags((current) =>
+      current.includes(normalized) ? current : [...current, normalized]
+    );
+    setNewTagText("");
+    setShowTagInput(false);
+  };
+
+  const removeTag = (tag: string) => {
+    setTags((current) => current.filter((item) => item !== tag));
+  };
+
+  const addLinkedArtifact = (artifact: LinkedArtifact) => {
+    setLinkedArtifacts((current) =>
+      current.some((item) => item.id === artifact.id)
+        ? current
+        : [...current, artifact],
+    );
+    setShowArtifactSelector(false);
+  };
+
+  const removeLinkedArtifact = (artifactId: string) => {
+    setLinkedArtifacts((current) =>
+      current.filter((item) => item.id !== artifactId),
+    );
+  };
+
+  const addAttachment = (attachment: JournalAttachment) => {
+    setAttachments((current) => [...current, attachment]);
+    setAttachmentError(null);
+  };
+
+  const removeAttachment = (attachmentId: string) => {
+    setAttachments((current) =>
+      current.filter((attachment) => attachment.id !== attachmentId),
+    );
+  };
+
+  const addUrlAttachment = (url: string, title?: string) => {
+    const normalized = url.trim();
+    if (!normalized) return;
+    setAttachments((current) => [
+      ...current,
+      {
+        id: `${Date.now()}-${normalized}`,
+        type: "link",
+        name: title?.trim() ? title.trim() : normalized,
+        url: normalized,
+        createdAt: Date.now(),
+      },
+    ]);
+    setLinkUrl("");
+    setLinkLabel("");
+    setShowUrlInput(false);
+    setAttachmentError(null);
+  };
+
+  const handleFileChange = async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
+    target.value = "";
+
+    if (file.size > 15_000_000) {
+      setAttachmentError("File is too large. Please use a smaller file.");
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const type = file.type.startsWith("image/")
+      ? "image"
+      : file.type.startsWith("video/")
+      ? "video"
+      : file.type.startsWith("audio/")
+      ? "audio"
+      : "file";
+
+    addAttachment({
+      id: `${Date.now()}-${file.name}`,
+      type,
+      name: file.name,
+      url,
+      mimeType: file.type,
+      createdAt: Date.now(),
+    });
+  };
+
+  const handleChooseAttachment = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleCommitThought = async () => {
     if (!currentInput.trim()) return;
@@ -413,6 +523,84 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
           {/* THE INPUT TERMINAL */}
           <div className="absolute bottom-0 left-0 w-full p-6 md:px-12 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent pt-20 pointer-events-none">
             <div className="w-full bg-[#111111] border border-white/10 rounded-[2rem] p-4 shadow-[0_0_50px_rgba(0,0,0,0.5)] pointer-events-auto transition-all focus-within:border-emerald-500/30 focus-within:shadow-[0_0_50px_rgba(16,185,129,0.1)] flex flex-col">
+              {(tags.length > 0 || attachments.length > 0) && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {tags.map((tag) => (
+                    <button
+                      type="button"
+                      key={tag}
+                      onClick={() => removeTag(tag)}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-200 hover:bg-white/10 transition"
+                    >
+                      #{tag}
+                    </button>
+                  ))}
+                  {attachments.map((attachment) => (
+                    <div
+                      key={attachment.id}
+                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-200"
+                    >
+                      <span>{attachment.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeAttachment(attachment.id)}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        <Icons.X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {showTagInput && (
+                <div className="mb-3 flex items-center gap-3">
+                  <input
+                    value={newTagText}
+                    onInput={(e) =>
+                      setNewTagText((e.target as HTMLInputElement).value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTag(newTagText);
+                      }
+                    }}
+                    placeholder="Add a tag and press Enter"
+                    className="flex-1 rounded-2xl border border-white/10 bg-[#0b0b0b] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/40"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addTag(newTagText)}
+                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white hover:bg-white/10 transition"
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+              {showUrlInput && (
+                <div className="mb-3 grid gap-3 md:grid-cols-[1fr_auto]">
+                  <input
+                    value={linkUrl}
+                    onInput={(e) =>
+                      setLinkUrl((e.target as HTMLInputElement).value)}
+                    placeholder="Paste URL to attach"
+                    className="w-full rounded-2xl border border-white/10 bg-[#0b0b0b] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/40"
+                  />
+                  <input
+                    value={linkLabel}
+                    onInput={(e) =>
+                      setLinkLabel((e.target as HTMLInputElement).value)}
+                    placeholder="Optional label"
+                    className="w-full rounded-2xl border border-white/10 bg-[#0b0b0b] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/40"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addUrlAttachment(linkUrl, linkLabel)}
+                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white hover:bg-white/10 transition"
+                  >
+                    Attach URL
+                  </button>
+                </div>
+              )}
               <textarea
                 value={currentInput}
                 onInput={(e) =>
@@ -426,19 +614,49 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                 placeholder="Type your thought. Press Enter to commit, Shift+Enter for new line..."
                 className="w-full bg-transparent text-white resize-none outline-none font-serif text-lg leading-relaxed placeholder-gray-600 min-h-[60px] max-h-[200px] custom-scrollbar px-2"
               />
+              {linkedArtifacts.length > 0 && (
+                <div className="mt-3">
+                  <LinkedArtifacts
+                    artifacts={linkedArtifacts}
+                    isEditing
+                    onRemove={removeLinkedArtifact}
+                  />
+                </div>
+              )}
+              {attachmentError && (
+                <div className="mt-3 text-sm text-rose-400">
+                  {attachmentError}
+                </div>
+              )}
               <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5 px-2">
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+                    onClick={() => setShowTagInput((prev) => !prev)}
+                    className="text-gray-500 hover:text-white transition-colors"
                   >
                     <Icons.Hash size={16} />
                   </button>
                   <button
                     type="button"
-                    className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+                    onClick={() => setShowArtifactSelector(true)}
+                    className="text-gray-500 hover:text-white transition-colors"
                   >
                     <Icons.Link2 size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowUrlInput((prev) => !prev)}
+                    className="text-gray-500 hover:text-white transition-colors"
+                  >
+                    <Icons.ExternalLink size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleChooseAttachment}
+                    className="text-gray-500 hover:text-white transition-colors"
+                  >
+                    <Icons.Paperclip size={16} />
                   </button>
                 </div>
                 <button
@@ -450,6 +668,27 @@ export default function JournalEntryView({ entryId }: { entryId: string }) {
                   <Icons.ArrowUp size={16} />
                 </button>
               </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept="image/*,video/*,audio/*,.pdf,.txt,.doc,.docx"
+                onChange={handleFileChange}
+              />
+              {showArtifactSelector && (
+                <ArtifactSelector
+                  rooms={rooms.map((room) => ({
+                    id: room.id,
+                    title: room.title || room.name || "Untitled room",
+                  }))}
+                  threads={threadsSignal.value.map((thread) => ({
+                    id: thread.id,
+                    title: thread.title || "Untitled thread",
+                  }))}
+                  onSelect={addLinkedArtifact}
+                  onClose={() => setShowArtifactSelector(false)}
+                />
+              )}
             </div>
           </div>
         </div>

@@ -443,10 +443,11 @@ export default function DemoVideo(
                       try {
                         const response = await fetch("/api/auth/demo", {
                           method: "POST",
-                          redirect: "manual",
+                          credentials: "same-origin",
+                          redirect: "follow",
                         });
-                        if (response.status === 303) {
-                          globalThis.location.href = response.headers.get("location") || "/dashboard";
+                        if (response.ok) {
+                          globalThis.location.href = "/dashboard";
                         } else {
                           globalThis.location.href = "/dashboard";
                         }

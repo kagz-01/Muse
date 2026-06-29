@@ -4,11 +4,12 @@
 -- Target Engine: PostgreSQL / CockroachDB
 -- ==========================================
 
--- Enable UUID extension
+-- Extensions
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. USERS TABLE
-CREATE TABLE users (
+-- 1. Users
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
     google_id VARCHAR(255) UNIQUE,
@@ -32,8 +33,48 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. ROOMS TABLE
-CREATE TABLE rooms (
+-- 2. Streak system
+CREATE TABLE IF NOT EXISTS streak_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    contribution_type TEXT NOT NULL,
+    content TEXT NOT NULL DEFAULT '',
+    destination TEXT DEFAULT 'journal',
+    weight NUMERIC DEFAULT 1,
+    summary TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS streak_sparks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    event_id UUID REFERENCES streak_events(id) ON DELETE CASCADE,
+    spark_type TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    destination TEXT DEFAULT 'journal',
+    visibility TEXT DEFAULT 'private',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS streak_entanglements (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_a UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_b UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status TEXT NOT NULL DEFAULT 'active',
+    current_streak INT DEFAULT 0,
+    longest_streak INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_a, user_b)
+);
+
+CREATE INDEX IF NOT EXISTS idx_streak_events_user_created ON streak_events(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_streak_sparks_user_created ON streak_sparks(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_streak_entanglements_user_a ON streak_entanglements(user_a);
+CREATE INDEX IF NOT EXISTS idx_streak_entanglements_user_b ON streak_entanglements(user_b);
+
+-- 3. Rooms
+CREATE TABLE IF NOT EXISTS rooms (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
@@ -49,8 +90,8 @@ CREATE TABLE rooms (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- 3. ITEMS TABLE (Scraped metadata and links)
-CREATE TABLE items (
+-- 4. Items and annotations
+CREATE TABLE IF NOT EXISTS items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     room_id UUID REFERENCES rooms(id) ON DELETE CASCADE,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -65,8 +106,7 @@ CREATE TABLE items (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- 3.5 ITEM ANNOTATIONS (Parallel collaboration notes on an item)
-CREATE TABLE item_annotations (
+CREATE TABLE IF NOT EXISTS item_annotations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     item_id UUID REFERENCES items(id) ON DELETE CASCADE,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -75,10 +115,8 @@ CREATE TABLE item_annotations (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_item_annotations_item_id ON item_annotations(item_id);
-
--- 4. THREADS TABLE (AI Synthesis)
-CREATE TABLE threads (
+-- 5. Threads and journal
+CREATE TABLE IF NOT EXISTS threads (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     room_id UUID REFERENCES rooms(id) ON DELETE CASCADE,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -108,8 +146,7 @@ CREATE TABLE threads (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- 5. JOURNAL ENTRIES TABLE (Raw thoughts)
-CREATE TABLE journal_entries (
+CREATE TABLE IF NOT EXISTS journal_entries (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     thread_id UUID REFERENCES threads(id) ON DELETE SET NULL,
@@ -128,40 +165,27 @@ CREATE TABLE journal_entries (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- 6. LEGACY ARTIFACTS TABLE
-CREATE TABLE artifacts (
+-- 6. Artifacts and social graph
+CREATE TABLE IF NOT EXISTS artifacts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
     type VARCHAR(50) NOT NULL,
     source_url TEXT,
-    unstructured_data JSONB, 
+    unstructured_data JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Indexes for performance
-CREATE INDEX idx_rooms_user_id ON rooms(user_id);
-CREATE INDEX idx_items_room_id ON items(room_id);
-CREATE INDEX idx_items_user_id ON items(user_id);
-CREATE INDEX idx_threads_room_id ON threads(room_id);
-CREATE INDEX idx_threads_user_id ON threads(user_id);
-CREATE INDEX idx_threads_partner_id ON threads(partner_id);
-CREATE INDEX idx_journal_user_id ON journal_entries(user_id);
-CREATE INDEX idx_artifacts_room_id ON artifacts(room_id);
-CREATE INDEX idx_artifacts_unstructured ON artifacts USING GIN (unstructured_data);
-
--- 7. ENTANGLEMENTS (Streak partnerships / friend connections)
-CREATE TABLE entanglements (
+CREATE TABLE IF NOT EXISTS entanglements (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     addressee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    status TEXT NOT NULL DEFAULT 'pending', -- 'pending' | 'accepted' | 'rejected'
+    status TEXT NOT NULL DEFAULT 'pending',
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(requester_id, addressee_id)
 );
 
--- 8. SPARK REACTIONS (Emoji reactions on public items/sparks)
-CREATE TABLE spark_reactions (
+CREATE TABLE IF NOT EXISTS spark_reactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -170,8 +194,7 @@ CREATE TABLE spark_reactions (
     UNIQUE(item_id, user_id)
 );
 
--- 9. SPARK COMMENTS (Replies on public sparks)
-CREATE TABLE spark_comments (
+CREATE TABLE IF NOT EXISTS spark_comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -179,20 +202,29 @@ CREATE TABLE spark_comments (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Additional indexes for social tables
-CREATE INDEX idx_entanglements_requester ON entanglements(requester_id);
-CREATE INDEX idx_entanglements_addressee ON entanglements(addressee_id);
-CREATE INDEX idx_spark_reactions_item ON spark_reactions(item_id);
-CREATE INDEX idx_spark_comments_item ON spark_comments(item_id);
-
--- 10. ROOM COLLABORATORS (Shared Entangled Collections)
-CREATE TABLE room_collaborators (
+CREATE TABLE IF NOT EXISTS room_collaborators (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role TEXT NOT NULL DEFAULT 'editor', -- 'editor' | 'viewer'
+    role TEXT NOT NULL DEFAULT 'editor',
     added_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(room_id, user_id)
 );
-CREATE INDEX idx_room_collaborators_room ON room_collaborators(room_id);
-CREATE INDEX idx_room_collaborators_user ON room_collaborators(user_id);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_rooms_user_id ON rooms(user_id);
+CREATE INDEX IF NOT EXISTS idx_items_room_id ON items(room_id);
+CREATE INDEX IF NOT EXISTS idx_items_user_id ON items(user_id);
+CREATE INDEX IF NOT EXISTS idx_item_annotations_item_id ON item_annotations(item_id);
+CREATE INDEX IF NOT EXISTS idx_threads_room_id ON threads(room_id);
+CREATE INDEX IF NOT EXISTS idx_threads_user_id ON threads(user_id);
+CREATE INDEX IF NOT EXISTS idx_threads_partner_id ON threads(partner_id);
+CREATE INDEX IF NOT EXISTS idx_journal_user_id ON journal_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_artifacts_room_id ON artifacts(room_id);
+CREATE INDEX IF NOT EXISTS idx_artifacts_unstructured ON artifacts USING GIN (unstructured_data);
+CREATE INDEX IF NOT EXISTS idx_entanglements_requester ON entanglements(requester_id);
+CREATE INDEX IF NOT EXISTS idx_entanglements_addressee ON entanglements(addressee_id);
+CREATE INDEX IF NOT EXISTS idx_spark_reactions_item ON spark_reactions(item_id);
+CREATE INDEX IF NOT EXISTS idx_spark_comments_item ON spark_comments(item_id);
+CREATE INDEX IF NOT EXISTS idx_room_collaborators_room ON room_collaborators(room_id);
+CREATE INDEX IF NOT EXISTS idx_room_collaborators_user ON room_collaborators(user_id);

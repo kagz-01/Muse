@@ -1,6 +1,7 @@
 import { signal } from "@preact/signals";
 import { userSignal } from "./user.ts";
 import { safeFetch } from "../utils/safeFetch.ts";
+import { buildSparkSummary, deriveNextStreakState } from "../utils/streakEngine.ts";
 
 export type StreakState = "ignition" | "resonance" | "fading" | "broken";
 
@@ -294,14 +295,28 @@ export async function captureMomentum(type: string, content: string, destination
   
   if (isDemo) {
     if (globalStreakSignal.value) {
+      const today = new Date().toDateString();
+      const nextState = deriveNextStreakState({
+        currentStreak: globalStreakSignal.value.currentStreak,
+        longestStreak: globalStreakSignal.value.longestStreak,
+        totalJournalDays: globalStreakSignal.value.totalJournalDays,
+        lastEntryDate: globalStreakSignal.value.lastEntryDate || "",
+        today,
+      });
+
+      const sparkSummary = buildSparkSummary(type, content, destination);
+
       globalStreakSignal.value = {
         ...globalStreakSignal.value,
-        currentStreak: globalStreakSignal.value.currentStreak + 1,
-        longestStreak: Math.max(globalStreakSignal.value.currentStreak + 1, globalStreakSignal.value.longestStreak),
+        currentStreak: nextState.shouldCount ? nextState.currentStreak : globalStreakSignal.value.currentStreak,
+        longestStreak: nextState.shouldCount ? nextState.longestStreak : globalStreakSignal.value.longestStreak,
+        totalJournalDays: nextState.shouldCount ? nextState.totalJournalDays : globalStreakSignal.value.totalJournalDays,
+        lastEntryDate: nextState.shouldCount ? nextState.lastEntryDate : globalStreakSignal.value.lastEntryDate,
+        streakLevel: nextState.shouldCount ? nextState.streakLevel : globalStreakSignal.value.streakLevel,
       };
       
       momentumFeedSignal.value = [
-        { type, created_at: new Date().toISOString(), content },
+        { type, created_at: new Date().toISOString(), content: sparkSummary },
         ...momentumFeedSignal.value
       ];
     }
@@ -321,13 +336,16 @@ export async function captureMomentum(type: string, content: string, destination
       if (globalStreakSignal.value) {
         globalStreakSignal.value = {
           ...globalStreakSignal.value,
-          currentStreak: data.newStreak,
+          currentStreak: data.newStreak ?? globalStreakSignal.value.currentStreak,
+          longestStreak: data.longestStreak ?? globalStreakSignal.value.longestStreak,
+          totalJournalDays: data.totalJournalDays ?? globalStreakSignal.value.totalJournalDays,
+          lastEntryDate: data.lastEntryDate ?? globalStreakSignal.value.lastEntryDate,
+          streakLevel: data.streakLevel ?? globalStreakSignal.value.streakLevel,
         };
       }
       
-      // Prepend to local feed
       momentumFeedSignal.value = [
-        { type, created_at: new Date().toISOString(), content },
+        { type, created_at: new Date().toISOString(), content: data.summary || buildSparkSummary(type, content, destination) },
         ...momentumFeedSignal.value
       ];
       return true;

@@ -1,31 +1,71 @@
-import { PageProps } from "$fresh/server.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
 import CommunityPulseStripIsland from "../../islands/connections/CommunityPulseStripIsland.tsx";
 import { PulseHome } from "../../islands/dashboard/index.ts";
+import DemoSessionHydrator from "../../islands/DemoSessionHydrator.tsx";
+import DemoModeBanner from "../../islands/DemoModeBanner.tsx";
+import { getSessionUser, isDemoUser } from "../../utils/auth.ts";
+import { queryDB } from "../../utils/db.ts";
+import { DEMO_USER } from "../../utils/demo_data.ts";
 
-export default function DashboardPage({ url }: PageProps) {
-  const isDemoMode = url.searchParams.get("demo") === "1";
+interface DashboardPageProps {
+  initialUser?: { id: string; name?: string; username: string; email: string };
+  isDemo?: boolean;
+}
 
+export const handler: Handlers<DashboardPageProps> = {
+  async GET(req, ctx) {
+    const userId = await getSessionUser(req);
+    if (!userId) {
+      return new Response("", {
+        status: 303,
+        headers: { location: "/" },
+      });
+    }
+
+    if (isDemoUser(userId)) {
+      return ctx.render({
+        initialUser: {
+          id: DEMO_USER.id,
+          name: DEMO_USER.name,
+          username: DEMO_USER.username,
+          email: DEMO_USER.email,
+        },
+        isDemo: true,
+      });
+    }
+
+    const users = await queryDB(
+      "SELECT id, name, username, email FROM users WHERE id = $1",
+      userId,
+    );
+    if (users.length === 0) {
+      return new Response("", { status: 303, headers: { location: "/" } });
+    }
+    const userRow = users[0] as Record<string, string>;
+
+    return ctx.render({
+      initialUser: {
+        id: userId,
+        name: userRow.name,
+        username: userRow.username,
+        email: userRow.email,
+      },
+      isDemo: false,
+    });
+  },
+};
+
+export default function DashboardPage({ initialUser, isDemo }: PageProps<DashboardPageProps>) {
   return (
     <div className="w-full mx-auto pb-24 md:pb-10 min-h-full">
-      {isDemoMode && (
-        <div className="px-6 md:px-10 pt-6 max-w-[1800px] mx-auto">
-          <div className="rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-amber-300">
-              Demo Mode
-            </p>
-            <p className="text-sm text-amber-100/90 mt-1">
-              You are exploring a sample workspace. Changes here are for preview
-              and may be reset.
-            </p>
-          </div>
-        </div>
-      )}
+      <DemoSessionHydrator />
+      <DemoModeBanner />
 
       <div className="px-6 md:px-10 pt-6 max-w-[1800px] mx-auto">
         <CommunityPulseStripIsland />
       </div>
 
-      <PulseHome />
+      <PulseHome initialUser={initialUser} isDemo={isDemo} />
     </div>
   );
 }

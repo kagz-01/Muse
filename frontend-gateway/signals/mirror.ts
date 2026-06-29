@@ -2,6 +2,7 @@ import { signal } from "@preact/signals";
 import { journalSignal } from "./journal.ts";
 import { roomsSignal } from "./rooms.ts";
 import { threadsSignal } from "./threads.ts";
+import { userSignal } from "./user.ts";
 
 export interface EngagementStats {
   views: number;
@@ -110,26 +111,86 @@ export const loadMirrorStats = (userId: string) => {
     const journals = journalSignal.value;
     const rooms = roomsSignal.value;
     const threads = threadsSignal.value;
+    const user = userSignal.value;
+
+    const followerBase = Math.max(
+      user?.resonance.connections ?? initialState.followerCount,
+      initialState.followerCount,
+    );
+
+    const totalViews = journals.reduce(
+      (sum, entry) => sum + (entry.viewCount ?? 0),
+      0,
+    ) + threads.reduce(
+      (sum, thread) => sum + (thread.resonanceMetrics?.views ?? 0),
+      0,
+    );
+
+    const totalLikes = journals.filter((entry) => entry.isFavorited).length * 7 +
+      threads.filter((thread) => thread.isFavorited).length * 10;
+
+    const totalComments = threads.reduce(
+      (sum, thread) => sum + (thread.dialogueLayers?.length ?? 0),
+      0,
+    );
+
+    const totalCollaborations = Math.max(rooms.length + threads.length, 1);
+    const totalCircleJoins = rooms.filter((room) => room.isPublic).length;
 
     const followerHistory = [...Array(7)].map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
       return {
         date: d.toLocaleDateString("en-US", { weekday: "short" }),
-        count: 120 + i * 5 + Math.floor(Math.random() * 10),
+        count: Math.max(
+          followerBase - 18 + i * 3 + Math.floor(Math.random() * 6),
+          0,
+        ),
       };
     });
+
+    const recentActivity = [
+      ...threads.slice(-2).map((thread, index) => ({
+        id: `act-thread-${thread.id}`,
+        type: "view" as const,
+        actor: "Network",
+        actorAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=network-${index}`,
+        target: thread.title,
+        timestamp: new Date(thread.updatedAt),
+      })),
+      ...rooms.slice(0, 2).map((room, index) => ({
+        id: `act-room-${room.id}`,
+        type: "join_circle" as const,
+        actor: "Circle",
+        actorAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=circle-${index}`,
+        target: room.title || room.name,
+        timestamp: new Date(room.updatedAt),
+      })),
+      ...journals.slice(-2).map((entry, index) => ({
+        id: `act-journal-${entry.id}`,
+        type: "collaborate" as const,
+        actor: "Insight",
+        actorAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=insight-${index}`,
+        target: entry.body.split("\n")[0].slice(0, 36),
+        timestamp: new Date(entry.createdAt),
+      })),
+    ]
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+      .slice(0, 5);
 
     mirrorSignal.value = {
       ...initialState,
       stats: {
-        views: journals.length * 15 + threads.length * 20,
-        likes: journals.filter((j) => j.isFavorited).length * 5,
-        comments: threads.length * 3,
-        collaborations: rooms.length * 2,
-        follows: 156,
-        circleJoins: rooms.length,
+        views: totalViews,
+        likes: totalLikes,
+        comments: totalComments,
+        collaborations: totalCollaborations,
+        follows: followerBase,
+        circleJoins: totalCircleJoins,
       },
+      activity: recentActivity.length > 0 ? recentActivity : initialState.activity,
+      followerCount: followerBase,
+      followingCount: Math.max(rooms.length + threads.length, initialState.followingCount),
       followerHistory,
       isLoading: false,
     };

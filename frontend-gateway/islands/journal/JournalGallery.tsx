@@ -16,6 +16,7 @@ import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.tsx";
 import { userSignal } from "../../signals/user.ts";
 import {
   emptyStateMessages,
+  fetchPersonalityPrompt,
   getContextualPrompt,
   type UserContext,
 } from "../../utils/contextualPrompts.ts";
@@ -87,9 +88,54 @@ export default function JournalGallery(
   const [isHydrated, setIsHydrated] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
+  const [emptyJournalPrompt, setEmptyJournalPrompt] = useState<string>(() => {
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12
+      ? "morning"
+      : hour >= 12 && hour < 18
+      ? "afternoon"
+      : "evening";
+    const user = userSignal.value;
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+    return getContextualPrompt("empty_journal", period, userContext);
+  });
+
   useEffect(() => {
     setIsHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (entries.length > 0) return;
+
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12
+      ? "morning"
+      : hour >= 12 && hour < 18
+      ? "afternoon"
+      : "evening";
+    const user = userSignal.value;
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+
+    fetchPersonalityPrompt("empty_journal", period, userContext)
+      .then(setEmptyJournalPrompt)
+      .catch(() => {
+        // keep the fallback prompt if API fails
+      });
+  }, [entries.length]);
 
   const uniqueCustomMoods = useMemo(() => {
     const custom = new Set<string>();
@@ -154,7 +200,7 @@ export default function JournalGallery(
       threadsActive: 0,
       hasUsername: Boolean(user?.username?.trim()),
     };
-    const contextualMsg = getContextualPrompt("empty_journal", period, userContext);
+    const contextualMsg = emptyJournalPrompt;
     
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center items-center px-6 pb-12">

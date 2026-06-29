@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import ThreadCard, { ThreadData } from "../../components/rooms/ThreadCard.tsx";
 import JournalModal from "./JournalModal.tsx";
@@ -18,6 +18,7 @@ interface RoomClientManagerProps {
 export default function RoomClientManager(
   { room, threads, artifacts }: RoomClientManagerProps,
 ) {
+  const [artifactList, setArtifactList] = useState<ArtifactData[]>(artifacts);
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     threadId: string;
@@ -27,6 +28,28 @@ export default function RoomClientManager(
     threadId: "",
     question: "",
   });
+
+  useEffect(() => {
+    const handleArtifactAdded = (event: Event) => {
+      const customEvent = event as CustomEvent<ArtifactData & { roomId: string }>;
+      const detail = customEvent.detail;
+      if (detail.roomId !== room.id) return;
+      setArtifactList((current) => [{
+        id: detail.id,
+        type: detail.type,
+        source_url: detail.source_url,
+        created_at: detail.created_at,
+      }, ...current]);
+    };
+
+    window.addEventListener("muse:artifact-added", handleArtifactAdded as EventListener);
+    return () => {
+      window.removeEventListener(
+        "muse:artifact-added",
+        handleArtifactAdded as EventListener,
+      );
+    };
+  }, [room.id]);
 
   const handleQuestionClick = (threadId: string, question: string) => {
     setModalState({ isOpen: true, threadId, question });
@@ -87,7 +110,7 @@ export default function RoomClientManager(
             Cognitive Ledger (Raw Data)
           </h2>
           <span className="text-xs font-medium text-[var(--muse-muted)] bg-[var(--muse-surface)] px-2 py-1 rounded-md border border-[var(--muse-border)]">
-            {artifacts.length} Artifacts
+            {artifactList.length} Artifacts
           </span>
         </div>
 
@@ -108,7 +131,7 @@ export default function RoomClientManager(
           )
           : (
             <div className="space-y-3">
-              {artifacts.map((artifact) => (
+              {artifactList.map((artifact) => (
                 <div
                   key={artifact.id}
                   className="group p-4 bg-[var(--muse-surface)] hover:bg-white/[0.02] border border-[var(--muse-border)] hover:border-white/10 rounded-2xl flex items-center justify-between transition-all cursor-pointer"

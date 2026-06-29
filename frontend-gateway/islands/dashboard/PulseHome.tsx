@@ -138,12 +138,16 @@ function toMillis(timestamp: string | number): number {
   return Number.isNaN(parsed) ? Date.now() : parsed;
 }
 
-export default function PulseHome() {
+export default function PulseHome({ initialUser, isDemo = false }: { initialUser?: { id: string; name?: string; username: string; email: string }; isDemo?: boolean }) {
   const user = userSignal.value;
   const rooms = roomsSignal.value;
   const journalEntries = journalSignal.value;
   const threads = threadsSignal.value;
   const items = itemsSignal.value;
+
+  // Use initialUser for name/username if available (from SSR), fall back to signal
+  const displayUserName = initialUser?.name || initialUser?.username || user?.name || user?.username;
+  const displayUserEmail = initialUser?.email || user?.email;
 
   const [timeContext, setTimeContext] = useState(getTimeContext());
   const [serviceHealth, setServiceHealth] = useState<
@@ -152,10 +156,16 @@ export default function PulseHome() {
   const [mounted, setMounted] = useState(false);
   const [heroGreeting, setHeroGreeting] = useState("");
   const [heroPrompt, setHeroPrompt] = useState("");
+  const [aiGreeting, setAiGreeting] = useState<string | null>(null);
 
   // Quick Capture State
   const [quickCaptureText, setQuickCaptureText] = useState("");
   const [isCapturing, setIsCapturing] = useState(false);
+
+  // Compute display name once for use throughout the component
+  const isGuestAccess = isDemo || user?.id === "__demo__";
+  const finalDisplayName = displayUserName?.trim() ||
+    (isGuestAccess ? "Guest" : "Stranger");
 
   useEffect(() => {
     const ctx = getTimeContext(user?.timezone);
@@ -182,16 +192,58 @@ export default function PulseHome() {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const body = {
+      period: timeContext.period,
+      streak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      entries: journalEntries.length,
+      rooms: rooms.length,
+      threads: threads.length,
+    };
+
+    const loadAiGreeting = async () => {
+      try {
+        const response = await fetch("/api/personality/greeting", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data?.greeting) {
+          setAiGreeting(data.greeting);
+        }
+      } catch {
+        // best effort; keep fallback humor
+      }
+    };
+
+    loadAiGreeting();
+    return () => controller.abort();
+  }, [
+    timeContext.period,
+    user?.cognitiveStreak,
+    user?.resonance?.resonanceScore,
+    journalEntries.length,
+    rooms.length,
+    threads.length,
+  ]);
+
+  useEffect(() => {
+    if (!aiGreeting) return;
+    setHeroPrompt(aiGreeting);
+  }, [aiGreeting]);
+
+  useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     let interval: ReturnType<typeof setInterval>;
     let promptTimeout: ReturnType<typeof setTimeout>;
 
     const hasDisplayName = Boolean(
-      user?.name?.trim() || user?.username?.trim(),
+      displayUserName?.trim(),
     );
-    const isGuestAccess = user?.id === "__demo__";
-    const displayName = user?.name?.trim() || user?.username?.trim() ||
-      (isGuestAccess ? "Guest" : "Stranger");
 
     // Build user context for dynamic humor generation
     const userContext: Partial<UserContext> = {
@@ -203,14 +255,14 @@ export default function PulseHome() {
       hasUsername: hasDisplayName,
     };
 
-    const prompt = getGuestPrompt(
+    const prompt = aiGreeting ?? getGuestPrompt(
       timeContext.period,
       isGuestAccess,
       userContext,
     );
 
     // Animate both greeting and name together as one flowing line
-    const fullGreeting = `${timeContext.greeting}, ${capitalize(displayName || "Stranger")}.`;
+    const fullGreeting = `${timeContext.greeting}, ${capitalize(finalDisplayName || "Stranger")}.`;
 
     setHeroGreeting("");
     setHeroPrompt("");
@@ -276,9 +328,6 @@ export default function PulseHome() {
   const latestThread = threads[0];
   const latestRoom = rooms[0];
 
-  const isGuestAccess = user?.id === "__demo__";
-  const displayName = user?.name?.trim() || user?.username?.trim() ||
-    (isGuestAccess ? "Guest" : "Stranger");
   const sysStatus = serviceHealth?.status === "healthy" ? "Online" : "Degraded";
   const sysColor = sysStatus === "Online"
     ? "text-emerald-400"
@@ -305,7 +354,7 @@ export default function PulseHome() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-8">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                {isGuestAccess ? "Guest Access" : displayName ? "Terminal Ready" : "Stranger Mode"}
+                {isGuestAccess ? "Guest Access" : finalDisplayName ? "Terminal Ready" : "Stranger Mode"}
               </div>
 
               <h1 className="text-5xl md:text-6xl font-bold tracking-tighter leading-[1.1] text-white">

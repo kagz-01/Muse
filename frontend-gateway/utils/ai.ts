@@ -2,6 +2,7 @@ import { ChatGroq } from "npm:@langchain/groq";
 import { PromptTemplate } from "npm:@langchain/core/prompts";
 import { StructuredOutputParser } from "npm:@langchain/core/output_parsers";
 import { z } from "npm:zod";
+import { generateDynamicHumor, type GreetingPeriod } from "./dynamicHumor.ts";
 
 const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY") || "";
 
@@ -207,6 +208,94 @@ export async function extractPublicSpark(journalText: string): Promise<string> {
   }
 
   return spark;
+}
+
+const personalityGreetingPrompt = new PromptTemplate({
+  template: `You are Muse's personality engine. Generate a single, witty greeting/prompt (1-2 sentences max) that is:
+- Encouraging but not saccharine (keep it real)
+- Specific to the user's engagement level and time of day
+- Relevant to journaling, wisdom synthesis, and community connection
+- Uses platform terminology (synthesis, resonance, threads, wisdom, signal)
+- Tone: thoughtful mentor who gets the user's journey, slightly philosophical, occasionally humorous
+
+User context:
+- Streak: {streak} days
+- Resonance score: {resonanceScore} (0-1000 scale)
+- Journal entries: {entries}
+- Active rooms: {rooms}
+- Active threads: {threads}
+- Time of day: {period}
+
+Avoid:
+- Generic motivational speaker phrases
+- Emojis or exclamation marks
+- References to other platforms
+- Anything that breaks the Muse aesthetic
+
+Output only the prompt text. Do not add quotes, labels, or extra explanation.
+`,
+  inputVariables: [
+    "streak",
+    "resonanceScore",
+    "entries",
+    "rooms",
+    "threads",
+    "period",
+  ],
+});
+
+function cleanPersonalityPrompt(raw: string) {
+  let prompt = raw.trim();
+  if (prompt.startsWith('"') && prompt.endsWith('"')) {
+    prompt = prompt.slice(1, -1).trim();
+  }
+
+  const sentences = prompt.split(/(?<=[.!?])\s+/);
+  if (sentences.length > 2) {
+    prompt = sentences.slice(0, 2).join(" ").trim();
+  }
+
+  return prompt;
+}
+
+export async function generatePersonalityGreeting(
+  period: GreetingPeriod,
+  streak: number,
+  resonanceScore: number,
+  entries: number,
+  rooms: number,
+  threads: number,
+): Promise<string> {
+  const fallback = generateDynamicHumor(period, {
+    currentStreak: streak,
+    resonanceScore,
+    journalEntryCount: entries,
+    roomsJoined: rooms,
+    threadsActive: threads,
+  });
+
+  if (!GROQ_API_KEY) {
+    return fallback;
+  }
+
+  try {
+    const promptValue = await personalityGreetingPrompt.format({
+      streak: String(streak),
+      resonanceScore: String(resonanceScore),
+      entries: String(entries),
+      rooms: String(rooms),
+      threads: String(threads),
+      period,
+    });
+
+    const response = await model.invoke(promptValue);
+    const content = response.content.toString().trim();
+    const cleaned = cleanPersonalityPrompt(content);
+    return cleaned || fallback;
+  } catch (error) {
+    console.error("[AI Personality] generatePersonalityGreeting failed:", error);
+    return fallback;
+  }
 }
 
 // ─── Pervasive AI Integration ───────────────────────────────────────────────

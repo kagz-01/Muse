@@ -9,6 +9,7 @@ import {
   streaksSignal,
   type UserStreak,
 } from "../../signals/streaks.ts";
+import { mirrorSignal } from "../../signals/mirror.ts";
 import { userSignal } from "../../signals/user.ts";
 
 const PROMPTS = [
@@ -62,8 +63,37 @@ export default function StreakHub() {
   const pickerContainerRef = useRef<HTMLDivElement>(null);
 
   const streak = globalStreakSignal.value;
+  const mirror = mirrorSignal.value;
   const user = userSignal.value;
   const partnerStreaks = streaksSignal.value;
+
+  const mirrorPulseLabel = mirror.stats.views > 1400
+    ? "a strong momentum wave"
+    : mirror.stats.views > 1000
+    ? "a rising network pulse"
+    : mirror.stats.views > 700
+    ? "a steady resonance"
+    : "a quiet signal";
+
+  const mirrorBridge = streak
+    ? `Your mirror currently sees ${mirror.followerCount} nodes and ${mirror.stats.likes} upvotes. Keep the ${streak.currentStreak}-day streak alive by anchoring a spark.`
+    : `Your mirror currently sees ${mirror.followerCount} nodes and ${mirror.stats.likes} upvotes. Start a streak from a captured spark to turn reflection into momentum.`;
+
+  const recentMomentum = momentumFeedSignal.value.slice(0, 4);
+  const currentStreakValue = streak?.currentStreak ?? 0;
+  const milestoneTargets = [7, 30, 100, 365];
+  let milestoneStart = 0;
+  let milestoneTarget = milestoneTargets[milestoneTargets.length - 1];
+  for (const milestone of milestoneTargets) {
+    if (milestone <= currentStreakValue) {
+      milestoneStart = milestone;
+      continue;
+    }
+    milestoneTarget = milestone;
+    break;
+  }
+  const milestoneSpan = Math.max(1, milestoneTarget - milestoneStart);
+  const milestoneProgress = Math.min(100, Math.round(((currentStreakValue - milestoneStart) / milestoneSpan) * 100));
 
   useEffect(() => {
     loadGlobalStreak().then(() => setIsInitializing(false));
@@ -452,6 +482,53 @@ export default function StreakHub() {
       <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[400px] rounded-full pointer-events-none opacity-50 ${flameShadow} transition-all duration-1000`} />
 
       {/* Main Flame Section */}
+      <div className="w-full max-w-5xl mx-auto mb-8 px-6 lg:px-0">
+        <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 text-sm text-gray-300">
+            <div className="flex items-center gap-2 mb-3 text-[11px] uppercase tracking-[0.3em] text-[var(--muse-muted)]">
+              {/* @ts-ignore dynamic import */}
+              <Icons.Radar size={14} className="text-cyan-400" />
+              <span>Mirror Signal</span>
+            </div>
+            <p className="leading-relaxed">
+              Your mirror is reading {mirrorPulseLabel}. {mirrorBridge}
+            </p>
+          </div>
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 text-sm text-gray-300">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div className="text-[11px] uppercase tracking-[0.3em] text-[var(--muse-muted)]">
+                Recent sparks
+              </div>
+              <div className="text-xs text-emerald-400">{currentStreakValue}d active</div>
+            </div>
+            {recentMomentum.length > 0
+              ? (
+                <div className="space-y-3">
+                  {recentMomentum.map((item) => (
+                    <div key={`${item.type}-${item.created_at}`} className="rounded-2xl border border-white/5 bg-black/20 p-3">
+                      <div className="flex items-center justify-between gap-3 text-[10px] uppercase tracking-[0.3em] text-[var(--muse-muted)]">
+                        <span>{item.type}</span>
+                        <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                      </div>
+                      <p className="mt-2 text-sm text-white">{item.content}</p>
+                    </div>
+                  ))}
+                </div>
+              )
+              : (
+                <p className="text-sm text-gray-400">Your first spark will appear here as soon as you capture one.</p>
+              )}
+            <a
+              href="/connections"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.3em] text-cyan-300 transition hover:bg-cyan-400/20"
+            >
+              <Icons.Users size={14} />
+              Open community
+            </a>
+          </div>
+        </div>
+      </div>
+
       <div className="flex-1 flex flex-col items-center justify-center relative z-10 pt-10 pb-8">
         <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] mb-4">
           Cognitive Momentum
@@ -468,6 +545,33 @@ export default function StreakHub() {
           <p className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)] mt-1">
             Day Streak
           </p>
+          {/* Milestone progress */}
+          {streak && (
+            (() => {
+              const milestones = [7, 30, 100, 365];
+              const current = streak.currentStreak || 0;
+              let prev = 0;
+              let next = milestones[milestones.length - 1];
+              for (const m of milestones) {
+                if (m <= current) prev = m;
+                if (m > current && next === milestones[milestones.length - 1]) next = m;
+              }
+              const span = Math.max(1, next - prev);
+              const progress = Math.min(100, Math.round(((current - prev) / span) * 100));
+
+              return (
+                <div className="w-full max-w-xs mt-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-[var(--muse-muted)]">Next milestone: {next}d</span>
+                    <span className="text-xs font-bold text-[var(--muse-text)]">{progress}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-2 bg-gradient-to-r from-orange-400 to-rose-500" style={{ width: `${progress}%` }} />
+                  </div>
+                </div>
+              );
+            })()
+          )}
         </div>
 
         {justShared ? (

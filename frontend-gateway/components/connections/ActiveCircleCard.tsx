@@ -10,6 +10,9 @@ export interface ActiveCircle {
   memberCount: number;
   recentActivity: string;
   members: { avatar: string }[];
+  isJoined?: boolean;
+  resonanceScore?: number;
+  ritual?: string;
 }
 
 interface Props {
@@ -19,6 +22,18 @@ interface Props {
 
 export default function ActiveCircleCard({ circle, onJoin }: Props) {
   const [showGateway, setShowGateway] = useState(false);
+  const [joined, setJoined] = useState(circle.isJoined ?? false);
+
+  const handleJoin = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (joined) {
+      setShowGateway(true);
+      return;
+    }
+
+    setJoined(true);
+    onJoin?.();
+  };
 
   return (
     <>
@@ -51,20 +66,17 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
             <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/30 rounded-lg">
               <Icons.Zap size={14} className="text-purple-400" />
               <span className="text-[10px] font-bold text-purple-300">
-                92 Resonance
+                {circle.resonanceScore ?? 92} Resonance
               </span>
             </div>
 
             {/* Enter Button */}
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowGateway(true);
-              }}
+              onClick={handleJoin}
               className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-500 hover:border-indigo-500 transition-all active:scale-90 shadow-lg cursor-pointer"
             >
-              <Icons.LogIn size={20} />
+              {joined ? <Icons.Check size={20} /> : <Icons.LogIn size={20} />}
             </button>
           </div>
         </div>
@@ -98,7 +110,7 @@ export default function ActiveCircleCard({ circle, onJoin }: Props) {
           {/* Live Indicator */}
           <span className="text-[10px] font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 rounded-xl uppercase tracking-widest flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            New thought 3m ago
+            {circle.ritual ?? "Live ritual"}
           </span>
         </div>
 

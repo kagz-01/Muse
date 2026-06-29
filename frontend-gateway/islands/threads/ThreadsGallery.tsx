@@ -18,7 +18,12 @@ import ThreadGenerationIndicator from "../../components/threads/ThreadGeneration
 import { isVaultUnlockedSignal } from "../../signals/vault.ts";
 import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.tsx";
 import { userSignal } from "../../signals/user.ts";
-import { emptyStateMessages, getContextualPrompt, type UserContext } from "../../utils/contextualPrompts.ts";
+import {
+  emptyStateMessages,
+  fetchPersonalityPrompt,
+  getContextualPrompt,
+  type UserContext,
+} from "../../utils/contextualPrompts.ts";
 
 type ThreadFilter = "all" | ThreadMood;
 
@@ -54,6 +59,24 @@ export default function ThreadsGallery() {
     "all" | "public" | "private" | "vault"
   >("all");
   const [vaultModalThread, setVaultModalThread] = useState<Thread | null>(null);
+  const [emptyThreadsPrompt, setEmptyThreadsPrompt] = useState<string>(() => {
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12
+      ? "morning"
+      : hour >= 12 && hour < 18
+      ? "afternoon"
+      : "evening";
+    const user = userSignal.value;
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+    return getContextualPrompt("empty_threads", period, userContext);
+  });
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isGeneratingThreads, _setIsGeneratingThreads] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -83,6 +106,32 @@ export default function ThreadsGallery() {
       return matchesSearch && matchesMood && matchesVisibility;
     });
   }, [threads, searchQuery, activeMoodFilter, filterVisibility]);
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    const period = hour >= 5 && hour < 12
+      ? "morning"
+      : hour >= 12 && hour < 18
+      ? "afternoon"
+      : "evening";
+    const user = userSignal.value;
+    const userContext: Partial<UserContext> = {
+      currentStreak: user?.cognitiveStreak ?? 0,
+      resonanceScore: user?.resonance?.resonanceScore ?? 0,
+      journalEntryCount: 0,
+      roomsJoined: 0,
+      threadsActive: 0,
+      hasUsername: Boolean(user?.username?.trim()),
+    };
+
+    if (filteredThreads.length === 0) {
+      fetchPersonalityPrompt("empty_threads", period, userContext)
+        .then(setEmptyThreadsPrompt)
+        .catch(() => {
+          // Keep the fallback if the AI call fails
+        });
+    }
+  }, [filteredThreads.length]);
 
   const stats = useMemo(
     () => ({
@@ -368,20 +417,7 @@ export default function ThreadsGallery() {
                     {emptyStateMessages.threads.title}
                   </h3>
                   <p className="mt-2 max-w-md text-sm font-serif italic leading-relaxed text-gray-400">
-                    {(() => {
-                      const hour = new Date().getHours();
-                      const period = hour >= 5 && hour < 12 ? "morning" : hour >= 12 && hour < 18 ? "afternoon" : "evening";
-                      const user = userSignal.value;
-                      const userContext: Partial<UserContext> = {
-                        currentStreak: user?.cognitiveStreak ?? 0,
-                        resonanceScore: user?.resonance?.resonanceScore ?? 0,
-                        journalEntryCount: 0,
-                        roomsJoined: 0,
-                        threadsActive: 0,
-                        hasUsername: Boolean(user?.username?.trim()),
-                      };
-                      return getContextualPrompt("empty_threads", period, userContext);
-                    })()}
+                    {emptyThreadsPrompt}
                   </p>
                 </div>
               )

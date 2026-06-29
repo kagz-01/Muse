@@ -13,6 +13,15 @@ import { generateDynamicHumor, type GreetingPeriod, type UserContext } from "./d
 
 export type { UserContext };
 
+export interface PersonalityPromptPayload {
+  period: GreetingPeriod;
+  streak: number;
+  resonanceScore: number;
+  entries: number;
+  rooms: number;
+  threads: number;
+}
+
 export type UIContext = 
   | "empty_journal" 
   | "empty_rooms" 
@@ -76,6 +85,47 @@ export function getContextualPrompt(
   };
 
   return prompts[context]();
+}
+
+export async function fetchPersonalityPrompt(
+  context: UIContext,
+  period: GreetingPeriod,
+  userContext: Partial<UserContext> = {},
+): Promise<string> {
+  if (typeof window === "undefined") {
+    return getContextualPrompt(context, period, userContext);
+  }
+
+  const payload: PersonalityPromptPayload = {
+    period,
+    streak: userContext.currentStreak ?? 0,
+    resonanceScore: userContext.resonanceScore ?? 0,
+    entries: userContext.journalEntryCount ?? 0,
+    rooms: userContext.roomsJoined ?? 0,
+    threads: userContext.threadsActive ?? 0,
+  };
+
+  try {
+    const response = await fetch("/api/personality/greeting", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Personality greeting request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (typeof data.greeting === "string" && data.greeting.trim().length > 0) {
+      return data.greeting.trim();
+    }
+  } catch (error) {
+    console.error("[Personality] fetchPersonalityPrompt failed:", error);
+  }
+
+  return getContextualPrompt(context, period, userContext);
 }
 
 /**

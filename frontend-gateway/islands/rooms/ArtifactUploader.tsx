@@ -1,5 +1,6 @@
 import { useRef, useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
+import { openCapture } from "../../signals/ui.ts";
 
 interface ArtifactUploaderProps {
   roomId: string;
@@ -14,6 +15,18 @@ export default function ArtifactUploader(
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const dispatchArtifactAdded = (artifact: {
+    roomId: string;
+    id: string;
+    type: string;
+    source_url: string;
+    created_at: string;
+  }) => {
+    window.dispatchEvent(
+      new CustomEvent("muse:artifact-added", { detail: artifact }),
+    );
+  };
 
   const handleUrlSubmit = async (e: Event) => {
     e.preventDefault();
@@ -33,8 +46,16 @@ export default function ArtifactUploader(
         throw new Error(await response.text());
       }
 
+      const data = await response.json();
+      dispatchArtifactAdded({
+        roomId,
+        id: `artifact-${Date.now()}`,
+        type: data.type || "url",
+        source_url: url,
+        created_at: new Date().toISOString(),
+      });
       setUrl("");
-      globalThis.location.reload(); // Quick way to refresh the artifact list
+      setIsProcessing(false);
     } catch (err: any) {
       setError(err.message || "Failed to ingest URL");
       setIsProcessing(false);
@@ -49,6 +70,7 @@ export default function ArtifactUploader(
       const formData = new FormData();
       formData.append("file", file);
       formData.append("roomId", roomId);
+      formData.append("mimeType", file.type || "application/octet-stream");
 
       const response = await fetch("/api/artifacts/upload-document", {
         method: "POST",
@@ -64,6 +86,10 @@ export default function ArtifactUploader(
       setError(err.message || "Failed to upload document");
       setIsProcessing(false);
     }
+  };
+
+  const openCaptureFlow = (kind: "photo" | "video" | "audio") => {
+    openCapture(roomId, kind);
   };
 
   const handleDrop = (e: any) => {
@@ -121,6 +147,33 @@ export default function ArtifactUploader(
         </div>
       </form>
 
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => openCaptureFlow("photo")}
+          className="flex items-center justify-center gap-2 rounded-2xl border border-[var(--muse-border)] bg-[var(--muse-surface)] px-3 py-2 text-xs font-bold uppercase tracking-widest text-[var(--muse-text)] hover:border-white/20 transition-all"
+        >
+          <Icons.Camera size={16} />
+          Photo
+        </button>
+        <button
+          type="button"
+          onClick={() => openCaptureFlow("video")}
+          className="flex items-center justify-center gap-2 rounded-2xl border border-[var(--muse-border)] bg-[var(--muse-surface)] px-3 py-2 text-xs font-bold uppercase tracking-widest text-[var(--muse-text)] hover:border-white/20 transition-all"
+        >
+          <Icons.Video size={16} />
+          Video
+        </button>
+        <button
+          type="button"
+          onClick={() => openCaptureFlow("audio")}
+          className="col-span-2 flex items-center justify-center gap-2 rounded-2xl border border-[var(--muse-border)] bg-[var(--muse-surface)] px-3 py-2 text-xs font-bold uppercase tracking-widest text-[var(--muse-text)] hover:border-white/20 transition-all"
+        >
+          <Icons.Mic2 size={16} />
+          Audio
+        </button>
+      </div>
+
       {/* Drag and Drop Zone */}
       <div
         onDrop={handleDrop}
@@ -141,7 +194,7 @@ export default function ArtifactUploader(
             const file = (e.target as HTMLInputElement).files?.[0];
             if (file) uploadFile(file);
           }}
-          accept=".pdf,.docx,.xlsx,.csv,.txt"
+          accept="image/*,video/*,audio/*,.pdf,.docx,.xlsx,.csv,.txt"
         />
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center mb-3 bg-[var(--muse-surface)] border border-[var(--muse-border)] shadow-xl"
@@ -155,7 +208,7 @@ export default function ArtifactUploader(
           {isProcessing ? "Synthesizing Document..." : "Drop Document Here"}
         </p>
         <p className="text-xs text-[var(--muse-muted)]">
-          Supports PDF, Word, Excel, and Text
+          Supports images, video, audio, PDF, Word, Excel, and text files
         </p>
       </div>
     </div>

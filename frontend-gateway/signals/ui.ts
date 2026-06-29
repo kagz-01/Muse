@@ -1,7 +1,11 @@
 import { signal } from "@preact/signals";
 
+export type CaptureMode = "url" | "document" | "photo" | "video" | "audio";
+
 export const isMenuOpenSignal = signal(false);
 export const isCaptureOpenSignal = signal(false);
+export const captureRoomIdSignal = signal<string | null>(null);
+export const captureModeSignal = signal<CaptureMode>("url");
 export const isProfileOpenSignal = signal(false);
 export const isNotificationsOpenSignal = signal(false);
 
@@ -313,8 +317,24 @@ export function closeMenu() {
   isMenuOpenSignal.value = false;
 }
 
+export function openCapture(roomId?: string, mode: CaptureMode = "url") {
+  captureRoomIdSignal.value = roomId ?? null;
+  captureModeSignal.value = mode;
+  isCaptureOpenSignal.value = true;
+}
+
+export function closeCapture() {
+  isCaptureOpenSignal.value = false;
+  captureRoomIdSignal.value = null;
+  captureModeSignal.value = "url";
+}
+
 export function toggleCapture() {
-  isCaptureOpenSignal.value = !isCaptureOpenSignal.value;
+  if (isCaptureOpenSignal.value) {
+    closeCapture();
+  } else {
+    isCaptureOpenSignal.value = true;
+  }
 }
 
 export function toggleProfile() {

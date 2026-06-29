@@ -102,22 +102,17 @@ export default function AuthModal({ initialMode, onClose }: AuthModalProps) {
     try {
       const response = await fetch("/api/auth/demo", {
         method: "POST",
-        redirect: "manual",
+        credentials: "same-origin",
+        redirect: "follow",
       });
 
-      if (response.status === 303) {
-        const location = response.headers.get("location") || "/dashboard";
-        globalThis.location.href = location;
+      if (!response.ok) {
+        const text = await response.text();
+        setErrorMsg(text || "Failed to enter demo mode");
         return;
       }
 
-      if (response.ok) {
-        globalThis.location.href = "/dashboard";
-        return;
-      }
-
-      const text = await response.text();
-      setErrorMsg(text || "Failed to enter demo mode");
+      globalThis.location.href = "/dashboard";
     } catch (_err) {
       setErrorMsg("Network error connecting to Vault.");
     } finally {

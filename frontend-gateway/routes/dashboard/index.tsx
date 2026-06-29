@@ -41,6 +41,7 @@ export const handler: Handlers<DashboardData> = {
       return ctx.render({
         user: {
           id: DEMO_USER.id,
+          name: DEMO_USER.name,
           username: DEMO_USER.username,
           email: DEMO_USER.email,
         },

@@ -3,6 +3,7 @@ import { userSignal } from "./user.ts";
 import { safeFetch } from "../utils/safeFetch.ts";
 import { DEMO_JOURNALS } from "../utils/demo_data.ts";
 import { registerIdSwapCallback } from "../utils/syncQueue.ts";
+import { deriveNextStreakState, getUnlockedMilestones, getStreakLevelForCount } from "../utils/streakEngine.ts";
 
 export type JournalMood =
   | "reflective"
@@ -20,6 +21,15 @@ export interface LinkedArtifact {
   type: "room" | "thread";
   title: string;
   linkedAt: number;
+}
+
+export interface JournalAttachment {
+  id: string;
+  type: "image" | "video" | "audio" | "file" | "link";
+  name: string;
+  url: string;
+  mimeType?: string;
+  createdAt: number;
 }
 
 export interface SynthesisData {
@@ -79,6 +89,7 @@ export interface JournalEntry {
   customMood?: string;
   tags: string[];
   linkedItemIds: string[];
+  attachments?: JournalAttachment[];
   isFavorited: boolean;
   isPinned?: boolean;
   isArchived?: boolean;
@@ -160,6 +171,16 @@ function normalizeJournalEntry(raw: unknown): JournalEntry | null {
   const linkedItemIds = Array.isArray(entry.linkedItemIds)
     ? entry.linkedItemIds.filter((id): id is string => typeof id === "string")
     : [];
+  const attachments = Array.isArray(entry.attachments)
+    ? entry.attachments.filter((attachment): attachment is JournalAttachment => {
+      return Boolean(
+        attachment &&
+          typeof (attachment as any).id === "string" &&
+          typeof (attachment as any).url === "string" &&
+          typeof (attachment as any).name === "string"
+      );
+    }).map((attachment) => attachment as JournalAttachment)
+    : undefined;
 
   const createdAt = typeof entry.createdAt === "number"
     ? entry.createdAt
@@ -179,6 +200,7 @@ function normalizeJournalEntry(raw: unknown): JournalEntry | null {
       : undefined,
     tags,
     linkedItemIds,
+    attachments,
     isFavorited: !!entry.isFavorited,
     isPinned: typeof entry.isPinned === "boolean" ? entry.isPinned : false,
     isArchived: typeof entry.isArchived === "boolean"
@@ -396,6 +418,24 @@ export async function addEntry(
 
   updateStreakOnNewEntry();
 
+  if (!isDemo) {
+    try {
+      await safeFetch("/api/user/streaks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "capture_momentum",
+          type: "journal",
+          content: body || "A reflection was captured",
+          destination: "journal",
+        }),
+        entity: "streak",
+      });
+    } catch (error) {
+      console.error("Failed to sync journal contribution to streak engine", error);
+    }
+  }
+
   return newEntry;
 }
 
@@ -496,41 +536,34 @@ function updateStreakOnNewEntry(): void {
   const metadata = streakMetadataSignal.value;
   const today = new Date().toDateString();
 
-  // Already wrote today, don't update
   if (metadata.lastEntryDate === today) {
     return;
   }
 
-  const yesterday = new Date(Date.now() - 86400000).toDateString();
-  let newStreak = metadata.currentStreak;
+  const nextState = deriveNextStreakState({
+    currentStreak: metadata.currentStreak,
+    longestStreak: metadata.longestStreak,
+    totalJournalDays: metadata.totalDays,
+    lastEntryDate: metadata.lastEntryDate,
+    today,
+  });
 
-  // If wrote yesterday or today is first entry
-  if (metadata.lastEntryDate === yesterday || metadata.currentStreak === 0) {
-    newStreak = metadata.currentStreak + 1;
-  } else {
-    // Streak broken, reset to 1
-    newStreak = 1;
+  if (!nextState.shouldCount) {
+    return;
   }
 
-  // Update longest streak if current > longest
-  const newLongest = Math.max(newStreak, metadata.longestStreak);
-
-  // Check for milestone unlock
   const unlockedMilestones = getUnlockedMilestones(
-    newStreak,
+    nextState.currentStreak,
     metadata.milestonesUnlocked,
   );
 
-  // Calculate streak level
-  const level = getStreakLevelForCount(newStreak);
-
   const updated: StreakData = {
     ...metadata,
-    currentStreak: newStreak,
-    longestStreak: newLongest,
-    totalDays: metadata.totalDays + 1,
-    lastEntryDate: today,
-    currentLevel: level,
+    currentStreak: nextState.currentStreak,
+    longestStreak: nextState.longestStreak,
+    totalDays: nextState.totalJournalDays,
+    lastEntryDate: nextState.lastEntryDate,
+    currentLevel: getStreakLevelForCount(nextState.currentStreak),
     milestonesUnlocked: unlockedMilestones,
   };
 
@@ -564,7 +597,7 @@ export function getStreakData(): StreakData {
   return streakMetadataSignal.value;
 }
 
-export function freezeStreak(): boolean {
+export async function freezeStreak(): Promise<boolean> {
   const metadata = streakMetadataSignal.value;
   const currentMonth = new Date().getMonth();
 
@@ -579,6 +612,33 @@ export function freezeStreak(): boolean {
     return false;
   }
 
+  // Call backend to persist the freeze use
+  try {
+    const res = await safeFetch("/api/user/streaks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "use_freeze" }),
+      entity: "streak",
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const newFreeze = Number(data.freezeCount ?? metadata.freezeCount - 1);
+
+      const updated: StreakData = {
+        ...metadata,
+        freezeCount: newFreeze,
+        lastEntryDate: data.lastEntryDate ?? metadata.lastEntryDate,
+      };
+
+      streakMetadataSignal.value = updated;
+      return true;
+    }
+  } catch (e) {
+    console.error("freezeStreak: failed to persist freeze", e);
+  }
+
+  // Fallback to local-only decrement (optimistic)
   const updated: StreakData = {
     ...metadata,
     freezeCount: metadata.freezeCount - 1,

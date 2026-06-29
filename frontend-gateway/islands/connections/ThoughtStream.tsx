@@ -1,8 +1,8 @@
 import { useState } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import {
-  alignWithPerspective,
-  challengePerspective,
+  alignWithPerspectiveRemote,
+  challengePerspectiveRemote,
   perspectivesSignal as persSig,
 } from "../../signals/connections.ts";
 import SynthesisModal from "../../components/connections/SynthesisModal.tsx";
@@ -162,7 +162,7 @@ export default function ThoughtStream(
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          alignWithPerspective(pers.id);
+                          void alignWithPerspectiveRemote(pers.id);
                         }}
                         className="group/btn flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
                       >
@@ -179,7 +179,7 @@ export default function ThoughtStream(
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          challengePerspective(pers.id);
+                          void challengePerspectiveRemote(pers.id);
                         }}
                         className="group/btn flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
                       >
@@ -457,7 +457,7 @@ export default function ThoughtStream(
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          alignWithPerspective(pers.id);
+                          void alignWithPerspectiveRemote(pers.id);
                         }}
                         className="group/btn flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
                       >
@@ -474,7 +474,7 @@ export default function ThoughtStream(
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          challengePerspective(pers.id);
+                          void challengePerspectiveRemote(pers.id);
                         }}
                         className="group/btn flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
                       >
