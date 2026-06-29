@@ -5,8 +5,23 @@ import { executeDB, queryDB } from "../../../utils/db.ts";
 export const handler: Handlers = {
   async GET(req) {
     const userId = await getSessionUser(req);
-    if (!userId || userId === "__demo__") {
+    if (!userId) {
       return new Response("Unauthorized", { status: 401 });
+    }
+
+    if (userId === "__demo__") {
+      const { DEMO_USER } = await import("../../../utils/demo_data.ts");
+      return new Response(
+        JSON.stringify({
+          name: DEMO_USER.name || "",
+          bio: DEMO_USER.bio || "",
+          avatarUrl: DEMO_USER.avatarUrl || "",
+          preferences: {},
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
     try {
@@ -45,8 +60,14 @@ export const handler: Handlers = {
 
   async PUT(req) {
     const userId = await getSessionUser(req);
-    if (!userId || userId === "__demo__") {
+    if (!userId) {
       return new Response("Unauthorized", { status: 401 });
+    }
+
+    if (userId === "__demo__") {
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     try {

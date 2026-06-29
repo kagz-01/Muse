@@ -9,8 +9,12 @@ import { executeDB, queryDB } from "../../../utils/db.ts";
 export const handler: Handlers = {
   async POST(req) {
     const userId = await getSessionUser(req);
-    if (!userId || userId === "__demo__") {
+    if (!userId) {
       return new Response("Unauthorized", { status: 401 });
+    }
+
+    if (userId === "__demo__") {
+      return new Response("Demo users cannot change passwords.", { status: 403 });
     }
 
     try {

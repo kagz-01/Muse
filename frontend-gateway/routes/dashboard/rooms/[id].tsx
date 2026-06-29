@@ -41,6 +41,42 @@ export const handler: Handlers<RoomInteriorData> = {
 
     const roomId = ctx.params.id;
 
+    if (userId === "__demo__") {
+      const { DEMO_USER, DEMO_ROOMS, DEMO_ITEMS, DEMO_THREADS } = await import("../../../utils/demo_data.ts");
+      const demoRoom = DEMO_ROOMS.find(r => r.id === roomId);
+      
+      if (!demoRoom) {
+        return new Response("Demo Room not found", { status: 404 });
+      }
+
+      const artifacts: ArtifactData[] = DEMO_ITEMS.filter(i => i.roomId === roomId).map(a => ({
+        id: a.id,
+        type: a.type || "web",
+        source_url: a.sourceUrl,
+        created_at: a.createdAt,
+      }));
+
+      const threads: ThreadData[] = DEMO_THREADS.filter(t => t.roomId === roomId).map(t => ({
+        id: t.id,
+        artifact_ids: t.itemIds,
+        blueprint: t.aiBlueprint,
+        created_at: t.createdAt,
+      }));
+
+      return ctx.render({
+        user: { username: DEMO_USER.username, email: DEMO_USER.email },
+        room: {
+          id: demoRoom.id,
+          title: demoRoom.title,
+          description: demoRoom.description || "",
+          theme_color: demoRoom.themeColor,
+          tags: demoRoom.tags || [],
+        },
+        artifacts,
+        threads,
+      });
+    }
+
     // Fetch User Data
     const users = await queryDB(
       "SELECT username, email FROM users WHERE id = $1",

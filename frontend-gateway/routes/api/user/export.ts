@@ -5,8 +5,35 @@ import { queryDB } from "../../../utils/db.ts";
 export const handler: Handlers = {
   async GET(req) {
     const userId = await getSessionUser(req);
-    if (!userId || userId === "__demo__") {
+    if (!userId) {
       return new Response("Unauthorized", { status: 401 });
+    }
+
+    if (userId === "__demo__") {
+      const { DEMO_USER, DEMO_JOURNALS } = await import("../../../utils/demo_data.ts");
+      const format = new URL(req.url).searchParams.get("format") || "json";
+      
+      if (format === "csv") {
+        let csvContent = "id,raw_thought,mood,tags,created_at\\n";
+        for (const j of DEMO_JOURNALS) {
+          const escapedThought = `"${j.body.replace(/"/g, '""')}"`;
+          const escapedTags = `"${(j.tags || []).join(",")}"`;
+          csvContent += `${j.id},${escapedThought},${j.mood},${escapedTags},${new Date(j.createdAt).toISOString()}\\n`;
+        }
+        return new Response(csvContent, {
+          headers: {
+            "Content-Type": "text/csv",
+            "Content-Disposition": 'attachment; filename="muse_export.csv"',
+          },
+        });
+      }
+
+      return new Response(JSON.stringify({ user: DEMO_USER, journals: DEMO_JOURNALS, exportDate: new Date().toISOString() }, null, 2), {
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Disposition": 'attachment; filename="muse_export.json"',
+        },
+      });
     }
 
     try {

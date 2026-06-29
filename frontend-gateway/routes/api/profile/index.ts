@@ -11,6 +11,26 @@ export const handler: Handlers = {
         return new Response("Unauthorized", { status: 401 });
       }
 
+      if (userId === "__demo__") {
+        const { DEMO_USER } = await import("../../../utils/demo_data.ts");
+        return new Response(
+          JSON.stringify({
+            id: DEMO_USER.id,
+            email: DEMO_USER.email,
+            username: DEMO_USER.username,
+            name: DEMO_USER.name,
+            wallet_address: null,
+            resonance_score: DEMO_USER.resonance,
+            current_streak: DEMO_USER.cognitiveStreak,
+            created_at: new Date().toISOString(),
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+
       const rows = await queryDB(
         "SELECT id, email, username, name, wallet_address, resonance_score, current_streak, created_at FROM users WHERE id = $1",
         userId,
@@ -55,6 +75,13 @@ export const handler: Handlers = {
       const userId = await getSessionUser(req);
       if (!userId) {
         return new Response("Unauthorized", { status: 401 });
+      }
+
+      if (userId === "__demo__") {
+        return new Response(JSON.stringify({ success: true, user: { id: "__demo__" } }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
       }
 
       const body = await req.json() as Record<string, string>;
