@@ -161,6 +161,9 @@ CREATE TABLE IF NOT EXISTS journal_entries (
     synthesized_context JSONB,
     blockchain_hash VARCHAR(255),
     is_broadcasted BOOLEAN DEFAULT false,
+    nlp_analysis JSONB DEFAULT '{}'::jsonb,
+    nlp_confidence NUMERIC(3,2),
+    analyzed_at TIMESTAMPTZ,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -172,6 +175,9 @@ CREATE TABLE IF NOT EXISTS artifacts (
     type VARCHAR(50) NOT NULL,
     source_url TEXT,
     unstructured_data JSONB,
+    nlp_analysis JSONB DEFAULT '{}'::jsonb,
+    nlp_confidence NUMERIC(3,2),
+    analyzed_at TIMESTAMPTZ,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -211,6 +217,20 @@ CREATE TABLE IF NOT EXISTS room_collaborators (
     UNIQUE(room_id, user_id)
 );
 
+-- 7. NLP Metadata and Intelligence
+CREATE TABLE IF NOT EXISTS artifact_nlp_metadata (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    artifact_id UUID REFERENCES artifacts(id) ON DELETE CASCADE,
+    journal_id UUID REFERENCES journal_entries(id) ON DELETE CASCADE,
+    themes TEXT[] DEFAULT ARRAY[]::TEXT[],
+    sentiment_score NUMERIC(3,2),
+    keywords TEXT[] DEFAULT ARRAY[]::TEXT[],
+    confidence NUMERIC(3,2) NOT NULL,
+    analysis_method TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CHECK (artifact_id IS NOT NULL OR journal_id IS NOT NULL)
+);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_rooms_user_id ON rooms(user_id);
 CREATE INDEX IF NOT EXISTS idx_items_room_id ON items(room_id);
@@ -228,3 +248,14 @@ CREATE INDEX IF NOT EXISTS idx_spark_reactions_item ON spark_reactions(item_id);
 CREATE INDEX IF NOT EXISTS idx_spark_comments_item ON spark_comments(item_id);
 CREATE INDEX IF NOT EXISTS idx_room_collaborators_room ON room_collaborators(room_id);
 CREATE INDEX IF NOT EXISTS idx_room_collaborators_user ON room_collaborators(user_id);
+
+-- NLP Metadata Indexes
+CREATE INDEX IF NOT EXISTS idx_artifact_nlp_artifact_id ON artifact_nlp_metadata(artifact_id);
+CREATE INDEX IF NOT EXISTS idx_artifact_nlp_journal_id ON artifact_nlp_metadata(journal_id);
+CREATE INDEX IF NOT EXISTS idx_artifact_nlp_confidence ON artifact_nlp_metadata(confidence DESC);
+CREATE INDEX IF NOT EXISTS idx_artifact_nlp_timestamp ON artifact_nlp_metadata(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_artifact_nlp_method ON artifact_nlp_metadata(analysis_method);
+CREATE INDEX IF NOT EXISTS idx_artifacts_nlp_confidence ON artifacts(nlp_confidence DESC);
+CREATE INDEX IF NOT EXISTS idx_artifacts_analyzed_at ON artifacts(analyzed_at DESC);
+CREATE INDEX IF NOT EXISTS idx_journal_nlp_confidence ON journal_entries(nlp_confidence DESC);
+CREATE INDEX IF NOT EXISTS idx_journal_analyzed_at ON journal_entries(analyzed_at DESC);

@@ -53,7 +53,7 @@ User Input
 ### **Option 1: Instant Analysis (Real-time Feedback)**
 ```
 POST /api/analyze
-Body: {"content": "Today I realized...", "user_id": "user123"}
+Body: {"content": "Today I realized...", "user_id": "user123", "journal_id": "9f1c8e2a-3b2a-4ed7-9e1b-d5f55978f2a1"}
 
 Response:
 {
@@ -66,6 +66,9 @@ Response:
   "ready_for_synthesis": true
 }
 ```
+
+- `journal_id` is optional but recommended for journal entry workflows.
+- If included, the backend persists the analysis into `journal_entries` and the `artifact_nlp_metadata` table for later querying.
 
 **Use case:** User writes journal entry → get instant feedback before synthesis
 
@@ -149,7 +152,8 @@ User writes journal entry:
 → Frontend calls POST /api/analyze
   {
     "content": "Today I learned about quantum...",
-    "user_id": "user123"
+    "user_id": "user123",
+    "journal_id": "9f1c8e2a-3b2a-4ed7-9e1b-d5f55978f2a1"
   }
 
 ← Backend returns instantly:

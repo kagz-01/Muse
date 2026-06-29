@@ -87,9 +87,18 @@ uvicorn main:app --reload
      muse-ai-engine
    ```
 
----
+4. **Run Cockroach-compatible DB migrations**
+```bash
+cd frontend-gateway/scripts
+./run_migration.sh
+```
 
-## API Responses
+  "journal_id": "9f1c8e2a-3b2a-4ed7-9e1b-d5f55978f2a1"
+}
+```
+
+- `journal_id` is optional.
+- When provided, analysis results are persisted to the journal entry metadata and also inserted into `artifact_nlp_metadata` for analytics.
 
 ### `/api/analyze` Response (NEW)
 

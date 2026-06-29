@@ -8,7 +8,13 @@ User Input → NLP Analysis → Storage → Synthesis Context → GPT Threads
 import logging
 from typing import Dict, Any, Optional, List
 from nlp_engine import NLPEngineFactory, InsightResult
-from database import queryDB, save_to_db
+from database import (
+    queryDB,
+    save_to_db,
+    save_artifact_analysis,
+    save_journal_analysis,
+    insert_artifact_nlp_metadata,
+)
 from synthesizer import synthesize_artifacts
 
 logger = logging.getLogger(__name__)
@@ -59,27 +65,43 @@ class IntelligencePipeline:
         
         insights = await self.analyze_content(content, artifact.get("id"))
         enriched = ArtifactWithInsights(artifact, insights)
-        
+
+        if artifact.get("id"):
+            self.store_analysis_metadata(artifact.get("id"), insights, artifact.get("user_id", "anonymous"))
+
         logger.info(f"Enriched artifact {artifact.get('id')} with themes: {insights.themes}")
         return enriched
     
-    def store_analysis_metadata(self, artifact_id: str, insights: InsightResult, user_id: str) -> bool:
+    def store_analysis_metadata(
+        self,
+        artifact_id: Optional[str],
+        insights: InsightResult,
+        user_id: Optional[str] = None,
+        journal_id: Optional[str] = None,
+    ) -> bool:
         """
         Step 3: Store NLP analysis metadata in database.
         Makes insights available for future queries and analytics.
         """
         try:
-            # Store in artifact_metadata or similar table
-            metadata = {
-                "artifact_id": artifact_id,
-                "user_id": user_id,
-                "themes": ",".join(insights.themes),
-                "sentiment_score": insights.sentiment_score,
-                "keywords": ",".join(insights.keywords),
-            }
-            
-            # This assumes you have a metadata table; adjust as needed
-            logger.info(f"Stored analysis for artifact {artifact_id}")
+            payload = insights.to_dict()
+            stored = False
+
+            if artifact_id:
+                save_artifact_analysis(artifact_id, payload, insights.confidence, insights.analysis_method)
+                insert_artifact_nlp_metadata(artifact_id=artifact_id, journal_id=journal_id, insights=payload)
+                stored = True
+
+            if journal_id and not artifact_id:
+                save_journal_analysis(journal_id, payload, insights.confidence, insights.analysis_method)
+                insert_artifact_nlp_metadata(artifact_id=None, journal_id=journal_id, insights=payload)
+                stored = True
+
+            if not stored:
+                logger.warning("No artifact_id or journal_id provided for NLP metadata persistence")
+                return False
+
+            logger.info(f"Stored analysis metadata for artifact={artifact_id} journal={journal_id}")
             return True
         except Exception as e:
             logger.error(f"Failed to store analysis metadata: {e}")
@@ -105,7 +127,13 @@ class IntelligencePipeline:
         logger.info(f"Generated {len(threads)} threads")
         return threads
     
-    async def process_journal_entry(self, content: str, user_id: str, room_id: Optional[str] = None) -> Dict[str, Any]:
+    async def process_journal_entry(
+        self,
+        content: str,
+        user_id: str,
+        room_id: Optional[str] = None,
+        journal_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """
         Full workflow for a journal entry:
         1. Analyze content → get instant insights
@@ -117,8 +145,14 @@ class IntelligencePipeline:
         # Step 1: Get instant insights
         insights = await self.analyze_content(content)
         
-        # Step 2: Could store in DB here if needed
-        # store_analysis_metadata(entry_id, insights, user_id)
+        # Step 2: Store journal metadata if a journal record exists
+        if journal_id:
+            self.store_analysis_metadata(
+                artifact_id=None,
+                insights=insights,
+                user_id=user_id,
+                journal_id=journal_id,
+            )
         
         return {
             "status": "success",

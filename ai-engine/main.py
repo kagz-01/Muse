@@ -30,6 +30,7 @@ class AnalysisRequest(BaseModel):
     content: str | None = None
     text: str | None = None
     user_id: str | None = None
+    journal_id: str | None = None
 
 class ScrapeRequest(BaseModel):
     url: str
@@ -225,7 +226,11 @@ async def analyze_content(request: AnalysisRequest):
 
     try:
         pipeline = get_pipeline()
-        result = await pipeline.process_journal_entry(content, request.user_id or "anonymous")
+        result = await pipeline.process_journal_entry(
+            content,
+            request.user_id or "anonymous",
+            journal_id=request.journal_id,
+        )
         logger.info(f"Analysis completed: {len(result['insights']['themes'])} themes")
         return result
     except Exception as e:
