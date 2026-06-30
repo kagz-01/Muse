@@ -288,14 +288,41 @@ export async function syncCurrentUserFromBackend(): Promise<void> {
     }
 
     userSignal.value = nextUser;
+    soloModeSignal.value = nextUser.privacySecurity.accountVisibility !== "public";
     refreshSetupBannerDismissed(nextUser.id);
   } catch {
     // Best effort hydration; keep existing local state if the backend is unavailable.
   }
 }
 
+async function persistPrivacySecurity(updates: Partial<PrivacySecurity>) {
+  try {
+    await fetch("/api/user/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ preferences: { privacySecurity: updates } }),
+    });
+  } catch {
+    // Ignore failures; client state remains authoritative until next sync.
+  }
+}
+
 export function toggleSoloMode() {
-  soloModeSignal.value = !soloModeSignal.value;
+  const user = userSignal.value;
+  const nextAccountVisibility = user.privacySecurity.accountVisibility === "public"
+    ? "connections"
+    : "public";
+
+  userSignal.value = {
+    ...user,
+    privacySecurity: {
+      ...user.privacySecurity,
+      accountVisibility: nextAccountVisibility,
+    },
+  };
+  soloModeSignal.value = nextAccountVisibility !== "public";
+
+  void persistPrivacySecurity({ accountVisibility: nextAccountVisibility });
 }
 
 export function updateUserAura(type: User["auraType"], color: string) {
@@ -331,10 +358,20 @@ export function togglePublicSetting(key: keyof PublicSettings) {
 
 export function updatePrivacySecurity(updates: Partial<PrivacySecurity>) {
   const user = userSignal.value;
+  const nextPrivacySecurity = {
+    ...user.privacySecurity,
+    ...updates,
+  };
+
   userSignal.value = {
     ...user,
-    privacySecurity: { ...user.privacySecurity, ...updates },
+    privacySecurity: nextPrivacySecurity,
   };
+
+  if (updates.accountVisibility !== undefined) {
+    soloModeSignal.value = nextPrivacySecurity.accountVisibility !== "public";
+    void persistPrivacySecurity({ accountVisibility: nextPrivacySecurity.accountVisibility });
+  }
 }
 
 export function login(email: string) {

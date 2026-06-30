@@ -1918,7 +1918,7 @@ export default function Settings() {
                 <p className="text-[10px] text-gray-500 mt-1">
                   {user.privacySecurity.accountVisibility === "public"
                     ? "Anyone can see your profile and content"
-                    : "Only approved followers can see your content"}
+                    : "Only approved connections can see your content"}
                 </p>
               </div>
               <button
@@ -1927,7 +1927,7 @@ export default function Settings() {
                   updatePrivacySecurity({
                     accountVisibility:
                       user.privacySecurity.accountVisibility === "public"
-                        ? "private"
+                        ? "connections"
                         : "public",
                   })}
                 className={`px-3 py-1 text-xs rounded-lg transition ${
@@ -1938,7 +1938,7 @@ export default function Settings() {
               >
                 {user.privacySecurity.accountVisibility === "public"
                   ? "Public"
-                  : "Private"}
+                  : "Connections"}
               </button>
             </div>
 

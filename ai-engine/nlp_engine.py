@@ -1,13 +1,13 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, List, Tuple
-from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Set, Tuple
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-import os
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer  # type: ignore[import]
 import json
 import hashlib
-from functools import lru_cache
+
+from config import get_config, NLPEngineType
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class CacheEntry:
     """Cache entry with TTL."""
     result: 'InsightResult'
-    timestamp: datetime
+    timestamp: datetime = field(default_factory=datetime.now)
     ttl_minutes: int = 60
     
     def is_expired(self) -> bool:
@@ -23,7 +23,7 @@ class CacheEntry:
 
 class InsightResult:
     """Unified insight structure for all analysis."""
-    def __init__(self, themes: list, sentiment_score: float, keywords: list, 
+    def __init__(self, themes: List[str], sentiment_score: float, keywords: List[str], 
                  raw_text: str = "", confidence: float = 1.0, analysis_method: str = "unknown"):
         self.themes = themes  # Main topics/themes
         self.sentiment_score = sentiment_score  # Emotional tone (-1.0 to 1.0)
@@ -33,7 +33,7 @@ class InsightResult:
         self.analysis_method = analysis_method  # Which engine analyzed this
         self.timestamp = datetime.now()
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for API responses."""
         return {
             "themes": self.themes,
@@ -62,9 +62,9 @@ class ProductionLocalNLPEngine(NLPEngine):
     """
     
     def __init__(self):
-        self.nlp = None
-        self.count_vectorizer = None
-        self.tfidf_vectorizer = None
+        self.nlp: Optional[Any] = None
+        self.count_vectorizer: Optional[Any] = None
+        self.tfidf_vectorizer: Optional[Any] = None
         self.cache: Dict[str, CacheEntry] = {}
         self.max_cache_size = 1000
         logger.info("ProductionLocalNLPEngine initialized")
@@ -73,11 +73,15 @@ class ProductionLocalNLPEngine(NLPEngine):
         """Lazy-load NLP models only when needed."""
         if self.nlp is None:
             try:
-                import spacy
-                self.nlp = spacy.load("en_core_web_sm")
-                logger.info("Loaded spaCy model en_core_web_sm")
-            except OSError:
-                logger.warning("spaCy model not found. Using sklearn-only analysis.")
+                spacy = __import__("spacy")
+                load_fn = getattr(spacy, "load", None)
+                if callable(load_fn):
+                    self.nlp = load_fn("en_core_web_sm")
+                    logger.info("Loaded spaCy model en_core_web_sm")
+                else:
+                    raise ImportError("spaCy load function unavailable")
+            except Exception as e:
+                logger.warning(f"spaCy model not found or load failed: {e}. Using sklearn-only analysis.")
                 self.nlp = None
         
         if self.count_vectorizer is None:
@@ -127,9 +131,10 @@ class ProductionLocalNLPEngine(NLPEngine):
     def _extract_themes_tfidf(self, text: str) -> Tuple[List[str], float]:
         """Extract themes using TF-IDF (better for importance)."""
         try:
-            X = self.tfidf_vectorizer.fit_transform([text])
-            terms = self.tfidf_vectorizer.get_feature_names_out()
-            scores = X.toarray()[0]
+            assert self.tfidf_vectorizer is not None, "TF-IDF vectorizer not initialized"
+            X: Any = self.tfidf_vectorizer.fit_transform([text])
+            terms: Any = self.tfidf_vectorizer.get_feature_names_out()
+            scores: Any = X.toarray()[0]
             
             if len(scores) == 0:
                 return ["reflection"], 0.3
@@ -149,10 +154,10 @@ class ProductionLocalNLPEngine(NLPEngine):
             return []
         
         try:
-            doc = self.nlp(text)
+            doc: Any = self.nlp(text)
             
             # Extract noun phrases and entities as themes
-            themes = set()
+            themes: Set[str] = set()
             
             # Named entities
             for ent in doc.ents:
@@ -171,10 +176,14 @@ class ProductionLocalNLPEngine(NLPEngine):
     def _calculate_sentiment_textblob(self, text: str) -> Tuple[float, float]:
         """Calculate sentiment using TextBlob."""
         try:
-            from textblob import TextBlob
-            blob = TextBlob(text)
-            polarity = blob.sentiment.polarity  # -1.0 to 1.0
-            subjectivity = blob.sentiment.subjectivity  # 0.0 to 1.0
+            textblob_module = __import__("textblob")
+            TextBlob = getattr(textblob_module, "TextBlob", None)
+            if TextBlob is None:
+                raise ImportError("TextBlob library not available")
+            blob: Any = TextBlob(text)
+            sentiment_obj: Any = getattr(blob, "sentiment", None)
+            polarity: float = float(getattr(sentiment_obj, "polarity", 0.0))
+            subjectivity: float = float(getattr(sentiment_obj, "subjectivity", 0.0))
             
             # Use subjectivity as confidence
             return round(polarity, 2), round(0.5 + (subjectivity * 0.5), 2)
@@ -275,13 +284,13 @@ class ProductionLocalNLPEngine(NLPEngine):
 class GroqEnrichedEngine(NLPEngine):
     """Uses Groq API for fast, production-grade LLM-backed analysis."""
     
-    def __init__(self):
+    def __init__(self, groq_api_key: str):
         self.local_engine = ProductionLocalNLPEngine()
-        self.groq_api_key = os.getenv("GROQ_API_KEY", "")
+        self.groq_api_key = groq_api_key or ""
         self.cache: Dict[str, CacheEntry] = {}
         
         if not self.groq_api_key:
-            logger.warning("GROQ_API_KEY not set, will use local NLP only")
+            logger.warning("GroqEnrichedEngine initialized without GROQ_API_KEY; falling back to local NLP only")
         else:
             logger.info("GroqEnrichedEngine initialized with Groq API")
 
@@ -298,8 +307,15 @@ class GroqEnrichedEngine(NLPEngine):
         
         # Try to enrich with Groq for better diversity
         try:
-            from langchain_groq import ChatGroq
-            from langchain_core.prompts import ChatPromptTemplate
+            langchain_groq_module = __import__("langchain_groq")
+            ChatGroq = getattr(langchain_groq_module, "ChatGroq", None)
+            if ChatGroq is None:
+                raise ImportError("ChatGroq class not found in langchain_groq")
+
+            langchain_core_prompts = __import__("langchain_core.prompts", fromlist=["ChatPromptTemplate"])
+            ChatPromptTemplate = getattr(langchain_core_prompts, "ChatPromptTemplate", None)
+            if ChatPromptTemplate is None:
+                raise ImportError("ChatPromptTemplate class not found in langchain_core.prompts")
             
             groq_llm = ChatGroq(
                 model="mixtral-8x7b-32768",
@@ -307,7 +323,7 @@ class GroqEnrichedEngine(NLPEngine):
                 api_key=self.groq_api_key
             )
             
-            prompt = ChatPromptTemplate.from_template(
+            prompt: Any = getattr(ChatPromptTemplate, "from_template")(  # type: ignore[union-attr]
                 """Analyze this text and extract 2-3 main themes and overall sentiment.
                 Be concise and diverse in theme selection.
                 
@@ -317,10 +333,11 @@ class GroqEnrichedEngine(NLPEngine):
                 {{"themes": ["theme1", "theme2"], "sentiment": -1.0 to 1.0}}"""
             )
             
-            chain = prompt | groq_llm
-            response = await chain.ainvoke({"text": raw_text[:500]})  # Limit to 500 chars for speed
+            chain: Any = prompt | groq_llm
+            response: Any = await getattr(chain, "ainvoke")({"text": raw_text[:500]})  # Limit to 500 chars for speed
             
-            parsed = json.loads(response.content)
+            content = getattr(response, "content", "{}")
+            parsed: Any = json.loads(str(content))
             groq_themes = parsed.get("themes", local_result.themes)
             groq_sentiment = parsed.get("sentiment", local_result.sentiment_score)
             
@@ -349,10 +366,17 @@ class NLPEngineFactory:
     def get_engine(cls) -> NLPEngine:
         """Get singleton NLP engine instance."""
         if cls._instance is None:
-            engine_type = os.getenv("NLP_ENGINE_TYPE", "groq_enriched").lower()
-            
-            if engine_type == "groq_enriched":
-                cls._instance = GroqEnrichedEngine()
+            config = get_config()
+            engine_type = config.nlp.engine_type
+
+            if engine_type == NLPEngineType.GROQ_ENRICHED:
+                if not config.nlp.groq_api_key:
+                    logger.warning(
+                        "Configured NLP engine as groq_enriched but GROQ_API_KEY is missing. Falling back to local NLP."
+                    )
+                    cls._instance = ProductionLocalNLPEngine()
+                else:
+                    cls._instance = GroqEnrichedEngine(config.nlp.groq_api_key)
             else:
                 cls._instance = ProductionLocalNLPEngine()
             

@@ -5,10 +5,16 @@ import { DEMO_STREAM } from "../../../utils/demo_data.ts";
 
 export const handler: Handlers = {
   async GET(_req) {
-    const _userId = await getSessionUser(_req);
+    const userId = await getSessionUser(_req);
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Demo mode — return template stream immediately
-    if (isDemoUser(_userId)) {
+    if (isDemoUser(userId)) {
       return new Response(JSON.stringify({ stream: DEMO_STREAM }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -24,16 +30,30 @@ export const handler: Handlers = {
         j.mood, 
         j.created_at as timestamp, 
         u.username as author_name,
-        u.avatar_url as author_avatar
+        u.avatar_url as author_avatar,
+        u.id as author_id
       FROM journal_entries j
       JOIN users u ON j.user_id = u.id
+      LEFT JOIN entanglements e ON (
+        ((e.requester_id = $1 AND e.addressee_id = j.user_id)
+          OR (e.requester_id = j.user_id AND e.addressee_id = $1))
+        AND e.status = 'accepted'
+      )
       WHERE j.is_public = true
+        AND (
+          u.preferences->'privacySecurity'->>'accountVisibility' = 'public'
+          OR u.id = $1
+          OR (
+            u.preferences->'privacySecurity'->>'accountVisibility' IN ('private', 'connections')
+            AND e.id IS NOT NULL
+          )
+        )
       ORDER BY j.created_at DESC
       LIMIT 50
     `;
 
     try {
-      const rawEntries = await queryDB(query);
+      const rawEntries = await queryDB(query, userId);
 
       const stream = rawEntries.map((e: unknown) => {
         const entry = e as Record<string, unknown>;

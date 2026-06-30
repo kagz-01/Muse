@@ -127,8 +127,21 @@ export const handler: Handlers = {
         values.push(email || "");
       }
       if (preferences !== undefined) {
+        const currentPrefRows = await queryDB(
+          "SELECT preferences FROM users WHERE id = $1",
+          userId,
+        );
+        const currentPreferences = currentPrefRows.length > 0
+          ? (currentPrefRows[0] as { preferences: Record<string, unknown> }).preferences || {}
+          : {};
+
+        const mergedPreferences = mergePreferences(
+          currentPreferences,
+          preferences as Record<string, unknown>,
+        );
+
         updates.push(`preferences = $${updates.length + 1}`);
-        values.push(preferences || {});
+        values.push(mergedPreferences);
       }
 
       if (updates.length === 0) {
@@ -149,3 +162,37 @@ export const handler: Handlers = {
     }
   },
 };
+
+function mergePreferences(
+  existing: Record<string, unknown>,
+  updates: Record<string, unknown>,
+): Record<string, unknown> {
+  const merged = { ...existing };
+
+  for (const [key, value] of Object.entries(updates)) {
+    if (
+      key === "privacySecurity" &&
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value)
+    ) {
+      merged.privacySecurity = {
+        ...((existing.privacySecurity as Record<string, unknown>) ?? {}),
+        ...value,
+      };
+      continue;
+    }
+
+    if (key === "profile" && value && typeof value === "object" && !Array.isArray(value)) {
+      merged.profile = {
+        ...((existing.profile as Record<string, unknown>) ?? {}),
+        ...value,
+      };
+      continue;
+    }
+
+    merged[key] = value;
+  }
+
+  return merged;
+}

@@ -178,3 +178,30 @@ This payload is attached to artifacts and journal entries as metadata.
 - `GroqEnrichedEngine` is optional and only active when `GROQ_API_KEY` is present.
 - The `IntelligencePipeline` is intentionally lightweight and declarative.
 - The design is optimized for mixed content: web artifacts, documents, and journal text.
+
+## Implementation notes
+
+- The current dual NLP storage pattern is a drift risk.
+  - `store_analysis_metadata()` currently writes to both inline JSONB fields (`artifacts.nlp_analysis`, `journal_entries.nlp_analysis`) and `artifact_nlp_metadata`.
+  - The team should decide on one canonical persistence model.
+  - Recommended pattern: keep inline analysis fields as the source of truth for content enrichment and synthesis, and reserve `artifact_nlp_metadata` for analytics/querying or history if needed.
+  - Runtime control is now available via `NLP_ENABLE_NLP_METADATA_TABLE`, which defaults to `false` and avoids writing to `artifact_nlp_metadata` unless explicitly enabled.
+
+- `GroqEnrichedEngine` depends on `GROQ_API_KEY`.
+  - If the key is missing, the engine silently falls back to local analysis and the `analysis_method` will vary between `local` and `groq-enriched` per environment.
+  - Confirm that `GROQ_API_KEY` is provisioned consistently across staging/production, or make the fallback explicit in logs and documentation.
+
+- Playwright-based scrapers currently lack retry/backoff documentation and robust handling.
+  - `social_scraper.py`, `tiktok_scraper.py`, and `generic_content_scraper.py` open a new browser session per request.
+  - This is a known improvement area for reliability and throughput.
+
+- There is no documented browser session caching layer for high-volume scraping.
+  - A browser context is recreated on each scrape request today.
+  - Adding a shared browser/context pool or request-level caching would reduce startup cost and resource churn.
+
+- A metadata-only preview endpoint is a useful future phase.
+  - If frontend preview use cases only need title/description/themes, avoid full scrape + analysis cost by returning a lightweight preview.
+
+- For phases 1 and 2, focus first on:
+  1. Choosing a single NLP source of truth.
+  2. Confirming `GROQ_API_KEY` behavior and making it explicit.

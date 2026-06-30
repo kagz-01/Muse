@@ -45,7 +45,19 @@ export const handler: Handlers = {
 
       // 2. Fetch potential collaborators (users other than current)
       const users = await queryDB(
-        `SELECT id, username, email, avatar_url FROM users WHERE id != $1 LIMIT 10`,
+        `SELECT u.id, u.username, u.email, u.avatar_url
+         FROM users u
+         LEFT JOIN entanglements e ON (
+           ((e.requester_id = $1 AND e.addressee_id = u.id)
+             OR (e.requester_id = u.id AND e.addressee_id = $1))
+           AND e.status = 'accepted'
+         )
+         WHERE u.id != $1
+           AND (
+             u.preferences->'privacySecurity'->>'accountVisibility' = 'public'
+             OR e.id IS NOT NULL
+           )
+         LIMIT 10`,
         userId,
       );
 
@@ -81,8 +93,12 @@ export const handler: Handlers = {
            sharedThemes = ["Next.js", "AI", "Design Systems"].sort(() => 0.5 - Math.random()).slice(0, 2);
         }
 
-        const partnerTextForProfile = partnerItems.map((pi: unknown) => `${(pi as Record<string, unknown>).title} ${(pi as Record<string, unknown>).note || ""}`).join("\n").slice(0, 500);
+        const partnerTextForProfile = partnerItems.map((pi: Record<string, unknown>) => `${pi.title} ${pi.note || ""}`).join("\n").slice(0, 500);
         const profile = await generateCognitiveProfile(partnerTextForProfile);
+
+        const topCitedNode = partnerItems.length > 0
+          ? String((partnerItems[0] as Record<string, unknown>).title || "Mental Models")
+          : "Mental Models";
 
         return {
           id: u.id,
@@ -97,7 +113,7 @@ export const handler: Handlers = {
           intelligenceProfile: profile.intelligenceProfile,
           matchPercentage,
           matchReason,
-          topCitedNode: partnerItems.length > 0 ? (partnerItems[0] as any).title : "Mental Models",
+          topCitedNode,
         };
       }));
 

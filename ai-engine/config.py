@@ -33,7 +33,8 @@ class NLPConfig:
     enable_spacy: bool
     enable_textblob: bool
     max_text_length: int  # Max chars to analyze
-    
+    enable_nlp_metadata_table: bool  # Persist to artifact_nlp_metadata table in addition to inline analysis
+
     @classmethod
     def from_env(cls):
         """Load from environment variables."""
@@ -53,6 +54,7 @@ class NLPConfig:
             enable_spacy=os.getenv("NLP_ENABLE_SPACY", "true").lower() == "true",
             enable_textblob=os.getenv("NLP_ENABLE_TEXTBLOB", "true").lower() == "true",
             max_text_length=int(os.getenv("NLP_MAX_TEXT_LENGTH", "10000")),
+            enable_nlp_metadata_table=os.getenv("NLP_ENABLE_NLP_METADATA_TABLE", "false").lower() == "true",
         )
 
 @dataclass

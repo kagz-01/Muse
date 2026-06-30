@@ -99,6 +99,8 @@ The app state is centralized in signals. Each feature has at least one signal fi
 - `frontend-gateway/signals/mirror.ts`
   - `mirrorSignal` stores engagement stats, activity, follower counts, and follower history.
   - `loadMirrorStats()` calculates mirror metrics from `journalSignal`, `roomsSignal`, `threadsSignal`, and `userSignal`.
+  - This is a client-side aggregation and does not currently represent a dedicated backend mirror/analytics endpoint.
+  - Because it is inferred from local signal state, it can drift from actual backend engagement metrics and should be treated as an inferred activity glance.
   - Mirror stats include views, likes, comments, collaborations, follows, circle joins, and recent activity entries.
 
 ### Connections / Community
@@ -115,10 +117,7 @@ The app state is centralized in signals. Each feature has at least one signal fi
   - `notificationsSignal` is the app notification queue.
   - `initializeTheme()`, `setTheme()`, `toggleTheme()` update the DOM theme, accent, and font size.
   - Appearance changes persist in `localStorage` under `muse-fresh-settings`.
-
-## Page and feature flow
-
-### Room flow
+- The app also bootstraps theme state in `frontend-gateway/routes/_app.tsx` before hydration, so the SSR shell and browser theme behavior are coupled.
 
 1. User visits `/rooms`.
 2. `RoomsGallery` renders `roomsSignal.value`.
@@ -195,7 +194,16 @@ The app state is centralized in signals. Each feature has at least one signal fi
 - Controlled by `soloModeSignal` in `signals/user.ts`.
 - Toggled by `toggleSoloMode()`.
 - Influences UI patterns in `ConnectionsHub`, `ProfilePage`, and other islands where mode-specific content appears.
-- Solo Mode is local state and is not currently persisted to the backend in this codebase.
+- Solo Mode state is purely client-side and is not persisted across page reloads or sessions.
+- This means Solo Mode is effectively a temporary UI mode, not a durable user preference.
+
+### Demo mode
+
+- Demo mode is a first-class path backed by `frontend-gateway/routes/api/auth/demo.ts`.
+- The demo session is persisted with the `muse_demo_session` cookie and identifies users as `__demo__`.
+- When `userSignal.value?.id === "__demo__"`, signals such as `threadsSignal`, `roomsSignal`, `itemsSignal`, `journalSignal`, and `mirrorSignal` load demo data and often persist it to `localStorage`.
+- Demo data is intentionally separate from live backend data and is sourced from `frontend-gateway/utils/demo_data.ts`.
+- Demo mode is persistent across page navigations, but the dataset remains client-side and is not synchronized with a backend demo store.
 
 ## UX and theme semantics
 
@@ -228,6 +236,8 @@ UI theme signals drive the whole app:
 - `customAccentHexSignal`: custom accent color on top of theme
 
 The theme system writes CSS variables to the document root and restores values from `localStorage`.
+- The DOM theme state is also bootstrapped on initial hydration in `frontend-gateway/routes/_app.tsx`.
+- This coupling means design-token changes to CSS variables or accent maps must be kept in sync with both signal logic and the SSR bootstrap script.
 
 ## Offline / sync resilience
 
@@ -237,6 +247,9 @@ The theme system writes CSS variables to the document root and restores values f
 - Writes (`POST`, `PUT`, `DELETE`, `PATCH`) are queued when network requests fail.
 - Returns a synthetic `202 Accepted` response so optimistic UI stays responsive.
 - Uses `pushToQueue()` and `registerIdSwapCallback()`.
+- Current id swap callbacks are registered in signal files for `journal`, `thread`, `item`, and `room`.
+- This means temporary optimistic IDs are resolved only if the queued operation later succeeds and the backend returns a real entity ID.
+- The UI can diverge from backend state until the queue flush completes, so reconciliation strategy should be explicit for temp-id swapping and failed writes.
 
 ### LocalStorage persistence
 

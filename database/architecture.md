@@ -94,6 +94,32 @@ users
 - `spark_reactions` / `spark_comments`: engagement signals on item content.
 - `room_collaborators`: shared room membership and roles.
 
+## Implementation notes
+
+- `entanglements` and `streak_entanglements` are intentionally separate tables.
+  - `entanglements` manages social link requests and status between two users.
+  - `streak_entanglements` tracks shared streak counters and mutual streak relationships.
+  - Keep them separate unless the team intentionally merges social state and streak state into a single graph with a shared lifecycle.
+
+- `threads.partner_id` and `room_collaborators` represent distinct collaboration models.
+  - `partner_id` is a single thread-level co-author/reference link.
+  - `room_collaborators` is a multi-user room access/role model.
+  - Do not conflate partner-based thread semantics with room membership/access control.
+
+- NLP storage is duplicated today.
+  - `artifacts.nlp_analysis` / `journal_entries.nlp_analysis` hold inline JSONB analysis payloads.
+  - `artifact_nlp_metadata` stores a separate analytic metadata record.
+  - Pick a single source of truth before extending writes to prevent drift.
+  - Recommended approach: use inline JSONB fields as canonical analysis for content ingestion and synthesis, while keeping `artifact_nlp_metadata` as a denormalized analytics index only if structured query performance is required.
+
+- JSONB indexing is partial.
+  - `artifacts.unstructured_data` is already indexed with GIN.
+  - If query patterns emerge for `rooms.custom_settings`, `threads.dialogue_layers`, `threads.synthesis`, or `threads.ai_blueprint`, add GIN/JSONB indexes for those columns proactively.
+
+- UUID generation currently uses `pgcrypto`.
+  - `uuid-ossp` is enabled in the schema but not presently used for primary key generation.
+  - Remove the unused extension or align generation strategy consistently across the schema.
+
 ## Architecture Blueprint
 
 Muse is a hybrid system that separates:

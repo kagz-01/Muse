@@ -5,8 +5,10 @@ Coordinates the flow:
 User Input → NLP Analysis → Storage → Synthesis Context → GPT Threads
 """
 
+import json
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, Optional, List
+from config import get_config
 from nlp_engine import NLPEngineFactory, InsightResult
 from database import (
     save_artifact_analysis,
@@ -32,6 +34,7 @@ class IntelligencePipeline:
     """Orchestrates the full intelligence pipeline."""
     
     def __init__(self):
+        self.config = get_config()
         self.nlp_engine = NLPEngineFactory.get_engine()
         self.analysis_cache: Dict[str, InsightResult] = {}
     
@@ -57,8 +60,10 @@ class IntelligencePipeline:
         Step 2: Enrich artifact with NLP insights.
         Pre-analyzes content to create context for synthesis.
         """
-        content = artifact.get("unstructured_data", "")
+        content: Any = artifact.get("unstructured_data", "")
         if isinstance(content, dict):
+            content = json.dumps(content)
+        else:
             content = str(content)
         
         insights = await self.analyze_content(content, artifact.get("id"))
@@ -87,13 +92,15 @@ class IntelligencePipeline:
 
             if artifact_id:
                 save_artifact_analysis(artifact_id, payload, insights.confidence, insights.analysis_method)
-                insert_artifact_nlp_metadata(artifact_id=artifact_id, journal_id=journal_id, insights=payload)
                 stored = True
+                if self.config.nlp.enable_nlp_metadata_table:
+                    insert_artifact_nlp_metadata(artifact_id=artifact_id, journal_id=journal_id, insights=payload)
 
-            if journal_id and not artifact_id:
+            if journal_id:
                 save_journal_analysis(journal_id, payload, insights.confidence, insights.analysis_method)
-                insert_artifact_nlp_metadata(artifact_id=None, journal_id=journal_id, insights=payload)
                 stored = True
+                if self.config.nlp.enable_nlp_metadata_table:
+                    insert_artifact_nlp_metadata(artifact_id=None, journal_id=journal_id, insights=payload)
 
             if not stored:
                 logger.warning("No artifact_id or journal_id provided for NLP metadata persistence")
@@ -114,10 +121,10 @@ class IntelligencePipeline:
         logger.info(f"Synthesizing {len(artifacts)} artifacts with NLP context")
         
         # Enrich all artifacts with NLP insights
-        enriched_artifacts = []
+        enriched_artifacts: List[Dict[str, Any]] = []
         for artifact in artifacts:
             enriched = await self.enrich_artifact(artifact)
-            enriched_artifacts.append(enriched)
+            enriched_artifacts.append(dict(enriched))
         
         # Pass enriched artifacts to synthesis
         threads = synthesize_artifacts(enriched_artifacts)
@@ -159,19 +166,23 @@ class IntelligencePipeline:
             "message": f"Entry analyzed. Found {len(insights.themes)} theme(s) with {insights.sentiment_score:.1%} sentiment"
         }
     
-    def generate_synthesis_context(self, artifacts: List[Dict[str, Any]]) -> str:
+    async def generate_synthesis_context(self, artifacts: List[Dict[str, Any]]) -> str:
         """
         Generate enriched context string for GPT synthesis.
         Includes NLP pre-analysis alongside raw content.
         """
-        context_lines = []
+        context_lines: List[str] = []
         
         for artifact in artifacts:
             artifact_id = artifact.get("id", "unknown")
-            content = artifact.get("unstructured_data", "")
+            content: Any = artifact.get("unstructured_data", "")
+            if isinstance(content, dict):
+                content = json.dumps(content)
+            else:
+                content = str(content)
             
             # Get NLP insights
-            insights = self.analyze_content(str(content), artifact_id)
+            insights = await self.analyze_content(content, artifact_id)
             
             # Build context block
             context = f"""
