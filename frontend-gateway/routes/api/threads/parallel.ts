@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
@@ -9,6 +11,9 @@ export const handler: Handlers = {
       const userId = await getSessionUser(req);
       if (!userId) {
         return new Response("Unauthorized", { status: 401 });
+      }
+      if (userId === "__demo__") {
+        return new Response(JSON.stringify({ error: "Demo users cannot start parallel synthesis" }), { status: 403 });
       }
 
       const body = await req.json();
@@ -37,6 +42,21 @@ export const handler: Handlers = {
         return new Response("Partner not found", { status: 404 });
       }
       const userB = userBRecords[0] as { id: string; name: string };
+
+      // Verify there is an accepted entanglement with this partner
+      const entanglementCheck = await queryDB(
+        `SELECT id FROM entanglements
+         WHERE ((requester_id = $1 AND addressee_id = $2)
+           OR (requester_id = $2 AND addressee_id = $1))
+           AND status = 'accepted'`,
+        userId,
+        partnerId,
+      );
+      if (entanglementCheck.length === 0) {
+        return new Response("Partner not authorized for parallel synthesis", {
+          status: 403,
+        });
+      }
 
       // Fetch User A Data (Public items)
       const userAItems = await queryDB(

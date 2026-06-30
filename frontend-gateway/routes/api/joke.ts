@@ -1,3 +1,5 @@
+/// <reference path="../../types/fresh.d.ts" />
+
 import { FreshContext } from "$fresh/server.ts";
 
 // Jokes courtesy of https://punsandoneliners.com/randomness/programmer-jokes/

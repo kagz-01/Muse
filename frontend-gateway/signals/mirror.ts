@@ -100,7 +100,7 @@ const initialState: MirrorStats = {
 
 export const mirrorSignal = signal<MirrorStats>(initialState);
 
-export const loadMirrorStats = (userId: string) => {
+export const loadMirrorStats = async () => {
   mirrorSignal.value = {
     ...mirrorSignal.value,
     isLoading: true,
@@ -108,6 +108,20 @@ export const loadMirrorStats = (userId: string) => {
   };
 
   try {
+    const response = await fetch(`/api/mirror`);
+    if (!response.ok) {
+      throw new Error(`Mirror API responded with ${response.status}`);
+    }
+
+    const data = await response.json() as Partial<MirrorStats>;
+
+    mirrorSignal.value = {
+      ...mirrorSignal.value,
+      ...data,
+      isLoading: false,
+      error: null,
+    };
+  } catch (err) {
     const journals = journalSignal.value;
     const rooms = roomsSignal.value;
     const threads = threadsSignal.value;
@@ -179,7 +193,7 @@ export const loadMirrorStats = (userId: string) => {
       .slice(0, 5);
 
     mirrorSignal.value = {
-      ...initialState,
+      ...mirrorSignal.value,
       stats: {
         views: totalViews,
         likes: totalLikes,
@@ -193,16 +207,11 @@ export const loadMirrorStats = (userId: string) => {
       followingCount: Math.max(rooms.length + threads.length, initialState.followingCount),
       followerHistory,
       isLoading: false,
-    };
-  } catch (err) {
-    mirrorSignal.value = {
-      ...mirrorSignal.value,
-      error: err instanceof Error ? err.message : "Unknown error",
-      isLoading: false,
+      error: err instanceof Error ? err.message : "Failed to load mirror stats",
     };
   }
 };
 
-export const refreshMirrorStats = (userId: string) => {
-  loadMirrorStats(userId);
+export const refreshMirrorStats = async () => {
+  await loadMirrorStats();
 };

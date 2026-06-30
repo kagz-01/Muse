@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo } from "preact/hooks";
 import * as Icons from "lucide-preact";
 import { loadMirrorStats, mirrorSignal } from "../../signals/mirror.ts";
 import {
@@ -21,10 +21,8 @@ import {
 import ActivityHeatmap from "./ActivityHeatmap.tsx";
 
 export default function MirrorDashboard() {
-  const currentUserId = "user-123";
-
   useEffect(() => {
-    loadMirrorStats(currentUserId);
+    void loadMirrorStats();
     loadGlobalStreak();
   }, []);
 
@@ -388,7 +386,7 @@ export default function MirrorDashboard() {
   ];
 
   // Interactive Aura State
-  const [activeTheme, setActiveTheme] = useState<string | null>(null);
+  const activeTheme = topThemes[0] || null;
   const resonanceScore = user?.resonance.resonanceScore || 0;
 
   const getAuraLevel = () => {
@@ -907,14 +905,7 @@ export default function MirrorDashboard() {
                   </h2>
                   <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 shadow-xl mb-12">
                     <RadarChart
-                      data={[
-                        { subject: "Politics", A: 80, fullMark: 100 },
-                        { subject: "Psychology", A: 90, fullMark: 100 },
-                        { subject: "Philosophy", A: 60, fullMark: 100 },
-                        { subject: "Technology", A: 50, fullMark: 100 },
-                        { subject: "Relationships", A: 85, fullMark: 100 },
-                        { subject: "Art", A: 65, fullMark: 100 },
-                      ]}
+                      data={radarData}
                       color={activeTheme ? "#22d3ee" : "#a855f7"}
                       title=""
                     />

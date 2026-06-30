@@ -14,6 +14,7 @@ async function initDB() {
       member_count INT DEFAULT 0,
       recent_activity TEXT,
       created_at TIMESTAMP DEFAULT now(),
+      created_by UUID REFERENCES users(id) ON DELETE SET NULL,
       required_streak INT DEFAULT 0,
       required_intelligence_profile TEXT
     )

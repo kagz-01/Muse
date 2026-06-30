@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { executeDB } from "../../../utils/db.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
@@ -9,6 +11,9 @@ export const handler: Handlers = {
       const userId = await getSessionUser(req);
       if (!userId) {
         return new Response("Unauthorized", { status: 401 });
+      }
+      if (userId === "__demo__") {
+        return new Response(JSON.stringify({ error: "Demo users cannot create rooms" }), { status: 403 });
       }
 
       const form = await req.formData();

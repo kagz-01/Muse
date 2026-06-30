@@ -1,3 +1,5 @@
+/// <reference path="../../types/fresh.d.ts" />
+
 import { FreshContext } from "$fresh/server.ts";
 
 export const handler = async (req: Request, _ctx: FreshContext) => {

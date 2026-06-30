@@ -1,3 +1,5 @@
+/// <reference path="../../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { getSessionUser } from "../../../../utils/auth.ts";
 import { queryDB } from "../../../../utils/db.ts";
@@ -16,6 +18,21 @@ export const handler: Handlers = {
     }
 
     try {
+      const access = await queryDB(
+        `SELECT i.id
+         FROM items i
+         LEFT JOIN rooms r ON i.room_id = r.id
+         LEFT JOIN room_collaborators rc ON r.id = rc.room_id
+         WHERE i.id = $1
+           AND (i.is_public = true OR i.user_id = $2 OR rc.user_id = $2)`,
+        itemId,
+        userId,
+      );
+
+      if (access.length === 0) {
+        return new Response("Unauthorized", { status: 403 });
+      }
+
       // Get annotations with author info
       const annotations = await queryDB(
         `SELECT 
@@ -25,7 +42,7 @@ export const handler: Handlers = {
          JOIN users u ON a.user_id = u.id
          WHERE a.item_id = $1
          ORDER BY a.created_at ASC`,
-        itemId
+        itemId,
       );
 
       return new Response(
@@ -43,7 +60,7 @@ export const handler: Handlers = {
         {
           status: 200,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     } catch (e) {
       console.error("Error fetching annotations:", e);
@@ -59,6 +76,9 @@ export const handler: Handlers = {
     if (!userId) {
       return new Response("Unauthorized", { status: 401 });
     }
+    if (userId === "__demo__") {
+      return new Response("Demo users cannot add annotations", { status: 403 });
+    }
 
     const itemId = ctx.params.id;
     if (!itemId) {
@@ -73,25 +93,32 @@ export const handler: Handlers = {
         return new Response("Annotation text is required", { status: 400 });
       }
 
-      // Check if item exists
-      const itemCheck = await queryDB("SELECT id FROM items WHERE id = $1", itemId);
-      if (itemCheck.length === 0) {
-        return new Response("Item not found", { status: 404 });
+      const access = await queryDB(
+        `SELECT i.id
+         FROM items i
+         LEFT JOIN rooms r ON i.room_id = r.id
+         LEFT JOIN room_collaborators rc ON r.id = rc.room_id
+         WHERE i.id = $1
+           AND (i.is_public = true OR i.user_id = $2 OR rc.user_id = $2)`,
+        itemId,
+        userId,
+      );
+
+      if (access.length === 0) {
+        return new Response("Unauthorized", { status: 403 });
       }
 
-      // Insert annotation
       const insertResult = await queryDB(
         `INSERT INTO item_annotations (item_id, user_id, annotation) 
          VALUES ($1, $2, $3) RETURNING *`,
         itemId,
         userId,
-        annotation
+        annotation,
       );
 
-      // Fetch author info to return with the new annotation
       const userResult = await queryDB(
         "SELECT id, username, avatar_url FROM users WHERE id = $1",
-        userId
+        userId,
       );
       const u = userResult[0] as any;
 
@@ -112,7 +139,7 @@ export const handler: Handlers = {
         {
           status: 200,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     } catch (e) {
       console.error("Error posting annotation:", e);

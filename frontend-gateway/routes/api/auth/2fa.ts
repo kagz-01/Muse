@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
 import { queryDB } from "../../../utils/db.ts";
@@ -31,10 +33,9 @@ export const handler: Handlers = {
           secret: newSecret,
           label: email,
           issuer: "Muse OS",
-          algorithm: "SHA1",
+          algorithm: "sha1",
           digits: 6,
           period: 30,
-          type: "totp",
         });
 
         return new Response(
@@ -56,7 +57,7 @@ export const handler: Handlers = {
           );
         }
 
-        const isValid = verify({ token, secret });
+        const isValid = await verify({ token, secret }) as unknown as boolean;
 
         if (isValid) {
           // In production: save secret to the `users` table

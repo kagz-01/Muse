@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
@@ -160,7 +162,7 @@ export const handler: Handlers = {
 
           const weight = contributionType === "synthesis" ? 2 : contributionType === "entanglement" ? 2.5 : contributionType === "artifact" ? 1.5 : 1;
 
-          const streakEventId = (await executeDB(
+          const insertRes = await executeDB(
             `INSERT INTO streak_events (user_id, contribution_type, content, destination, weight, summary) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
             userId as string,
             contributionType,
@@ -168,7 +170,8 @@ export const handler: Handlers = {
             normalizedDestination,
             weight,
             summary,
-          )).rows[0]?.id;
+          );
+          const streakEventId = (insertRes as { rows: Array<Record<string, unknown>> }).rows[0]?.id as string | undefined;
 
           await executeDB(
             `INSERT INTO streak_sparks (user_id, event_id, spark_type, summary, destination, visibility) VALUES ($1, $2, $3, $4, $5, $6)`,

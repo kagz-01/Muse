@@ -1,12 +1,14 @@
-import { FreshContext } from "$fresh/server.ts";
-
-const followsDatabase: Map<string, Set<string>> = new Map();
+import { getSessionUser } from "../../../utils/auth.ts";
+import { queryDB } from "../../../utils/db.ts";
 
 export const handler = async (req: Request) => {
+  const sessionUserId = await getSessionUser(req);
+  if (!sessionUserId) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+
   if (req.method !== "GET") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-    });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
   }
 
   try {
@@ -15,22 +17,15 @@ export const handler = async (req: Request) => {
     const targetUserId = url.searchParams.get("targetUserId");
 
     if (!userId || !targetUserId) {
-      return new Response(
-        JSON.stringify({ error: "userId and targetUserId required" }),
-        {
-          status: 400,
-        },
-      );
+      return new Response(JSON.stringify({ error: "userId and targetUserId required" }), { status: 400 });
     }
 
-    const isFollowing = followsDatabase.get(userId)?.has(targetUserId) ?? false;
+    const rows = await queryDB(`SELECT 1 FROM follows WHERE follower_id = $1 AND followee_id = $2 LIMIT 1`, userId, targetUserId);
+    const isFollowing = rows.length > 0;
 
-    return new Response(JSON.stringify({ isFollowing }), {
-      status: 200,
-    });
+    return new Response(JSON.stringify({ isFollowing }), { status: 200 });
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Invalid request" }), {
-      status: 400,
-    });
+    console.error("Error in follow status endpoint", err);
+    return new Response(JSON.stringify({ error: "Invalid request" }), { status: 400 });
   }
 };

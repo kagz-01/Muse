@@ -18,6 +18,14 @@ export async function GET(req: Request): Promise<Response> {
   if (!rawUserId) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
 
   const userId = (rawUserId as string).replace(/[^a-zA-Z0-9-]/g, "");
+  if (userId === "__demo__") {
+    // Demo users may read but not perform social mutations
+    const url = new URL(req.url);
+    const action = url.searchParams.get("action");
+    if (req.method === "POST") {
+      return new Response(JSON.stringify({ error: "Demo users cannot perform social actions" }), { status: 403 });
+    }
+  }
   const url = new URL(req.url);
   const action = url.searchParams.get("action");
 
@@ -72,7 +80,7 @@ export async function GET(req: Request): Promise<Response> {
         `SELECT i.id, i.title AS content, i.created_at,
            CASE WHEN i.room_id IS NULL THEN 'network' ELSE 'item' END as type
          FROM items i
-         WHERE i.user_id = $1
+         WHERE i.user_id = $1 AND i.is_public = true
          ORDER BY i.created_at DESC LIMIT 10`,
         partnerId
       );
@@ -122,6 +130,19 @@ export async function POST(req: Request): Promise<Response> {
     // --- React to a spark ---
     if (action === "react") {
       const cleanItemId = (itemId as string).replace(/[^a-zA-Z0-9-]/g, "");
+      const itemAccess = await queryDB(
+        `SELECT i.id
+         FROM items i
+         LEFT JOIN rooms r ON i.room_id = r.id
+         LEFT JOIN room_collaborators rc ON r.id = rc.room_id
+         WHERE i.id = $1 AND (i.is_public = true OR i.user_id = $2 OR rc.user_id = $2)`,
+        cleanItemId,
+        userId,
+      );
+      if (!itemAccess.length) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
+      }
+
       const existing = await queryDB(
         `SELECT id, emoji FROM spark_reactions WHERE item_id = $1 AND user_id = $2`,
         cleanItemId, userId
@@ -141,6 +162,19 @@ export async function POST(req: Request): Promise<Response> {
     // --- Comment on a spark ---
     if (action === "comment") {
       const cleanItemId = (itemId as string).replace(/[^a-zA-Z0-9-]/g, "");
+      const itemAccess = await queryDB(
+        `SELECT i.id
+         FROM items i
+         LEFT JOIN rooms r ON i.room_id = r.id
+         LEFT JOIN room_collaborators rc ON r.id = rc.room_id
+         WHERE i.id = $1 AND (i.is_public = true OR i.user_id = $2 OR rc.user_id = $2)`,
+        cleanItemId,
+        userId,
+      );
+      if (!itemAccess.length) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
+      }
+
       await executeDB(
         `INSERT INTO spark_comments (item_id, user_id, content) VALUES ($1, $2, $3)`,
         cleanItemId, userId, content

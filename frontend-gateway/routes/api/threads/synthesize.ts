@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
@@ -40,7 +42,7 @@ export const handler: Handlers = {
       }
 
       // Run through our new Deno LangChain AI Engine
-      const aiBlueprint = await synthesizeArtifacts(artifacts);
+      const aiBlueprint = await synthesizeArtifacts(artifacts as Record<string, unknown>[]);
 
       // Extract the artifact UUIDs
       const artifactIds = artifacts.map((a: any) => a.id);

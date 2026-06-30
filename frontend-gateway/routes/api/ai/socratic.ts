@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { FreshContext } from "$fresh/server.ts";
 import { generateDynamicSocraticQuestion } from "../../../utils/ai.ts";
 

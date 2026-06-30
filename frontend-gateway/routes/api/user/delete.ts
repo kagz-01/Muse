@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { executeDB } from "../../../utils/db.ts";
 import { getSessionUser } from "../../../utils/auth.ts";

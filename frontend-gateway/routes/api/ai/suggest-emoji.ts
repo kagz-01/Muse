@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { suggestEmojis } from "../../../utils/ai.ts";
 import { getSessionUser } from "../../../utils/auth.ts";

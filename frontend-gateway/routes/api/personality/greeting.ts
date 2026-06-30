@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { generatePersonalityGreeting } from "../../../utils/ai.ts";
 import { type GreetingPeriod } from "../../../utils/dynamicHumor.ts";

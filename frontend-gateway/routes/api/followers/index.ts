@@ -1,11 +1,20 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { FreshContext } from "$fresh/server.ts";
+import { getSessionUser } from "../../../utils/auth.ts";
 
 // Mock database for MVP
 const followsDatabase: Map<string, Set<string>> = new Map();
 
 export const handler = async (req: Request, ctx: FreshContext) => {
+  const userId = await getSessionUser(req);
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+    });
+  }
   const url = new URL(req.url);
-  const currentUserId = "user-123"; // Would come from auth in production
+  const currentUserId = userId;
 
   if (req.method === "POST") {
     const { targetUserId } = await req.json();
@@ -54,11 +63,14 @@ export const handler = async (req: Request, ctx: FreshContext) => {
     if (
       url.searchParams.has("userId") && url.searchParams.has("targetUserId")
     ) {
-      const userId = url.searchParams.get("userId");
-      const targetUserId = url.searchParams.get("targetUserId");
+        const userIdParam = url.searchParams.get("userId");
+        const targetUserId = url.searchParams.get("targetUserId");
 
-      const isFollowing = followsDatabase.get(userId)?.has(targetUserId) ??
-        false;
+        if (!userIdParam || !targetUserId) {
+          return new Response(JSON.stringify({ error: "userId and targetUserId required" }), { status: 400 });
+        }
+
+        const isFollowing = followsDatabase.get(userIdParam)?.has(targetUserId) ?? false;
 
       return new Response(JSON.stringify({ isFollowing }), {
         status: 200,
@@ -66,7 +78,7 @@ export const handler = async (req: Request, ctx: FreshContext) => {
     }
 
     // Get followers/following lists
-    const userId = ctx.params.id || currentUserId;
+    const userId = (ctx.params.id as string | undefined) || currentUserId;
 
     const userFollowing = followsDatabase.get(userId) || new Set();
     const followers = Array.from(followsDatabase.entries())

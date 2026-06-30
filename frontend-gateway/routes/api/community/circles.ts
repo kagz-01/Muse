@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
 import { getSessionUser, isDemoUser } from "../../../utils/auth.ts";
@@ -62,11 +64,12 @@ export const handler: Handlers = {
 
       // Create circle
       const result = await executeDB(
-        `INSERT INTO circles (name, description, theme, member_count, recent_activity) 
-         VALUES ($1, $2, $3, 1, 'Circle founded.') RETURNING id`,
+        `INSERT INTO circles (name, description, theme, member_count, recent_activity, created_by) 
+         VALUES ($1, $2, $3, 1, 'Circle founded.', $4) RETURNING id`,
         name,
         description,
         theme,
+        userId,
       );
 
       const circleId = (result as { rows: { id: string }[] }).rows[0].id;

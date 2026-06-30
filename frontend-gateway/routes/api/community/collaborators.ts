@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { queryDB } from "../../../utils/db.ts";
 import { getSessionUser, isDemoUser } from "../../../utils/auth.ts";
@@ -45,7 +47,7 @@ export const handler: Handlers = {
 
       // 2. Fetch potential collaborators (users other than current)
       const users = await queryDB(
-        `SELECT u.id, u.username, u.email, u.avatar_url
+        `SELECT u.id, u.username, u.avatar_url
          FROM users u
          LEFT JOIN entanglements e ON (
            ((e.requester_id = $1 AND e.addressee_id = u.id)
@@ -93,7 +95,7 @@ export const handler: Handlers = {
            sharedThemes = ["Next.js", "AI", "Design Systems"].sort(() => 0.5 - Math.random()).slice(0, 2);
         }
 
-        const partnerTextForProfile = partnerItems.map((pi: Record<string, unknown>) => `${pi.title} ${pi.note || ""}`).join("\n").slice(0, 500);
+        const partnerTextForProfile = partnerItems.map((pi) => `${(pi as Record<string, unknown>).title} ${(pi as Record<string, unknown>).note || ""}`).join("\n").slice(0, 500);
         const profile = await generateCognitiveProfile(partnerTextForProfile);
 
         const topCitedNode = partnerItems.length > 0
@@ -102,7 +104,7 @@ export const handler: Handlers = {
 
         return {
           id: u.id,
-          name: u.username || (u.email as string).split("@")[0],
+          name: u.username || String(u.id).slice(0, 8),
           avatar: u.avatar_url ||
             "https://api.dicebear.com/7.x/avataaars/svg?seed=" + u.username,
           role: profile.intelligenceProfile,

@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
 import { encodeHex } from "https://deno.land/std@0.214.0/encoding/hex.ts";

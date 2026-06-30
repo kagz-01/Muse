@@ -21,9 +21,8 @@ interface Artifact {
   createdAt: string;
 }
 
-// Mock database for artifacts
-const artifactsDatabase = new Map<string, Artifact>();
-let artifactCounter = 0;
+import { getSessionUser } from "../../../utils/auth.ts";
+import { executeDB } from "../../../utils/db.ts";
 
 export const handler = async (req: Request) => {
   if (req.method !== "POST") {
@@ -31,8 +30,15 @@ export const handler = async (req: Request) => {
       status: 405,
     });
   }
-
   try {
+    const userId = await getSessionUser(req);
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+    if (userId === "__demo__") {
+      return new Response(JSON.stringify({ error: "Demo users cannot create artifacts" }), { status: 403 });
+    }
+
     const { metadata, roomId }: ArtifactCreateRequest = await req.json();
 
     if (!metadata || !metadata.url) {
@@ -42,23 +48,25 @@ export const handler = async (req: Request) => {
       );
     }
 
-    const artifactId = `artifact-${++artifactCounter}`;
-    const artifact: Artifact = {
-      id: artifactId,
-      title: metadata.title,
-      url: metadata.url,
-      type: "link",
-      metadata,
-      roomId,
-      createdAt: new Date().toISOString(),
-    };
+    // Insert artifact into DB
+    const result = await executeDB(
+      `INSERT INTO artifacts (title, url, type, metadata, room_id, user_id, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING id, created_at`,
+      metadata.title,
+      metadata.url,
+      "link",
+      JSON.stringify(metadata),
+      roomId || null,
+      userId,
+    );
 
-    artifactsDatabase.set(artifactId, artifact);
+    const id = (result as { rows: { id: string; created_at: string }[] }).rows[0].id;
+    const createdAt = (result as { rows: { id: string; created_at: string }[] }).rows[0].created_at;
 
-    return new Response(JSON.stringify(artifact), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ id, title: metadata.title, url: metadata.url, type: "link", metadata, roomId, createdAt }),
+      { status: 201, headers: { "Content-Type": "application/json" } },
+    );
   } catch (err) {
     return new Response(
       JSON.stringify({

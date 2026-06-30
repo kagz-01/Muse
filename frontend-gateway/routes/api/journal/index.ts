@@ -1,3 +1,5 @@
+/// <reference path="../../../types/fresh.d.ts" />
+
 import { Handlers } from "$fresh/server.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
 import { queryDB } from "../../../utils/db.ts";
@@ -7,8 +9,11 @@ export const handler: Handlers = {
   async POST(req) {
     try {
       const userId = await getSessionUser(req);
-      if (!userId || userId === "__demo__") {
+      if (!userId) {
         return new Response("Unauthorized", { status: 401 });
+      }
+      if (userId === "__demo__") {
+        return new Response(JSON.stringify({ error: "Demo users cannot create journal entries" }), { status: 403 });
       }
 
       const body = await req.json();

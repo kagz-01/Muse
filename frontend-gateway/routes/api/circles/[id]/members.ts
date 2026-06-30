@@ -1,47 +1,21 @@
-// Mock database
-const mockMembers: Record<
-  string,
-  Array<{
-    userId: string;
-    name: string;
-    username: string;
-    avatar: string;
-    joinedAt: string;
-    role: "founder" | "moderator" | "member";
-    resonanceScore: number;
-  }>
-> = {
-  "circle-1": [
-    {
-      userId: "user-456",
-      name: "Alex Chen",
-      username: "alexchen",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
-      joinedAt: new Date(Date.now() - 30 * 24 * 3600000).toISOString(),
-      role: "founder",
-      resonanceScore: 95,
-    },
-    {
-      userId: "user-789",
-      name: "Sam Rodriguez",
-      username: "samrod",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
-      joinedAt: new Date(Date.now() - 15 * 24 * 3600000).toISOString(),
-      role: "moderator",
-      resonanceScore: 88,
-    },
-  ],
-};
+/// <reference path="../../../../types/fresh.d.ts" />
 
-export const handler = async (req: Request, ctx: any) => {
+import { FreshContext } from "$fresh/server.ts";
+import { getSessionUser } from "../../../../utils/auth.ts";
+import { queryDB } from "../../../../utils/db.ts";
+
+export const handler = async (req: Request, ctx: FreshContext) => {
   if (req.method !== "GET") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
     });
   }
-
   try {
     const circleId = ctx.params.id;
+    const userId = await getSessionUser(req);
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
 
     if (!circleId) {
       return new Response(JSON.stringify({ error: "circleId required" }), {
@@ -49,13 +23,30 @@ export const handler = async (req: Request, ctx: any) => {
       });
     }
 
-    const members = mockMembers[circleId] || [];
+    const rows = await queryDB(
+      `SELECT u.id AS user_id, u.username, u.name, u.avatar_url, cm.joined_at, cm.role, u.resonance_score
+       FROM circle_members cm
+       JOIN users u ON cm.user_id = u.id
+       WHERE cm.circle_id = $1 ORDER BY cm.joined_at ASC LIMIT 200`,
+      circleId,
+    );
+
+    const members = rows.map((r: any) => ({
+      userId: r.user_id,
+      name: r.name,
+      username: r.username,
+      avatar: r.avatar_url,
+      joinedAt: r.joined_at,
+      role: r.role,
+      resonanceScore: r.resonance_score,
+    }));
 
     return new Response(JSON.stringify({ members }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
+    console.error("Error fetching circle members:", err);
     return new Response(JSON.stringify({ error: "Invalid request" }), {
       status: 400,
     });

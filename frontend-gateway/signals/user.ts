@@ -1,4 +1,5 @@
 import { signal } from "@preact/signals";
+import { safeFetch } from "../utils/safeFetch.ts";
 
 export interface ResonanceMetrics {
   views: number;
@@ -297,13 +298,19 @@ export async function syncCurrentUserFromBackend(): Promise<void> {
 
 async function persistPrivacySecurity(updates: Partial<PrivacySecurity>) {
   try {
-    await fetch("/api/user/settings", {
+    const body = { preferences: { privacySecurity: updates } };
+    const response = await safeFetch("/api/user/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ preferences: { privacySecurity: updates } }),
+      body: JSON.stringify(body),
+      entity: "settings",
     });
+
+    if (!response.ok && response.status !== 202) {
+      console.warn("[persistPrivacySecurity] Backend update failed", response.status);
+    }
   } catch {
-    // Ignore failures; client state remains authoritative until next sync.
+    // Ignore failures; the client state remains authoritative until the queue flushes.
   }
 }
 
