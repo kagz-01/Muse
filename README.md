@@ -1,107 +1,160 @@
-# Muse Collective 3.0: The Industrial-Grade Intelligence Loop
+# Muse Collective 3.0
 
-**Muse** is a sovereign knowledge environment designed to transform raw consumption into collective intelligence. It replaces passive data storage with a proactive **Synthesis Engine**, allowing users to capture signals, contemplate patterns, and broadcast immutable thoughts to a global collective.
+**Muse** is a knowledge workspace built to transform captured signals into personal and collective intelligence. It combines a Deno Fresh frontend, a Python-powered AI engine, and a modular blockchain/security workspace to support synthesis, reflection, and community.
 
-## 🌀 The Loop: Your Cognitive Workflow (Day 1 Journey)
+## What’s in this repository
 
-Muse follows a strictly enforced four-phase cognitive cycle. As a user, your journey flows seamlessly through these states:
+- `frontend-gateway/` — Deno Fresh frontend and app shell
+- `ai-engine/` — Python AI and NLP engine, analysis pipeline, scraper modules
+- `blockchain-security/` — Rust smart-contract and blockchain security tooling
+- `database/` — SQL schema and database initialization scripts
 
-1. **Collect (The "Inlet" Phase)**: Capture raw signals from the social web (YouTube, Medium, GitHub, Twitter). When you paste a link, the **Synthesis Engine** extracts its semantic meaning and prompts you to store it as an Artifact in a specific **Sovereign Knowledge Room**.
-2. **Contemplate (The "Internal" Phase)**: Dive into your private rooms or the **Journal Terminal**. Here, the **Real-time AI Feedback System** acts as a silent co-pilot. As you type and connect artifacts, it detects patterns, calculates a "Blueprint Score," and asks Socratic questions to deepen your thought process. 
-3. **Synthesize (The "Integration" Phase)**: Use the **Synthesis Engine** (accessed via the cinematic Radial Menu) to weave diverse artifacts and journals into **Woven Threads**—living documents of complex thought.
-4. **Create (The "Outlet" Phase)**: When you are ready, transform your private syntheses into **Immutable Thoughts**, broadcasting them to the **Collective Thought Stream**. Every published thought carries a unique **Ledger ID**, providing cryptographic proof of provenance (blockchain integration). Your thoughts remain yours forever.
+## Core product flows
 
-## 🏗️ Core Infrastructure & Architecture
+Muse centers on an integrated flow across Rooms, Threads, Journal, Streaks, Mirror, Profile, Settings, and Community.
 
-### The Synthesis Engine & Radial Menu
-A cinematic, globally accessible navigation layer that allows frictionless movement between the four phases of the loop.
+1. **Rooms**
+   - Capture artifacts and source material in themed knowledge rooms.
+   - Rooms are the entry point for organizing raw signals and collecting context.
 
-### Sovereign Knowledge Rooms (The Vaults)
-Personal data vaults where raw signals are stored. Features include:
-- **Resonance Clusters**: Automated grouping of related artifacts.
-- **Privacy Shrouds**: Granular control over visibility (100% private until explicitly published).
+2. **Threads**
+   - Connect artifacts and journal reflections into synthesis threads.
+   - Threads become living documents that preserve the relationships between ideas.
 
-### The Collective Soul Profile & Wisdom Map
-A high-fidelity visualization of your intellectual character (e.g., "The Synthesizer"). The **Wisdom Map** displays pulsing node clusters showing how your patterns connect with others across the network.
+3. **Journal**
+   - Record private reflections, synthesis notes, and daily entries.
+   - Journal entries feed streak tracking and mirror analytics.
 
-### The Mirror Dashboard
-Your personal analytics center. It reflects your real-time interactions with the app, showing engagement stats, activity timelines, follower growth, and your overall **Resonance Score**.
+4. **Streaks & Momentum**
+   - Track ongoing writing, capture momentum, and surface streak-based progress.
+   - Streaks are part of the personal growth loop and influence mirror analytics.
 
-## ✨ MVP Features (The 5 Phases Completed)
+5. **Mirror**
+   - Reflect user engagement, resonance, activity history, and profile metrics.
+   - The Mirror dashboard aggregates Rooms, Threads, Journal, and community signals.
 
-The MVP is 100% complete (49/49 features built) across 5 core development phases:
+6. **Profile & Settings**
+   - Manage your public profile, privacy settings, appearance, and notifications.
+   - Solo Mode can be toggled to shift the experience toward personal reflection.
 
-1. **Phase 1: Followers System** - Follow creators, filter feeds by following status, build your community.
-2. **Phase 2: Mirror Dashboard** - Real-time engagement analytics with activity timeline and growth metrics.
-3. **Phase 3: Synthesis Feature** - Intelligent link parsing, multi-source artifact creation, paste-to-synthesize workflow.
-4. **Phase 4: Circle Join Action** - Interactive circle membership, activity feeds, resonance-based connections.
-5. **Phase 5: Real-time AI Feedback** - Multi-stage analysis pipeline, pattern detection, blueprint matching with confidence scores.
+7. **Community**
+   - Connect with circles, collaborators, and shared themes.
+   - Community features are surfaced through `ConnectionsHub` and the collective activity stream.
 
-## 🛠️ Technology Stack & State Management
+## Key features implemented
 
-The frontend is an industrial-grade application built for maximum reactivity and performance:
-- **Frontend Framework**: [Deno Fresh](https://fresh.deno.dev/)
-- **UI & State**: Preact + Preact Signals
-- **Aesthetics**: Vanilla CSS + Tailwind-compatible utility layers for brutalist, bento styling.
-- **Icons**: [Lucide-Preact](https://lucide.dev/)
+- `frontend-gateway` route architecture with authenticated app layout
+- Signal-driven state management across rooms, threads, journal, streaks, mirror, user, and UI themes
+- Offline-safe write queue and optimistic sync in `utils/safeFetch.ts`
+- Demo mode with localStorage persistence for rooms, threads, journal, and settings
+- Personality-driven prompts and humor system used in dashboard, journal empty states, and setup banners
+- AI-backed personality greeting API at `/api/personality/greeting`
+- Modular page islands for high interactivity and client-side hydration
 
-### Signal-Based State Management
-To prevent prop-drilling, the platform utilizes **17 global Signal modules** located in `frontend-gateway/signals/`:
-- `ai-feedback.ts`, `circle-membership.ts`, `followers.ts`, `synthesis.ts`, `mirror.ts`, `notifications.ts`, etc.
+## Architecture overview
 
-### Component Organization
-**50+ robust components** organized by domain in `frontend-gateway/components/`:
-- Followers, Circles, Threads, AI Feedback, Notifications, Community, Synthesis.
+### Frontend
 
-## 🔗 API Contracts (Ready for Backend)
+The frontend uses Deno Fresh with route-based pages and hydrated islands.
 
-All `/routes/api/` endpoints are currently mock implementations defined by strict JSON contracts. They are ready for a 1:1 replacement with real backend databases and Python AI engines:
+- `frontend-gateway/routes/(app)/` contains authenticated pages like `/rooms`, `/threads`, `/journal`, `/mirror`, `/profile`, `/settings`, `/journal-community`, and `/connections`
+- `frontend-gateway/islands/` contains interactive UI islands and components
+- `frontend-gateway/signals/` holds centralized reactive state using `@preact/signals`
+- `frontend-gateway/utils/` contains shared helpers and sync helpers like `safeFetch.ts`, `dynamicHumor.ts`, and `contextualPrompts.ts`
 
-### Followers & Circles
-- `POST /api/followers/follow` & `/unfollow`
-- `GET /api/followers/status/:userId`
-- `POST /api/circles/:circleId/join` & `/leave`
+### AI engine
 
-### Synthesis & AI
-- `POST /api/synthesis/parse` - Extracts link metadata
-- `POST /api/synthesis/create-artifact`
-- `GET /api/ai/analyze/:artifactId` - Starts 4-stage pipeline
+The `ai-engine/` folder contains the NLP and synthesis engine architecture used for analysis, scraper routing, and data enrichment. It includes:
 
-### Analytics
-- `GET /api/mirror` - Fetches engagement stats and timeline
+- `main.py` — entry point and API server behavior
+- `synthesizer.py` — synthesis orchestration
+- `pipeline.py` / pipeline logic for multi-stage document analysis
+- `database.py` — local metadata storage
+- `scrapers/` — content scrapers for web, social, documents, and YouTube
 
-## 🚀 Getting Started
+### Blockchain/security
 
-### Development Mode
-To run the Deno Frontend locally:
+The `blockchain-security/` workspace contains Rust tooling and contract projects for blockchain proof and security experimentation.
+
+## Current system status
+
+- Core frontend flows are implemented and actively wired:
+  - Rooms → items → threads
+  - Journal → streaks → mirror
+  - Profile/settings/community UI and signals
+- Personality system is live in the frontend, not just planned
+- Offline queueing and demo persistence are part of the UX
+- The backend API layer is ready for integration with a full Python/DB stack
+
+## Tech stack
+
+- Frontend: Deno Fresh, Preact, Preact Signals
+- UI: vanilla CSS with Tailwind-style utility classes
+- AI engine: Python 3 with custom NLP and scraper modules
+- Blockchain tooling: Rust + Cargo
+- Data: SQL schema in `database/schema.sql`
+
+## Getting started
+
+### Frontend
+
 ```bash
 cd frontend-gateway
 deno task start
 ```
-The app will be available at `http://localhost:8000`
 
-### Test the 4 Core Flows
-1. **Community (`/connections`)**: View the Thought Stream, filter by followers, and join Circles.
-2. **Synthesis (`/rooms`)**: Copy a URL and paste it to watch the Synthesis Engine parse and store it.
-3. **AI Analysis (`/ai-analysis`)**: Start an analysis and watch the 4-stage pattern detection pipeline.
-4. **Analytics (`/mirror`)**: View your engagement stats and follower growth timeline.
+Open `http://localhost:8000`.
 
-## ⚡ Performance Optimization
-- **Lazy Loading**: Components load on-demand via Intersection Observers.
-- **API Response Caching**: Intelligent TTL-based caching reduces network calls (`utils/cache.ts`).
-- **Animation Optimization**: RequestAnimationFrame (RAF) throttling for smooth 60fps performance on cubic-bezier animations.
+### AI engine
 
-## 🔐 Security Roadmap (Moving to Production)
+```bash
+cd ai-engine
+python main.py
+```
 
-**Current State**: In-memory data, mock authentication (user-123).
-**Next Steps**:
-- [ ] HTTPS/TLS Enforcement & OAuth2 Authentication
-- [ ] Encrypted Database Backend (PostgreSQL/MongoDB)
-- [ ] WebSocket integration for real-time collaborative features
-- [ ] Real AI Pipeline implementation
+> If your environment uses a virtual environment, activate it before starting the Python service.
 
----
+## Developer quickstart
 
-*“Where diverse signals from your rooms converge into living documents of collective intelligence.”*
+### Frontend quickstart
 
-**Platform Status**: ✅ MVP Ready | **Version**: 2.0 (Phase Alpha) | **Last Updated**: 2026-05-22
+```bash
+cd frontend-gateway
+deno task start
+```
+
+### AI engine quickstart
+
+```bash
+cd ai-engine
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
+
+### Docker quickstart
+
+```bash
+docker compose up --build
+```
+
+### Database quickstart
+
+The database schema is in `database/schema.sql` and targets PostgreSQL / CockroachDB.
+
+```bash
+psql your_database_name < database/schema.sql
+```
+
+If you need a local Postgres instance, use Docker or your preferred local setup.
+
+## Important reference docs
+
+- `frontend-gateway/FRONTEND_GATEWAY_ARCHITECTURE.md`
+- `ai-engine/NLP_ENGINE_ARCHITECTURE.md`
+- `ai-engine/SCRAPERS_ARCHITECTURE.md`
+
+## Notes
+
+This repository is built as a connected knowledge workflow with a strong focus on reactive frontend state, adaptive personalization, and pattern-driven intelligence. The current README reflects the implemented system flow and the actual structure of the repository.

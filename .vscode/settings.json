@@ -16,5 +16,15 @@
   },
   "css.customData": [
     ".vscode/tailwind.json"
-  ]
+  ],
+  "python.defaultInterpreterPath": "${workspaceFolder}/ai-engine/venv/bin/python",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/ai-engine"
+  ],
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.useImportHeuristic": true,
+  "deno.enable": true,
+  "deno.unstable": true,
+  "deno.config": "${workspaceFolder}/frontend-gateway/deno.json",
+  "deno.enablePaths": ["${workspaceFolder}/frontend-gateway"]
 }

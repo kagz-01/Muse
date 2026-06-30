@@ -9,8 +9,6 @@ import logging
 from typing import Dict, Any, Optional, List
 from nlp_engine import NLPEngineFactory, InsightResult
 from database import (
-    queryDB,
-    save_to_db,
     save_artifact_analysis,
     save_journal_analysis,
     insert_artifact_nlp_metadata,

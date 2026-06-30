@@ -5,6 +5,15 @@
 .env.production.local
 .env.local
 
+# Python virtual environments
+.venv/
+ai-engine/venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Fresh build directory
 _fresh/
 # npm dependencies

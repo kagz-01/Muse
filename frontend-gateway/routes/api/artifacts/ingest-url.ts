@@ -6,7 +6,7 @@ const AI_ENGINE_URL = Deno.env.get("AI_ENGINE_URL") ||
   "https://muse-ai-engine.onrender.com";
 
 export const handler: Handlers = {
-  async POST(req) {
+  async POST(req: Request) {
     try {
       const userId = await getSessionUser(req);
       if (!userId) {

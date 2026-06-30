@@ -228,7 +228,7 @@ class ProductionLocalNLPEngine(NLPEngine):
         try:
             # Multi-strategy theme extraction
             tfidf_themes, tfidf_conf = self._extract_themes_tfidf(raw_text)
-            linguistic_themes = self._extract_linguistic(raw_text)
+            linguistic_themes = self._extract_themes_linguistic(raw_text)
             
             # Combine strategies
             all_themes = set(tfidf_themes) | set(linguistic_themes)
