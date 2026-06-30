@@ -1,52 +1,59 @@
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.formatters import TextFormatter
+import logging
 import re
+from typing import Any, Dict, Optional
 
-def extract_video_id(url: str) -> str:
+logger = logging.getLogger(__name__)
+
+
+def extract_video_id(url: str) -> Optional[str]:
     """Extracts the YouTube video ID from a URL."""
-    # Matches ?v=, &v=, or youtu.be/
     regex = r"(?:v=|\/)([0-9A-Za-z_-]{11}).*"
     match = re.search(regex, url)
-    if match:
-        return match.group(1)
-    return None
+    return match.group(1) if match else None
 
-def scrape_youtube_transcript(url: str) -> dict:
+
+def scrape_youtube_transcript(url: str) -> Dict[str, Any]:
     """
-    Extracts the closed-captions/transcript from a YouTube video.
+    Extracts the closed-captions/transcript from a YouTube video and returns
+    a production-friendly payload with metadata.
     """
     try:
         video_id = extract_video_id(url)
         if not video_id:
             return {
                 "status": "error",
-                "message": "Could not extract valid YouTube video ID.",
-                "url": url
+                "type": "youtube_transcript",
+                "message": "Could not extract a valid YouTube video ID.",
+                "url": url,
             }
 
-        # Fetch transcript
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        
-        # Format into pure text block
+        from youtube_transcript_api import YouTubeTranscriptApi
+        from youtube_transcript_api.formatters import TextFormatter
+
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=["en", "en-US"])
         formatter = TextFormatter()
         text_formatted = formatter.format_transcript(transcript)
-
-        # Basic cleanup: remove massive repeated newlines
-        clean_text = re.sub(r'\n+', ' ', text_formatted)
+        clean_text = re.sub(r"\n+", " ", text_formatted).strip()
 
         return {
             "status": "success",
             "type": "youtube_transcript",
-            "title": f"YouTube Video ({video_id})", # YouTube Data API needed for real title, skipping for now to save quota
+            "title": f"YouTube Video ({video_id})",
             "author": "Unknown Channel",
             "content": clean_text,
-            "url": url
+            "url": url,
+            "metadata": {
+                "video_id": video_id,
+                "source": "youtube_transcript_api",
+                "content_length": len(clean_text),
+            },
         }
 
-    except Exception as e:
+    except Exception as exc:
+        logger.exception("YouTube scraper failed for %s", url)
         return {
             "status": "error",
             "type": "youtube_transcript",
-            "message": str(e),
-            "url": url
+            "message": str(exc),
+            "url": url,
         }

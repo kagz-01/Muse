@@ -1,46 +1,48 @@
-from unstructured.partition.auto import partition
-import tempfile
+import logging
 import os
+import tempfile
+from typing import Any, Dict
 
-def parse_document(file_bytes: bytes, filename: str) -> dict:
+logger = logging.getLogger(__name__)
+
+
+def parse_document(file_bytes: bytes, filename: str) -> Dict[str, Any]:
     """
-    Uses the 'unstructured' library to automatically detect the file type 
-    (PDF, DOCX, XLSX, TXT, etc.) and extract the pure text content.
+    Uses the unstructured library to detect and extract text from uploaded
+    documents such as PDFs, DOCX, XLSX, and TXT files in a production-safe way.
     """
     try:
-        # Unstructured often needs a file path to inspect extensions and use specific parsers.
-        # We write the uploaded bytes to a temporary file.
-        # Ensure we keep the extension so auto partition can hint from it.
         ext = os.path.splitext(filename)[1]
         with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp_file:
             tmp_file.write(file_bytes)
             tmp_path = tmp_file.name
 
         try:
-            # Partition automatically detects format and extracts elements
-            elements = partition(filename=tmp_path)
-            
-            # Join all text elements together
-            clean_text = "\n\n".join([str(el) for el in elements if str(el).strip()])
-            
+            from unstructured.partition.auto import partition
+
+            elements = partition(filename=tmp_path, strategy="auto")
+            clean_text = "\n\n".join(str(el) for el in elements if str(el).strip())
             return {
                 "status": "success",
                 "type": "document",
                 "title": filename,
                 "author": "Extracted from Document",
-                "content": clean_text[:50000], # Cap length to avoid massive overload
-                "filename": filename
+                "content": clean_text[:50000],
+                "filename": filename,
+                "metadata": {
+                    "source": "unstructured",
+                    "content_length": len(clean_text),
+                },
             }
-        
         finally:
-            # Clean up the temp file
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
 
-    except Exception as e:
+    except Exception as exc:
+        logger.exception("Document parsing failed for %s", filename)
         return {
             "status": "error",
             "type": "document",
-            "message": f"Document Parsing Failed: {str(e)}",
-            "filename": filename
+            "message": f"Document parsing failed: {exc}",
+            "filename": filename,
         }

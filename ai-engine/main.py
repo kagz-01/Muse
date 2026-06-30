@@ -5,7 +5,7 @@ import logging
 import os
 from datetime import datetime
 
-from scrapers import scrape_webpage, scrape_youtube_transcript, scrape_social_media, parse_document
+from scrapers import parse_document, scrape_url
 from database import get_room_artifacts, save_threads
 from synthesizer import synthesize_artifacts
 from nlp_engine import NLPEngineFactory
@@ -78,17 +78,7 @@ def scrape_url(request: ScrapeRequest):
     if not url:
         raise HTTPException(status_code=400, detail="Missing URL")
 
-    # Route: YouTube Video
-    if "youtube.com" in url or "youtu.be" in url:
-        result = scrape_youtube_transcript(url)
-    
-    # Route: Heavy JS Social Media Platforms
-    elif any(domain in url for domain in ["twitter.com", "x.com", "reddit.com", "linkedin.com", "instagram.com"]):
-        result = scrape_social_media(url)
-        
-    # Route: Standard Web Article (Fallback)
-    else:
-        result = scrape_webpage(url)
+    result = scrape_url(url)
 
     if result.get("status") == "error":
         raise HTTPException(status_code=400, detail=result.get("message"))

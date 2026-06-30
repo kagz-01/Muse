@@ -1,10 +1,8 @@
-import httrtpx
+import asyncio
 import json
 import re
-import asyncio
 from typing import Dict, Any, Optional
-from datetime import datetime, timedelta
-from functools import lru_cache
+from datetime import datetime
 
 # Rate limiting: 1 request per 3 seconds per domain
 REQUEST_DELAY_SECONDS = 3
@@ -123,6 +121,8 @@ async def extract_pinterest_metadata(
     
     headers = _build_headers()
     
+    import httpx
+
     try:
         # Use httpx with reasonable defaults
         async with httpx.AsyncClient(
@@ -209,6 +209,11 @@ async def extract_pinterest_metadata(
             "status": "unknown",
             "message": str(e)
         }
+
+
+def scrape_pinterest_metadata(url: str) -> Dict[str, Any]:
+    """Compatibility wrapper for the AI engine scraper contract."""
+    return asyncio.run(extract_pinterest_metadata(url))
 
 
 # Example usage for FastAPI
