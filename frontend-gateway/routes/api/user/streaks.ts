@@ -11,7 +11,8 @@ import {
 async function generateSparkSummary(contributionType: string, content: string, destination: string) {
   const fallback = buildSparkSummary(contributionType, content, destination);
 
-  const aiEngineUrl = Deno.env.get("AI_ENGINE_URL") || "http://127.0.0.1:8000";
+  const aiEngineUrl = Deno.env.get("AI_ENGINE_URL") ||
+    "https://muse-ai-engine.onrender.com";
   try {
     const response = await fetch(`${aiEngineUrl}/api/streak-spark`, {
       method: "POST",

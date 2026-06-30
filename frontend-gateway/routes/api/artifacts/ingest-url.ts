@@ -2,7 +2,8 @@ import { Handlers } from "$fresh/server.ts";
 import { executeDB } from "../../../utils/db.ts";
 import { getSessionUser } from "../../../utils/auth.ts";
 
-const AI_ENGINE_URL = Deno.env.get("AI_ENGINE_URL") || "http://127.0.0.1:8001";
+const AI_ENGINE_URL = Deno.env.get("AI_ENGINE_URL") ||
+  "https://muse-ai-engine.onrender.com";
 
 export const handler: Handlers = {
   async POST(req) {

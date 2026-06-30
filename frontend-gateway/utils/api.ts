@@ -6,9 +6,9 @@ function getEnv(name: string): string | undefined {
 }
 
 export const AI_ENGINE_URL = getEnv("AI_ENGINE_URL") ||
-  "http://localhost:8000";
+  "https://muse-ai-engine.onrender.com";
 export const BLOCKCHAIN_URL = getEnv("BLOCKCHAIN_URL") ||
-  "http://localhost:3000";
+  "https://muse-blockchain-security.onrender.com";
 
 export interface AIInsightsResponse {
   status: string;
