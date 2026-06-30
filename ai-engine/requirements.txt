@@ -9,8 +9,8 @@ youtube-transcript-api==0.6.2
 beautifulsoup4==4.12.3
 playwright==1.42.0
 unstructured[all-docs]
+numpy==1.26.4
 python-multipart==0.0.9
-langchain
 langchain-openai
 langchain-groq
 psycopg2-binary
