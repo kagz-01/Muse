@@ -6,6 +6,8 @@ export type StreakContributionType =
   | "recovery"
   | "network"
   | "room"
+  | "thread"
+  | "idea"
   | string;
 
 export interface StreakStateInput {
@@ -44,6 +46,10 @@ export function computeResonanceWeight(contributionType: StreakContributionType)
       return 1.5;
     case "room":
       return 1.5;
+    case "thread":
+      return 1.3;
+    case "idea":
+      return 1.2;
     default:
       return 1;
   }
@@ -60,7 +66,7 @@ export function buildSparkSummary(
   }
 
   const label = getSparkLabel(contributionType);
-  const suffix = destination === "partner" || destination.startsWith("partner:")
+  const suffix = destination === "partner" || destination.startsWith("partner:") || destination === "thread" || destination.startsWith("thread:")
     ? ` via ${destination}`
     : "";
   return `${label} spark: ${cleaned}${suffix}`;
@@ -82,6 +88,10 @@ function getSparkLabel(contributionType: StreakContributionType): string {
       return "Network";
     case "room":
       return "Room";
+    case "thread":
+      return "Thread";
+    case "idea":
+      return "Idea";
     default:
       return "Resonance";
   }

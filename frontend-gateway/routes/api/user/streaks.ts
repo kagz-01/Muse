@@ -5,6 +5,7 @@ import { getSessionUser } from "../../../utils/auth.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
 import {
   buildSparkSummary,
+  computeResonanceWeight,
   deriveNextStreakState,
   getStreakLevelForCount,
   getUnlockedMilestones,
@@ -107,7 +108,7 @@ export const handler: Handlers = {
     const userId = rawUserId.replace(/[^a-zA-Z0-9-]/g, "");
 
     try {
-      const { action, permissions, content, type, destination } = await req.json();
+      const { action, permissions, content, type, destination, skipAI } = await req.json();
 
       if (action === "set_permissions" && permissions) {
         await executeDB(
@@ -126,16 +127,20 @@ export const handler: Handlers = {
         const contributionType = String(type || "journal");
         const normalizedDestination = String(destination || "journal");
         const normalizedContent = String(content || "A meaningful resonance ritual was completed");
-        const summary = await generateSparkSummary(contributionType, normalizedContent, normalizedDestination);
+        const summary = skipAI
+          ? buildSparkSummary(contributionType, normalizedContent, normalizedDestination)
+          : await generateSparkSummary(contributionType, normalizedContent, normalizedDestination);
 
-        if (destination === "network") {
+        if (normalizedDestination === "network") {
           await executeDB(`INSERT INTO items (user_id, title) VALUES ($1, $2)`, userId as string, normalizedContent);
-        } else if (destination === "new_room") {
+        } else if (normalizedDestination === "new_room") {
           await executeDB(`INSERT INTO rooms (user_id, title) VALUES ($1, $2)`, userId as string, normalizedContent);
-        } else if (destination && destination.startsWith("partner:")) {
+        } else if (normalizedDestination && normalizedDestination.startsWith("partner:")) {
           await executeDB(`INSERT INTO items (user_id, title) VALUES ($1, $2)`, userId as string, `[Parallel Spark] ${normalizedContent}`);
-        } else if (destination && destination.length > 10) {
-          await executeDB(`INSERT INTO items (user_id, room_id, title) VALUES ($1, $2, $3)`, userId as string, destination, normalizedContent);
+        } else if (normalizedDestination.startsWith("thread:")) {
+          await executeDB(`INSERT INTO items (user_id, title, room_id) VALUES ($1, $2, $3)`, userId as string, normalizedContent, normalizedDestination);
+        } else if (normalizedDestination.length > 10) {
+          await executeDB(`INSERT INTO items (user_id, room_id, title) VALUES ($1, $2, $3)`, userId as string, normalizedDestination, normalizedContent);
         } else {
           await executeDB(`INSERT INTO items (user_id, title) VALUES ($1, $2)`, userId as string, normalizedContent);
         }
@@ -160,7 +165,7 @@ export const handler: Handlers = {
             today,
           });
 
-          const weight = contributionType === "synthesis" ? 2 : contributionType === "entanglement" ? 2.5 : contributionType === "artifact" ? 1.5 : 1;
+          const weight = computeResonanceWeight(contributionType);
 
           const insertRes = await executeDB(
             `INSERT INTO streak_events (user_id, contribution_type, content, destination, weight, summary) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,

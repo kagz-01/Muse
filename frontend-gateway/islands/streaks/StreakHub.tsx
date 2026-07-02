@@ -38,6 +38,12 @@ interface PartnerSpark {
   reactions: Array<{ emoji: string; count: number }>;
 }
 
+interface AttachmentItem {
+  id: string;
+  type: "file" | "photo" | "video" | "voice";
+  name: string;
+}
+
 export default function StreakHub() {
   const [sharing, setSharing] = useState(false);
   const [justShared, setJustShared] = useState(false);
@@ -46,6 +52,9 @@ export default function StreakHub() {
   const [synthesisContent, setSynthesisContent] = useState("");
   const [captureMode, setCaptureMode] = useState<"text" | "voice" | "camera">("text");
   const [destination, setDestination] = useState<string>("network");
+  const [sourceType, setSourceType] = useState<"room" | "thread" | "journal" | "idea" | "artifact">("room");
+  const [attachments, setAttachments] = useState<AttachmentItem[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [activePrompt, setActivePrompt] = useState("");
   const [selectedPartner, setSelectedPartner] = useState<UserStreak | null>(null);
@@ -138,6 +147,32 @@ export default function StreakHub() {
     setRequests(r => r.filter(x => x.id !== requestId));
   };
 
+  const handleAddAttachment = (attachment: AttachmentItem) => {
+    setAttachments((current) => [attachment, ...current]);
+  };
+
+  const handleTriggerFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleSelectFiles = (files: FileList | null) => {
+    if (!files) return;
+    const added: AttachmentItem[] = [];
+    for (const file of Array.from(files)) {
+      added.push({ id: crypto.randomUUID(), type: "file", name: file.name });
+    }
+    setAttachments((current) => [...added, ...current]);
+  };
+
+  const handleToggleRecording = () => {
+    if (isRecording) {
+      setIsRecording(false);
+      handleAddAttachment({ id: crypto.randomUUID(), type: "voice", name: "Recorded voice note" });
+    } else {
+      setIsRecording(true);
+    }
+  };
+
   const handleIgnoreRequest = async (requestId: string) => {
     await fetch("/api/user/social", {
       method: "POST",
@@ -204,20 +239,20 @@ export default function StreakHub() {
 
   const handleShare = async () => {
     if (captureMode === "text" && !synthesisContent.trim()) return;
-    
-    // For voice/camera, simulate finishing recording
-    if (isRecording) setIsRecording(false);
-    
+
+    if (isRecording) {
+      setIsRecording(false);
+      handleAddAttachment({ id: crypto.randomUUID(), type: "voice", name: "Recorded voice note" });
+    }
+
     setSharing(true);
-    // In a real app, voice/camera would upload a file and return a URL.
-    // Here we just use a placeholder text if not in text mode.
-    const finalContent = captureMode === "text" 
-      ? synthesisContent 
+    const finalContent = captureMode === "text"
+      ? synthesisContent
       : `[Captured ${captureMode} artifact]`;
-      
-    const success = await captureMomentum(captureMode, finalContent, destination);
+    const attachmentsLabel = attachments.length ? ` + ${attachments.length} attachment${attachments.length === 1 ? "" : "s"}` : "";
+    const success = await captureMomentum(sourceType, `${finalContent}${attachmentsLabel}`, destination, true);
     setSharing(false);
-    
+
     if (success) {
       setJustShared(true);
       setIsSynthesizing(false);
@@ -226,12 +261,14 @@ export default function StreakHub() {
     }
   };
 
-  const handleOpenCapture = () => {
+  const handleOpenCapture = (source: "room" | "thread" | "journal" | "idea" | "artifact") => {
     setActivePrompt(PROMPTS[Math.floor(Math.random() * PROMPTS.length)]);
     setIsSynthesizing(true);
     setCaptureMode("text");
-    setDestination("network");
+    setSourceType(source);
+    setDestination(source === "room" ? "network" : source === "thread" ? "thread:general" : "journal");
     setSynthesisContent("");
+    setAttachments([]);
     setIsRecording(false);
   };
 
@@ -582,42 +619,60 @@ export default function StreakHub() {
             <p className="text-sm text-[var(--muse-muted)]">Momentum captured.</p>
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={handleOpenCapture}
-            className="px-8 py-4 rounded-full bg-gradient-to-r from-[var(--muse-accent)] to-[var(--muse-accent-dark)] text-white font-bold text-lg shadow-[0_0_30px_rgba(var(--muse-accent-rgb),0.4)] hover:shadow-[0_0_50px_rgba(var(--muse-accent-rgb),0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 cursor-pointer"
-          >
-            {/* @ts-ignore dynamic import */}
-            <Icons.Zap size={20} />
-            Ignite Momentum
-          </button>
-        )}
-
-        {/* Momentum Feed */}
-        <div className="w-full max-w-2xl mx-auto mt-16 px-6">
-          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--muse-muted)] mb-6 text-center">Daily Momentum Feed</h4>
-          {momentumFeedSignal.value.length === 0 ? (
-            <p className="text-center text-sm text-[var(--muse-muted)] italic">No momentum captured yet today. Share a spark to begin.</p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {momentumFeedSignal.value.map((item, i) => (
-                <div key={i} className="p-5 rounded-[2rem] bg-[var(--muse-surface)] border border-[var(--muse-border)] flex flex-col gap-2 relative overflow-hidden group">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--muse-accent)] to-purple-500 opacity-50 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-center gap-2 mb-1">
-                    {/* @ts-ignore dynamic import */}
-                    {item.type === "network" ? <Icons.Globe size={14} className="text-[var(--muse-muted)]" /> : <Icons.LayoutGrid size={14} className="text-[var(--muse-muted)]" />}
-                    <p className="text-xs font-bold text-[var(--muse-muted)] uppercase tracking-wider">
-                      {item.type === "network" ? "Public Spark" : item.type === "room" ? "Room Created" : "Artifact Added"}
-                    </p>
-                    <span className="text-[10px] text-gray-600 ml-auto">{new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                  </div>
-                  <p className="text-base text-[var(--muse-text)] leading-relaxed">{item.content}</p>
-                </div>
-              ))}
+          <div className="w-full max-w-5xl flex flex-col gap-8">
+            <div className="grid gap-4 sm:grid-cols-3 w-full">
+              <button
+                type="button"
+                onClick={() => handleOpenCapture("room")}
+                className="px-6 py-4 rounded-3xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-bold text-base shadow-[0_0_25px_rgba(56,189,248,0.25)] hover:shadow-[0_0_40px_rgba(56,189,248,0.35)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-3"
+              >
+                <span className="text-sm uppercase tracking-[0.28em] text-white/70">Quick Streak</span>
+                <span className="text-xl font-black">Streak this room</span>
+                <span className="text-sm text-white/80">Capture the moment and keep your flow alive.</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOpenCapture("thread")}
+                className="px-6 py-4 rounded-3xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-base shadow-[0_0_25px_rgba(236,72,153,0.25)] hover:shadow-[0_0_40px_rgba(236,72,153,0.35)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-3"
+              >
+                <span className="text-sm uppercase tracking-[0.28em] text-white/70">Thread Spark</span>
+                <span className="text-xl font-black">Streak a thread</span>
+                <span className="text-sm text-white/80">Mark a discussion or idea as worth sharing.</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOpenCapture("journal")}
+                className="px-6 py-4 rounded-3xl bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-bold text-base shadow-[0_0_25px_rgba(251,191,36,0.25)] hover:shadow-[0_0_40px_rgba(251,191,36,0.35)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-3"
+              >
+                <span className="text-sm uppercase tracking-[0.28em] text-black/70">Journal Flex</span>
+                <span className="text-xl font-black">Streak your note</span>
+                <span className="text-sm text-black/80">Quickly log a journal insight or reflection.</span>
+              </button>
             </div>
-          )}
-        </div>
+            <div className="flex flex-col gap-4">
+              {momentumFeedSignal.value.length > 0 ? (
+                momentumFeedSignal.value.map((item, i) => (
+                  <div key={i} className="p-5 rounded-[2rem] bg-[var(--muse-surface)] border border-[var(--muse-border)] flex flex-col gap-2 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--muse-accent)] to-purple-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+                    <div className="flex items-center gap-2 mb-1">
+                      {/* @ts-ignore dynamic import */}
+                      {item.type === "network" ? <Icons.Globe size={14} className="text-[var(--muse-muted)]" /> : <Icons.LayoutGrid size={14} className="text-[var(--muse-muted)]" />}
+                      <p className="text-xs font-bold text-[var(--muse-muted)] uppercase tracking-wider">
+                        {item.type === "network" ? "Public Spark" : item.type === "room" ? "Room Created" : "Artifact Added"}
+                      </p>
+                      <span className="text-[10px] text-gray-600 ml-auto">{new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <p className="text-base text-[var(--muse-text)] leading-relaxed">{item.content}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-400 text-center">No momentum captured yet today. Share a spark to begin.</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+    </div>
 
       {/* Social / Entanglements Section */}
       <div className="w-full px-6 py-12 relative z-10 border-t border-[var(--muse-border)] overflow-hidden">
@@ -952,7 +1007,59 @@ export default function StreakHub() {
                     <option value="network" className="bg-black text-white">Publish to Network</option>
                     <option value="new_room" className="bg-black text-white">Create New Room</option>
                     <option value="room-sys-arch" className="bg-black text-white">Add to Room: System Architecture</option>
+                    <option value="thread:general" className="bg-black text-white">Add to Thread: General</option>
                   </select>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Attachments</span>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={handleTriggerFileSelect}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white hover:bg-white/10 transition"
+                    >
+                      <Icons.Plus size={16} /> Attach file
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAddAttachment({ id: crypto.randomUUID(), type: "photo", name: "Captured photo" })}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white hover:bg-white/10 transition"
+                    >
+                      <Icons.Camera size={16} /> Photo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAddAttachment({ id: crypto.randomUUID(), type: "video", name: "Captured video" })}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white hover:bg-white/10 transition"
+                    >
+                      <Icons.Video size={16} /> Video
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleToggleRecording}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white hover:bg-white/10 transition"
+                    >
+                      <Icons.Mic size={16} /> {isRecording ? "Stop" : "Voice"}
+                    </button>
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleSelectFiles(e.currentTarget.files)}
+                  />
+                  {attachments.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {attachments.map((attachment) => (
+                        <span key={attachment.id} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-white">
+                          {attachment.type === "file" ? "📎" : attachment.type === "photo" ? "🖼️" : attachment.type === "video" ? "🎥" : "🎤"}
+                          {attachment.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <button

@@ -321,37 +321,38 @@ export default function RoomInside({ roomId }: { roomId: string }) {
     setSystemStatus("Analyzing");
     setAiResponse(null);
 
-    // Simulate complex neural processing
+    if (action === "Synthesize to Thread") {
+      fetch("/api/threads/synthesize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomId: room.id })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          if (!threadShared) {
+            setThreadShared(true);
+            setNewThreadId("new"); // Or extract real ID if returned
+          }
+          setAiResponse(data.message || "Sovereign synthesis ready. The patterns have been woven into a formal intelligence document.");
+        } else {
+          setAiResponse("Synthesis failed: " + (data.message || "Unknown error"));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setAiResponse("Failed to connect to the AI engine.");
+      })
+      .finally(() => {
+        setIsAnalyzing(false);
+        setSystemStatus("Idle");
+      });
+      return;
+    }
+
+    // Simulate complex neural processing for other dialogue queries
     setTimeout(async () => {
       const { response, keywords } = generateDynamicInsight(items, action);
-
-      if (action === "Synthesize to Thread" && !threadShared) {
-        const generatedTitle = keywords.length > 0
-          ? `The Patterns of ${keywords.join(" & ")}`
-          : "AI Pattern Synthesis";
-        const threadId = await addThread({
-          title: generatedTitle,
-          description:
-            `A synthesized thread derived from the ${room.name} room, focusing on ${
-              keywords.join(", ")
-            }.`,
-          mood: "focus" as ThreadMood, // Fallback, would match room theme normally
-          format: "essay",
-          depth: "deep",
-          itemIds: items.map((i) => i.id),
-          sourceRoomIds: [room.id],
-          isPublic: true, // Auto share to community
-          coverImage: room.coverImage || "",
-          thesis: `By analyzing the resonance of ${
-            keywords.join(" and ") || "these artifacts"
-          }, we can uncover the underlying truth of this collection.`,
-          isVault: room.isVault, // Inherit vault status
-        });
-
-        setNewThreadId(threadId);
-        setThreadShared(true);
-      }
-
       setAiResponse(response);
       setIsAnalyzing(false);
       setSystemStatus("Idle");

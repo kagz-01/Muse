@@ -65,9 +65,30 @@ export const handler: Handlers = {
     if (!userId) {
       return new Response("Unauthorized", { status: 401 });
     }
-    // Prevent demo users from mutating DB
+    // For demo users, mock the DB insert but still fire the AI observer
     if (userId === "__demo__") {
-      return new Response(JSON.stringify({ error: "Demo users cannot create items" }), { status: 403 });
+      try {
+        const body = await req.json();
+        const { title, note } = body;
+        
+        // Phase 3: The AI Observer — fire async annotation
+        (async () => {
+          try {
+            console.log(`[AI Observer] Starting annotation for DEMO user artifact: ${title}`);
+            const aiNote = await generateArtifactAnnotation(title, note || "");
+            console.log(`[AI Observer] Annotated DEMO item: ${aiNote}`);
+          } catch (err) {
+            console.error("[AI Observer] Failed to annotate DEMO item:", err);
+          }
+        })();
+
+        return new Response(JSON.stringify({ success: true, item: { id: "demo-id", title } }), {
+          status: 201,
+          headers: { "Content-Type": "application/json" }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "Invalid payload" }), { status: 400 });
+      }
     }
 
     try {

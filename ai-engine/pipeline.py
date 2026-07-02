@@ -93,14 +93,13 @@ class IntelligencePipeline:
             if artifact_id:
                 save_artifact_analysis(artifact_id, payload, insights.confidence, insights.analysis_method)
                 stored = True
-                if self.config.nlp.enable_nlp_metadata_table:
-                    insert_artifact_nlp_metadata(artifact_id=artifact_id, journal_id=journal_id, insights=payload)
 
             if journal_id:
                 save_journal_analysis(journal_id, payload, insights.confidence, insights.analysis_method)
                 stored = True
-                if self.config.nlp.enable_nlp_metadata_table:
-                    insert_artifact_nlp_metadata(artifact_id=None, journal_id=journal_id, insights=payload)
+
+            if stored and self.config.nlp.enable_nlp_metadata_table:
+                insert_artifact_nlp_metadata(artifact_id=artifact_id, journal_id=journal_id, insights=payload)
 
             if not stored:
                 logger.warning("No artifact_id or journal_id provided for NLP metadata persistence")

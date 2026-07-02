@@ -355,7 +355,12 @@ class GroqEnrichedEngine(NLPEngine):
             )
             
         except Exception as e:
-            logger.warning(f"Groq enrichment failed, using local only: {e}")
+            logger.warning(
+                "NLP Engine Fallback: Groq LLM enrichment failed. "
+                f"Reason: {str(e)}. "
+                "System is automatically falling back to Local TF-IDF analysis. "
+                "No synthesis context is lost, but theme diversity may be reduced."
+            )
             return local_result
 
 class NLPEngineFactory:
