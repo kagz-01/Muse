@@ -487,121 +487,101 @@ export default function PulseHome({ initialUser, isDemo = false }: { initialUser
           </section>
         </div>
 
-        {/* BENTO GRID ROW 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* WIDGET 3: RECENT NODES (Spatial Grid) */}
+        {/* BENTO GRID ROW 2: TIER 2 & TIER 3 (SPLIT BRAIN) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* THE INNER WORLD (Private Momentum & Graph) */}
           <section
-            className="lg:col-span-8 relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-8 md:p-10 shadow-2xl group min-h-[400px]"
+            className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-8 md:p-10 shadow-2xl group min-h-[400px] flex flex-col"
             style={stagger(3)}
           >
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
-                <Icons.Layers size={14} className="text-rose-400" />
-                Recent Nodes
+                <Icons.Brain size={14} className="text-purple-400" />
+                Inner World (Cognitive Nodes)
               </h2>
               <a
                 href="/mirror"
                 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
               >
-                Open Ledger →
+                Open Mirror →
               </a>
             </div>
 
-            {/* Spatial Layout of recent items */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                latestEntry
-                  ? {
-                    title: getJournalTitle(latestEntry),
-                    detail: `${latestEntry.wordCount} words`,
-                    type: "Reflection",
-                    href: "/journal",
-                    icon: Icons.BookOpen,
-                    color: "text-emerald-400",
-                    bg: "bg-emerald-500/10",
-                    border: "border-emerald-500/20",
-                  }
-                  : null,
-                latestThread
-                  ? {
-                    title: latestThread.title,
-                    detail: `${latestThread.itemIds.length} artifacts`,
-                    type: "Thread",
-                    href: "/threads",
-                    icon: Icons.GitCommit,
-                    color: "text-amber-400",
-                    bg: "bg-amber-500/10",
-                    border: "border-amber-500/20",
-                  }
-                  : null,
-                latestRoom
-                  ? {
-                    title: latestRoom.name,
-                    detail: `${latestRoom.count} items`,
-                    type: "Room",
-                    href: "/rooms",
-                    icon: Icons.Layout,
-                    color: "text-blue-400",
-                    bg: "bg-blue-500/10",
-                    border: "border-blue-500/20",
-                  }
-                  : null,
-              ].filter(Boolean).map((item, i) => {
-                const Icon = item!.icon;
-                return (
-                  <a
-                    key={i}
-                    href={item!.href}
-                    className={`group/node relative flex flex-col justify-between p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all duration-500 ${
-                      i % 2 === 1 ? "md:mt-8" : ""
-                    }`}
-                  >
-                    <div
-                      className={`w-10 h-10 rounded-2xl ${item!.bg} ${
-                        item!.border
-                      } border flex items-center justify-center mb-6`}
-                    >
-                      <Icon size={18} className={item!.color} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-200 group-hover/node:text-white transition-colors font-serif italic tracking-tight line-clamp-2 mb-2">
-                        "{item!.title}"
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] uppercase tracking-widest font-bold text-gray-600">
-                          {item!.type}
-                        </span>
-                        <Icons.ArrowRight
-                          size={14}
-                          className="text-gray-600 opacity-0 group-hover/node:opacity-100 -translate-x-4 group-hover/node:translate-x-0 transition-all duration-300"
-                        />
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
+            {/* Visual Node Graph (Show, Don't Tell) */}
+            <div className="flex-1 relative flex items-center justify-center min-h-[200px] my-4">
+              {/* Central Node */}
+              <a href="/journal" className="absolute w-24 h-24 rounded-full bg-purple-500/10 border border-purple-500/30 flex flex-col items-center justify-center animate-[pulse_4s_ease-in-out_infinite] z-20 group/node hover:scale-110 hover:bg-purple-500/20 hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] transition-all duration-500">
+                <Icons.BookOpen size={20} className="text-purple-400 mb-1" />
+                <span className="text-[8px] uppercase tracking-widest text-purple-300 font-bold max-w-[80%] truncate text-center opacity-0 group-hover/node:opacity-100 transition-opacity duration-300">
+                  {latestEntry ? getJournalTitle(latestEntry) : "Journal"}
+                </span>
+                {/* Connecting Lines */}
+                <svg className="absolute w-full h-full overflow-visible -z-10 opacity-30">
+                  <line x1="50%" y1="50%" x2="-20%" y2="-10%" stroke="#a855f7" strokeWidth="1" strokeDasharray="4 4" />
+                  <line x1="50%" y1="50%" x2="120%" y2="120%" stroke="#a855f7" strokeWidth="1" strokeDasharray="4 4" />
+                </svg>
+              </a>
+
+              {/* Orbiting Node 1 */}
+              <a href="/threads" className="absolute -left-2 -top-4 w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex flex-col items-center justify-center animate-[pulse_5s_ease-in-out_infinite] z-10 hover:scale-110 hover:bg-amber-500/20 hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.3)] transition-all duration-500 group/node">
+                <Icons.GitCommit size={14} className="text-amber-400" />
+                <span className="absolute -top-6 text-[8px] uppercase tracking-widest text-amber-300 font-bold whitespace-nowrap opacity-0 group-hover/node:opacity-100 transition-opacity duration-300 drop-shadow-md">
+                  {latestThread ? latestThread.title : "Thread"}
+                </span>
+              </a>
+
+              {/* Orbiting Node 2 */}
+              <a href="/rooms" className="absolute -right-2 -bottom-4 w-20 h-20 rounded-full bg-blue-500/10 border border-blue-500/30 flex flex-col items-center justify-center animate-[pulse_6s_ease-in-out_infinite] z-10 hover:scale-110 hover:bg-blue-500/20 hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition-all duration-500 group/node">
+                <Icons.Layout size={16} className="text-blue-400" />
+                <span className="absolute -bottom-6 text-[8px] uppercase tracking-widest text-blue-300 font-bold whitespace-nowrap opacity-0 group-hover/node:opacity-100 transition-opacity duration-300 drop-shadow-md">
+                  {latestRoom ? latestRoom.name : "Room"}
+                </span>
+              </a>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-mono text-white font-bold leading-none">
+                  {weekItems.length}
+                </div>
+                <div className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-2">
+                  Nodes this week
+                </div>
+              </div>
+              <div className="flex gap-1">
+                 {/* Mini heatmap visual (simulated) */}
+                 {[1,2,3,4,5,6,7].map((day, i) => (
+                   <div key={day} className={`w-3 h-8 rounded-sm ${i === 6 ? 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : i % 2 === 0 ? 'bg-purple-500/30' : 'bg-white/5'}`} />
+                 ))}
+              </div>
             </div>
           </section>
 
-          {/* WIDGET 4: ACTIVITY SPARKLINE (Telemetry) */}
+          {/* THE OUTER WORLD (Community Pulse & Telemetry) */}
           <section
-            className="lg:col-span-4 relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-8 shadow-2xl group flex flex-col justify-between min-h-[400px]"
+            className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0d0d0d] p-8 md:p-10 shadow-2xl group min-h-[400px] flex flex-col"
             style={stagger(4)}
           >
             <div className="flex items-center justify-between mb-8 relative z-10">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
-                <Icons.TrendingUp size={14} className="text-emerald-400" />
-                Resonance Telemetry
+                <Icons.Globe size={14} className="text-emerald-400" />
+                Outer World (Network)
               </h2>
+              <a
+                href="/connections"
+                className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+              >
+                Open Hub →
+              </a>
             </div>
 
-            {/* Minimalist SVG Sparkline */}
-            <div className="flex-1 relative w-full h-full min-h-[150px] flex items-end">
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+            {/* Minimalist SVG Sparkline (Telemetry) */}
+            <div className="flex-1 relative w-full flex items-end min-h-[100px] mb-8">
+              <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl" />
               <svg
                 viewBox="0 0 100 50"
                 preserveAspectRatio="none"
-                className="w-full h-full overflow-visible drop-shadow-[0_0_10px_rgba(16,185,129,0.5)] relative z-10"
+                className="w-full h-[100px] overflow-visible drop-shadow-[0_0_10px_rgba(16,185,129,0.5)] relative z-10"
               >
                 <polyline
                   fill="none"
@@ -614,30 +594,30 @@ export default function PulseHome({ initialUser, isDemo = false }: { initialUser
                   style={{ strokeDasharray: 300, strokeDashoffset: 300 }}
                 />
               </svg>
-              {/* CSS Animation for SVG Line drawing */}
-              <style>
-                {`
-                @keyframes dash {
-                  to {
-                    stroke-dashoffset: 0;
-                  }
-                }
-              `}
-              </style>
             </div>
 
-            <div className="relative z-10 mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
-              <div>
-                <div className="text-[28px] font-mono text-white font-bold">
+            <div className="grid grid-cols-2 gap-4 mt-auto">
+              <div className="p-4 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col justify-center">
+                <div className="text-[28px] font-mono text-white font-bold leading-none">
                   {user.resonance.resonanceScore}%
                 </div>
-                <div className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-1">
-                  Current Sync Level
+                <div className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-2">
+                  Signal Reach
                 </div>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
-                <Icons.TrendingUp size={12} />
-                +4% this week
+              
+              <div className="p-4 rounded-3xl bg-emerald-500/5 border border-emerald-500/10 flex flex-col justify-center relative overflow-hidden group/pulse">
+                 <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover/pulse:opacity-100 transition-opacity duration-500" />
+                 <div className="flex items-center gap-2 mb-2 relative z-10">
+                   <span className="relative flex h-2 w-2">
+                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                   </span>
+                   <span className="text-[9px] uppercase tracking-widest text-emerald-400 font-bold">Live Pulse</span>
+                 </div>
+                 <div className="text-xs font-serif italic text-emerald-100/70 line-clamp-2 relative z-10">
+                   "A shift in cognitive alignment detected across your network."
+                 </div>
               </div>
             </div>
           </section>
