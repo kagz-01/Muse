@@ -1244,60 +1244,71 @@ export default function StreakHub() {
 
         {justShared
           ? (
-            <div className="w-full max-w-sm text-center py-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* @ts-ignore dynamic import */}
-              <Icons.CheckCircle
-                size={32}
-                className="text-emerald-500 mx-auto mb-4"
-              />
-              <p className="text-xl font-bold text-[var(--muse-text)]">
-                Spark Shared
+            <div className="w-full max-w-sm text-center py-8 animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
+              {/* Furnace fed confirmation */}
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-orange-500 to-rose-600 shadow-[0_0_40px_rgba(249,115,22,0.4)] flex items-center justify-center mb-4 animate-[pulse_1.5s_ease-in-out_infinite]">
+                <Icons.Flame size={28} className="text-white" />
+              </div>
+              <p className="text-xl font-black text-white tracking-tight">
+                Furnace Fed
               </p>
-              <p className="text-sm text-[var(--muse-muted)]">
-                Momentum captured.
+              <p className="text-sm font-serif italic text-[var(--muse-muted)] mt-2">
+                Your Aura frequency has increased.
               </p>
             </div>
           )
           : (
             <div className="w-full max-w-5xl flex flex-col gap-8">
               <div className="grid gap-4 sm:grid-cols-3 w-full">
-                <button
-                  type="button"
-                  onClick={() => handleOpenCapture("room")}
-                  className="px-6 py-4 rounded-3xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-bold text-base shadow-[0_0_25px_rgba(56,189,248,0.25)] hover:shadow-[0_0_40px_rgba(56,189,248,0.35)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-3"
-                >
-                  <span className="text-sm uppercase tracking-[0.28em] text-white/70">
-                    Quick Streak
-                  </span>
-                  <span className="text-xl font-black">Streak this room</span>
-                  <span className="text-sm text-white/80">
-                    Capture the moment and keep your flow alive.
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleOpenCapture("thread")}
-                  className="px-6 py-4 rounded-3xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-base shadow-[0_0_25px_rgba(236,72,153,0.25)] hover:shadow-[0_0_40px_rgba(236,72,153,0.35)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-3"
-                >
-                  <span className="text-sm uppercase tracking-[0.28em] text-white/70">
-                    Thread Spark
-                  </span>
-                  <span className="text-xl font-black">Streak a thread</span>
-                  <span className="text-sm text-white/80">
-                    Mark a discussion or idea as worth sharing.
-                  </span>
-                </button>
+                {/* KINDLING: Journal */}
                 <button
                   type="button"
                   onClick={() => handleOpenCapture("journal")}
-                  className="px-6 py-4 rounded-3xl bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-bold text-base shadow-[0_0_25px_rgba(251,191,36,0.25)] hover:shadow-[0_0_40px_rgba(251,191,36,0.35)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-3"
+                  className="px-6 py-5 rounded-3xl bg-gradient-to-br from-cyan-950 to-sky-900 text-white font-bold text-base border border-cyan-500/20 shadow-[0_0_25px_rgba(6,182,212,0.1)] hover:shadow-[0_0_35px_rgba(6,182,212,0.25)] hover:border-cyan-500/40 hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-2 group cursor-pointer"
                 >
-                  <span className="text-sm uppercase tracking-[0.28em] text-black/70">
-                    Journal Flex
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.7)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-cyan-400/80 font-bold">
+                      Kindling
+                    </span>
+                  </div>
+                  <span className="text-xl font-black group-hover:text-cyan-100 transition-colors">Feed a Reflection</span>
+                  <span className="text-xs text-white/50 font-serif italic leading-relaxed">
+                    Drop a journal insight. Keeps the furnace lit.
                   </span>
-                  <span className="text-xl font-black">Streak your note</span>
-                  <span className="text-sm text-black/80">
-                    Quickly log a journal insight or reflection.
+                </button>
+                {/* WOOD: Room */}
+                <button
+                  type="button"
+                  onClick={() => handleOpenCapture("room")}
+                  className="px-6 py-5 rounded-3xl bg-gradient-to-br from-purple-950 to-indigo-900 text-white font-bold text-base border border-purple-500/20 shadow-[0_0_25px_rgba(168,85,247,0.1)] hover:shadow-[0_0_35px_rgba(168,85,247,0.25)] hover:border-purple-500/40 hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-2 group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.7)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-purple-400/80 font-bold">
+                      Wood
+                    </span>
+                  </div>
+                  <span className="text-xl font-black group-hover:text-purple-100 transition-colors">Ignite a Room</span>
+                  <span className="text-xs text-white/50 font-serif italic leading-relaxed">
+                    Create or extend a cognitive room. Solid fuel.
+                  </span>
+                </button>
+                {/* ACCELERANT: Synthesis */}
+                <button
+                  type="button"
+                  onClick={() => handleOpenCapture("synthesis")}
+                  className="px-6 py-5 rounded-3xl bg-gradient-to-br from-rose-950 to-pink-900 text-white font-bold text-base border border-rose-500/20 shadow-[0_0_25px_rgba(244,63,94,0.1)] hover:shadow-[0_0_35px_rgba(244,63,94,0.25)] hover:border-rose-500/40 hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-start gap-2 group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.7)]" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-rose-400/80 font-bold">
+                      Accelerant
+                    </span>
+                  </div>
+                  <span className="text-xl font-black group-hover:text-rose-100 transition-colors">Detonate a Synthesis</span>
+                  <span className="text-xs text-white/50 font-serif italic leading-relaxed">
+                    Run an AI synthesis. Instantly maxes your frequency.
                   </span>
                 </button>
               </div>
@@ -1310,22 +1321,35 @@ export default function StreakHub() {
                     ) => (
                       <div
                         key={i}
-                        className="p-5 rounded-[2rem] bg-[var(--muse-surface)] border border-[var(--muse-border)] flex flex-col gap-2 relative overflow-hidden group"
+                        className="p-5 rounded-[2rem] bg-black/30 border border-white/5 flex flex-col gap-2 relative overflow-hidden group"
                       >
-                        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--muse-accent)] to-purple-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+                        {/* Fuel type color stripe */}
+                        <div className={`absolute top-0 left-0 w-1 h-full transition-opacity opacity-60 group-hover:opacity-100 ${
+                          item.type === 'journal' ? 'bg-gradient-to-b from-cyan-400 to-sky-600' :
+                          item.type === 'room' ? 'bg-gradient-to-b from-purple-400 to-indigo-600' :
+                          item.type === 'synthesis' ? 'bg-gradient-to-b from-rose-400 to-pink-600' :
+                          'bg-gradient-to-b from-gray-400 to-gray-600'
+                        }`} />
                         <div className="flex items-center gap-2 mb-1">
                           {/* @ts-ignore dynamic import */}
-                          {item.type === "network"
+                          {item.type === "network" || item.type === "room"
                             ? (
                               <Icons.Globe
                                 size={14}
-                                className="text-[var(--muse-muted)]"
+                                className="text-purple-400"
+                              />
+                            )
+                            : item.type === "synthesis"
+                            ? (
+                              <Icons.Sparkles
+                                size={14}
+                                className="text-rose-400"
                               />
                             )
                             : (
-                              <Icons.LayoutGrid
+                              <Icons.BookOpen
                                 size={14}
-                                className="text-[var(--muse-muted)]"
+                                className="text-cyan-400"
                               />
                             )}
                           <p className="text-xs font-bold text-[var(--muse-muted)] uppercase tracking-wider">
