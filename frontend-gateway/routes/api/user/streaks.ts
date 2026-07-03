@@ -9,6 +9,8 @@ import {
   deriveNextStreakState,
   getStreakLevelForCount,
   getUnlockedMilestones,
+  isContributionStreakable,
+  normalizeEnabledStreakTypes,
 } from "../../../utils/streakEngine.ts";
 
 async function generateSparkSummary(contributionType: string, content: string, destination: string) {
@@ -44,9 +46,46 @@ export const handler: Handlers = {
     }
     const userId = rawUserId.replace(/[^a-zA-Z0-9-]/g, "");
 
+    if (userId === "demo" || userId === "u1") {
+      const mockStreakData = {
+        current_streak: 7,
+        longest_streak: 12,
+        total_journal_days: 21,
+        last_entry_date: new Date().toISOString(),
+        streak_level: "Rising Signal",
+        freeze_count: 2,
+        milestones_unlocked: [7],
+        permissions: {
+          show_active: true,
+          show_mood: true,
+          show_room_titles: false,
+          show_journal_previews: false,
+        },
+      };
+      
+      const mockFeed = [
+         { type: "network", created_at: new Date().toISOString(), content: "Joined the Identity matrix" },
+         { type: "room", created_at: new Date(Date.now() - 86400000).toISOString(), content: "Created new workspace" }
+      ];
+      
+      const mockSparks = [
+         { summary: "Synthesized a new core thesis", destination: "network", created_at: new Date().toISOString() }
+      ];
+
+      return new Response(JSON.stringify({ 
+        streak: mockStreakData, 
+        feed: mockFeed, 
+        sparks: mockSparks, 
+        streak_preferences: normalizeEnabledStreakTypes([]) 
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     try {
       const result = await queryDB(
-        `SELECT current_streak, longest_streak, total_journal_days, last_entry_date, streak_level, freeze_count, milestones_unlocked, preferences->'streak_permissions' AS streak_permissions 
+        `SELECT current_streak, longest_streak, total_journal_days, last_entry_date, streak_level, freeze_count, milestones_unlocked, preferences->'streak_permissions' AS streak_permissions, preferences->'streak_types' AS streak_types 
          FROM users WHERE id = $1`,
         userId as string,
       );
@@ -90,7 +129,9 @@ export const handler: Handlers = {
         userId as string,
       );
 
-      return new Response(JSON.stringify({ streak: streakData, feed: feedResult, sparks: sparkRows }), {
+      const streakPreferences = normalizeEnabledStreakTypes(row.streak_types);
+
+      return new Response(JSON.stringify({ streak: streakData, feed: feedResult, sparks: sparkRows, streak_preferences: streakPreferences }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -107,8 +148,37 @@ export const handler: Handlers = {
     }
     const userId = rawUserId.replace(/[^a-zA-Z0-9-]/g, "");
 
+    if (userId === "demo" || userId === "u1") {
+       const { action, permissions, enabledStreakTypes } = await req.json();
+       const headers = { "Content-Type": "application/json" };
+       
+       if (action === "set_permissions") {
+         return new Response(JSON.stringify({ success: true, permissions }), { status: 200, headers });
+       }
+       if (action === "set_streak_preferences") {
+         const normalizedTypes = normalizeEnabledStreakTypes(Array.isArray(enabledStreakTypes) ? enabledStreakTypes : []);
+         return new Response(JSON.stringify({ success: true, enabledStreakTypes: normalizedTypes }), { status: 200, headers });
+       }
+       if (action === "capture_momentum") {
+         return new Response(JSON.stringify({ 
+           success: true, 
+           newStreak: 8, 
+           longestStreak: 12, 
+           totalJournalDays: 22, 
+           lastEntryDate: new Date().toISOString(), 
+           streakLevel: "Rising Signal", 
+           summary: "Captured momentum (Demo)", 
+           alreadyCountedToday: false 
+         }), { status: 200, headers });
+       }
+       if (action === "use_freeze") {
+         return new Response(JSON.stringify({ success: true, freezeCount: 1, lastEntryDate: new Date().toISOString() }), { status: 200, headers });
+       }
+       return new Response("Invalid action", { status: 400 });
+    }
+
     try {
-      const { action, permissions, content, type, destination, skipAI } = await req.json();
+      const { action, permissions, content, type, destination, skipAI, enabledStreakTypes } = await req.json();
 
       if (action === "set_permissions" && permissions) {
         await executeDB(
@@ -122,11 +192,33 @@ export const handler: Handlers = {
         });
       }
 
+      if (action === "set_streak_preferences") {
+        const normalizedTypes = normalizeEnabledStreakTypes(Array.isArray(enabledStreakTypes) ? enabledStreakTypes : []);
+        await executeDB(
+          `UPDATE users SET preferences = jsonb_set(COALESCE(preferences, '{}'::jsonb), '{streak_types}', $1::jsonb) WHERE id = $2`,
+          JSON.stringify(normalizedTypes),
+          userId as string,
+        );
+        return new Response(JSON.stringify({ success: true, enabledStreakTypes: normalizedTypes }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
       if (action === "capture_momentum") {
         const today = new Date().toDateString();
         const contributionType = String(type || "journal");
         const normalizedDestination = String(destination || "journal");
         const normalizedContent = String(content || "A meaningful resonance ritual was completed");
+        const streakTypes = Array.isArray(enabledStreakTypes) ? enabledStreakTypes : [];
+        const isStreakable = isContributionStreakable(contributionType, streakTypes);
+        if (!isStreakable) {
+          return new Response(JSON.stringify({ success: false, skipped: true, reason: "contribution_not_enabled" }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
         const summary = skipAI
           ? buildSparkSummary(contributionType, normalizedContent, normalizedDestination)
           : await generateSparkSummary(contributionType, normalizedContent, normalizedDestination);

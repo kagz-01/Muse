@@ -1,7 +1,13 @@
 import { signal } from "@preact/signals";
 import { userSignal } from "./user.ts";
 import { safeFetch } from "../utils/safeFetch.ts";
-import { buildSparkSummary, deriveNextStreakState } from "../utils/streakEngine.ts";
+import {
+  buildSparkSummary,
+  DEFAULT_STREAKABLE_TYPES,
+  deriveNextStreakState,
+  isContributionStreakable,
+  normalizeEnabledStreakTypes,
+} from "../utils/streakEngine.ts";
 
 export type StreakState = "ignition" | "resonance" | "fading" | "broken";
 
@@ -52,6 +58,7 @@ export interface GlobalStreak {
 
 export const globalStreakSignal = signal<GlobalStreak | null>(null);
 export const momentumFeedSignal = signal<MomentumFeedItem[]>([]);
+export const streakPreferencesSignal = signal<string[]>([...DEFAULT_STREAKABLE_TYPES]);
 
 // Seed data so the feature isn't empty on first visit
 const SEED_STREAKS: UserStreak[] = [
@@ -236,6 +243,9 @@ export async function loadGlobalStreak() {
       if (data.feed) {
         momentumFeedSignal.value = data.feed;
       }
+      if (data.streak_preferences) {
+        streakPreferencesSignal.value = normalizeEnabledStreakTypes(data.streak_preferences);
+      }
     }
   } catch (e) {
     console.error("Failed to load global streak", e);
@@ -290,8 +300,37 @@ export async function setSparkPermissions(permissions: Partial<StreakPermissions
 }
 
 /** Capture Momentum (Log a real action to extend streak) */
-export async function captureMomentum(type: string, content: string, destination: string = "journal", skipAI = true) {
+export async function saveStreakPreferences(enabledStreakTypes: string[]) {
+  const normalized = normalizeEnabledStreakTypes(enabledStreakTypes);
+  streakPreferencesSignal.value = normalized;
+
+  try {
+    await safeFetch("/api/user/streaks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "set_streak_preferences", enabledStreakTypes: normalized }),
+      entity: "settings",
+    });
+    return true;
+  } catch (e) {
+    console.error("Failed to save streak preferences", e);
+    return false;
+  }
+}
+
+export async function captureMomentum(
+  type: string,
+  content: string,
+  destination: string = "journal",
+  skipAI = true,
+  enabledStreakTypes: string[] = [],
+) {
   const isDemo = userSignal.value?.id === "__demo__";
+
+  const isStreakable = isContributionStreakable(type, enabledStreakTypes);
+  if (!isStreakable) {
+    return false;
+  }
   
   if (isDemo) {
     if (globalStreakSignal.value) {
@@ -327,7 +366,7 @@ export async function captureMomentum(type: string, content: string, destination
     const res = await safeFetch("/api/user/streaks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "capture_momentum", type, content, destination, skipAI }),
+      body: JSON.stringify({ action: "capture_momentum", type, content, destination, skipAI, enabledStreakTypes: normalizeEnabledStreakTypes(enabledStreakTypes) }),
       entity: "streak",
     });
 

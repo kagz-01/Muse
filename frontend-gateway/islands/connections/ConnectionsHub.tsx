@@ -27,10 +27,11 @@ import {
   CommunityThemePulse,
 } from "../../components/community/CommunityCharts.tsx";
 
-type Tab = "Stream" | "Wisdom" | "Circles" | "Collab" | "People";
+type Tab = "Discover" | "Network" | "Collab";
 
 export default function ConnectionsHub() {
-  const [activeTab, setActiveTab] = useState<Tab>("Stream");
+  const [activeTab, setActiveTab] = useState<Tab>("Discover");
+  const [discoverView, setDiscoverView] = useState<"feed" | "map">("feed");
   const [activeProfileFilter, setActiveProfileFilter] = useState<string>("All");
   const [circleDraft, setCircleDraft] = useState({
     name: "",
@@ -204,11 +205,9 @@ export default function ConnectionsHub() {
   );
 
   const tabs: { id: Tab; icon: unknown; label: string }[] = [
-    { id: "Stream", icon: Icons.Activity, label: "Thought Stream" },
-    { id: "Wisdom", icon: Icons.Aperture, label: "Wisdom Map" },
-    { id: "Circles", icon: Icons.MessageSquare, label: "Active Circles" },
+    { id: "Discover", icon: Icons.Compass, label: "Discover" },
+    { id: "Network", icon: Icons.Network, label: "Network" },
     { id: "Collab", icon: Icons.Handshake, label: "Collaborations" },
-    { id: "People", icon: Icons.Users, label: "Collaborators" },
   ];
 
   return (
@@ -409,110 +408,107 @@ export default function ConnectionsHub() {
                     </div>
                   )}
 
-                  {!isLoading && activeTab === "Stream" && (
-                    <ThoughtStream streamData={stream} />
-                  )}
-
-                  {!isLoading && activeTab === "Wisdom" && <WisdomMap />}
-
-                  {!isLoading && activeTab === "Circles" && (
-                    <div className="space-y-16">
-                      <div className="rounded-[2.5rem] border border-white/10 bg-white/[0.03] p-8">
-                        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                          <div className="max-w-2xl">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-400">
-                              Circle Builder
-                            </p>
-                            <h2 className="mt-3 text-3xl font-bold text-white">
-                              Start a circle around a living idea.
-                            </h2>
-                            <p className="mt-3 text-sm leading-relaxed text-gray-400">
-                              Give your circle a purpose, a ritual, and a threshold for resonance. It becomes a place where new thinkers can join the work.
-                            </p>
-                          </div>
-
-                          <form
-                            className="w-full max-w-xl space-y-3"
-                            onSubmit={handleCreateCircle}
-                          >
-                            <input
-                              type="text"
-                              value={circleDraft.name}
-                              onInput={(e) => {
-                                const target = e.currentTarget as HTMLInputElement;
-                                setCircleDraft((prev) => ({ ...prev, name: target.value }));
-                              }}
-                              placeholder="Circle name"
-                              className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none"
-                            />
-                            <input
-                              type="text"
-                              value={circleDraft.theme}
-                              onInput={(e) => {
-                                const target = e.currentTarget as HTMLInputElement;
-                                setCircleDraft((prev) => ({ ...prev, theme: target.value }));
-                              }}
-                              placeholder="Theme"
-                              className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none"
-                            />
-                            <textarea
-                              value={circleDraft.description}
-                              onInput={(e) => {
-                                const target = e.currentTarget as HTMLTextAreaElement;
-                                setCircleDraft((prev) => ({ ...prev, description: target.value }));
-                              }}
-                              placeholder="What is this circle for?"
-                              className="min-h-[100px] w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none"
-                            />
-                            <div className="flex items-center justify-between gap-3">
-                              <button
-                                type="submit"
-                                className="rounded-full bg-emerald-500 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-black"
-                              >
-                                Launch circle
-                              </button>
-                              {circleFeedback && (
-                                <p className="text-xs text-emerald-400">{circleFeedback}</p>
-                              )}
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                        {circles.map((circle) => (
-                          <div
-                            key={circle.id}
-                            className="w-[360px] flex-shrink-0"
-                          >
-                            <ActiveCircleCard
-                              circle={circle}
-                              onJoin={() => handleJoinCircle(circle.id)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-10">
-                          <h2 className="text-3xl font-bold text-white flex items-center gap-4">
-                            <Icons.Globe size={32} className="text-gray-800" />
-                            {" "}
-                            Public Domains
-                          </h2>
+                  {!isLoading && activeTab === "Discover" && (
+                    <div className="space-y-6 animate-in fade-in duration-500">
+                      <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-4">
+                        <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                          <Icons.Compass size={24} className="text-indigo-400" />
+                          Discovery Feed
+                        </h2>
+                        <div className="flex items-center bg-black/40 rounded-full p-1 border border-white/10 shadow-inner">
                           <button
                             type="button"
-                            className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em] hover:underline cursor-pointer"
+                            onClick={() => setDiscoverView("feed")}
+                            className={`px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${discoverView === "feed" ? "bg-indigo-500 text-white shadow-lg" : "text-gray-500 hover:text-white"}`}
                           >
-                            Explore All
+                            Feed
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDiscoverView("map")}
+                            className={`px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${discoverView === "map" ? "bg-indigo-500 text-white shadow-lg" : "text-gray-500 hover:text-white"}`}
+                          >
+                            Map
                           </button>
                         </div>
+                      </div>
+                      {discoverView === "feed" ? <ThoughtStream streamData={stream} /> : <WisdomMap />}
+                    </div>
+                  )}
+
+                  {!isLoading && activeTab === "Network" && (
+                    <div className="space-y-20 animate-in fade-in duration-500">
+                      {/* People / Match Grid */}
+                      <div className="space-y-10">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                          <div>
+                            <h2 className="text-3xl font-bold text-white flex items-center gap-4 tracking-tight">
+                              <Icons.Network size={32} className="text-emerald-500" />
+                              Cognitive Match Grid
+                            </h2>
+                            <p className="text-gray-500 font-serif italic mt-2">
+                              Sorted by Resonance Alignment with your staked thoughts.
+                            </p>
+                          </div>
+                          <div className="flex bg-white/5 p-1.5 rounded-full border border-white/10">
+                            {["All", "Architect", "Synthesizer", "Challenger"].map((profile) => (
+                              <button
+                                key={profile}
+                                type="button"
+                                onClick={() => setActiveProfileFilter(profile)}
+                                className={`px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
+                                  activeProfileFilter === profile
+                                    ? "bg-emerald-500 text-black shadow-lg"
+                                    : "text-gray-500 hover:text-white"
+                                }`}
+                              >
+                                {profile}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                          {[...collaborators]
+                            .filter((c) => activeProfileFilter === "All" || c.intelligenceProfile === activeProfileFilter)
+                            .sort((a, b) => b.matchPercentage - a.matchPercentage)
+                            .map((collaborator) => (
+                              <AuraCard key={collaborator.id} collaborator={collaborator} />
+                            ))}
+                        </div>
+                      </div>
+
+                      {/* Circles / Domains */}
+                      <div className="space-y-12 border-t border-white/5 pt-16">
+                        <div className="flex items-center justify-between mb-4">
+                          <h2 className="text-3xl font-bold text-white flex items-center gap-4">
+                            <Icons.MessageSquare size={32} className="text-cyan-500" />
+                            Active Domains
+                          </h2>
+                        </div>
                         <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                          {communityRooms.map((room: CommunityRoom) => (
-                            <div key={room.id} className="flex-shrink-0 w-80">
-                              <CommunityRoomCard room={room} />
+                          {circles.map((circle) => (
+                            <div key={circle.id} className="w-[360px] flex-shrink-0">
+                              <ActiveCircleCard circle={circle} onJoin={() => {}} />
                             </div>
                           ))}
+                        </div>
+                        <div className="pt-8">
+                          <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-bold text-gray-300 flex items-center gap-3">
+                              <Icons.Globe size={24} className="text-gray-600" />
+                              Public Domains
+                            </h3>
+                            <button type="button" className="text-[10px] font-bold text-canvas-primary uppercase tracking-[0.3em] hover:underline cursor-pointer">
+                              Explore All
+                            </button>
+                          </div>
+                          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                            {communityRooms.map((room: CommunityRoom) => (
+                              <div key={room.id} className="flex-shrink-0 w-80">
+                                <CommunityRoomCard room={room} />
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -534,10 +530,7 @@ export default function ConnectionsHub() {
 
                       <div className="grid gap-6 lg:grid-cols-2">
                         {collaborationSparks.map((spark) => (
-                          <div
-                            key={spark.id}
-                            className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-7"
-                          >
+                          <div key={spark.id} className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-7">
                             <div className="flex items-center justify-between gap-3">
                               <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-400">
                                 {spark.urgency} signal
@@ -556,68 +549,12 @@ export default function ConnectionsHub() {
                               <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                                 {spark.circleName}
                               </span>
-                              <button
-                                type="button"
-                                className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-300"
-                              >
+                              <button type="button" className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-300">
                                 {spark.actionLabel}
                               </button>
                             </div>
                           </div>
                         ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {!isLoading && activeTab === "People" && (
-                    <div className="space-y-10 animate-in fade-in duration-500">
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div>
-                          <h2 className="text-3xl font-bold text-white flex items-center gap-4 tracking-tight">
-                            <Icons.Network
-                              size={32}
-                              className="text-emerald-500"
-                            />{" "}
-                            Cognitive Match Grid
-                          </h2>
-                          <p className="text-gray-500 font-serif italic mt-2">
-                            Sorted by Resonance Alignment with your staked
-                            thoughts.
-                          </p>
-                        </div>
-
-                        <div className="flex bg-white/5 p-1.5 rounded-full border border-white/10">
-                          {["All", "Architect", "Synthesizer", "Challenger"]
-                            .map((profile) => (
-                              <button
-                                key={profile}
-                                type="button"
-                                onClick={() => setActiveProfileFilter(profile)}
-                                className={`px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
-                                  activeProfileFilter === profile
-                                    ? "bg-emerald-500 text-black shadow-lg"
-                                    : "text-gray-500 hover:text-white"
-                                }`}
-                              >
-                                {profile}
-                              </button>
-                            ))}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {[...collaborators]
-                          .filter((c) =>
-                            activeProfileFilter === "All" ||
-                            c.intelligenceProfile === activeProfileFilter
-                          )
-                          .sort((a, b) => b.matchPercentage - a.matchPercentage)
-                          .map((collaborator) => (
-                            <AuraCard
-                              key={collaborator.id}
-                              collaborator={collaborator}
-                            />
-                          ))}
                       </div>
                     </div>
                   )}

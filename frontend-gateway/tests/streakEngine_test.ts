@@ -3,6 +3,8 @@ import {
   buildSparkSummary,
   computeResonanceWeight,
   deriveNextStreakState,
+  isContributionStreakable,
+  normalizeEnabledStreakTypes,
 } from "../utils/streakEngine.ts";
 
 Deno.test("computeResonanceWeight rewards deeper contributions", () => {
@@ -35,4 +37,16 @@ Deno.test("deriveNextStreakState increments on a fresh resonance day", () => {
   assertEquals(next.currentStreak, 5);
   assertEquals(next.longestStreak, 7);
   assertEquals(next.totalJournalDays, 11);
+});
+
+Deno.test("isContributionStreakable respects the curated streak list", () => {
+  assertEquals(isContributionStreakable("artifact", ["artifact", "room", "synthesis"]), true);
+  assertEquals(isContributionStreakable("journal", ["artifact", "room", "synthesis"]), false);
+  assertEquals(isContributionStreakable("thread", []), false);
+});
+
+Deno.test("normalizeEnabledStreakTypes cleans and defaults curated types", () => {
+  assertEquals(normalizeEnabledStreakTypes(["Artifact", "room", "room", "thread"]), ["artifact", "room", "thread"]);
+  assertEquals(normalizeEnabledStreakTypes("Artifact, room , synthesis"), ["artifact", "room", "synthesis"]);
+  assertEquals(normalizeEnabledStreakTypes(undefined), ["artifact", "room", "thread", "synthesis", "idea"]);
 });

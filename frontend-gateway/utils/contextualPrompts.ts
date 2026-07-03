@@ -14,6 +14,7 @@ import { generateDynamicHumor, type GreetingPeriod, type UserContext } from "./d
 export type { UserContext };
 
 export interface PersonalityPromptPayload {
+  context: UIContext;
   period: GreetingPeriod;
   streak: number;
   resonanceScore: number;
@@ -97,6 +98,7 @@ export async function fetchPersonalityPrompt(
   }
 
   const payload: PersonalityPromptPayload = {
+    context,
     period,
     streak: userContext.currentStreak ?? 0,
     resonanceScore: userContext.resonanceScore ?? 0,

@@ -213,7 +213,7 @@ export async function extractPublicSpark(journalText: string): Promise<string> {
 const personalityGreetingPrompt = new PromptTemplate({
   template: `You are Muse's personality engine. Generate a single, witty greeting/prompt (1-2 sentences max) that is:
 - Encouraging but not saccharine (keep it real)
-- Specific to the user's engagement level and time of day
+- Specific to the user's engagement level, time of day, and the current UI context ({ui_context})
 - Relevant to journaling, wisdom synthesis, and community connection
 - Uses platform terminology (synthesis, resonance, threads, wisdom, signal)
 - Tone: thoughtful mentor who gets the user's journey, slightly philosophical, occasionally humorous
@@ -235,6 +235,7 @@ Avoid:
 Output only the prompt text. Do not add quotes, labels, or extra explanation.
 `,
   inputVariables: [
+    "ui_context",
     "streak",
     "resonanceScore",
     "entries",
@@ -250,15 +251,23 @@ function cleanPersonalityPrompt(raw: string) {
     prompt = prompt.slice(1, -1).trim();
   }
 
+  // Hard limit: take at most 2 sentences
   const sentences = prompt.split(/(?<=[.!?])\s+/);
   if (sentences.length > 2) {
     prompt = sentences.slice(0, 2).join(" ").trim();
+  }
+
+  // Safety net: never exceed 180 characters so it never bleeds into the UI
+  if (prompt.length > 180) {
+    const lastSpace = prompt.lastIndexOf(" ", 177);
+    prompt = prompt.slice(0, lastSpace > 80 ? lastSpace : 177).trimEnd() + "…";
   }
 
   return prompt;
 }
 
 export async function generatePersonalityGreeting(
+  uiContext: string,
   period: GreetingPeriod,
   streak: number,
   resonanceScore: number,
@@ -280,6 +289,7 @@ export async function generatePersonalityGreeting(
 
   try {
     const promptValue = await personalityGreetingPrompt.format({
+      ui_context: uiContext,
       streak: String(streak),
       resonanceScore: String(resonanceScore),
       entries: String(entries),

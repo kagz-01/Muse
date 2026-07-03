@@ -30,6 +30,46 @@ export interface NextStreakState {
 
 const MILESTONES = [7, 30, 100, 365, 1000];
 
+export const DEFAULT_STREAKABLE_TYPES = ["artifact", "room", "thread", "synthesis", "idea"];
+
+export function normalizeEnabledStreakTypes(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    const normalized = value
+      .filter((entry): entry is string => typeof entry === "string")
+      .map((entry) => entry.trim().toLowerCase())
+      .filter(Boolean);
+
+    if (normalized.length === 0) {
+      return [];
+    }
+
+    return [...new Set(normalized)];
+  }
+
+  if (typeof value === "string") {
+    const normalized = value
+      .split(",")
+      .map((entry) => entry.trim().toLowerCase())
+      .filter(Boolean);
+
+    return normalized.length > 0 ? [...new Set(normalized)] : [];
+  }
+
+  return [...DEFAULT_STREAKABLE_TYPES];
+}
+
+export function isContributionStreakable(
+  contributionType: StreakContributionType,
+  enabledTypes: string[] = [],
+): boolean {
+  if (enabledTypes.length === 0) {
+    return false;
+  }
+
+  const normalized = enabledTypes.map((value) => value.toLowerCase());
+  return normalized.includes(String(contributionType).toLowerCase());
+}
+
 export function computeResonanceWeight(contributionType: StreakContributionType): number {
   switch (contributionType) {
     case "journal":

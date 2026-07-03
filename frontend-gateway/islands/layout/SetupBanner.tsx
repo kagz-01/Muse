@@ -8,34 +8,13 @@ import {
   type SetupStep,
   userSignal,
 } from "../../signals/user.ts";
-import {
-  fetchPersonalityPrompt,
-  getContextualPrompt,
-  type UserContext,
-} from "../../utils/contextualPrompts.ts";
 
 export default function SetupBanner() {
   const user = userSignal.value;
   const isDismissed = setupBannerDismissedSignal.value;
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
-  const [setupMsg, setSetupMsg] = useState<string>(() => {
-    const hour = new Date().getHours();
-    const period = hour >= 5 && hour < 12
-      ? "morning"
-      : hour >= 12 && hour < 18
-      ? "afternoon"
-      : "evening";
-    const userContext: Partial<UserContext> = {
-      currentStreak: user?.cognitiveStreak ?? 0,
-      resonanceScore: user?.resonance?.resonanceScore ?? 0,
-      journalEntryCount: 0,
-      roomsJoined: 0,
-      threadsActive: 0,
-      hasUsername: Boolean(user?.username?.trim()),
-    };
-    return getContextualPrompt("setup_profile", period, userContext);
-  });
+  const [setupMsg, setSetupMsg] = useState<string>("Take a moment to complete your profile.");
 
   const steps = getSetupSteps(user);
   const done = steps.filter((s) => s.done).length;
@@ -54,26 +33,18 @@ export default function SetupBanner() {
   const nextStep = steps.find((s) => !s.done);
 
   useEffect(() => {
-    const hour = new Date().getHours();
-    const period = hour >= 5 && hour < 12
-      ? "morning"
-      : hour >= 12 && hour < 18
-      ? "afternoon"
-      : "evening";
-    const userContext: Partial<UserContext> = {
-      currentStreak: user?.cognitiveStreak ?? 0,
-      resonanceScore: user?.resonance?.resonanceScore ?? 0,
-      journalEntryCount: 0,
-      roomsJoined: 0,
-      threadsActive: 0,
-      hasUsername: Boolean(user?.username?.trim()),
-    };
+    const messages = [
+      "Take a moment to complete your profile.",
+      "Set up your space to start synthesizing.",
+      "A complete profile helps the engine understand your context.",
+      "Finish setup to unlock full platform capabilities."
+    ];
+    setSetupMsg(messages[Math.floor(Math.random() * messages.length)]);
 
-    fetchPersonalityPrompt("setup_profile", period, userContext)
-      .then(setSetupMsg)
-      .catch(() => {
-        // keep the fallback setup hint if the API fails
-      });
+    // Client-side hydration check for dismissal
+    if (globalThis.localStorage?.getItem("muse-setup-dismissed:global") === "true") {
+      setupBannerDismissedSignal.value = true;
+    }
   }, []);
 
   return (
@@ -130,7 +101,7 @@ export default function SetupBanner() {
         {/* Expand / Go button */}
         <button
           type="button"
-          onClick={() => setIsExpanded((e) => !e)}
+          onClick={() => setIsExpanded((e: boolean) => !e)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--muse-accent)]/15 text-[var(--muse-accent)] text-[11px] font-bold uppercase tracking-widest hover:bg-[var(--muse-accent)]/25 transition-colors flex-shrink-0"
         >
           Setup

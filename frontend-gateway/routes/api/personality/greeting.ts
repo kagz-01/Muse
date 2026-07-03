@@ -5,6 +5,7 @@ import { generatePersonalityGreeting } from "../../../utils/ai.ts";
 import { type GreetingPeriod } from "../../../utils/dynamicHumor.ts";
 
 interface Body {
+  context?: string;
   period: GreetingPeriod;
   streak: number;
   resonanceScore: number;
@@ -20,12 +21,13 @@ export const handler: Handlers = {
       return new Response("Invalid request payload", { status: 400 });
     }
 
-    const { period, streak, resonanceScore, entries, rooms, threads } = body;
+    const { context, period, streak, resonanceScore, entries, rooms, threads } = body;
     if (!period || !["morning", "afternoon", "evening"].includes(period)) {
       return new Response("Invalid period", { status: 400 });
     }
 
     const greeting = await generatePersonalityGreeting(
+      context || "general_dashboard",
       period,
       Number(streak) || 0,
       Number(resonanceScore) || 0,

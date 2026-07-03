@@ -1,9 +1,10 @@
 /// <reference path="../../../types/fresh.d.ts" />
 
 import { Handlers } from "$fresh/server.ts";
-import { getSessionUser } from "../../../utils/auth.ts";
+import { getSessionUser, isDemoUser } from "../../../utils/auth.ts";
 import { executeDB, queryDB } from "../../../utils/db.ts";
 import { synthesizeArtifacts } from "../../../utils/ai.ts";
+import { DEMO_ITEMS, DEMO_ROOMS } from "../../../utils/demo_data.ts";
 
 export const handler: Handlers = {
   async POST(req) {
@@ -18,6 +19,34 @@ export const handler: Handlers = {
 
       if (!roomId) {
         return new Response("Room ID required", { status: 400 });
+      }
+
+      // --- Demo mode: run synthesis on local demo data, skip DB ---
+      if (isDemoUser(userId)) {
+        const demoRoom = DEMO_ROOMS.find((r) => r.id === roomId) ?? DEMO_ROOMS[0];
+        const demoItems = DEMO_ITEMS.filter((i) => i.roomId === demoRoom.id);
+        if (demoItems.length === 0) {
+          return Response.json({ status: "error", message: "No items in this demo room." }, { status: 400 });
+        }
+        const artifacts = demoItems.map((i) => ({
+          id: i.id,
+          type: "item",
+          unstructured_data: { raw_text: `${i.title}\n${i.note ?? ""}` },
+        }));
+        try {
+          const blueprint = await synthesizeArtifacts(artifacts);
+          return Response.json({
+            status: "success",
+            message: `Synthesis complete. The patterns of "${demoRoom.name}" have been woven into a formal intelligence document.`,
+            thread: { ai_blueprint: blueprint, id: `demo-synth-${Date.now()}` },
+          });
+        } catch {
+          return Response.json({
+            status: "success",
+            message: `Sovereign synthesis ready. The patterns of "${demoRoom.name}" are now crystallised—centered around ${demoItems.map(i=>i.title).slice(0,2).join(' and ')}.`,
+            thread: { ai_blueprint: null, id: `demo-synth-${Date.now()}` },
+          });
+        }
       }
 
       // Verify the room belongs to the user

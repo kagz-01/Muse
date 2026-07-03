@@ -109,7 +109,8 @@ export const userSignal = signal<User>({
 export const soloModeSignal = signal(false);
 
 function setupBannerKeyForUser(userId?: string): string {
-  return `muse-setup-dismissed:${userId || "anonymous"}`;
+  // Use a global key so it doesn't reappear when user ID hydrates from 'u1' to the real ID
+  return `muse-setup-dismissed:global`;
 }
 
 function readSetupDismissed(userId?: string): boolean {

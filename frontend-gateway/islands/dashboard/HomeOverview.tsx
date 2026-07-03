@@ -16,9 +16,9 @@ import {
   insightsSignal,
 } from "../../signals/connections.ts";
 import {
-  generateDynamicHumor,
+  fetchPersonalityPrompt,
   type UserContext,
-} from "../../utils/dynamicHumor.ts";
+} from "../../utils/contextualPrompts.ts";
 
 function getTimeContext(timeZone?: string): {
   greeting: string;
@@ -82,8 +82,19 @@ export default function HomeOverview() {
       hasUsername: Boolean(user?.username?.trim()),
     };
 
-    const humor = generateDynamicHumor(timeCtx.period, userContext);
-    setDynamicSubheading(humor);
+    // Fetch an AI-generated, context-aware subheading
+    fetchPersonalityPrompt("empty_rooms", timeCtx.period, userContext)
+      .then((msg) => setDynamicSubheading(msg))
+      .catch(() => {/* keep placeholder */});
+
+    // Rotate the message every 30 seconds so it feels alive
+    const interval = setInterval(() => {
+      fetchPersonalityPrompt("empty_journal", timeCtx.period, userContext)
+        .then((msg) => setDynamicSubheading(msg))
+        .catch(() => {/* keep placeholder */});
+    }, 30_000);
+
+    return () => clearInterval(interval);
   }, [
     user?.timezone,
     user?.cognitiveStreak,
@@ -94,9 +105,9 @@ export default function HomeOverview() {
     threads.length,
   ]);
 
-  const totalArtifacts = rooms.reduce((sum, room) => sum + room.count, 0);
-  const publicRooms = rooms.filter((room) => room.isPublic).length;
-  const publicThreads = threads.filter((thread) => thread.isPublic).length;
+  const totalArtifacts = rooms.reduce((sum: number, room: { count: number }) => sum + room.count, 0);
+  const publicRooms = rooms.filter((room: { isPublic: boolean }) => room.isPublic).length;
+  const publicThreads = threads.filter((thread: { isPublic: boolean }) => thread.isPublic).length;
   const streak = getJournalStreak();
   const todayWords = getTodayWordCount();
   const latestEntry = journalEntries[0];
@@ -399,7 +410,7 @@ export default function HomeOverview() {
             </div>
 
             <div className="mt-5 flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {circles.slice(0, 4).map((circle) => (
+              {circles.slice(0, 4).map((circle: { id: string; name: string; description: string; memberCount: number }) => (
                 <div
                   key={circle.id}
                   className="rounded-3xl border border-white/5 bg-black/20 p-4 min-w-[240px] flex-shrink-0"
@@ -436,7 +447,7 @@ export default function HomeOverview() {
             </div>
 
             <div className="mt-5 flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
-              {topThemes.map((theme) => (
+              {topThemes.map((theme: string) => (
                 <span
                   key={theme}
                   className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-300 flex-shrink-0"

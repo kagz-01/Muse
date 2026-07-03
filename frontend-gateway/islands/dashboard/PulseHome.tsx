@@ -194,6 +194,7 @@ export default function PulseHome({ initialUser, isDemo = false }: { initialUser
   useEffect(() => {
     const controller = new AbortController();
     const body = {
+      context: "general_dashboard",
       period: timeContext.period,
       streak: user?.cognitiveStreak ?? 0,
       resonanceScore: user?.resonance?.resonanceScore ?? 0,
@@ -221,7 +222,14 @@ export default function PulseHome({ initialUser, isDemo = false }: { initialUser
     };
 
     loadAiGreeting();
-    return () => controller.abort();
+
+    // Rotate greeting every 40 seconds for a dynamic feel
+    const rotateInterval = setInterval(loadAiGreeting, 40_000);
+
+    return () => {
+      controller.abort();
+      clearInterval(rotateInterval);
+    };
   }, [
     timeContext.period,
     user?.cognitiveStreak,
