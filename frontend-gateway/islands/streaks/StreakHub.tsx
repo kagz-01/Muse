@@ -1138,69 +1138,108 @@ export default function StreakHub() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center relative z-10 pt-10 pb-8">
-        <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] mb-4">
-          Cognitive Momentum
+        <h3 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[var(--muse-muted)] mb-10">
+          The Aura Furnace
         </h3>
 
-        <div className="relative flex flex-col items-center justify-center mb-8">
-          <div
-            className={`w-32 h-32 rounded-full flex items-center justify-center ${flameBg} border border-[var(--muse-border)] mb-4 transition-all duration-700`}
-          >
-            {/* @ts-ignore dynamic import */}
-            <Icons.Flame
-              size={64}
-              className={`${flameColor} ${
-                streak && streak.currentStreak > 0
-                  ? "animate-pulse"
-                  : "opacity-50"
-              } transition-colors duration-700`}
-            />
-          </div>
-          <div className="text-6xl font-black text-[var(--muse-text)] tracking-tighter">
-            {streak ? streak.currentStreak : 0}
-          </div>
-          <p className="text-sm font-bold uppercase tracking-widest text-[var(--muse-muted)] mt-1">
-            Day Streak
-          </p>
-          {/* Milestone progress */}
-          {streak && (
-            (() => {
-              const milestones = [7, 30, 100, 365];
-              const current = streak.currentStreak || 0;
-              let prev = 0;
-              let next = milestones[milestones.length - 1];
-              for (const m of milestones) {
-                if (m <= current) prev = m;
-                if (m > current && next === milestones[milestones.length - 1]) {
-                  next = m;
-                }
-              }
-              const span = Math.max(1, next - prev);
-              const progress = Math.min(
-                100,
-                Math.round(((current - prev) / span) * 100),
-              );
+        <div className="relative flex flex-col items-center justify-center mb-8 w-full">
+          {/* The 3D Aura Sphere */}
+          {(() => {
+            let furnaceColor = "from-cyan-500 to-blue-600";
+            let furnaceShadow = "shadow-[0_0_50px_rgba(6,182,212,0.3)]";
+            let pulseSpeed = "animate-pulse";
 
-              return (
-                <div className="w-full max-w-xs mt-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-[var(--muse-muted)]">
-                      Next milestone: {next}d
+            if (streak && streak.currentStreak >= 30) {
+              furnaceColor = "from-orange-500 to-rose-600";
+              furnaceShadow = "shadow-[0_0_80px_rgba(249,115,22,0.4)]";
+              pulseSpeed = "animate-[pulse_1.5s_ease-in-out_infinite]";
+            } else if (streak && streak.currentStreak >= 7) {
+              furnaceColor = "from-purple-500 to-indigo-600";
+              furnaceShadow = "shadow-[0_0_60px_rgba(168,85,247,0.35)]";
+              pulseSpeed = "animate-[pulse_2s_ease-in-out_infinite]";
+            }
+
+            const currentStreakVal = streak ? streak.currentStreak : 0;
+            const frequency = Math.min(999, Math.max(432, 432 + (currentStreakVal * 12)));
+
+            return (
+              <>
+                <div className={`relative w-48 h-48 rounded-full bg-gradient-to-tr ${furnaceColor} ${furnaceShadow} flex items-center justify-center ${pulseSpeed} transition-all duration-1000`}>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent mix-blend-overlay" />
+                  <div className="absolute inset-1 rounded-full border border-white/10" />
+                  
+                  {/* Core energy */}
+                  <div className="relative z-10 flex flex-col items-center justify-center">
+                    <div className="text-5xl font-black text-white drop-shadow-md tracking-tighter">
+                      {currentStreakVal > 0 ? frequency : 0}
+                      <span className="text-xl text-white/70 font-normal ml-1">Hz</span>
+                    </div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/80 mt-1 drop-shadow-md">
+                      Aura Frequency
+                    </div>
+                  </div>
+
+                  {/* Orbiting particles */}
+                  <div className="absolute w-[120%] h-[120%] rounded-full border border-dashed border-white/20 animate-[spin_10s_linear_infinite]" />
+                  <div className="absolute w-[140%] h-[140%] rounded-full border border-white/5 animate-[spin_15s_linear_infinite_reverse]" />
+                </div>
+
+                {/* Burn Time Remaining */}
+                <div className="mt-16 w-full max-w-sm">
+                  <div className="flex items-center justify-between mb-3 px-2">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-[var(--muse-muted)] flex items-center gap-2">
+                      <Icons.Timer size={14} className="text-gray-400" />
+                      Burn Time Remaining
                     </span>
-                    <span className="text-xs font-bold text-[var(--muse-text)]">
-                      {progress}%
+                    <span className="text-xs font-mono font-bold text-[var(--muse-text)]">
+                      {(() => {
+                        if (!streak || streak.currentStreak === 0) return "0h 0m";
+                        const now = new Date();
+                        const nextMidnight = new Date();
+                        nextMidnight.setUTCHours(24, 0, 0, 0);
+                        const hoursRemaining = Math.floor((nextMidnight.getTime() - now.getTime()) / (1000 * 60 * 60));
+                        const minutesRemaining = Math.floor(((nextMidnight.getTime() - now.getTime()) / (1000 * 60)) % 60);
+                        return `${hoursRemaining}h ${minutesRemaining}m`;
+                      })()}
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                  
+                  <div className="w-full h-2.5 bg-[#1a1a1a] rounded-full overflow-hidden border border-white/5">
                     <div
-                      className="h-2 bg-gradient-to-r from-orange-400 to-rose-500"
-                      style={{ width: `${progress}%` }}
+                      className={`h-full bg-gradient-to-r ${furnaceColor} transition-all duration-1000 ease-out`}
+                      style={{ width: `${(() => {
+                        if (!streak || streak.currentStreak === 0) return 0;
+                        const now = new Date();
+                        const startOfDay = new Date();
+                        startOfDay.setUTCHours(0, 0, 0, 0);
+                        const percent = 100 - ((now.getTime() - startOfDay.getTime()) / (24 * 60 * 60 * 1000)) * 100;
+                        return Math.max(5, percent); // keep a tiny sliver visible if close to midnight
+                      })()}%` }}
                     />
                   </div>
+
+                  {/* Fuel Legend */}
+                  <div className="flex items-center justify-center gap-6 mt-8 p-4 rounded-3xl bg-white/[0.02] border border-white/5">
+                    <div className="flex flex-col items-center gap-1.5 group cursor-help">
+                      <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)] group-hover:scale-125 transition-transform" />
+                      <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold">Kindling</span>
+                      <span className="text-[8px] text-gray-600 opacity-0 group-hover:opacity-100 absolute -bottom-4 transition-opacity">Journal</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5 group cursor-help relative">
+                      <div className="w-3 h-3 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(192,132,252,0.5)] group-hover:scale-125 transition-transform" />
+                      <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold">Wood</span>
+                      <span className="text-[8px] text-gray-600 opacity-0 group-hover:opacity-100 absolute -bottom-4 transition-opacity">Rooms</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5 group cursor-help relative">
+                      <div className="w-3 h-3 rounded-full bg-rose-400 shadow-[0_0_10px_rgba(251,113,133,0.5)] group-hover:scale-125 transition-transform" />
+                      <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold">Accelerant</span>
+                      <span className="text-[8px] text-gray-600 opacity-0 group-hover:opacity-100 absolute -bottom-4 transition-opacity whitespace-nowrap">AI Synthesis</span>
+                    </div>
+                  </div>
                 </div>
-              );
-            })()
-          )}
+              </>
+            );
+          })()}
         </div>
 
         {justShared
@@ -1316,7 +1355,6 @@ export default function StreakHub() {
                   )}
               </div>
             </div>
-          </>
         )}
       </div>
 
