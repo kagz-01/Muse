@@ -7,9 +7,7 @@ import {
   journalSignal,
 } from "../../signals/journal.ts";
 import { activeThemesSignal } from "../../signals/connections.ts";
-import { roomsSignal } from "../../signals/rooms.ts";
 import { threadsSignal } from "../../signals/threads.ts";
-import { globalStreakSignal, loadGlobalStreak } from "../../signals/streaks.ts";
 import { userSignal } from "../../signals/user.ts";
 import ActivityTimeline from "../../components/mirror/ActivityTimeline.tsx";
 import {
@@ -23,13 +21,11 @@ import ActivityHeatmap from "./ActivityHeatmap.tsx";
 export default function MirrorDashboard() {
   useEffect(() => {
     void loadMirrorStats();
-    loadGlobalStreak();
   }, []);
 
   const stats = mirrorSignal.value;
   const entries = journalSignal.value;
   const user = userSignal.value;
-  const rooms = roomsSignal.value;
   const threads = threadsSignal.value;
   const topThemes = activeThemesSignal.value.slice(0, 8);
 
@@ -38,7 +34,6 @@ export default function MirrorDashboard() {
   const totalPublic = entries.filter((entry) => entry.isPublic).length;
   const totalFavorites = entries.filter((entry) => entry.isFavorited).length;
   const totalSyntheses = threads.length;
-  const totalRooms = rooms.length;
   const totalWords = useMemo(
     () => getActivityHeatmap().reduce((sum, day) => sum + day.count, 0),
     [entries],
@@ -49,30 +44,8 @@ export default function MirrorDashboard() {
   }, [entries]);
 
   const mirrorSummary = activeMood
-    ? `The mirror shows your most frequent mood as ${activeMood.label}, with ${stats.followerCount} network nodes and ${stats.stats.likes} upvotes in motion.`
-    : "This mirror is tuning your mood, network, and creative cadence into a single reflection.";
-
-  const streak = globalStreakSignal.value;
-  const currentStreakDisplay = streak?.currentStreak ?? 0;
-  const milestoneTargets = [7, 30, 100, 365];
-  let milestoneStart = 0;
-  let milestoneTarget = milestoneTargets[milestoneTargets.length - 1];
-  for (const milestone of milestoneTargets) {
-    if (milestone <= currentStreakDisplay) {
-      milestoneStart = milestone;
-      continue;
-    }
-    milestoneTarget = milestone;
-    break;
-  }
-  const milestoneSpan = Math.max(1, milestoneTarget - milestoneStart);
-  const milestoneProgress = Math.min(
-    100,
-    Math.round(((currentStreakDisplay - milestoneStart) / milestoneSpan) * 100),
-  );
-  const streakCue = streak
-    ? `Your mirror is holding a ${streak.currentStreak}-day streak with ${streak.streakLevel} momentum. Keep the flame alive on the Streak Hub.`
-    : "The mirror is ready. When you're ready to turn reflection into momentum, the Streak Hub is your next stop.";
+    ? `The mirror shows your most frequent mood as ${activeMood.label}. Your focus remains steady as you process ${topThemes[0] || 'emerging concepts'}.`
+    : "This mirror is tuning your mood, reflection patterns, and creative cadence into a single private signal.";
 
   const currentFocus = topThemes[0] || user.weeklyInsights.topThemes[0] || "Focus";
   const moodDistribution = moodStats.slice(0, 4).map((mood) => ({
@@ -99,22 +72,8 @@ export default function MirrorDashboard() {
       { subject: "Depth", A: 60, fullMark: 100 },
     ];
 
-  const weeklyFollowerChange = stats.followerHistory.length > 1
-    ? stats.followerHistory[stats.followerHistory.length - 1].count -
-      stats.followerHistory[0].count
-    : 0;
-  const followerTrendLabel = weeklyFollowerChange >= 0
-    ? `+${weeklyFollowerChange} this week`
-    : `${weeklyFollowerChange} this week`;
-
-  const topRooms = [...rooms]
-    .sort(
-      (a, b) =>
-        (b.resonanceMetrics.views - a.resonanceMetrics.views) ||
-        (b.count - a.count),
-    )
-    .slice(0, 3);
   const topThreads = [...threads]
+    .sort((a, b) => (b.dialogueLayers?.length ?? 0) - (a.dialogueLayers?.length ?? 0))
     .sort(
       (a, b) =>
         (b.resonanceMetrics.views - a.resonanceMetrics.views) ||
@@ -148,9 +107,6 @@ export default function MirrorDashboard() {
   const formatDelta = (value: number) =>
     `${value >= 0 ? "+" : ""}${value}`;
 
-  const formatPercent = (value: number) =>
-    `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
-
   const formatCount = (value: number) =>
     value.toLocaleString();
 
@@ -175,76 +131,8 @@ export default function MirrorDashboard() {
     return time >= priorWeekStart && time < thisWeekStart;
   });
 
-  const weeklyUpvotes = thisWeekEntries.filter((entry) => entry.isFavorited)
-    .length * 7 + thisWeekThreads.filter((thread) => thread.isFavorited).length * 10;
-  const priorWeeklyUpvotes = priorWeekEntries.filter((entry) =>
-    entry.isFavorited
-  ).length * 7 + priorWeekThreads.filter((thread) => thread.isFavorited).length * 10;
-
-  const weeklyComments = thisWeekThreads.reduce(
-    (sum, thread) => sum + (thread.dialogueLayers?.length ?? 0),
-    0,
-  );
-  const priorWeeklyComments = priorWeekThreads.reduce(
-    (sum, thread) => sum + (thread.dialogueLayers?.length ?? 0),
-    0,
-  );
-
-  const weeklyPublicShares = thisWeekEntries.filter((entry) => entry.isPublic)
-    .length;
-  const priorWeeklyPublicShares = priorWeekEntries.filter((entry) =>
-    entry.isPublic
-  ).length;
-
-  const weeklyPublicShareRatio = thisWeekEntries.length > 0
-    ? weeklyPublicShares / thisWeekEntries.length
-    : 0;
-  const priorWeeklyPublicShareRatio = priorWeekEntries.length > 0
-    ? priorWeeklyPublicShares / priorWeekEntries.length
-    : 0;
-
-  const upvoteDelta = weeklyUpvotes - priorWeeklyUpvotes;
-  const commentsDelta = weeklyComments - priorWeeklyComments;
-  const publicShareDelta = weeklyPublicShareRatio - priorWeeklyPublicShareRatio;
-  const followerGrowthDelta = stats.followerHistory.length > 1
-    ? stats.followerHistory[stats.followerHistory.length - 1].count -
-      stats.followerHistory[0].count
-    : 0;
-
-  const weeklyKpiCards = [
-    {
-      label: "Upvotes this week",
-      value: `${formatCount(weeklyUpvotes)}`,
-      delta: formatDelta(upvoteDelta),
-      caption: "vs last week",
-      icon: Icons.ArrowUpCircle,
-      color: "text-emerald-400",
-    },
-    {
-      label: "Network growth",
-      value: `${formatCount(stats.followerCount)} nodes`,
-      delta: formatDelta(followerGrowthDelta),
-      caption: "over 7 days",
-      icon: Icons.Network,
-      color: "text-canvas-primary",
-    },
-    {
-      label: "Comments trend",
-      value: `${formatCount(weeklyComments)} mentions`,
-      delta: formatDelta(commentsDelta),
-      caption: "vs last week",
-      icon: Icons.MessageSquare,
-      color: "text-amber-400",
-    },
-    {
-      label: "Public share ratio",
-      value: formatPercent(weeklyPublicShareRatio),
-      delta: formatPercent(publicShareDelta),
-      caption: "vs last week",
-      icon: Icons.Globe,
-      color: "text-violet-400",
-    },
-  ];
+  const reflectionDelta = thisWeekEntries.length - priorWeekEntries.length;
+  const synthesisDelta = thisWeekThreads.length - priorWeekThreads.length;
 
   const moodWordCounts = entries.reduce<Record<string, number>>((memo, entry) => {
     const moodKey = entry.mood === "custom" && entry.customMood
@@ -270,65 +158,18 @@ export default function MirrorDashboard() {
     ? moodWordCounts[moodStats[0].mood] ?? 0
     : 0;
 
-  const collaboratorCounts = stats.activity.reduce(
-    (map, activity) => {
-      if (!activity.actor || ["Network", "Circle", "Insight"].includes(activity.actor)) {
-        return map;
-      }
-      map.set(activity.actor, (map.get(activity.actor) ?? 0) + 1);
-      return map;
-    },
-    new Map<string, number>(),
-  );
-
-  const topCollaborator = [...collaboratorCounts.entries()]
-    .sort((a, b) => b[1] - a[1])[0]?.[0] ??
-    stats.activity[0]?.actor ?? "No collaborator yet";
-
-  const bestFollowerDay = stats.followerHistory.reduce(
-    (best, point) => point.count > best.count ? point : best,
-    stats.followerHistory[0] ?? { date: "", count: 0 },
-  );
-
-  const recent24h = stats.activity.filter((activity) =>
-    now - activity.timestamp.getTime() <= 24 * 60 * 60 * 1000
-  );
-
-  const recentPerformanceEvents = [
-    {
-      label: "New followers",
-      value: `${recent24h.filter((activity) => activity.type === "follow").length}`,
-      icon: Icons.UserPlus,
-    },
-    {
-      label: "Upvotes in 24h",
-      value: `${recent24h.filter((activity) => activity.type === "like").length}`,
-      icon: Icons.Heart,
-    },
-    {
-      label: "Room joins",
-      value: `${recent24h.filter((activity) => activity.type === "join_circle").length}`,
-      icon: Icons.Users,
-    },
-    {
-      label: "New reactions",
-      value: `${recent24h.filter((activity) => activity.type === "comment").length}`,
-      icon: Icons.MessageCircle,
-    },
-  ];
-
   const focusLens = [
     {
-      label: "Top room",
-      title: topRooms[0]?.title || topRooms[0]?.name || "No room yet",
-      value: `${topRooms[0]?.resonanceMetrics.views ?? 0} views`,
-      icon: Icons.Home,
+      label: "Reflections",
+      title: "Written entries",
+      value: `${entries.length} total`,
+      icon: Icons.BookOpen,
     },
     {
-      label: "Top thread",
-      title: topThreads[0]?.title || "No thread yet",
-      value: `${topThreads[0]?.resonanceMetrics.views ?? 0} views`,
-      icon: Icons.Hash,
+      label: "Syntheses",
+      title: "AI Extractions",
+      value: `${totalSyntheses} threads`,
+      icon: Icons.Zap,
     },
     {
       label: "Highest mood",
@@ -344,45 +185,16 @@ export default function MirrorDashboard() {
     },
   ];
 
-  const performanceCards = [
-    {
-      label: "Followers",
-      value: followerTrendLabel,
-      icon: Icons.UserPlus,
-    },
-    {
-      label: "Upvotes",
-      value: `${stats.stats.likes}`,
-      icon: Icons.ArrowUpCircle,
-    },
-    {
-      label: "Comments",
-      value: `${stats.stats.comments}`,
-      icon: Icons.MessageSquare,
-    },
-    {
-      label: "Public entries",
-      value: `${totalPublic}`,
-      icon: Icons.Globe,
-    },
-  ];
-
   const mirrorInsights = [
-    `Public share ratio is ${formatPercent(weeklyPublicShareRatio)} (${formatPercent(publicShareDelta)})`,
-    `Charged mood leads with ${topMoodOutputCount.toLocaleString()} words`,
-    `Audience velocity peaked on ${bestFollowerDay.date}`,
+    `Steady cadence: ${thisWeekEntries.length} reflections this week (${formatDelta(reflectionDelta)}).`,
+    `Charged mood leads with ${formatCount(topMoodOutputCount)} words written in state.`,
+    `You've captured ${totalSyntheses} cognitive threads over time.`,
   ];
 
   const suggestions = [
-    totalPublic < 3
-      ? "Share one public reflection today."
-      : "Keep your public signal alive.",
-    topRooms.length > 0
-      ? `Follow up in ${topRooms[0]?.title || topRooms[0]?.name}.`
-      : "Start one new room.",
-    followerGrowthDelta < 0
-      ? "Invite one new connection to regain momentum."
-      : "Lean into your strongest themes.",
+    "Log a new private reflection.",
+    "Review your latest synthesis.",
+    "Tune into your strongest themes.",
   ];
 
   // Interactive Aura State
@@ -451,51 +263,24 @@ export default function MirrorDashboard() {
                 ? `The mirror is currently tuning into "${activeTheme}". Your network is reflecting the theme's pulse.`
                 : mirrorSummary}
             </p>
-            <div className="mx-auto lg:mx-0 mt-6 max-w-2xl rounded-[2rem] border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-300 shadow-sm">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-gray-500">Momentum meter</div>
-                  <div className="mt-2 text-white font-semibold">{currentStreakDisplay} day streak</div>
-                </div>
-                <div className="text-right text-xs text-gray-400">
-                  <div>Next {milestoneTarget}d</div>
-                  <div className="text-emerald-400">{milestoneProgress}%</div>
-                </div>
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-500"
-                  style={{ width: `${Math.max(8, milestoneProgress)}%` }}
-                />
-              </div>
-              <div className="mt-3 text-xs text-gray-400">{streakCue}</div>
-              <a
-                href="/connections"
-                className="mt-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.3em] text-cyan-300 transition hover:bg-cyan-400/20"
-              >
-                <Icons.Users size={14} />
-                Open community
-              </a>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 mt-6 text-xs font-bold uppercase tracking-[0.25em] text-gray-400 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 mt-8 text-xs font-bold uppercase tracking-[0.25em] text-gray-400 sm:grid-cols-2 xl:grid-cols-4">
               {[
                 {
-                  icon: Icons.ArrowUpCircle,
-                  label: "Upvotes",
-                  value: stats.stats.likes,
+                  icon: Icons.Book,
+                  label: "Reflections",
+                  value: entries.length,
                   color: "text-emerald-400",
                 },
                 {
-                  icon: Icons.Eye,
-                  label: "Impressions",
-                  value: stats.stats.views,
+                  icon: Icons.PenTool,
+                  label: "Total Words",
+                  value: totalWords,
                   color: "text-canvas-primary",
                 },
                 {
-                  icon: Icons.Network,
-                  label: "Network size",
-                  value: stats.followerCount,
+                  icon: Icons.Star,
+                  label: "Deep Insights",
+                  value: totalFavorites,
                   color: "text-violet-400",
                 },
                 {
@@ -507,7 +292,7 @@ export default function MirrorDashboard() {
               ].map((metric) => (
                 <div
                   key={metric.label}
-                  className="flex items-center justify-between gap-3 p-4 rounded-3xl bg-white/[0.03] border border-white/5"
+                  className="flex items-center justify-between gap-3 p-4 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <metric.icon size={18} className={metric.color} />
@@ -605,45 +390,22 @@ export default function MirrorDashboard() {
 
         {!stats.isLoading && !stats.error && (
           <>
-            {/* THE RESONANCE KPI ROW */}
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 p-2">
-              {weeklyKpiCards.map((card) => (
-                <div
-                  key={card.label}
-                  className="rounded-3xl border border-white/5 bg-white/[0.04] p-5 shadow-2xl"
-                >
-                  <div className="flex items-center justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-3">
-                      <card.icon size={16} className={`${card.color} shrink-0`} />
-                      <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400">
-                        {card.label}
-                      </span>
-                    </div>
-                    <span className="text-xs text-gray-400">Live</span>
-                  </div>
-                  <div className="text-3xl font-semibold text-white">{card.value}</div>
-                  <div className="flex items-center gap-2 mt-3 text-sm text-gray-400">
-                    <span className={card.delta.startsWith("+") ? "text-emerald-400" : "text-rose-400"}>
-                      {card.delta}
-                    </span>
-                    <span>{card.caption}</span>
-                  </div>
-                </div>
-              ))}
-            </section>
-
+            {/* PRIVATE INTROSPECTION KPIs */}
             <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 px-4 md:px-8 pt-4">
-              {recentPerformanceEvents.map((event) => (
+              {focusLens.map((lens) => (
                 <div
-                  key={event.label}
-                  className="rounded-3xl border border-white/5 bg-white/[0.03] p-4 shadow-xl flex items-center gap-4"
+                  key={lens.label}
+                  className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 shadow-xl flex items-center gap-4 hover:border-canvas-primary/30 transition-colors"
                 >
-                  <event.icon size={20} className="text-canvas-primary" />
+                  <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                    <lens.icon size={20} className="text-canvas-primary" />
+                  </div>
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500">
-                      {event.label}
+                      {lens.label}
                     </p>
-                    <p className="text-lg font-semibold text-white">{event.value}</p>
+                    <p className="text-lg font-semibold text-white leading-tight">{lens.value}</p>
+                    <p className="text-xs text-gray-400 mt-1">{lens.title}</p>
                   </div>
                 </div>
               ))}
@@ -651,38 +413,17 @@ export default function MirrorDashboard() {
 
             <section className="px-4 md:px-8 w-full grid gap-6 lg:grid-cols-[1.3fr_0.95fr] pt-8">
               <div className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {focusLens.map((lens) => (
-                    <div
-                      key={lens.label}
-                      className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 shadow-xl"
-                    >
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-3">
-                        {lens.label}
-                      </p>
-                      <p className="text-sm font-semibold text-white mb-2">{lens.title}</p>
-                      <p className="text-xs uppercase tracking-[0.3em] text-gray-400">
-                        {lens.value}
-                      </p>
+                <div className="grid gap-4 md:grid-cols-2 h-full">
+                  <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 shadow-xl flex flex-col justify-between">
+                    <PieChart data={moodDistribution} title="Mood × Output" />
+                    <div className="mt-6 rounded-3xl border border-white/5 bg-[#111418] p-4 text-sm text-white">
+                      <div className="font-semibold text-white">{topMood} + {formatCount(topMoodOutputCount)} words</div>
+                      <div className="mt-2 text-gray-400">Balance score {moodBalanceScore}%</div>
                     </div>
-                  ))}
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  {performanceCards.map((card) => (
-                    <div
-                      key={card.label}
-                      className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-5 shadow-xl flex items-center gap-4"
-                    >
-                      <card.icon size={20} className="text-canvas-primary" />
-                      <div>
-                        <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500">
-                          {card.label}
-                        </p>
-                        <p className="text-lg font-semibold text-white">{card.value}</p>
-                      </div>
-                    </div>
-                  ))}
+                  </div>
+                  <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 shadow-xl flex flex-col justify-center">
+                    <PieChart data={contentDistribution} title="Content Mix" />
+                  </div>
                 </div>
               </div>
 
@@ -701,20 +442,20 @@ export default function MirrorDashboard() {
                   </div>
                   <div className="rounded-full bg-white/5 h-3 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-canvas-primary"
+                      className="h-full rounded-full bg-gradient-to-r from-canvas-primary to-emerald-400"
                       style={{ width: `${resonanceScore}%` }}
                     />
                   </div>
                 </div>
 
-                <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 shadow-xl">
+                <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 shadow-xl h-[calc(100%-140px)]">
                   <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-4">
                     Mirror insights
                   </p>
                   <ul className="space-y-3 text-sm text-gray-300">
                     {mirrorInsights.map((insight) => (
                       <li key={insight} className="flex gap-3 items-start">
-                        <span className="mt-1 h-2.5 w-2.5 rounded-full bg-canvas-primary" />
+                        <span className="mt-1 h-2.5 w-2.5 rounded-full bg-canvas-primary shrink-0" />
                         <span>{insight}</span>
                       </li>
                     ))}
@@ -731,121 +472,6 @@ export default function MirrorDashboard() {
                         {suggestion}
                       </div>
                     ))}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* THEME & CONNECTION TRENDS */}
-            <section className="px-4 md:px-8 w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 pt-8">
-              <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-[1.3fr_0.9fr]">
-                  <div>
-                    <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
-                      <Icons.Brain size={14} className="text-canvas-primary" />
-                      Mirror Focus & Mood
-                    </h2>
-                    <p className="text-sm text-gray-400 mt-4 leading-relaxed max-w-2xl">
-                      {activeTheme
-                        ? `Live focus on #${activeTheme} with your mirror reflecting thematic energy, mood balance, and network flow.`
-                        : `Your mirror is blending mood, ideas, and community impact into a single personal signal.`}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 shadow-xl">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-4 font-bold">
-                      Current Mirror Summary
-                    </p>
-                    <div className="space-y-3 text-sm text-gray-300">
-                      <p>{mirrorSummary}</p>
-                      <p>{`Top focus: ${currentFocus}. ${totalRooms} rooms, ${totalSyntheses} syntheses, ${totalPublic} public entries.`}</p>
-                      <p>{`You’ve generated ${totalWords} words in the last 31 days, with ${totalFavorites} favorites aligned to your strongest rhythms.`}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 shadow-xl">
-                    <PieChart data={moodDistribution} title="Mood × Output" />
-                    <div className="mt-6 rounded-3xl border border-white/5 bg-[#111418] p-4 text-sm text-white">
-                      <div className="font-semibold text-white">{topMood} + {formatCount(topMoodOutputCount)} words</div>
-                      <div className="mt-2 text-gray-400">Balance score {moodBalanceScore}%</div>
-                    </div>
-                  </div>
-                  <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 shadow-xl">
-                    <PieChart data={contentDistribution} title="Content Mix" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2">
-                  <Icons.GitMerge size={14} className="text-indigo-400" />
-                  Network Momentum
-                </h2>
-                <div
-                  className={`bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 shadow-xl transition-all duration-500 ${
-                    activeTheme
-                      ? "border-canvas-primary/20 shadow-[0_0_30px_rgba(34,211,238,0.1)]"
-                      : ""
-                  }`}
-                >
-                  <LineChart
-                    data={stats.followerHistory.map((h) => h.count)}
-                    title="Audience growth"
-                    color={activeTheme ? "#22d3ee" : "#818cf8"}
-                  />
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-3xl border border-white/5 bg-[#0d0d0d]/80 p-4">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500">Highest engagement</p>
-                      <p className="mt-3 text-lg font-semibold text-white">{bestFollowerDay.date}</p>
-                      <p className="text-sm text-gray-400">+{bestFollowerDay.count} nodes</p>
-                    </div>
-                    <div className="rounded-3xl border border-white/5 bg-[#0d0d0d]/80 p-4">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500">Top collaborator</p>
-                      <p className="mt-3 text-lg font-semibold text-white">{topCollaborator}</p>
-                      <p className="text-sm text-gray-400">Engaged most this week</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 shadow-xl">
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-4">
-                    Collaboration Pulse
-                  </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">
-                        Top rooms
-                      </p>
-                      <div className="space-y-3">
-                        {topRooms.map((room) => (
-                          <div key={room.id} className="flex items-center justify-between gap-4">
-                            <div>
-                              <p className="text-sm font-semibold text-white">{room.title || room.name}</p>
-                              <p className="text-xs text-gray-500">{room.resonanceMetrics.views} views</p>
-                            </div>
-                            <span className="text-xs text-gray-400">{room.count} items</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">
-                        Top threads
-                      </p>
-                      <div className="space-y-3">
-                        {topThreads.map((thread) => (
-                          <div key={thread.id} className="flex items-center justify-between gap-4">
-                            <div>
-                              <p className="text-sm font-semibold text-white">{thread.title}</p>
-                              <p className="text-xs text-gray-500">{thread.resonanceMetrics.views} views</p>
-                            </div>
-                            <span className="text-xs text-gray-400">{thread.resonanceMetrics.connections} links</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -875,26 +501,7 @@ export default function MirrorDashboard() {
                   </div>
                 </div>
 
-                <div>
-                  <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 flex items-center gap-2 mb-6">
-                    <Icons.Zap size={14} className="text-orange-400" />
-                    Synthesis Chain
-                  </h2>
-                  <div className="bg-white/[0.02] rounded-[2.5rem] border border-white/5 p-6 md:p-10 shadow-xl">
-                    <a
-                      href="/streaks"
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white text-black font-bold text-sm hover:bg-white/90 transition-all"
-                    >
-                      <Icons.Zap size={16} />
-                      View Your Momentum
-                    </a>
-                    <p className="text-sm text-gray-500 mt-4 italic font-serif">
-                      {streak
-                        ? `Your ${streak.currentStreak}-day streak is waiting to be continued on the Streak Hub.`
-                        : "Track your daily streak, milestone progress, and cognitive links on the Streak Hub."}
-                    </p>
-                  </div>
-                </div>
+
               </div>
 
               <div className="space-y-12">
