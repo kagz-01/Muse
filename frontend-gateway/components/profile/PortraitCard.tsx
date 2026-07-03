@@ -84,6 +84,24 @@ export default function PortraitCard(
             </div>
           )}
 
+          <div className="mb-8 grid grid-cols-3 gap-2 px-2">
+            <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-colors group">
+              <Icons.Network size={16} className="text-indigo-400 mb-2 group-hover:scale-110 transition-transform" />
+              <span className="text-lg font-bold text-white">{user.resonance.connections}</span>
+              <span className="text-[9px] uppercase tracking-widest text-gray-500 mt-1">Nodes</span>
+            </div>
+            <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-colors group">
+              <Icons.Eye size={16} className="text-emerald-400 mb-2 group-hover:scale-110 transition-transform" />
+              <span className="text-lg font-bold text-white">{user.resonance.views > 999 ? (user.resonance.views/1000).toFixed(1) + 'k' : user.resonance.views}</span>
+              <span className="text-[9px] uppercase tracking-widest text-gray-500 mt-1">Reach</span>
+            </div>
+            <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-colors group">
+              <Icons.Zap size={16} className="text-orange-400 mb-2 group-hover:scale-110 transition-transform" />
+              <span className="text-lg font-bold text-white">{user.resonance.resonanceScore}%</span>
+              <span className="text-[9px] uppercase tracking-widest text-gray-500 mt-1">Signal</span>
+            </div>
+          </div>
+
           <div className="mb-10 flex flex-col items-center">
             <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold mb-4 flex items-center gap-2.5">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]">
