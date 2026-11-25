@@ -1,5 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { mapRoomRow, parseRoomInput } from "./rooms";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { queryDB } from "./db";
+import { hasRoomAccess, mapRoomRow, parseRoomInput } from "./rooms";
+
+vi.mock("./db", () => ({ queryDB: vi.fn() }));
 
 describe("room API mapping", () => {
   it("maps database fields to the room shape and computes counts", () => {
@@ -34,6 +37,29 @@ describe("room API mapping", () => {
     expect(parseRoomInput({ resonanceMetrics: null })).toBeNull();
     expect(parseRoomInput({ customStyling: null })).toMatchObject({
       customStyling: null,
+    });
+  });
+
+  describe("room access", () => {
+    beforeEach(() => {
+      vi.mocked(queryDB).mockReset();
+    });
+
+    it("allows room owners and collaborators returned by the access query", async () => {
+      vi.mocked(queryDB).mockResolvedValue([{ id: "room-1" }] as never);
+
+      await expect(hasRoomAccess("user-1", "room-1")).resolves.toBe(true);
+      expect(queryDB).toHaveBeenCalledWith(
+        expect.stringContaining("rc.user_id = $2"),
+        "room-1",
+        "user-1",
+      );
+    });
+
+    it("denies users with no matching room access row", async () => {
+      vi.mocked(queryDB).mockResolvedValue([]);
+
+      await expect(hasRoomAccess("user-2", "room-1")).resolves.toBe(false);
     });
   });
 });

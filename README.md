@@ -97,6 +97,8 @@ npm install
 npm run dev
 ```
 
+Copy `.env.example` to `.env` and set `DATABASE_URL` before using database-backed features. Room synthesis also requires `DATABASE_URL` and `OPENAI_API_KEY` on the AI Engine service.
+
 Open `http://localhost:3000`.
 
 ### AI engine

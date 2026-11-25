@@ -18,6 +18,7 @@ export interface MuseThread {
   isVault: boolean;
   synthesisScore: number;
   itemIds: string[];
+  aiBlueprint: unknown;
   sourceRoomIds: string[];
   dialogueLayers: unknown[];
   resonanceMetrics: Record<string, unknown>;
@@ -44,6 +45,7 @@ export function mapThreadRow(row: Record<string, unknown>): MuseThread {
     isVault: row.is_vault === true,
     synthesisScore: Number(row.synthesis_score ?? 0),
     itemIds: Array.isArray(row.artifact_ids) ? row.artifact_ids.map(String) : [],
+    aiBlueprint: row.ai_blueprint ?? null,
     sourceRoomIds: Array.isArray(row.source_room_ids) ? row.source_room_ids.map(String) : [],
     dialogueLayers: Array.isArray(row.dialogue_layers) ? row.dialogue_layers : [],
     resonanceMetrics: row.resonance_metrics && typeof row.resonance_metrics === "object"
@@ -54,13 +56,19 @@ export function mapThreadRow(row: Record<string, unknown>): MuseThread {
   };
 }
 
-export async function listThreads(userId: string): Promise<MuseThread[]> {
-  const rows = await queryDB(
-    `SELECT t.* FROM threads t
+export async function listThreads(
+  userId: string,
+  roomId?: string,
+): Promise<MuseThread[]> {
+  const query = `SELECT DISTINCT t.* FROM threads t
      LEFT JOIN rooms r ON t.room_id = r.id
-     WHERE t.user_id = $1 OR r.user_id = $1
-     ORDER BY t.updated_at DESC`,
-    userId,
-  );
+     LEFT JOIN room_collaborators rc ON rc.room_id = r.id
+     WHERE (t.user_id = $1 OR r.user_id = $1 OR rc.user_id = $1)${
+    roomId ? " AND t.room_id = $2" : ""
+  }
+     ORDER BY t.updated_at DESC`;
+  const rows = roomId
+    ? await queryDB(query, userId, roomId)
+    : await queryDB(query, userId);
   return rows.map(mapThreadRow);
 }

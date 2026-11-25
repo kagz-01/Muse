@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { ArrowRight, Plus, Search, Sparkles } from "lucide-react";
 import type { MuseRoom } from "../server/rooms";
@@ -8,6 +8,8 @@ export const Route = createFileRoute("/rooms")({
 });
 
 function RoomsPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const isRoomDetail = pathname.startsWith("/rooms/");
   const [rooms, setRooms] = useState<MuseRoom[]>([]);
   const [query, setQuery] = useState("");
   const [roomName, setRoomName] = useState("");
@@ -16,6 +18,7 @@ function RoomsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (isRoomDetail) return;
     const controller = new AbortController();
     void (async () => {
       try {
@@ -50,7 +53,9 @@ function RoomsPage() {
       }
     })();
     return () => controller.abort();
-  }, []);
+  }, [isRoomDetail]);
+
+  if (isRoomDetail) return <Outlet />;
 
   const createRoom = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

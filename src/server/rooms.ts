@@ -90,6 +90,22 @@ export function mapRoomRow(row: Record<string, unknown>): MuseRoom {
   };
 }
 
+export async function hasRoomAccess(
+  userId: string,
+  roomId: string,
+): Promise<boolean> {
+  const rows = await queryDB(
+    `SELECT r.id
+     FROM rooms r
+     LEFT JOIN room_collaborators rc ON rc.room_id = r.id
+     WHERE r.id = $1 AND (r.user_id = $2 OR rc.user_id = $2)
+     LIMIT 1`,
+    roomId,
+    userId,
+  );
+  return rows.length > 0;
+}
+
 export function parseRoomInput(
   value: unknown,
   requireName = false,

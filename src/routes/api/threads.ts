@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSessionUser, isDemoUser } from "../../server/auth";
 import { queryDB } from "../../server/db";
+import { hasRoomAccess } from "../../server/rooms";
 import { listThreads, mapThreadRow } from "../../server/threads";
 
 export const Route = createFileRoute("/api/threads")({
@@ -9,7 +10,11 @@ export const Route = createFileRoute("/api/threads")({
       const userId = await getSessionUser(request);
       if (!userId) return new Response("Unauthorized", { status: 401 });
       if (isDemoUser(userId)) return Response.json([]);
-      return Response.json(await listThreads(userId));
+      const roomId = new URL(request.url).searchParams.get("roomId") ?? undefined;
+      if (roomId && !await hasRoomAccess(userId, roomId)) {
+        return new Response("Room not found", { status: 404 });
+      }
+      return Response.json(await listThreads(userId, roomId));
     },
     POST: async ({ request }) => {
       const userId = await getSessionUser(request);

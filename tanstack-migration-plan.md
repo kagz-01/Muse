@@ -20,11 +20,7 @@ Move every Fresh page, API, signal-backed product flow, database operation, and 
 
 ## Current path-level audit
 
-The generated route-tree comparison found these outstanding URL differences:
-
-- Fresh `/dashboard/rooms/$id` has no TanStack route. Its Fresh page includes room artifacts, threads, upload, and synthesis behavior; a route alias alone would not complete that migration.
-- TanStack `/api/social` has no Fresh route and needs review to determine whether it is an intentional new endpoint or a migration misroute.
-- TanStack now has the expected `/api/followers/follow` path. Its request and response behavior still needs parity tests.
+The current generated route-tree comparison has no Fresh-only URL paths. The canonical TanStack `/rooms/$id` workspace covers room artifacts, threads, upload, synthesis, and journal capture; the legacy `/dashboard/rooms/$id` URL redirects to it, and the previous room editor remains available at `/rooms/$id/edit`. Non-demo database and AI-service behavior still needs integration verification. TanStack `/api/artifacts` was added to support the workspace and has no Fresh route counterpart. The unused TanStack-only `/api/social` duplicate was removed; `/api/followers/follow` remains the canonical follow endpoint. The Fresh `/api/user/social` response and item-access behavior has been ported and covered by API tests, but PostgreSQL integration remains unverified. TanStack's `/streaks` page is still a minimal page; the Fresh `StreakHub` UI has not yet been migrated.
 
 Matching URL paths do not establish parity for HTTP methods, authorization, persistence, error handling, or page behavior.
 

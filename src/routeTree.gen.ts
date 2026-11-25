@@ -26,6 +26,7 @@ import { Route as RoomsRouteImport } from './routes/rooms'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StreaksRouteImport } from './routes/streaks'
 import { Route as ThreadsRouteImport } from './routes/threads'
+import { Route as ApiArtifactsRouteImport } from './routes/api/artifacts'
 import { Route as ApiExtractRouteImport } from './routes/api/extract'
 import { Route as ApiFollowersRouteImport } from './routes/api/followers'
 import { Route as ApiItemsRouteImport } from './routes/api/items'
@@ -34,7 +35,6 @@ import { Route as ApiJournalRouteImport } from './routes/api/journal'
 import { Route as ApiMirrorRouteImport } from './routes/api/mirror'
 import { Route as ApiProfileRouteImport } from './routes/api/profile'
 import { Route as ApiRoomsRouteImport } from './routes/api/rooms'
-import { Route as ApiSocialRouteImport } from './routes/api/social'
 import { Route as ApiThreadsRouteImport } from './routes/api/threads'
 import { Route as GreetNameRouteImport } from './routes/greet.$name'
 import { Route as JournalIdRouteImport } from './routes/journal.$id'
@@ -79,6 +79,8 @@ import { Route as ApiUserExportRouteImport } from './routes/api/user/export'
 import { Route as ApiUserSettingsRouteImport } from './routes/api/user/settings'
 import { Route as ApiUserSocialRouteImport } from './routes/api/user/social'
 import { Route as ApiUserStreaksRouteImport } from './routes/api/user/streaks'
+import { Route as DashboardRoomsIdRouteImport } from './routes/dashboard.rooms.$id'
+import { Route as RoomsIdEditRouteImport } from './routes/rooms.$id.edit'
 import { Route as ApiCirclesIdMembersRouteImport } from './routes/api/circles.$id.members'
 import { Route as ApiCirclesIdMembershipRouteImport } from './routes/api/circles.$id.membership'
 import { Route as ApiCommunityPerspectivesIdRouteImport } from './routes/api/community/perspectives.$id'
@@ -170,6 +172,11 @@ const ThreadsRoute = ThreadsRouteImport.update({
   path: '/threads',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiArtifactsRoute = ApiArtifactsRouteImport.update({
+  id: '/api/artifacts',
+  path: '/api/artifacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiExtractRoute = ApiExtractRouteImport.update({
   id: '/api/extract',
   path: '/api/extract',
@@ -208,11 +215,6 @@ const ApiProfileRoute = ApiProfileRouteImport.update({
 const ApiRoomsRoute = ApiRoomsRouteImport.update({
   id: '/api/rooms',
   path: '/api/rooms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSocialRoute = ApiSocialRouteImport.update({
-  id: '/api/social',
-  path: '/api/social',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiThreadsRoute = ApiThreadsRouteImport.update({
@@ -261,15 +263,15 @@ const ApiAiSuggestEmojiRoute = ApiAiSuggestEmojiRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiArtifactsIngestUrlRoute = ApiArtifactsIngestUrlRouteImport.update({
-  id: '/api/artifacts/ingest-url',
-  path: '/api/artifacts/ingest-url',
-  getParentRoute: () => rootRouteImport,
+  id: '/ingest-url',
+  path: '/ingest-url',
+  getParentRoute: () => ApiArtifactsRoute,
 } as any)
 const ApiArtifactsUploadDocumentRoute =
   ApiArtifactsUploadDocumentRouteImport.update({
-    id: '/api/artifacts/upload-document',
-    path: '/api/artifacts/upload-document',
-    getParentRoute: () => rootRouteImport,
+    id: '/upload-document',
+    path: '/upload-document',
+    getParentRoute: () => ApiArtifactsRoute,
   } as any)
 const ApiAuth2faRoute = ApiAuth2faRouteImport.update({
   id: '/api/auth/2fa',
@@ -439,6 +441,16 @@ const ApiUserStreaksRoute = ApiUserStreaksRouteImport.update({
   path: '/api/user/streaks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoomsIdRoute = DashboardRoomsIdRouteImport.update({
+  id: '/rooms/$id',
+  path: '/rooms/$id',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const RoomsIdEditRoute = RoomsIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => RoomsIdRoute,
+} as any)
 const ApiCirclesIdMembersRoute = ApiCirclesIdMembersRouteImport.update({
   id: '/api/circles/$id/members',
   path: '/api/circles/$id/members',
@@ -473,7 +485,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/connections': typeof ConnectionsRoute
   '/create': typeof CreateRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/journal': typeof JournalRouteWithChildren
   '/journal-community': typeof JournalCommunityRoute
@@ -484,6 +496,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/streaks': typeof StreaksRoute
   '/threads': typeof ThreadsRouteWithChildren
+  '/api/artifacts': typeof ApiArtifactsRouteWithChildren
   '/api/extract': typeof ApiExtractRoute
   '/api/followers': typeof ApiFollowersRouteWithChildren
   '/api/items': typeof ApiItemsRouteWithChildren
@@ -492,13 +505,12 @@ export interface FileRoutesByFullPath {
   '/api/mirror': typeof ApiMirrorRoute
   '/api/profile': typeof ApiProfileRoute
   '/api/rooms': typeof ApiRoomsRouteWithChildren
-  '/api/social': typeof ApiSocialRoute
   '/api/threads': typeof ApiThreadsRouteWithChildren
   '/greet/$name': typeof GreetNameRoute
   '/journal/$id': typeof JournalIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/profile/edit': typeof ProfileEditRoute
-  '/rooms/$id': typeof RoomsIdRoute
+  '/rooms/$id': typeof RoomsIdRouteWithChildren
   '/threads/$id': typeof ThreadsIdRoute
   '/api/ai/socratic': typeof ApiAiSocraticRoute
   '/api/ai/suggest-emoji': typeof ApiAiSuggestEmojiRoute
@@ -537,6 +549,8 @@ export interface FileRoutesByFullPath {
   '/api/user/settings': typeof ApiUserSettingsRoute
   '/api/user/social': typeof ApiUserSocialRoute
   '/api/user/streaks': typeof ApiUserStreaksRoute
+  '/dashboard/rooms/$id': typeof DashboardRoomsIdRoute
+  '/rooms/$id/edit': typeof RoomsIdEditRoute
   '/api/circles/$id/members': typeof ApiCirclesIdMembersRoute
   '/api/circles/$id/membership': typeof ApiCirclesIdMembershipRoute
   '/api/community/perspectives/$id': typeof ApiCommunityPerspectivesIdRoute
@@ -550,7 +564,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/connections': typeof ConnectionsRoute
   '/create': typeof CreateRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/journal': typeof JournalRouteWithChildren
   '/journal-community': typeof JournalCommunityRoute
@@ -561,6 +575,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/streaks': typeof StreaksRoute
   '/threads': typeof ThreadsRouteWithChildren
+  '/api/artifacts': typeof ApiArtifactsRouteWithChildren
   '/api/extract': typeof ApiExtractRoute
   '/api/followers': typeof ApiFollowersRouteWithChildren
   '/api/items': typeof ApiItemsRouteWithChildren
@@ -569,13 +584,12 @@ export interface FileRoutesByTo {
   '/api/mirror': typeof ApiMirrorRoute
   '/api/profile': typeof ApiProfileRoute
   '/api/rooms': typeof ApiRoomsRouteWithChildren
-  '/api/social': typeof ApiSocialRoute
   '/api/threads': typeof ApiThreadsRouteWithChildren
   '/greet/$name': typeof GreetNameRoute
   '/journal/$id': typeof JournalIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/profile/edit': typeof ProfileEditRoute
-  '/rooms/$id': typeof RoomsIdRoute
+  '/rooms/$id': typeof RoomsIdRouteWithChildren
   '/threads/$id': typeof ThreadsIdRoute
   '/api/ai/socratic': typeof ApiAiSocraticRoute
   '/api/ai/suggest-emoji': typeof ApiAiSuggestEmojiRoute
@@ -614,6 +628,8 @@ export interface FileRoutesByTo {
   '/api/user/settings': typeof ApiUserSettingsRoute
   '/api/user/social': typeof ApiUserSocialRoute
   '/api/user/streaks': typeof ApiUserStreaksRoute
+  '/dashboard/rooms/$id': typeof DashboardRoomsIdRoute
+  '/rooms/$id/edit': typeof RoomsIdEditRoute
   '/api/circles/$id/members': typeof ApiCirclesIdMembersRoute
   '/api/circles/$id/membership': typeof ApiCirclesIdMembershipRoute
   '/api/community/perspectives/$id': typeof ApiCommunityPerspectivesIdRoute
@@ -628,7 +644,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/connections': typeof ConnectionsRoute
   '/create': typeof CreateRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/journal': typeof JournalRouteWithChildren
   '/journal-community': typeof JournalCommunityRoute
@@ -639,6 +655,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/streaks': typeof StreaksRoute
   '/threads': typeof ThreadsRouteWithChildren
+  '/api/artifacts': typeof ApiArtifactsRouteWithChildren
   '/api/extract': typeof ApiExtractRoute
   '/api/followers': typeof ApiFollowersRouteWithChildren
   '/api/items': typeof ApiItemsRouteWithChildren
@@ -647,13 +664,12 @@ export interface FileRoutesById {
   '/api/mirror': typeof ApiMirrorRoute
   '/api/profile': typeof ApiProfileRoute
   '/api/rooms': typeof ApiRoomsRouteWithChildren
-  '/api/social': typeof ApiSocialRoute
   '/api/threads': typeof ApiThreadsRouteWithChildren
   '/greet/$name': typeof GreetNameRoute
   '/journal/$id': typeof JournalIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/profile/edit': typeof ProfileEditRoute
-  '/rooms/$id': typeof RoomsIdRoute
+  '/rooms/$id': typeof RoomsIdRouteWithChildren
   '/threads/$id': typeof ThreadsIdRoute
   '/api/ai/socratic': typeof ApiAiSocraticRoute
   '/api/ai/suggest-emoji': typeof ApiAiSuggestEmojiRoute
@@ -692,6 +708,8 @@ export interface FileRoutesById {
   '/api/user/settings': typeof ApiUserSettingsRoute
   '/api/user/social': typeof ApiUserSocialRoute
   '/api/user/streaks': typeof ApiUserStreaksRoute
+  '/dashboard/rooms/$id': typeof DashboardRoomsIdRoute
+  '/rooms/$id/edit': typeof RoomsIdEditRoute
   '/api/circles/$id/members': typeof ApiCirclesIdMembersRoute
   '/api/circles/$id/membership': typeof ApiCirclesIdMembershipRoute
   '/api/community/perspectives/$id': typeof ApiCommunityPerspectivesIdRoute
@@ -718,6 +736,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/streaks'
     | '/threads'
+    | '/api/artifacts'
     | '/api/extract'
     | '/api/followers'
     | '/api/items'
@@ -726,7 +745,6 @@ export interface FileRouteTypes {
     | '/api/mirror'
     | '/api/profile'
     | '/api/rooms'
-    | '/api/social'
     | '/api/threads'
     | '/greet/$name'
     | '/journal/$id'
@@ -771,6 +789,8 @@ export interface FileRouteTypes {
     | '/api/user/settings'
     | '/api/user/social'
     | '/api/user/streaks'
+    | '/dashboard/rooms/$id'
+    | '/rooms/$id/edit'
     | '/api/circles/$id/members'
     | '/api/circles/$id/membership'
     | '/api/community/perspectives/$id'
@@ -795,6 +815,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/streaks'
     | '/threads'
+    | '/api/artifacts'
     | '/api/extract'
     | '/api/followers'
     | '/api/items'
@@ -803,7 +824,6 @@ export interface FileRouteTypes {
     | '/api/mirror'
     | '/api/profile'
     | '/api/rooms'
-    | '/api/social'
     | '/api/threads'
     | '/greet/$name'
     | '/journal/$id'
@@ -848,6 +868,8 @@ export interface FileRouteTypes {
     | '/api/user/settings'
     | '/api/user/social'
     | '/api/user/streaks'
+    | '/dashboard/rooms/$id'
+    | '/rooms/$id/edit'
     | '/api/circles/$id/members'
     | '/api/circles/$id/membership'
     | '/api/community/perspectives/$id'
@@ -872,6 +894,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/streaks'
     | '/threads'
+    | '/api/artifacts'
     | '/api/extract'
     | '/api/followers'
     | '/api/items'
@@ -880,7 +903,6 @@ export interface FileRouteTypes {
     | '/api/mirror'
     | '/api/profile'
     | '/api/rooms'
-    | '/api/social'
     | '/api/threads'
     | '/greet/$name'
     | '/journal/$id'
@@ -925,6 +947,8 @@ export interface FileRouteTypes {
     | '/api/user/settings'
     | '/api/user/social'
     | '/api/user/streaks'
+    | '/dashboard/rooms/$id'
+    | '/rooms/$id/edit'
     | '/api/circles/$id/members'
     | '/api/circles/$id/membership'
     | '/api/community/perspectives/$id'
@@ -939,7 +963,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConnectionsRoute: typeof ConnectionsRoute
   CreateRoute: typeof CreateRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   DiscoverRoute: typeof DiscoverRoute
   JournalRoute: typeof JournalRouteWithChildren
   JournalCommunityRoute: typeof JournalCommunityRoute
@@ -950,6 +974,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   StreaksRoute: typeof StreaksRoute
   ThreadsRoute: typeof ThreadsRouteWithChildren
+  ApiArtifactsRoute: typeof ApiArtifactsRouteWithChildren
   ApiExtractRoute: typeof ApiExtractRoute
   ApiFollowersRoute: typeof ApiFollowersRouteWithChildren
   ApiItemsRoute: typeof ApiItemsRouteWithChildren
@@ -958,13 +983,10 @@ export interface RootRouteChildren {
   ApiMirrorRoute: typeof ApiMirrorRoute
   ApiProfileRoute: typeof ApiProfileRoute
   ApiRoomsRoute: typeof ApiRoomsRouteWithChildren
-  ApiSocialRoute: typeof ApiSocialRoute
   ApiThreadsRoute: typeof ApiThreadsRouteWithChildren
   GreetNameRoute: typeof GreetNameRoute
   ApiAiSocraticRoute: typeof ApiAiSocraticRoute
   ApiAiSuggestEmojiRoute: typeof ApiAiSuggestEmojiRoute
-  ApiArtifactsIngestUrlRoute: typeof ApiArtifactsIngestUrlRoute
-  ApiArtifactsUploadDocumentRoute: typeof ApiArtifactsUploadDocumentRoute
   ApiAuth2faRoute: typeof ApiAuth2faRoute
   ApiAuthDemoRoute: typeof ApiAuthDemoRoute
   ApiAuthForgotPasswordRoute: typeof ApiAuthForgotPasswordRoute
@@ -1114,6 +1136,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ThreadsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/artifacts': {
+      id: '/api/artifacts'
+      path: '/api/artifacts'
+      fullPath: '/api/artifacts'
+      preLoaderRoute: typeof ApiArtifactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/extract': {
       id: '/api/extract'
       path: '/api/extract'
@@ -1168,13 +1197,6 @@ declare module '@tanstack/react-router' {
       path: '/api/rooms'
       fullPath: '/api/rooms'
       preLoaderRoute: typeof ApiRoomsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/social': {
-      id: '/api/social'
-      path: '/api/social'
-      fullPath: '/api/social'
-      preLoaderRoute: typeof ApiSocialRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/threads': {
@@ -1242,17 +1264,17 @@ declare module '@tanstack/react-router' {
     }
     '/api/artifacts/ingest-url': {
       id: '/api/artifacts/ingest-url'
-      path: '/api/artifacts/ingest-url'
+      path: '/ingest-url'
       fullPath: '/api/artifacts/ingest-url'
       preLoaderRoute: typeof ApiArtifactsIngestUrlRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiArtifactsRoute
     }
     '/api/artifacts/upload-document': {
       id: '/api/artifacts/upload-document'
-      path: '/api/artifacts/upload-document'
+      path: '/upload-document'
       fullPath: '/api/artifacts/upload-document'
       preLoaderRoute: typeof ApiArtifactsUploadDocumentRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiArtifactsRoute
     }
     '/api/auth/2fa': {
       id: '/api/auth/2fa'
@@ -1485,6 +1507,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUserStreaksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/rooms/$id': {
+      id: '/dashboard/rooms/$id'
+      path: '/rooms/$id'
+      fullPath: '/dashboard/rooms/$id'
+      preLoaderRoute: typeof DashboardRoomsIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/rooms/$id/edit': {
+      id: '/rooms/$id/edit'
+      path: '/edit'
+      fullPath: '/rooms/$id/edit'
+      preLoaderRoute: typeof RoomsIdEditRouteImport
+      parentRoute: typeof RoomsIdRoute
+    }
     '/api/circles/$id/members': {
       id: '/api/circles/$id/members'
       path: '/api/circles/$id/members'
@@ -1523,6 +1559,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardRoomsIdRoute: typeof DashboardRoomsIdRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardRoomsIdRoute: DashboardRoomsIdRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 interface JournalRouteChildren {
   JournalIdRoute: typeof JournalIdRoute
 }
@@ -1547,12 +1595,23 @@ const ProfileRouteChildren: ProfileRouteChildren = {
 const ProfileRouteWithChildren =
   ProfileRoute._addFileChildren(ProfileRouteChildren)
 
+interface RoomsIdRouteChildren {
+  RoomsIdEditRoute: typeof RoomsIdEditRoute
+}
+
+const RoomsIdRouteChildren: RoomsIdRouteChildren = {
+  RoomsIdEditRoute: RoomsIdEditRoute,
+}
+
+const RoomsIdRouteWithChildren =
+  RoomsIdRoute._addFileChildren(RoomsIdRouteChildren)
+
 interface RoomsRouteChildren {
-  RoomsIdRoute: typeof RoomsIdRoute
+  RoomsIdRoute: typeof RoomsIdRouteWithChildren
 }
 
 const RoomsRouteChildren: RoomsRouteChildren = {
-  RoomsIdRoute: RoomsIdRoute,
+  RoomsIdRoute: RoomsIdRouteWithChildren,
 }
 
 const RoomsRouteWithChildren = RoomsRoute._addFileChildren(RoomsRouteChildren)
@@ -1567,6 +1626,20 @@ const ThreadsRouteChildren: ThreadsRouteChildren = {
 
 const ThreadsRouteWithChildren =
   ThreadsRoute._addFileChildren(ThreadsRouteChildren)
+
+interface ApiArtifactsRouteChildren {
+  ApiArtifactsIngestUrlRoute: typeof ApiArtifactsIngestUrlRoute
+  ApiArtifactsUploadDocumentRoute: typeof ApiArtifactsUploadDocumentRoute
+}
+
+const ApiArtifactsRouteChildren: ApiArtifactsRouteChildren = {
+  ApiArtifactsIngestUrlRoute: ApiArtifactsIngestUrlRoute,
+  ApiArtifactsUploadDocumentRoute: ApiArtifactsUploadDocumentRoute,
+}
+
+const ApiArtifactsRouteWithChildren = ApiArtifactsRoute._addFileChildren(
+  ApiArtifactsRouteChildren,
+)
 
 interface ApiFollowersRouteChildren {
   ApiFollowersFollowRoute: typeof ApiFollowersFollowRoute
@@ -1669,7 +1742,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConnectionsRoute: ConnectionsRoute,
   CreateRoute: CreateRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   DiscoverRoute: DiscoverRoute,
   JournalRoute: JournalRouteWithChildren,
   JournalCommunityRoute: JournalCommunityRoute,
@@ -1680,6 +1753,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   StreaksRoute: StreaksRoute,
   ThreadsRoute: ThreadsRouteWithChildren,
+  ApiArtifactsRoute: ApiArtifactsRouteWithChildren,
   ApiExtractRoute: ApiExtractRoute,
   ApiFollowersRoute: ApiFollowersRouteWithChildren,
   ApiItemsRoute: ApiItemsRouteWithChildren,
@@ -1688,13 +1762,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMirrorRoute: ApiMirrorRoute,
   ApiProfileRoute: ApiProfileRoute,
   ApiRoomsRoute: ApiRoomsRouteWithChildren,
-  ApiSocialRoute: ApiSocialRoute,
   ApiThreadsRoute: ApiThreadsRouteWithChildren,
   GreetNameRoute: GreetNameRoute,
   ApiAiSocraticRoute: ApiAiSocraticRoute,
   ApiAiSuggestEmojiRoute: ApiAiSuggestEmojiRoute,
-  ApiArtifactsIngestUrlRoute: ApiArtifactsIngestUrlRoute,
-  ApiArtifactsUploadDocumentRoute: ApiArtifactsUploadDocumentRoute,
   ApiAuth2faRoute: ApiAuth2faRoute,
   ApiAuthDemoRoute: ApiAuthDemoRoute,
   ApiAuthForgotPasswordRoute: ApiAuthForgotPasswordRoute,

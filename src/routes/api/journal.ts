@@ -23,7 +23,15 @@ export const Route = createFileRoute("/api/journal")({
         const blockchainHash = await generateBlockchainHash(rawThought);
         const threadId = typeof body.threadId === "string" ? body.threadId : null;
         if (threadId) {
-          const thread = await queryDB("SELECT t.id FROM threads t JOIN rooms r ON t.room_id=r.id WHERE t.id=$1 AND r.user_id=$2", threadId, userId);
+          const thread = await queryDB(
+            `SELECT t.id FROM threads t
+             JOIN rooms r ON t.room_id = r.id
+             LEFT JOIN room_collaborators rc ON rc.room_id = r.id
+             WHERE t.id = $1 AND (r.user_id = $2 OR rc.user_id = $2)
+             LIMIT 1`,
+            threadId,
+            userId,
+          );
           if (!thread[0]) return new Response("Thread not found or unauthorized", { status: 404 });
         }
         const rows = await queryDB(
