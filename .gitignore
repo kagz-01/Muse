@@ -1,9 +1,13 @@
 # dotenv environment variable files
 .env
+**/.env
 .env.development.local
 .env.test.local
 .env.production.local
 .env.local
+chat.json
+**/*.log
+**/_fresh/
 
 # Python virtual environments
 .venv/
@@ -14,7 +18,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Fresh build directory
-_fresh/
 # npm dependencies
 node_modules/
+
+# TanStack build and local caches
+dist/
+dist-ssr/
+.tanstack/
+*.local

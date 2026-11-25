@@ -1,10 +1,11 @@
 # Muse Collective 3.0
 
-**Muse** is a knowledge workspace built to transform captured signals into personal and collective intelligence. It combines a Deno Fresh frontend, a Python-powered AI engine, and a modular blockchain/security workspace to support synthesis, reflection, and community.
+**Muse** is a knowledge workspace built to transform captured signals into personal and collective intelligence. The application runs on TanStack Start and Node.js, with a Python AI engine, PostgreSQL, and a modular blockchain/security service.
 
 ## What’s in this repository
 
-- `frontend-gateway/` — Deno Fresh frontend and app shell
+- repository root — TanStack Start + React application
+- `fresh/` — original Deno Fresh implementation, retained as migration reference
 - `ai-engine/` — Python AI and NLP engine, analysis pipeline, scraper modules
 - `blockchain-security/` — Rust smart-contract and blockchain security tooling
 - `database/` — SQL schema and database initialization scripts
@@ -43,24 +44,21 @@ Muse centers on an integrated flow across Rooms, Threads, Journal, Streaks, Mirr
 
 ## Key features implemented
 
-- `frontend-gateway` route architecture with authenticated app layout
-- Signal-driven state management across rooms, threads, journal, streaks, mirror, user, and UI themes
-- Offline-safe write queue and optimistic sync in `utils/safeFetch.ts`
-- Demo mode with localStorage persistence for rooms, threads, journal, and settings
-- Personality-driven prompts and humor system used in dashboard, journal empty states, and setup banners
-- AI-backed personality greeting API at `/api/personality/greeting`
-- Modular page islands for high interactivity and client-side hydration
+- Root-level TanStack routes, Node server handlers, authentication, sessions, and PostgreSQL helpers
+- Muse landing experience and theme preferences ported to React
+- Initial authenticated dashboard and PostgreSQL-backed room list/create/detail/update/delete APIs
+- Remaining Fresh behavior is being ported incrementally; preserve `fresh/` until route, API, and service parity is verified
 
 ## Architecture overview
 
 ### Frontend
 
-The frontend uses Deno Fresh with route-based pages and hydrated islands.
+The application entry point is the root-level TanStack Start project and runs on Node.js.
 
-- `frontend-gateway/routes/(app)/` contains authenticated pages like `/rooms`, `/threads`, `/journal`, `/mirror`, `/profile`, `/settings`, `/journal-community`, and `/connections`
-- `frontend-gateway/islands/` contains interactive UI islands and components
-- `frontend-gateway/signals/` holds centralized reactive state using `@preact/signals`
-- `frontend-gateway/utils/` contains shared helpers and sync helpers like `safeFetch.ts`, `dynamicHumor.ts`, and `contextualPrompts.ts`
+- `src/routes/`, `src/server/`, and `src/components/` contain the root TanStack application
+- `fresh/` contains the original Fresh pages, API handlers, islands, signals, and Deno configuration; it is a migration reference, not the active application runtime
+- Port each behavior into TanStack and verify database and service wiring before removing the Fresh reference
+- `ai-engine/`, `database/`, and `blockchain-security/` remain service/data boundaries; the TanStack application must be wired to them and preserve their existing behavior
 
 ### AI engine
 
@@ -78,17 +76,13 @@ The `blockchain-security/` workspace contains Rust tooling and contract projects
 
 ## Current system status
 
-- Core frontend flows are implemented and actively wired:
-  - Rooms → items → threads
-  - Journal → streaks → mirror
-  - Profile/settings/community UI and signals
-- Personality system is live in the frontend, not just planned
-- Offline queueing and demo persistence are part of the UX
-- The backend API layer is ready for integration with a full Python/DB stack
+- TanStack is the active application runtime; migration is in progress
+- Landing, authentication, dashboard, and room flows are present in the TanStack app
+- Remaining workflows and integrations must be verified against `fresh/` before the reference is removed
 
 ## Tech stack
 
-- Frontend: Deno Fresh, Preact, Preact Signals
+- Current application runtime: TanStack Start, React, Node.js
 - UI: vanilla CSS with Tailwind-style utility classes
 - AI engine: Python 3 with custom NLP and scraper modules
 - Blockchain tooling: Rust + Cargo
@@ -99,11 +93,11 @@ The `blockchain-security/` workspace contains Rust tooling and contract projects
 ### Frontend
 
 ```bash
-cd frontend-gateway
-deno task start
+npm install
+npm run dev
 ```
 
-Open `http://localhost:8000`.
+Open `http://localhost:3000`.
 
 ### AI engine
 
@@ -116,12 +110,14 @@ python main.py
 
 ## Developer quickstart
 
-### Frontend quickstart
+### Muse application quickstart
 
 ```bash
-cd frontend-gateway
-deno task start
+npm install
+npm run dev
 ```
+
+The TanStack app is the active target. Its landing, authentication, dashboard, and room slices are migrated; work on the remaining product flows and API parity is ongoing. The original implementation remains in `fresh/` as a reference.
 
 ### AI engine quickstart
 
@@ -136,7 +132,7 @@ python main.py
 ### Docker quickstart
 
 ```bash
-docker compose up --build
+docker compose up --build muse-app
 ```
 
 ### Database quickstart
@@ -151,7 +147,6 @@ If you need a local Postgres instance, use Docker or your preferred local setup.
 
 ## Important reference docs
 
-- `frontend-gateway/FRONTEND_GATEWAY_ARCHITECTURE.md`
 - `ai-engine/NLP_ENGINE_ARCHITECTURE.md`
 - `ai-engine/SCRAPERS_ARCHITECTURE.md`
 

@@ -33,6 +33,17 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Application sessions replace the former Deno KV session store.
+CREATE TABLE IF NOT EXISTS app_sessions (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_app_sessions_expires_at
+    ON app_sessions(expires_at);
+
 -- 2. Streak system
 CREATE TABLE IF NOT EXISTS streak_events (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -79,13 +90,22 @@ CREATE TABLE IF NOT EXISTS rooms (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     description TEXT,
+    emoji TEXT,
+    category TEXT,
+    size TEXT DEFAULT 'medium',
+    mood TEXT,
     theme_color VARCHAR(50) DEFAULT '#ffffff',
+    custom_theme_hex TEXT,
+    cover_image TEXT,
     tags VARCHAR(255)[],
+    notifications_enabled BOOLEAN NOT NULL DEFAULT true,
     is_public BOOLEAN DEFAULT false,
     count INT DEFAULT 0,
     semantic_tags TEXT[] DEFAULT ARRAY[]::TEXT[],
     custom_settings JSONB DEFAULT '{}'::jsonb,
     resonance_metrics JSONB DEFAULT '{"views": 0, "wovenCount": 0}'::jsonb,
+    custom_styling JSONB,
+    is_vault BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -237,6 +257,13 @@ CREATE TABLE IF NOT EXISTS spark_comments (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS perspective_reactions (
+    perspective_id TEXT PRIMARY KEY,
+    align_count INTEGER NOT NULL DEFAULT 0,
+    challenge_count INTEGER NOT NULL DEFAULT 0,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS room_collaborators (

@@ -1,0 +1,2 @@
+import{createFileRoute}from"@tanstack/react-router";
+export const Route=createFileRoute("/profile/$userId")({component(){const{userId}=Route.useParams();return<main className="min-h-screen bg-[var(--muse-bg)] px-5 py-10 text-[var(--muse-text)]"><div className="mx-auto max-w-3xl"><a href="/connections" className="text-xs uppercase text-[var(--muse-muted)]">← Connections</a><h1 className="mt-8 text-4xl font-semibold">Profile {userId}</h1><p className="mt-4 text-[var(--muse-muted)]">Public profile data is managed by Muse connections.</p></div></main>}});

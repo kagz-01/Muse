@@ -1,18 +1,12 @@
 {
-  "deno.enable": true,
-  "deno.lint": true,
-  "editor.defaultFormatter": "denoland.vscode-deno",
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
   },
-  "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
   },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
   },
   "css.customData": [
     ".vscode/tailwind.json"
@@ -22,9 +16,5 @@
     "${workspaceFolder}/ai-engine"
   ],
   "python.analysis.autoSearchPaths": true,
-  "python.analysis.useImportHeuristic": true,
-  "deno.enable": true,
-  "deno.unstable": true,
-  "deno.config": "${workspaceFolder}/frontend-gateway/deno.json",
-  "deno.enablePaths": ["${workspaceFolder}/frontend-gateway"]
+  "python.analysis.useImportHeuristic": true
 }

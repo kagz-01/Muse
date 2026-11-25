@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { getSessionUser } from "../../server/auth";import{queryDB}from"../../server/db";
+export const Route=createFileRoute("/api/threads/parallel")({server:{handlers:{POST:async({request})=>{const userId=await getSessionUser(request);if(!userId)return new Response("Unauthorized",{status:401});const body=await request.json().catch(()=>null)as Record<string,unknown>|null;const roomId=typeof body?.roomId==="string"?body.roomId:"";if(!roomId)return new Response("roomId required",{status:400});const rows=await queryDB("SELECT t.* FROM threads t JOIN rooms r ON r.id=t.room_id WHERE t.room_id=$1 AND r.user_id=$2 ORDER BY t.updated_at DESC LIMIT 10",roomId,userId);return Response.json({threads:rows})}}}});

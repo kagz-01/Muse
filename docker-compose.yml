@@ -1,21 +1,18 @@
-version: '3.8'
-
 services:
-  frontend-gateway:
-    build: 
-      context: ./frontend-gateway
+  muse-app:
+    build:
+      context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "3001:3000"
     environment:
-      - PORT=8000
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL:-}
       - AI_ENGINE_URL=http://ai-engine:8000
       - BLOCKCHAIN_URL=http://blockchain-security:3000
     depends_on:
       - ai-engine
       - blockchain-security
-    volumes:
-      - ./frontend-gateway:/app
 
   ai-engine:
     build:

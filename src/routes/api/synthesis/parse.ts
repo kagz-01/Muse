@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+export const Route=createFileRoute("/api/synthesis/parse")({server:{handlers:{POST:async({request})=>{
+ try{const body=await request.json() as Record<string,unknown>;const url=typeof body.url==="string"?body.url:"";if(!url)return Response.json({error:"URL required"},{status:400});const urlObj=new URL(url);const domain=urlObj.hostname;let type:"article"|"image"|"video"|"document"|"unknown"="article";if(/\.(png|jpg|jpeg|gif|webp)$/i.test(url))type="image";else if(domain.includes("youtube"))type="video";else if(/\.pdf$/i.test(url))type="document";return Response.json({title:domain,description:"Link content",url,source:domain,type,favicon:`https://${domain}/favicon.ico`});}catch{return Response.json({error:"Invalid URL provided"},{status:400})}
+}}}});
