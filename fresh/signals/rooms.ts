@@ -1,0 +1,368 @@
+import { signal } from "@preact/signals";
+import { itemsSignal } from "./items.ts";
+import { threadsSignal } from "./threads.ts";
+import { userSignal } from "./user.ts";
+import { safeFetch } from "../utils/safeFetch.ts";
+import { registerIdSwapCallback } from "../utils/syncQueue.ts";
+import { DEMO_ROOMS } from "../utils/demo_data.ts";
+
+export type RoomTheme =
+  | "indigo"
+  | "emerald"
+  | "rose"
+  | "amber"
+  | "cyan"
+  | "slate";
+
+export type RoomCategory =
+  | "workspace"
+  | "journal"
+  | "archive"
+  | "brainstorm"
+  | "inspiration";
+export type RoomSize = "small" | "medium" | "large";
+export type RoomMood =
+  | "focus"
+  | "zen"
+  | "chaos"
+  | "energetic"
+  | "melancholy"
+  | "dreamy"
+  | "noir"
+  | "warm"
+  | "electric"
+  | "minimal"
+  | "cosmic"
+  | "storm";
+
+export const MOOD_OPTIONS: {
+  id: RoomMood;
+  emoji: string;
+  label: string;
+  description: string;
+}[] = [
+  {
+    id: "focus",
+    emoji: "🎯",
+    label: "Focus",
+    description: "Deep work, no distractions",
+  },
+  {
+    id: "zen",
+    emoji: "🧘",
+    label: "Zen",
+    description: "Calm, meditative breathing",
+  },
+  {
+    id: "chaos",
+    emoji: "🌀",
+    label: "Chaos",
+    description: "Glitchy, raw creative energy",
+  },
+  {
+    id: "energetic",
+    emoji: "⚡",
+    label: "Energetic",
+    description: "Fast-paced, vibrant pulse",
+  },
+  {
+    id: "melancholy",
+    emoji: "🌧️",
+    label: "Melancholy",
+    description: "Thoughtful, introspective depth",
+  },
+  {
+    id: "dreamy",
+    emoji: "☁️",
+    label: "Dreamy",
+    description: "Soft, floating, ethereal",
+  },
+  {
+    id: "noir",
+    emoji: "🖤",
+    label: "Noir",
+    description: "Dark cinematic mystery",
+  },
+  {
+    id: "warm",
+    emoji: "🕯️",
+    label: "Warm",
+    description: "Cozy, candlelit comfort",
+  },
+  {
+    id: "electric",
+    emoji: "💜",
+    label: "Electric",
+    description: "Neon-lit cyberpunk haze",
+  },
+  {
+    id: "minimal",
+    emoji: "◻️",
+    label: "Minimal",
+    description: "Clean, stripped-back clarity",
+  },
+  {
+    id: "cosmic",
+    emoji: "🌌",
+    label: "Cosmic",
+    description: "Deep space, infinite scale",
+  },
+  {
+    id: "storm",
+    emoji: "🌩️",
+    label: "Storm",
+    description: "Intense, volatile urgency",
+  },
+];
+
+export interface Room {
+  id: string;
+  name: string;
+  title?: string;
+  description?: string;
+  emoji?: string; // Room icon/emoji (e.g., 🎨, 📖, 🏗️)
+  category?: RoomCategory; // Room type/template (workspace, journal, archive, brainstorm, inspiration)
+  size?: RoomSize; // Room capacity (small, medium, large)
+  mood?: RoomMood; // Ambient mode (focus, zen, chaos, energetic)
+  themeColor: RoomTheme;
+  customThemeHex?: string; // Custom hex color chosen by user (overrides themeColor if present)
+  coverImage?: string;
+  isPublic: boolean;
+  count: number;
+  tags: string[]; // Initial/managed tags for the room
+  notificationsEnabled: boolean; // User notification preference for room activity
+  updatedAt: string;
+  semanticTags: string[];
+  resonanceMetrics: {
+    views: number;
+    wovenCount: number; // Number of times artifacts from this room were woven into public threads
+  };
+  customStyling?: {
+    wallpaper?: string;
+    auraIntensity?: number;
+    fontFamily?: string;
+  };
+  // Vault-related properties
+  isVault?: boolean; // True if this is a private vault room
+}
+
+const STORAGE_KEY = "muse_rooms_v2";
+
+const INITIAL_ROOMS: Room[] = [];
+
+function getDemoRooms(): Room[] {
+  return DEMO_ROOMS.map((room) => ({
+    id: room.id,
+    name: room.name,
+    title: room.title || room.name,
+    description: room.description,
+    emoji: room.emoji,
+    category: room.category as RoomCategory,
+    size: room.size as RoomSize,
+    mood: room.mood as RoomMood,
+    themeColor: room.themeColor as RoomTheme,
+    isPublic: room.isPublic,
+    count: room.count,
+    tags: room.tags,
+    notificationsEnabled: room.notificationsEnabled,
+    updatedAt: room.updatedAt,
+    semanticTags: room.semanticTags,
+    resonanceMetrics: room.resonanceMetrics,
+    coverImage: room.coverImage,
+    customStyling: room.customStyling,
+  })) as Room[];
+}
+
+function loadRooms(): Room[] {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  if (typeof localStorage === "undefined") {
+    return isDemo ? getDemoRooms() : INITIAL_ROOMS;
+  }
+
+  try {
+    if (!isDemo) return INITIAL_ROOMS;
+
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return getDemoRooms();
+    const parsed = JSON.parse(stored) as Room[];
+    const base = Array.isArray(parsed) ? parsed : INITIAL_ROOMS;
+
+    return base;
+  } catch {
+    return isDemo ? getDemoRooms() : INITIAL_ROOMS;
+  }
+}
+
+export const roomsSignal = signal<Room[]>(loadRooms());
+
+// Keep localStorage as a fast cache for demo mode + offline display
+if (typeof localStorage !== "undefined") {
+  roomsSignal.subscribe((rooms: Room[]) => {
+    const isDemo = userSignal.value?.id === "__demo__";
+    if (isDemo) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
+      } catch { /* ignore */ }
+    }
+  });
+
+  userSignal.subscribe((user) => {
+    if (user?.id === "__demo__") {
+      if (!roomsSignal.value.some((room) => room.id.startsWith("demo-"))) {
+        roomsSignal.value = getDemoRooms();
+      }
+    } else {
+      roomsSignal.value = INITIAL_ROOMS;
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  });
+}
+
+// Load rooms from backend for authenticated users
+export async function syncRoomsFromBackend(): Promise<void> {
+  const isDemo = userSignal.value?.id === "__demo__";
+  if (isDemo) return;
+  try {
+    const response = await fetch("/api/rooms");
+    if (response.ok) {
+      const rooms = await response.json();
+      roomsSignal.value = rooms;
+    }
+  } catch (e) {
+    console.error("Failed to sync rooms from backend:", e);
+  }
+}
+
+export async function addRoom(
+  room: Omit<
+    Room,
+    "id" | "updatedAt" | "count" | "semanticTags" | "resonanceMetrics"
+  >,
+): Promise<string> {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  if (isDemo) {
+    const newId = "r" + (roomsSignal.value.length + 1);
+    const newRoom: Room = {
+      ...room,
+      id: newId,
+      updatedAt: new Date().toISOString(),
+      count: 0,
+      semanticTags: [],
+      resonanceMetrics: { views: 0, wovenCount: 0 },
+    };
+    roomsSignal.value = [...roomsSignal.value, newRoom];
+    return newId;
+  }
+
+  const tempId = "r" + (roomsSignal.value.length + 1) + "_pending";
+  const response = await safeFetch("/api/rooms", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(room),
+    entity: "room",
+    tempId,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create room: ${await response.text()}`);
+  }
+
+  const data = await response.json();
+  if (data.queued) {
+    const newRoom: Room = {
+      ...room,
+      id: tempId,
+      updatedAt: new Date().toISOString(),
+      count: 0,
+      semanticTags: [],
+      resonanceMetrics: { views: 0, wovenCount: 0 },
+    };
+    roomsSignal.value = [...roomsSignal.value, newRoom];
+    return tempId;
+  }
+
+  const { room: newRoom } = data;
+  roomsSignal.value = [...roomsSignal.value, newRoom];
+  return newRoom.id;
+}
+
+export async function updateRoom(id: string, updates: Partial<Room>) {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  // Optimistic update
+  roomsSignal.value = roomsSignal.value.map((r: Room) =>
+    r.id === id ? { ...r, ...updates, updatedAt: new Date().toISOString() } : r
+  );
+
+  if (!isDemo && !id.startsWith("r")) {
+    try {
+      await safeFetch(`/api/rooms/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+        entity: "room",
+      });
+    } catch (e) {
+      console.error("Failed to update room on backend:", e);
+    }
+  }
+}
+
+export async function updateRoomTheme(id: string, theme: RoomTheme) {
+  await updateRoom(id, { themeColor: theme });
+}
+
+export async function updateRoomCover(id: string, cover: string) {
+  await updateRoom(id, { coverImage: cover });
+}
+
+export async function toggleRoomPrivacy(id: string) {
+  const room = roomsSignal.value.find((r) => r.id === id);
+  if (room) {
+    await updateRoom(id, { isPublic: !room.isPublic });
+  }
+}
+
+export async function deleteRoom(id: string) {
+  const isDemo = userSignal.value?.id === "__demo__";
+
+  // Remove from signal first (optimistic)
+  roomsSignal.value = roomsSignal.value.filter((r: Room) => r.id !== id);
+
+  // Clean up local signal references
+  const removedItemIds = itemsSignal.value
+    .filter((it) => it.roomId === id)
+    .map((it) => it.id);
+  itemsSignal.value = itemsSignal.value.filter((it) => it.roomId !== id);
+  threadsSignal.value = threadsSignal.value
+    .map((t) => ({
+      ...t,
+      itemIds: t.itemIds.filter((iid) => !removedItemIds.includes(iid)),
+      sourceRoomIds: t.sourceRoomIds.filter((rid) => rid !== id),
+    }))
+    .filter((t) => t.itemIds.length > 0 || t.sourceRoomIds.length > 0);
+
+  if (!isDemo && !id.startsWith("r")) {
+    try {
+      await safeFetch(`/api/rooms/${id}`, {
+        method: "DELETE",
+        entity: "room",
+      });
+    } catch (e) {
+      console.error("Failed to delete room on backend:", e);
+    }
+  }
+}
+
+// ─── Offline Sync Callback ───────────────────────────────────────────────
+registerIdSwapCallback("room", (tempId, realId) => {
+  roomsSignal.value = roomsSignal.value.map((r) =>
+    r.id === tempId ? { ...r, id: realId } : r
+  );
+});
+
+export function resetRooms() {
+  roomsSignal.value = [];
+}

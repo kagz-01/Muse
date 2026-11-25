@@ -1,0 +1,31 @@
+services:
+  muse-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL:-}
+      - AI_ENGINE_URL=http://ai-engine:8000
+      - BLOCKCHAIN_URL=http://blockchain-security:3000
+    depends_on:
+      - ai-engine
+      - blockchain-security
+
+  ai-engine:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./ai-engine:/app
+
+  blockchain-security:
+    build:
+      context: ./blockchain-security
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"

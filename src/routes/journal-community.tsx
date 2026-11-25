@@ -1,0 +1,2 @@
+import { createFileRoute } from "@tanstack/react-router";
+export const Route=createFileRoute("/journal-community")({component(){return<main className="min-h-screen bg-[var(--muse-bg)] px-5 py-10 text-[var(--muse-text)]"><div className="mx-auto max-w-4xl"><a href="/dashboard" className="text-xs uppercase text-[var(--muse-muted)]">← Muse</a><h1 className="mt-8 text-5xl font-semibold">Community Journal</h1><p className="mt-5 text-[var(--muse-muted)]">Open public journal signals appear in Discover and the Community Stream.</p></div></main>}});

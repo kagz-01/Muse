@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: muse-app
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: AI_ENGINE_URL
+        sync: false
+      - key: BLOCKCHAIN_URL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: noreply@muse.app
+
+  - type: web
+    name: muse-ai-engine
+    runtime: docker
+    dockerContext: ./ai-engine
+    dockerfilePath: ./ai-engine/Dockerfile
+    plan: free
+    region: oregon # or frankfurt, depending on your user base
+    branch: main
+    envVars:
+      - key: PORT
+        value: 8000
+
+  - type: web
+    name: muse-blockchain-security
+    runtime: docker
+    dockerContext: ./blockchain-security
+    dockerfilePath: ./blockchain-security/Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    envVars:
+      - key: PORT
+        value: 3000

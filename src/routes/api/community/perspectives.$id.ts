@@ -1,0 +1,8 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { getSessionUser, isDemoUser } from "../../../server/auth";
+import { executeDB, queryDB } from "../../../server/db";
+
+export const Route=createFileRoute("/api/community/perspectives/$id")({server:{handlers:{
+ GET:async({params})=>{const rows=await queryDB("SELECT align_count,challenge_count FROM perspective_reactions WHERE perspective_id=$1",params.id);const row=rows[0] as Record<string,unknown>|undefined;return Response.json({alignCount:Number(row?.align_count||0),challengeCount:Number(row?.challenge_count||0)})},
+ POST:async({request,params})=>{const userId=await getSessionUser(request);if(!userId)return new Response("Unauthorized",{status:401});if(isDemoUser(userId))return new Response("Demo users cannot react",{status:403});const body=await request.json().catch(()=>null)as Record<string,unknown>|null;const action=body?.action==="align"?"align":body?.action==="challenge"?"challenge":"";if(!action)return Response.json({error:"Invalid action"},{status:400});await executeDB(action==="align"?"INSERT INTO perspective_reactions(perspective_id,align_count) VALUES($1,1) ON CONFLICT(perspective_id) DO UPDATE SET align_count=perspective_reactions.align_count+1,updated_at=NOW()":"INSERT INTO perspective_reactions(perspective_id,challenge_count) VALUES($1,1) ON CONFLICT(perspective_id) DO UPDATE SET challenge_count=perspective_reactions.challenge_count+1,updated_at=NOW()",params.id);const rows=await queryDB("SELECT align_count,challenge_count FROM perspective_reactions WHERE perspective_id=$1",params.id);const row=rows[0] as Record<string,unknown>;return Response.json({alignCount:Number(row.align_count),challengeCount:Number(row.challenge_count)})},
+}}});

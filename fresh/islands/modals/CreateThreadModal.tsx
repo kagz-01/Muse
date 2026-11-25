@@ -1,0 +1,548 @@
+import { useEffect, useRef, useState } from "preact/hooks";
+import * as Icons from "lucide-preact";
+import EmojiInput from "../../components/ui/EmojiInput.tsx";
+import { addThread } from "../../signals/threads.ts";
+import { useDraft } from "../../hooks/useDraft.ts";
+
+const CORE_MOODS = [
+  { id: "focus", label: "Focus", emoji: "🧠" },
+  { id: "chaos", label: "Chaos", emoji: "🌪️" },
+  { id: "minimal", label: "Minimal", emoji: "⬜" },
+  { id: "cosmic", label: "Cosmic", emoji: "🌌" },
+  { id: "noir", label: "Noir", emoji: "🕵️" },
+];
+
+interface Props {
+  onClose: () => void;
+}
+
+const moodColors: Record<string, string> = {
+  focus: "#6366f1", // indigo
+  zen: "#10b981", // emerald
+  chaos: "#f43f5e", // rose
+  energetic: "#f59e0b", // amber
+  melancholy: "#8b5cf6", // violet
+  dreamy: "#0ea5e9", // sky
+  noir: "#475569", // slate
+  warm: "#fb923c", // orange
+  electric: "#d946ef", // fuchsia
+  minimal: "#9ca3af", // gray
+  cosmic: "#8b5cf6", // violet
+  storm: "#64748b", // slate
+};
+
+export default function CreateThreadModal({ onClose }: Props) {
+  const { draft, hasDraft, updateDraft, clearDraft } = useDraft<{
+    title: string;
+    description: string;
+    thesis: string;
+    mood: string;
+    format: string;
+    depth: string;
+    theme: string;
+    isPublic: boolean;
+    isVault: boolean;
+  }>("muse_thread_draft");
+
+  const [showResumeBanner, setShowResumeBanner] = useState(hasDraft);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [thesis, setThesis] = useState("");
+  const [mood, setMood] = useState("focus");
+  const [format, setFormat] = useState("Essay");
+  const [depth, setDepth] = useState("50");
+  const [theme, setTheme] = useState("");
+  const [coverPreview, setCoverPreview] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
+  const [isVault, setIsVault] = useState(false);
+  const [error, setError] = useState("");
+
+  const applyDraft = () => {
+    if (!draft) return;
+    if (draft.title) setTitle(draft.title);
+    if (draft.description) setDescription(draft.description);
+    if (draft.thesis) setThesis(draft.thesis);
+    if (draft.mood) setMood(draft.mood);
+    if (draft.format) setFormat(draft.format);
+    if (draft.depth) setDepth(draft.depth);
+    if (draft.theme) setTheme(draft.theme);
+    if (typeof draft.isPublic === "boolean") setIsPublic(draft.isPublic);
+    if (typeof draft.isVault === "boolean") setIsVault(draft.isVault);
+    setShowResumeBanner(false);
+  };
+
+  const titleRef = useRef<HTMLInputElement | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    titleRef.current?.focus();
+  }, []);
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    globalThis.addEventListener("keydown", handler);
+    return () => globalThis.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  const handleBackdropClick = (e: MouseEvent) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+
+  const handleImagePick = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setCoverPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const selectedMoodOption = CORE_MOODS.find((m) => m.id === mood);
+  const moodColor = selectedMoodOption
+    ? moodColors[selectedMoodOption.id]
+    : "#a855f7"; // default to purple-ish if custom
+
+  const handleCreate = async () => {
+    if (!title.trim()) {
+      setError("Give your thread a title.");
+      return;
+    }
+
+    const newId = await addThread({
+      title: title.trim(),
+      description: description.trim(),
+      thesis: thesis.trim(),
+      mood,
+      format,
+      depth,
+      theme,
+      coverImage: coverPreview,
+      isPublic,
+      isVault,
+      itemIds: [],
+      sourceRoomIds: [],
+    });
+
+    clearDraft(); // ✅ wipe draft on success
+    onClose();
+    globalThis.location.href = `/threads/${newId}`;
+  };
+
+  // Auto-save draft on every meaningful change
+  useEffect(() => {
+    if (title || description || thesis || theme) {
+      updateDraft({
+        title,
+        description,
+        thesis,
+        mood,
+        format,
+        depth,
+        theme,
+        isPublic,
+        isVault,
+      });
+    }
+  }, [title, description, thesis, mood, format, depth, theme, isPublic, isVault]);
+
+  return (
+    <div
+      onClick={handleBackdropClick}
+      className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200"
+    >
+      <div className="relative w-full max-w-2xl bg-[#111318] border border-white/10 rounded-4xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
+        {/* Ambient glow */}
+        <div
+          className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500"
+          style={{ backgroundColor: moodColor }}
+        />
+
+        <div className="relative z-10 p-8">
+          {/* Resume Draft Banner */}
+          {showResumeBanner && (
+            <div className="mb-6 flex items-center gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 animate-in slide-in-from-top-2 duration-300">
+              <Icons.FileText size={18} className="text-amber-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">
+                  Unsaved Draft Found
+                </p>
+                <p className="text-xs text-amber-400/80 font-serif italic mt-0.5 truncate">
+                  {draft?.title
+                    ? `"${draft.title}"`
+                    : "A thread you started is waiting"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={applyDraft}
+                className="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-widest hover:bg-amber-500/30 transition-all shrink-0"
+              >
+                Resume
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  clearDraft();
+                  setShowResumeBanner(false);
+                }}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-amber-500/60 hover:text-amber-400 transition-colors shrink-0"
+              >
+                <Icons.X size={14} />
+              </button>
+            </div>
+          )}
+          {/* Header */}
+          <div className="flex items-center justify-between mb-7">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-white">
+                Start a Thread
+              </h2>
+              <p className="text-sm text-gray-400 mt-1 font-serif italic">
+                Define the thematic idea you want to explore.
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              type="button"
+              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+            >
+              <Icons.X size={18} />
+            </button>
+          </div>
+
+          {/* Cover */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
+                Cover Image
+              </label>
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                Local or Web URL
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              <div
+                onClick={() => fileRef.current?.click()}
+                className="relative w-full h-32 rounded-2xl border-2 border-dashed border-white/10 hover:border-white/25 transition-all cursor-pointer overflow-hidden group bg-white/[0.02]"
+              >
+                {coverPreview
+                  ? (
+                    <img
+                      src={coverPreview}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      alt=""
+                    />
+                  )
+                  : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-gray-300 transition-colors">
+                      <Icons.UploadCloud size={22} />
+                      <span className="text-xs font-bold uppercase tracking-widest">
+                        Upload Local Cover
+                      </span>
+                    </div>
+                  )}
+                {coverPreview && (
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                      <Icons.UploadCloud size={14} /> Upload New
+                    </span>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImagePick}
+                className="hidden"
+              />
+
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                  <Icons.Link2 size={14} />
+                </div>
+                <input
+                  type="url"
+                  placeholder="Or paste an image URL from the web..."
+                  value={coverPreview && coverPreview.startsWith("http")
+                    ? coverPreview
+                    : ""}
+                  onChange={(e) =>
+                    setCoverPreview((e.target as HTMLInputElement).value)}
+                  className="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-canvas-primary/50 transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Title */}
+          <div className="mb-5">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Thread Title *
+            </label>
+            <EmojiInput
+              value={title}
+              onInput={(v) => {
+                setTitle(v);
+                setError("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleCreate();
+              }}
+              placeholder="e.g. The Aesthetic of Restraint"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-base font-medium tracking-tight"
+            />
+            {error && (
+              <p className="text-rose-400 text-xs mt-2 font-medium">{error}</p>
+            )}
+          </div>
+
+          {/* Thesis */}
+          <div className="mb-5">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Core Thesis
+            </label>
+            <EmojiInput
+              value={thesis}
+              onInput={setThesis}
+              placeholder="What core question or idea does this thread explore?"
+              multiline
+              rows={2}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm font-serif italic leading-relaxed resize-none"
+            />
+          </div>
+
+          {/* Description */}
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Brief Description
+            </label>
+            <EmojiInput
+              value={description}
+              onInput={setDescription}
+              placeholder="A short summary of what you're gathering here…"
+              multiline
+              rows={2}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm leading-relaxed resize-none"
+            />
+          </div>
+
+          {/* Format and Depth Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Synthesis Format
+              </label>
+              <div className="relative">
+                <EmojiInput
+                  value={format}
+                  onInput={setFormat}
+                  placeholder="e.g. Technical Spec, Poem"
+                  iconLeft={<Icons.Type size={14} className="text-gray-500" />}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm font-medium focus:outline-none focus:border-canvas-primary/50 transition-all"
+                />
+              </div>
+              <div className="flex gap-2 mt-3 flex-wrap">
+                {["Essay", "Manifesto", "Blueprint", "Debate"].map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setFormat(f)}
+                    className="px-2 py-1 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded text-[10px] uppercase font-bold tracking-widest transition-colors"
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 flex justify-between">
+                <span>Cognitive Depth</span>
+                <span className="text-canvas-primary">{depth}%</span>
+              </label>
+              <div className="pt-2 pb-1">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={depth}
+                  onInput={(e) =>
+                    setDepth((e.target as HTMLInputElement).value)}
+                  className="w-full accent-canvas-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
+              <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-gray-500 mt-2">
+                <span>Surface</span>
+                <span>Deep</span>
+                <span>Comprehensive</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Theme */}
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Aesthetic Theme (Optional)
+            </label>
+            <div className="relative">
+              <EmojiInput
+                value={theme}
+                onInput={setTheme}
+                placeholder="e.g. Cyberpunk, Minimalist, Brutalist"
+                iconLeft={<Icons.Palette size={14} className="text-gray-500" />}
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all font-mono"
+              />
+            </div>
+          </div>
+
+          {/* Mood Visual Grid */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
+                Generative Mood
+              </label>
+            </div>
+            <div className="mb-4">
+              <EmojiInput
+                value={mood}
+                onInput={setMood}
+                placeholder="Type any mood..."
+                iconLeft={
+                  <Icons.Sparkles
+                    size={14}
+                    className="text-canvas-primary/60"
+                  />
+                }
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-white text-sm focus:outline-none focus:border-canvas-primary/50 transition-all"
+              />
+            </div>
+            <div className="grid grid-cols-5 gap-2">
+              {CORE_MOODS.map((m) => {
+                const isSelected = mood.toLowerCase() === m.id.toLowerCase();
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setMood(m.id)}
+                    className={`relative p-2 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
+                      isSelected
+                        ? "border-canvas-primary/40 bg-canvas-primary/10 shadow-lg"
+                        : "border-white/5 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <span className="text-lg filter drop-shadow-md">
+                      {m.emoji}
+                    </span>
+                    <div className="text-center w-full">
+                      <p className="text-gray-400 text-[9px] font-bold capitalize truncate">
+                        {m.label}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Visibility Toggle */}
+          <div className="mb-8 p-1 bg-white/5 rounded-2xl flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsPublic(false);
+                setIsVault(false);
+              }}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                !isPublic && !isVault
+                  ? "bg-white/10 text-white shadow-xl"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <Icons.Lock size={16} />
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Private — Solo Mode
+                </span>
+                <span className="block text-[9px] text-gray-400 font-normal">
+                  Only you can access this thread
+                </span>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsPublic(false);
+                setIsVault(true);
+              }}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                isVault
+                  ? "bg-amber-500/20 text-amber-400 shadow-xl shadow-amber-500/5"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <Icons.Shield size={16} />
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Vault — Protected Mode
+                </span>
+                <span className="block text-[9px] text-gray-400 font-normal">
+                  Hidden behind the master vault
+                </span>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsPublic(true);
+                setIsVault(false);
+              }}
+              className={`flex-1 py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                isPublic
+                  ? "bg-indigo-500/20 text-indigo-400 shadow-xl shadow-indigo-500/5"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <Icons.Globe size={16} />
+              <div className="text-left">
+                <span className="block text-[10px] font-bold uppercase tracking-widest">
+                  Community Hub
+                </span>
+                <span className="block text-[9px] text-indigo-400/60 font-normal">
+                  Visible to others
+                </span>
+              </div>
+            </button>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3 mt-4">
+            <button
+              onClick={() => {
+                clearDraft();
+                onClose();
+              }}
+              type="button"
+              className="flex-1 py-4 rounded-2xl border border-white/10 text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreate}
+              type="button"
+              className="flex-[2] py-4 rounded-2xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer hover:-translate-y-0.5 active:scale-95 text-white"
+              style={{
+                backgroundColor: moodColor,
+                boxShadow: `0 0 30px ${moodColor}55`,
+              }}
+            >
+              Start Thread <Icons.ArrowRight size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

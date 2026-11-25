@@ -1,0 +1,17 @@
+node_modules
+dist
+.env
+.env.*
+!.env.example
+.git
+npm-debug.log*
+fresh/
+frontend-gateway/
+frontend-tanstack/
+ai-engine/
+blockchain-security/
+.agent/
+AGENTS.md
+README.md
+render.yaml
+docker-compose.yml
